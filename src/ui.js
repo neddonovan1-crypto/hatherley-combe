@@ -117,7 +117,7 @@ function paperHTML(){ const e = byId(S.pending), bill = BILLS.has(e.id), text = 
   return `${runhead(bill ? 'Posted this quarter' : 'Papers received this quarter', `fo. ${Math.min(S.t + 1, 84)}`)}
     <article class="sheet${bill ? ' bill' : ''}">
       ${who ? `<div class="from">${medal(who, true)}<div><p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p><h2>${esc(e.title)}</h2></div></div>` : `<p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>`}
-      <div class="prose">${pic('events/' + e.id, '')}${paras(text)}</div>
+      <div class="prose">${(e.cut && pic('events/' + e.cut(), '')) || pic('events/' + e.id, '')}${paras(text)}</div>
     </article>`; }
 function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c => !c.if || c.if());
   return `${runhead('Your answer', 'Cr.')}
