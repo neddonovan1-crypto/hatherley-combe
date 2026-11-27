@@ -691,6 +691,9 @@ const lab = c => typeof c.t === 'function' ? c.t() : c.t;
 const byId = id => EVENTS.find(e => e.id === id);
 
 function pickEvent(){
+  // A dated event keeps its date. Anything queued for the same season waits one.
+  const dated = (FIXED[S.year + '-' + S.season] || []).find(e => !e.cond || e.cond());
+  if (dated) { S.queue.forEach(x => { if (x.at <= S.t) x.at = S.t + 1; }); return dated.id; }
   const due = S.queue.filter(x => x.at <= S.t);
   for (const d of due){ S.queue.splice(S.queue.indexOf(d), 1); const e = byId(d.id); if (e && (!e.cond || e.cond())) { S.queue.forEach(x => { if (x.at <= S.t) x.at = S.t + 1; }); return e.id; } }
   const fx = FIXED[S.year + '-' + S.season];
@@ -4886,7 +4889,8 @@ function estateSync(){
   if (kb && S.projectsDone.drain === 'done' && !kb.drained) { kb.drained = true; kb.cond = Math.max(kb.cond, 2); }
   if (kb && F('edmund') === 'farmer' && kb.tenant !== 'Edmund') { kb.tenant = 'Edmund'; kb.she = false; kb.arrears = 0; delete kb.void; kb.since = S.year;
     kb.rent = five(0.88 * lettingValue(kb, S.year)); kb.lease = {type:'term', ends:S.year + 14, years:14}; kb.K = kb.rent; }
-  if (!S.offered && S.t >= 5) { S.offered = true; later('farmOffered', 0); }
+  bubbleClock();
+  if (!S.offered && S.t >= 6) { S.offered = true; later('farmOffered', 0); }
   if (F('starveall') && !farm('starveall') && !S.starveallDone) { S.starveallDone = true; S.rentAdj /= 1.09; addFarm('starveall'); }
 }
 
@@ -5373,6 +5377,152 @@ function endSociety(id){ const x = societyList().find(r => r.id === id); if (!x 
 function societyQuarter(line){ for (const id in SOCIETY) if (held(id) && SOCIETY[id].keep) line(SOCIETY[id].name, -socKeep(id) / 4); }
 /* Land he bought is his own, and counts in what he is worth. Settled land is Edmund's, and does not. */
 const ownLandValue = () => S.farms.filter(f => f.own).reduce((a, f) => a + salePrice(f), 0);
+
+/* ---------- the Brazil Association: a bubble in four papers, 1808 to 1810 ---------- */
+/* Three fates, fixed when the prospectus arrives and hidden. made: the ship comes home full. glut: the market breaks with the rest in 1810.
+   gone: the secretary goes abroad and the proprietors answer for the debts. The letter of 1809 tells which, to anyone who reads it closely. */
+const ONES = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+function numWords(n){ n = Math.round(n); if (n === 0) return 'nothing';
+  const under = k => { const h = Math.floor(k / 100), r = k % 100, a = []; if (h) a.push((h === 1 ? 'a' : ONES[h]) + ' hundred'); if (r) a.push(r < 20 ? ONES[r] : TENS[Math.floor(r / 10)] + (r % 10 ? '-' + ONES[r % 10] : '')); return a.join(' and '); };
+  if (n >= 1100 && n < 2000 && n % 100 === 0) return ONES[n / 100] + ' hundred';
+  const th = Math.floor(n / 1000), r = n % 1000;
+  return (th ? under(th).replace(/^a hundred/, 'one hundred') + ' thousand' : '') + (th && r ? (r < 100 ? ' and ' : ' ') : '') + (r ? (th ? under(r).replace(/^a hundred/, 'one hundred') : under(r)) : ''); }
+const pounds = n => numWords(n) + ' pounds';
+const cap1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+const bub = () => S.bub || {shares:0};
+function bubbleClock(){ if (!S.bub && S.t >= 52 && S.t <= 54) { const r = Math.random(); S.bub = {shares:0, fate:r < 0.2 ? 'made' : r < 0.65 ? 'glut' : 'gone'}; later('bubbleTip', 0); }
+  const b = S.bub; if (!b) return;
+  if (!b.done && S.t >= 61) { b.done = true;
+    if (b.shares > 0) later('bubbleEnd', 0);
+    else if (b.fate === 'made') S.notes.push('The Brazil Association has paid its proprietors two hundred and fifty pounds a share. Hartopp held twenty.');
+    else if (b.fate === 'glut') S.notes.push('Brickwood’s bank has stopped in London, and five Manchester houses after it. Brazils are at twenty. Hartopp gave seventy.');
+    else S.notes.push('The Brazil Association has stopped. Its secretary is at Calais. The proprietors are called on for seventy pounds a share, and Hartopp is on the register for twenty.'); }
+  if (b.kept && S.t >= 72) { const p = 35 * b.kept; S.money += p; b.kept = 0; S.notes.push(`The Brazil Association is wound up. The proprietors are paid thirty-five pounds a share. ${cap1(pounds(p))} is passed to your account at Tidmarsh’s.`); } }
+
+ev({ id:'bubbleTip', follow:true, cond:() => !!S.bub && !S.bub.tipped, title:'The Brazil Association',
+  text:() => `A printed paper comes by the London mail under a frank. It is four pages, with a map of South America on the fourth.
+
+“THE BRAZIL ASSOCIATION, for supplying the Dominions of His Royal Highness the PRINCE REGENT of PORTUGAL with British Manufactures. Capital £200,000, in Shares of £50 each. The Court of Lisbon being now happily removed to RIO DE JANEIRO, and the Ports of that vast Continent opened to our Flag, the Directors have chartered three Ships. A Dividend of Twenty per Cent. is confidently expected upon the first Returns. Early Application is recommended to Mr Quill, Secretary, at the Jerusalem Coffee-house, Cornhill.”
+
+Hartopp has had one too. He brings it over folded in his hat.
+
+“I have been to Marlborough, sir. I know a cold collation when I read one.”
+
+Henrietta has read the list of Directors. There is a baronet in it, and two Members.`,
+  choices:[
+    {t:'Take ten shares.', note:'£500', go:() => { const b = S.bub; b.tipped = true; b.shares = 10; b.paid = 500; S.money -= 500; later('bubbleRise', 3);
+      return `You write to Mr Quill for ten shares and enclose a draft on Tidmarsh’s for five hundred pounds.
+
+The scrip comes back in a week. It is engraved with a ship under full sail and a native holding a cornucopia. Mr Quill begs to add that the list closed on Friday, three times over.`; }},
+    {t:'Take thirty.', note:'£1,500', if:() => S.money >= 1500, go:() => { const b = S.bub; b.tipped = true; b.shares = 30; b.paid = 1500; S.money -= 1500; later('bubbleRise', 3); reg('henrietta', 1);
+      return `You write to Mr Quill for thirty shares and enclose a draft on Tidmarsh’s for fifteen hundred pounds. Mr Tidmarsh pays it. He sends a note with the pass-book asking whether the figure is right.
+
+The scrip comes in a week, thirty sheets. Each has a ship under full sail and a native holding a cornucopia.`; }},
+    {t:'Put it behind the clock.', go:() => { S.bub.tipped = true; later('bubbleRise', 3);
+      return `You put it behind the clock on the chimney-piece.
+
+On market day Mr Tidmarsh says that nine of his customers have drawn on him for Cornhill in a week. One of them is the rector of Kintbury.`; }}
+  ]});
+
+ev({ id:'bubbleRise', follow:true, cond:() => !!S.bub && !S.bub.rose && !S.bub.done, title:'Brazils at Ninety',
+  text:() => { const n = bub().shares;
+    return `The Mercury prints the price of shares below the price of corn. This Saturday it reads: “Brazil Association, £50 paid, 90.”
+
+${n ? `Your ${numWords(n)} shares cost ${pounds(S.bub.paid)} in the spring. They would fetch ${pounds(90 * n)} to-day.` : `The ten shares you did not take would fetch nine hundred pounds to-day.`}
+
+Mr Quill has written to the proprietors. The Three Brothers has cleared from Bristol for Rio with hardware, Manchester cottons and four hundred pair of skates. A second issue is to be made at the market price.
+
+Hartopp bought twenty at seventy. He told nobody until they were at eighty.`; },
+  choices:[
+    {t:'Sell them all.', note:() => '+' + fmt(90 * bub().shares), if:() => bub().shares > 0, go:() => { const b = S.bub, n = b.shares, p = 90 * n; b.rose = true; b.shares = 0; S.money += p; fl('bubbleOut');
+      return `Tidmarsh’s London agent sells the ${numWords(n)} at ninety. ${cap1(pounds(p))} is passed to your account, less his eighth per cent.
+
+Hartopp asks you at the Bench whether you are unwell.`; }},
+    {t:'Sell half.', note:() => '+' + fmt(45 * bub().shares), if:() => bub().shares > 0, go:() => { const b = S.bub, n = b.shares / 2, p = 90 * n; b.rose = true; b.shares = n; S.money += p; later('bubbleCall', 3);
+      return `${cap1(numWords(n))} are sold at ninety. ${cap1(pounds(p))} goes to your account. The rest of the scrip stays in the deed box.`; }},
+    {t:'Hold.', if:() => bub().shares > 0, go:() => { S.bub.rose = true; later('bubbleCall', 3);
+      return `The scrip stays in the deed box. On Saturdays you turn to the share list before the corn.`; }},
+    {t:() => bub().shares ? 'Take as many again at ninety.' : 'Buy ten at ninety.', note:() => fmt(90 * (bub().shares || 10)), if:() => S.money >= 90 * (bub().shares || 10), go:() => { const b = S.bub, n = b.shares || 10, had = b.shares; b.rose = true; b.shares += n; b.paid = (b.paid || 0) + 90 * n; S.money -= 90 * n; later('bubbleCall', 3);
+      return `Mr Quill allots you ${numWords(n)} of the second issue at ninety. You send ${pounds(90 * n)}.
+
+The new scrip has the same ship. The native has been given a second cornucopia.${had ? '' : ' Hartopp says he is glad to see you come to your senses.'}`; }},
+    {t:'Leave it alone.', if:() => !bub().shares, go:() => { S.bub.rose = true;
+      return `You leave it alone. Henrietta reads the share list aloud at breakfast on Saturdays, down to Brazils, and stops there.`; }}
+  ]});
+
+ev({ id:'bubbleCall', follow:true, cond:() => !!S.bub && S.bub.shares > 0 && !S.bub.called && !S.bub.done, title:'A Call of Ten Pounds',
+  text:() => { const b = S.bub, bad = b.fate === 'gone', price = bad ? 75 : 95;
+    return `A letter from Cornhill. ${bad ? 'It is not franked. The postboy wants eightpence for it.' : 'It is franked by one of the Members.'}
+
+“Sir, I am directed to acquaint you that the Court of Directors have this Day made a Call of Ten Pounds per Share, payable on or before the 1st proximo, the Three Brothers being detained at Rio for want of a Return Cargo. ${bad ? 'The Dividend declared at Midsummer will be satisfied in new Shares.' : 'A Dividend Warrant for Three Pounds per Share is enclosed.'} I have the Honour to be, &c., J. QUILL, Sec.”
+
+Brazils are at ${numWords(price)} in Saturday’s paper. They were at a hundred and ten in July.
+
+${steward()} has worked the call on your ${numWords(b.shares)} shares. It comes to ${pounds(10 * b.shares)}.`; },
+  choices:[
+    {t:'Pay the call.', note:() => fmt(10 * bub().shares), go:() => { const b = S.bub; b.called = true; S.money -= 10 * b.shares; b.paid += 10 * b.shares; if (b.fate !== 'gone') S.money += 3 * b.shares;
+      return `You send the draft. A receipt comes back by return, signed by a clerk. Mr Quill is at Bristol on the Association’s business.`; }},
+    {t:'Sell at the price in the paper.', note:() => 'About ' + fmt((bub().fate === 'gone' ? 73 : 94) * bub().shares), go:() => { const b = S.bub, n = b.shares, at = b.fate === 'gone' ? 73 : 94, p = at * n; b.called = true; b.shares = 0; S.money += p + (b.fate !== 'gone' ? 3 * n : 0); fl('bubbleOut');
+      return `The agent sells at ${numWords(at)}. He writes that buyers were shy of so many together, and that the call goes with the shares. ${cap1(pounds(p))} is passed to your account.`; }},
+    {t:'Send nothing, and let the shares be forfeit.', go:() => { const b = S.bub; b.called = true; b.shares = 0; add({standing:-2});
+      return `You do not answer. In November the Courier prints a list of proprietors in default. Your name is in it, between a hop factor and a clergyman of Devizes.
+
+The shares are declared forfeit to the Association.`; }}
+  ]});
+
+ev({ id:'bubbleEnd', follow:true, cond:() => !!S.bub && S.bub.shares > 0 && !S.bub.ended,
+  get title(){ const f = bub().fate; return f === 'made' ? 'The Three Brothers' : f === 'glut' ? 'Brazils at Twenty' : 'Mr Quill Is Not at Cornhill'; },
+  text:() => { const b = S.bub, n = b.shares;
+    if (b.fate === 'made') return `Hartopp rides into the yard without his hat.
+
+The Three Brothers is in King Road, below Bristol. She has hides, tallow, eleven hundred bags of cotton, and Spanish dollars in kegs under the captain’s cot. She sold her whole outward cargo at Rio in a fortnight, to the Court.
+
+The Directors have declared a return of two hundred and fifty pounds a share. They mean to wind up while the price holds.
+
+You have ${numWords(n)} shares. ${steward()} works the sum twice. It is ${pounds(250 * n)}.`;
+    if (b.fate === 'glut') return `Brickwood’s bank has stopped in London. Five Manchester houses in the South American trade have stopped after it. Every share on the list has fallen.
+
+The Three Brothers came home in May with half a cargo of hides. The captain says the warehouses at Rio are full of English goods to the rafters, and there is nobody left there to buy them.
+
+Brazils are at twenty. You have ${numWords(n)} shares. They have cost you ${pounds(b.paid)}.
+
+Mr Quill writes that the Association will trade on in a smaller way.`;
+    return `The office at the Jerusalem Coffee-house is shut. Mr Quill went down to Dover on the 9th. He has not written.
+
+The Three Brothers sold her cargo at Rio for less than the freight. The Association’s bills have come back unpaid from three houses. An attorney in Bucklersbury writes on behalf of the holders.
+
+“The Association was never incorporated by Charter or Act. Every Proprietor upon the Register is therefore answerable for its Engagements as a Partner, to the whole Extent of his Property.”
+
+He names the sum. It is seventy pounds a share. You are on the register for ${numWords(n)}.`; },
+  choices:[
+    {t:'Take the money.', note:() => '+' + fmt(250 * bub().shares), if:() => bub().fate === 'made', go:() => { const b = S.bub, p = 250 * b.shares; b.ended = true; b.shares = 0; fl('bubbleMade'); add({money:p, standing:3, family:4}); reg('henrietta', 1); reg('hartopp', 1);
+      return `The draft is on Smith, Payne and Smiths. Mr Tidmarsh holds it up to the window before he enters it.
+
+Henrietta asks what a house in town costs. Hartopp has a new prospectus in his hat. It is for lighting Reading with the smoke of coal.`; }},
+    {t:'Take it, and pay down the mortgage.', note:() => fmt(250 * bub().shares) + ' off the debt', if:() => bub().fate === 'made' && S.mortgage > 0, go:() => { const b = S.bub, p = 250 * b.shares, off = Math.min(S.mortgage, Math.floor(p / 100) * 100); b.ended = true; b.shares = 0; fl('bubbleMade'); S.mortgage -= off; add({money:p - off, standing:3, family:2}); reg('hartopp', 1);
+      return `The draft is on Smith, Payne and Smiths. Mr Tidmarsh writes off ${pounds(off)} of the mortgage with his own pen and blots it.
+
+“I had not thought to see that money again, sir,” he says. “From Brazil least of all.”`; }},
+    {t:'Sell at twenty.', note:() => '+' + fmt(20 * bub().shares), if:() => bub().fate === 'glut', go:() => { const b = S.bub, p = 20 * b.shares; b.ended = true; b.shares = 0; S.money += p;
+      return `The agent sells at twenty. ${cap1(pounds(p))} is passed to your account.
+
+The scrip goes to the buyer. Kitty had asked for one sheet, for the ship.`; }},
+    {t:'Keep them.', if:() => bub().fate === 'glut', go:() => { const b = S.bub; b.ended = true; b.kept = b.shares; b.shares = 0;
+      return `The scrip stays in the deed box, under the canal share.
+
+The Mercury drops Brazils from its list in the autumn, to make room for the price of oats.`; }},
+    {t:'Pay it.', note:() => fmt(70 * bub().shares), if:() => bub().fate === 'gone', go:() => { const b = S.bub, p = 70 * b.shares; b.ended = true; b.shares = 0; fl('bubbleBurnt'); add({money:-p, standing:-1});
+      return `You pay ${pounds(p)} to the attorney in Bucklersbury. He sends a release on stamped paper.
+
+Hartopp has paid too. He does not bring anything over in his hat that winter.`; }},
+    {t:'Offer ten shillings in the pound, for a quick end.', note:() => fmt(35 * bub().shares) + ', if they take it', if:() => bub().fate === 'gone', go:() => { const b = S.bub, n = b.shares, ok = chance(0.5); b.ended = true; b.shares = 0; fl('bubbleBurnt'); add({money:-(ok ? 35 : 70) * n - 60, standing:-3});
+      return ok ? `Your attorney at Newbury offers ten shillings in the pound, money down. The holders meet at the London Tavern and take it. It costs you ${pounds(35 * n)}, and sixty for the attorney.
+
+The Courier prints the composition, with the names.` : `Your attorney at Newbury offers ten shillings in the pound. The holders meet at the London Tavern and refuse it. They have seen a map of Hatherley.
+
+You pay ${pounds(70 * n)}, and sixty for the attorney.`; }}
+  ]});
 const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/cobbett.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/hartoppShearing.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jubilee.jpg','events/kittyBotany.jpg','events/ludd.jpg','events/manTraps.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/farms.jpg','icons/persons.jpg','icons/society.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png']);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
