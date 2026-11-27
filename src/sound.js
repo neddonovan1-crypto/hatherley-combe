@@ -1,9 +1,9 @@
 /* The sounds of the house. Files are in sound/, their makers in SOUNDS.md.
    Loaded last: it wraps render, start, resume, choose, undertake, showTab and showWho, and alters nothing in them.
-   Nothing plays until the first touch or key, the page starts quiet-ish, and the choice is remembered. */
+   The house is silent until Sound is turned on in the corner of the desk. The choice is remembered. */
 const Sound = (() => {
   const DIR = 'sound/', VOL = .3, AIR = .32, LAP = 2.5, KEY = 'hatherley-quiet';
-  let muted = false; try { muted = localStorage.getItem(KEY) === '1'; } catch (err) {}
+  let muted = true; try { muted = localStorage.getItem(KEY) !== '0'; } catch (err) {}
   let ctx = null, master = null, live = false, airName = '', airWant = '', airTok = 0, airBus = null, airTag = null;
   const bufs = {};
   const fetchBuf = name => bufs[name] || (bufs[name] = fetch(DIR + name + '.mp3').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(a => ctx.decodeAudioData(a)).catch(() => null));
