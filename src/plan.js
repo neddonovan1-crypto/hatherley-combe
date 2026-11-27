@@ -33,7 +33,7 @@ const PLACES = {
 };
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
 const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'down', enclosure:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
-const VENT_AT = {plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry'};
+const VENT_AT = {plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london'};
 const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london'};
 const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
@@ -184,7 +184,7 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
-    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span></div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${cueHTML()}
     <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
@@ -210,10 +210,12 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   if (p.farm && farmAt(p.farm)) sec('farm', 'The Rent Roll', farmsHTML(p.farm));
   if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
   if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
-  if (vents.length) sec('vents', 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
+  const brazils = id === 'london' && S.bub && S.bub.shares > 0 ? `<div class="lots"><div class="lot done"><b>The Brazil Association</b><span>${S.bub.shares} shares</span></div></div>` : '';
+  if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it') + brazils);
+  if (id === 'london' && typeof creditList === 'function' && S.phase !== 'end') sec('ann', 'Life Annuities', raiseHTML(['annuity', 'redeem'], true));
   /* What is bought in town is found in London; what is bought in the county, at Wyvern. */
   if ((id === 'london' || id === 'wyvern') && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house && COUNTY_LOTS.has(r.id) === (id === 'wyvern')), true, 'beginSociety', 'endSociety', 'Pay for it'));
-  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>${raiseHTML(['annuity', 'redeem'])}`); }
+  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>`); }
   if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
   const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
   const glb = id === 'hall' ? (isBuilt('front') && ART.has('hall/hall-front.glb') ? 'hall-front' : ART.has('hall/hall-old.glb') ? 'hall-old' : '') : '';
