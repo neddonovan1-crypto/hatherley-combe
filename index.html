@@ -373,6 +373,108 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
 .lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
 @media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
 .favours #pts i{font-style:normal;color:var(--muted);opacity:.7}
+/* The plan: the survey sheet lies on the baize with the quarter's slips beside it. A place's paper is laid over one side. Plates are held up over everything. */
+body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{overflow:hidden}
+#plan[hidden], #plate[hidden], #sheet[hidden]{display:none}
+#plan{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:18px;align-items:center;padding:16px max(18px, env(safe-area-inset-right, 0px)) 16px max(18px, env(safe-area-inset-left, 0px))}
+#landwrap{min-width:0;height:100%;display:grid;place-items:center}
+#landwrap{filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
+/* the scan has a white margin beyond the torn edge of the paper, which is trimmed off here */
+#land{position:relative;width:min(100%, calc((100dvh - 32px) * 1.5));aspect-ratio:3/2;container-type:inline-size;clip-path:inset(1.9% 1.35% 1.9% 1.35% round 2px);user-select:none}
+#land .base{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+#land .base, #land .piece, #land .mot{clip-path:none;pointer-events:none}
+#land .mot{position:absolute;mix-blend-mode:multiply;object-fit:fill}
+#land .piece{position:absolute}
+#land .arms{position:absolute;left:3.6%;top:4.8%;width:7.4%;height:auto;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(60,40,20,.25))} #land .arms.baronet{width:12.5%}
+.lbl{position:absolute;transform:translate(-50%, -50%);z-index:2;background:none;border:0;padding:.35em .5em;font-family:var(--display);font-style:italic;font-size:max(12px, 1.36cqw);line-height:1;color:#2b1d10;white-space:nowrap;
+  text-shadow:0 0 2px #f6edd4, 0 0 3px #f6edd4, 0 0 5px #f6edd4, 0 0 8px #f6edd4, 0 0 12px #f6edd4}
+.lbl:hover span, .lbl:focus-visible span{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px} .lbl.on span{color:var(--madder);text-decoration:underline;text-underline-offset:3px}
+.lbl .stir{display:inline-block;width:1.9em;height:1.9em;margin-right:.3em;vertical-align:middle;border-radius:50%;overflow:hidden;background:#efe6cb;box-shadow:0 0 0 1px rgba(60,40,20,.55), 1px 2px 4px rgba(0,0,0,.35)} .lbl .stir img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
+.lbl .call{position:absolute;left:50%;bottom:92%;width:3.2em;height:4em;margin-left:-1.6em;border-radius:50%;overflow:hidden;background:#efe6cb;box-shadow:0 0 0 2px #efe6cb, 0 0 0 3px var(--madder), 2px 5px 9px rgba(0,0,0,.5);animation:knock 1.6s ease-in-out infinite}
+.lbl .call .medal{width:100%;height:100%;display:block;border-radius:0} .lbl .call .medal span{font-size:1.6em} .lbl .call > img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
+.lbl.called{z-index:3} .lbl.called span{color:var(--madder)}
+@keyframes knock{0%, 100%{transform:translateY(0)} 50%{transform:translateY(-.5em)}}
+
+/* the slips beside the sheet */
+#cart{display:flex;flex-direction:column;gap:12px;min-width:0}
+#cart .slip, #cart .cue, #cart .chips button{background:#efe6cb var(--leaf) 12% 50%/150% 150%;color:var(--ink);border:0;box-shadow:1px 2px 2px rgba(0,0,0,.3), 3px 8px 14px rgba(0,0,0,.4);text-align:left}
+#cart img{mix-blend-mode:multiply;flex:none}
+#cart .slip{display:flex;align-items:center;gap:10px;padding:10px 12px;transform:rotate(-.5deg)} #cart .slip p{margin:0;display:flex;flex-direction:column;min-width:0}
+#cart .day img{width:58px;height:58px;object-fit:cover;border-radius:50%} #cart .day b{font-family:var(--hand);font-weight:400;font-size:2.1rem;line-height:1} #cart .day span, #cart .purse span{font-family:var(--caps);font-size:.72rem;letter-spacing:.1em;color:var(--muted)}
+#cart .purse{transform:rotate(.6deg);width:100%} #cart .purse img{width:50px;height:50px;object-fit:cover;border-radius:50%} #cart .purse b{font-family:var(--display);font-weight:400;font-size:1.75rem;line-height:1.05;font-variant-numeric:tabular-nums} #cart .purse i{font-style:normal;color:var(--bad)} #cart .neg{color:var(--bad)}
+#cart .vigs{flex-direction:column;align-items:stretch;gap:4px;padding:8px 10px;transform:rotate(-.3deg)}
+#cart .vig{display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center;background:none;border:0;padding:2px 0;text-align:left}
+#cart .vig img{grid-row:1/3;width:44px;height:44px;object-fit:cover;border-radius:50%} #cart .vig span{font-family:var(--caps);font-size:.7rem;letter-spacing:.1em;color:var(--muted);align-self:end;line-height:1.1} #cart .vig b{font-family:var(--hand);font-weight:400;font-size:1.5rem;line-height:1;align-self:start;white-space:nowrap} #cart .vig.low b{color:var(--bad)}
+#cart .vig:hover b{text-decoration:underline;text-decoration-thickness:1px}
+#cart .cue{position:relative;padding:12px 12px 12px 62px;min-height:60px;font-family:var(--display);font-style:italic;font-size:1.12rem;line-height:1.2;color:var(--madder);transform:rotate(.8deg)}
+#cart .cue::before{content:"";position:absolute;left:8px;top:50%;width:46px;height:46px;margin-top:-23px;background:url(art/ui/seal.png) center/contain no-repeat;filter:drop-shadow(1px 2px 2px rgba(40,10,5,.45));transition:transform .15s} #cart .cue:hover::before{transform:rotate(-8deg) scale(.95)}
+#cart .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px} #cart .chips button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 7px;font-family:var(--caps);font-size:.76rem;letter-spacing:.06em;text-align:center;position:relative}
+#cart .chips img{width:40px;height:40px;object-fit:cover;border-radius:50%} #cart .chips button:disabled{opacity:.55;cursor:default} #cart .chips small{position:absolute;top:5px;right:8px;font-family:var(--display);font-size:.9rem;color:var(--madder)}
+
+/* the paper of a place */
+#sheet{position:absolute;top:16px;bottom:16px;z-index:5;width:min(410px, calc(100vw - 36px));padding:18px 20px 22px;overflow-y:auto;overscroll-behavior:contain;background:#efe6cb var(--leaf) 12% 50%/150% 150%;box-shadow:2px 4px 4px rgba(0,0,0,.3), 6px 16px 34px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:11px;animation:laidon .22s ease-out}
+#sheet.right{right:18px} #sheet.left{left:18px}
+@keyframes laidon{from{opacity:0;transform:translateY(10px)}}
+#sheet > h2{font-family:var(--hand);font-size:2.3rem;line-height:1;padding-right:34px}
+#sheet .shut{position:absolute;top:8px;right:10px;width:38px;height:38px;background:none;border:0;font-family:var(--display);font-size:1.8rem;line-height:1;color:var(--muted)} #sheet .shut:hover{color:var(--madder)}
+#sheet > .plate{aspect-ratio:16/9;flex:none;margin:3px} #sheet > .plate img{object-position:50% 72%} #sheet .plate.round{background:#d8d2bd} #sheet model-viewer{position:absolute;inset:0;width:100%;height:100%;--poster-color:transparent}
+#sheet .turn{position:absolute;right:6px;bottom:6px;background:#efe6cb;border:1px solid var(--ink);padding:3px 9px;font-family:var(--caps);font-size:.72rem;letter-spacing:.08em;line-height:1.5}
+#sheet .sec{border-top:1px solid var(--ink)} #sheet .sec:last-child{border-bottom:1px solid var(--ink)}
+#sheet .sec > summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;padding:7px 0 6px;font-family:var(--caps);font-size:.9rem;letter-spacing:.12em} #sheet .sec > summary::-webkit-details-marker{display:none}
+#sheet .sec > summary::after{content:"\25BE";color:var(--muted)} #sheet .sec[open] > summary::after{content:"\25B4"} #sheet .sec[open] > summary{color:var(--madder)}
+#sheet .sec > div{padding:2px 0 12px;display:flex;flex-direction:column;gap:9px}
+#sheet .people{grid-template-columns:minmax(0,1fr)} #sheet .who{grid-template-columns:minmax(0,38%) minmax(0,1fr)} #sheet .bal dd{font-size:1.7rem} #sheet .bal .creditbox{margin-left:0}
+#sheet .choice{padding-left:40px} #sheet .choice span{font-size:1.1rem} #sheet .memo{display:flex;flex-direction:column;gap:10px} #sheet .wheat{margin:0}
+#sheet ::-webkit-scrollbar, #plate ::-webkit-scrollbar{width:9px} #sheet::-webkit-scrollbar{width:9px} #sheet::-webkit-scrollbar-thumb, #plate ::-webkit-scrollbar-thumb{background:#5a3a22;border-radius:5px;border:2px solid transparent;background-clip:padding-box}
+
+/* a plate held up */
+#plate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.8);overflow:auto;animation:heldup .25s ease-out}
+@keyframes heldup{from{opacity:0}}
+.pcard, .progress{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(16px,2.4vw,34px);align-items:center;width:min(1260px, 100%)}
+.pcard:has(.progress){display:block}
+.print{margin:0;padding:clamp(12px,1.8vw,26px);background:#f1e8cf var(--leaf) 12% 50%/150% 150%;box-shadow:2px 4px 4px rgba(0,0,0,.35), 8px 20px 40px rgba(0,0,0,.6);transform:rotate(-.4deg)}
+.print .mark{position:relative;padding:26px clamp(10px,1.4vw,18px) 12px;border:1px solid rgba(70,50,25,.3);box-shadow:inset 1px 1px 2px rgba(70,50,25,.25), inset -1px -1px 1px rgba(255,255,255,.5)}
+.print .pn{position:absolute;top:6px;right:clamp(10px,1.4vw,18px);font-family:var(--display);font-style:italic;font-size:.86rem;color:var(--muted)}
+.print img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;mix-blend-mode:multiply;outline:1px solid rgba(42,35,32,.7)}
+.print figcaption{display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:10px;text-align:center}
+.print figcaption b{font-family:var(--hand);font-weight:400;font-size:clamp(1.7rem,3.2vw,2.7rem);line-height:1.05;text-wrap:balance} .print figcaption small{font-family:var(--display);font-style:italic;font-size:.82rem;color:var(--muted)}
+.pside{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;max-height:calc(100dvh - 36px)}
+.pside .sheet{flex:0 1 auto;min-height:7rem;overflow-y:auto;overscroll-behavior:contain;transform:none;padding:26px clamp(16px,2vw,26px) 18px;background:#f3ead0 var(--leaf) 12% 50%/150% 150%} .pside .sheet.bill{transform:none}
+.pside .sheet .from{justify-content:center} .pside .sheet .from .medal{width:40px;height:50px} .pside .sheet .from .medal span{font-size:1.5rem}
+.pside .sheet.came::before{display:none} .pside .sheet.came{padding-top:18px}
+.pside .answer{flex:none;background:#efe6cb var(--leaf) 12% 50%/150% 150%;padding:10px 14px 12px;box-shadow:1px 2px 2px rgba(0,0,0,.3), 4px 10px 20px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:8px}
+.pside .inhand{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;margin:0;font-family:var(--caps);font-size:.78rem;letter-spacing:.1em;color:var(--muted)} .pside .inhand b{font-family:var(--display);font-weight:400;font-size:1.25rem;letter-spacing:0;color:var(--ink);margin-left:4px} .pside .inhand b.neg{color:var(--bad)} .pside .inhand .quiet{margin-left:auto;font-family:var(--body);letter-spacing:0;min-height:26px}
+.pside .choice{min-height:44px;padding-top:8px;padding-bottom:7px} .pside .choice span{font-size:1.1rem} .pside .row{margin:0}
+.progress .pside{background:#efe6cb var(--leaf) 12% 50%/150% 150%;padding:18px 20px;box-shadow:2px 4px 4px rgba(0,0,0,.3), 6px 16px 34px rgba(0,0,0,.6);align-items:flex-start}
+.progress h2{font-family:var(--hand);font-size:2.2rem;line-height:1} .progress .did{margin:0;font-family:var(--display);font-style:italic;font-size:1.05rem;line-height:1.35;min-height:2.7em}
+.progress .thumbs{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:8px;align-self:stretch}
+.progress .thumbs button{position:relative;padding:3px;background:#f6efd9;border:1px solid rgba(42,35,32,.5);line-height:0} .progress .thumbs img{width:100%;aspect-ratio:3/2;object-fit:cover;mix-blend-mode:multiply} .progress .thumbs span{position:absolute;right:4px;bottom:3px;padding:0 4px;background:#f6efd9;font-family:var(--display);font-size:.78rem;line-height:1.3}
+.progress .thumbs button[aria-pressed="true"]{outline:2px solid var(--madder);outline-offset:1px}
+.progress .leafs{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0;align-self:stretch;font-family:var(--caps);font-size:.76rem;letter-spacing:.1em;color:var(--muted)} .progress .quiet:disabled{opacity:.35;cursor:default}
+
+/* a narrow or upright screen: the slips along the top, the sheet under them to be pushed about, a place's paper below */
+@media (max-width:1080px), (orientation:portrait){
+  #plan{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;padding:0;align-items:stretch}
+  #plan.sheeton{grid-template-rows:auto minmax(0,1fr) min(60dvh, 34rem)}
+  #cart{order:-1;display:grid;grid-template-columns:repeat(6, minmax(0,1fr));gap:6px;padding:8px max(8px, env(safe-area-inset-right, 0px)) 8px max(8px, env(safe-area-inset-left, 0px))}
+  #cart .slip, #cart .cue, #cart .purse{transform:none} #cart .slip{padding:5px 8px;gap:7px}
+  #cart .day{grid-column:span 3} #cart .purse{grid-column:span 3} #cart .vigs{grid-column:1/-1;flex-direction:row;justify-content:space-between;gap:4px;padding:3px 8px}
+  #cart .day img, #cart .purse img{width:36px;height:36px} #cart .day b{font-size:1.6rem} #cart .purse b{font-size:1.3rem} #cart .day span, #cart .purse span{font-size:.62rem}
+  #cart .vig{grid-template-columns:30px minmax(0,1fr);column-gap:6px;flex:1 1 0;min-width:0} #cart .vig img{width:30px;height:30px} #cart .vig span{font-size:.58rem} #cart .vig b{font-size:1.15rem}
+  #cart .cue{grid-column:span 4;min-height:44px;padding:6px 8px 6px 46px;font-size:1rem} #cart .cue::before{width:34px;height:34px;margin-top:-17px;left:6px}
+  #cart .chips{grid-column:span 2;gap:6px} #cart .chips:first-child, #cart .vigs + .chips{grid-column:1/-1} #cart .chips button{padding:4px 2px;font-size:.62rem;justify-content:center} #cart .chips img{display:none} #cart .chips small{position:static;font-size:.8rem}
+  #landwrap{display:block;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
+  #land{height:100%;width:auto} #landwrap{filter:none}
+  #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton #land{margin:0 auto}
+  #sheet, #sheet.left, #sheet.right{position:relative;inset:auto;width:auto;padding:14px 16px 20px;box-shadow:0 -6px 18px rgba(0,0,0,.5);animation:none}
+  #sheet > h2{font-size:2rem} #sheet > .plate{aspect-ratio:5/2}
+  #plate{place-items:start center;padding:10px}
+  .pcard, .progress{grid-template-columns:minmax(0,1fr);gap:12px}
+  .print{padding:10px;transform:none} .print .mark{padding:22px 8px 8px} .print figcaption b{font-size:1.7rem}
+  .pside{max-height:none} .pside .sheet{overflow:visible}
+}
+@media (max-width:1080px) and (orientation:landscape) and (max-height:520px){ #plan{grid-template-columns:minmax(0,1fr) 200px;grid-template-rows:minmax(0,1fr)} #cart{order:0;display:flex;overflow-y:auto;max-height:100dvh} #plan.sheeton{grid-template-rows:minmax(0,1fr)} #sheet, #sheet.left, #sheet.right{position:absolute;top:0;bottom:0;left:0;width:min(60vw, 400px)} }
+body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 </style>
 <div class="desk">
   <div class="book">
@@ -382,6 +484,12 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
     <nav id="tabs" aria-label="Sections of the book"></nav>
   </div>
 </div>
+<div id="plan" hidden>
+  <div id="landwrap"><div id="land"></div></div>
+  <aside id="cart" aria-label="The quarter"></aside>
+  <section id="sheet" aria-live="polite" hidden></section>
+</div>
+<div id="plate" hidden></div>
 <script>
 /* Hatherley Combe: the almanack. Prices, weather, people, news. */
 const SEASONS = ['Spring', 'Summer', 'Autumn', 'Winter'];
@@ -1558,7 +1666,7 @@ The rooks come over to the Hall roof. They are there each morning when you go ou
 ];
 
 function undertakingOptions(){
-  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); LAST_CUT = null; const text = u.run();
@@ -9061,14 +9169,235 @@ function householdList(){ const open = S.phase !== 'end' && !S.dead, i = estIdx(
   const lots = societyList().filter(r => SOCIETY[r.id].house);
   return {establishment, wages, lots, cost:estCost(i, y) + houseCost('servants') + houseCost('stables') + houseCost('schoolroom')}; }
 for (const id of ['plate', 'cellar', 'hunters', 'library']) SOCIETY[id].house = true;
-const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/badajoz.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bubbleCall.jpg','events/bubbleRise.jpg','events/bubbleTip.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/cobbett.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmundDuel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/farmOffered.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/georgeMeeting.jpg','events/hammer.jpg','events/hartoppShearing.jpg','events/heir.jpg','events/henPorch.jpg','events/henRichmond.jpg','events/henSongs.jpg','events/henrietta.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jamaica.jpg','events/jubilee.jpg','events/kittyBotany.jpg','events/kittyDoor.jpg','events/ludd.jpg','events/manTraps.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/royalBond.jpg','events/royalPrincess.jpg','events/royalRegency.jpg','events/royalStag.jpg','events/royalTerrace.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/walcheren.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/farms.jpg','icons/household.jpg','icons/persons.jpg','icons/society.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-guilford.jpg','undertakings/dine-haunch.jpg','undertakings/dine-ice.jpg','undertakings/dine-lamb.jpg','undertakings/dine-lobscouse.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-onefootman.jpg','undertakings/dine-partridge.jpg','undertakings/dine-pitt.jpg','undertakings/dine-regrets.jpg','undertakings/dine-snow.jpg','undertakings/dine-swans.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/dine-whist.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-barleybread.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-coverley.jpg','undertakings/home-drip.jpg','undertakings/home-fish.jpg','undertakings/home-flannel.jpg','undertakings/home-flea.jpg','undertakings/home-indians.jpg','undertakings/home-linen.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/home-sextant.jpg','undertakings/home-stocking.jpg','undertakings/home-swing.jpg','undertakings/ride-arrears.jpg','undertakings/ride-barley.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-cottages.jpg','undertakings/ride-coxswain.jpg','undertakings/ride-dear.jpg','undertakings/ride-edmund.jpg','undertakings/ride-ewes.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-gout.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-house.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-pond.jpg','undertakings/ride-quickset.jpg','undertakings/ride-rooks.jpg','undertakings/ride-school.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-drum.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-hassock.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rate.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-admiralty.jpg','undertakings/town-brooks.jpg','undertakings/town-burdett.jpg','undertakings/town-candles.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-levee.jpg','undertakings/town-partners.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
+/* Where each drawn piece sits on the plan: left, top, width, height, in hundredths of the sheet. The pieces are art/plan/f/<id>-<season>.webp.
+   The order here is the order they are laid down, so the Hall covers the park and the carriage stands before the Hall. */
+const PLAN_BOX = {
+  'common':[0.5, 16.5, 23, 25],
+  'drain':[60.333, 49.5, 27.042, 27.562],
+  'meadows':[63.792, 69.562, 31.917, 27.0],
+  'fourcourse':[51.542, 57.125, 20.708, 13.312],
+  'plough':[40.0, 8.375, 27.625, 24.812],
+  'chalk':[29.5, 11.312, 11.458, 14.625],
+  'oaks':[63.875, 14.688, 20.167, 14.625],
+  'peat':[89.625, 66.438, 7.458, 21.562],
+  'merino':[62.792, 38.375, 9.0, 9.875],
+  'cottages':[2.583, 43.312, 15.5, 6.562],
+  'school':[21.542, 41.875, 7.417, 8.312],
+  'pinery':[53.083, 40.875, 6.125, 5.0],
+  'thresher':[58.958, 46.25, 11.667, 11.125],
+  'barns':[25.625, 63.625, 14.333, 13.688],
+  'spa':[43.875, 60.875, 5.792, 8.875],
+  'mill':[47.792, 71.0, 10.333, 15.0],
+  'malthouse':[56.417, 70.812, 8.208, 12.5],
+  'brickkiln':[76.875, 62.75, 8.792, 10.75],
+  'butts':[10.417, 32.312, 10.708, 5.812],
+  'kennels':[27.0, 40.938, 10.417, 9.062],
+  'paddock':[50.625, 26.812, 12.625, 11.688],
+  'camp':[79.458, 39.875, 15.75, 14.438],
+  'icehouse':[37.833, 44.062, 8.208, 8.562],
+  'parterre':[42.208, 53.25, 10.292, 9.812],
+  'hall-old':[45.362, 43.262, 11.875, 10.677],
+  'hall-front':[45.367, 43.25, 11.871, 10.635],
+  'carriage':[44.083, 49.938, 7.083, 5.875],
+  'rooks':[37.346, 39.352, 11.111, 10.185],
+  'smoke':[47.531, 35.648, 9.63, 11.111]
+};
+const ART = new Set(['arms/baronet.webp','arms/esquire.webp','arms/knight.webp','events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/badajoz.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bubbleCall.jpg','events/bubbleRise.jpg','events/bubbleTip.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/cobbett.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmundDuel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/farmOffered.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/georgeMeeting.jpg','events/hammer.jpg','events/hartoppShearing.jpg','events/heir.jpg','events/henPorch.jpg','events/henRichmond.jpg','events/henSongs.jpg','events/henrietta.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jamaica.jpg','events/jubilee.jpg','events/kittyBotany.jpg','events/kittyDoor.jpg','events/ludd.jpg','events/manTraps.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/royalBond.jpg','events/royalPrincess.jpg','events/royalRegency.jpg','events/royalStag.jpg','events/royalTerrace.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/walcheren.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','hall/hall-front.glb','hall/hall-old.glb','icons/accounts.jpg','icons/christmas.jpg','icons/daybook.jpg','icons/farms.jpg','icons/goodwill.jpg','icons/hand.jpg','icons/household.jpg','icons/lady-day.jpg','icons/michaelmas.jpg','icons/midsummer.jpg','icons/parchments.jpg','icons/persons.jpg','icons/purse.jpg','icons/regard-1.jpg','icons/regard-2.jpg','icons/regard-3.jpg','icons/regard-4.jpg','icons/regard-5.jpg','icons/rentroll.jpg','icons/ride.jpg','icons/society.jpg','icons/standing.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','places/assembly-rooms.jpg','places/bank-parlour.jpg','places/bath.jpg','places/canal-locks.jpg','places/church-and-vestry.jpg','places/clifton.jpg','places/common-enclosed.jpg','places/common.jpg','places/cuckoo-copse.jpg','places/cullerne-castle.jpg','places/dining-room.jpg','places/down-beacon.jpg','places/down-duel.jpg','places/drawing-room.jpg','places/east-wing.jpg','places/estate-office.jpg','places/frigate-nore.jpg','places/gallows-piece.jpg','places/hall-new-front.jpg','places/ice-house.jpg','places/kennet-bottom-drained.jpg','places/kennet-bottom-flood.jpg','places/kintbury-lane-mended.jpg','places/kintbury-lane.jpg','places/kitchen.jpg','places/ladder-window.jpg','places/library.jpg','places/london-season.jpg','places/london-westminster.jpg','places/long-barrow-farm.jpg','places/mail-coach-laurel.jpg','places/market-place.jpg','places/milestone.jpg','places/mill-new.jpg','places/mill-old.jpg','places/newbury.jpg','places/paris-1802.jpg','places/pelican-speen.jpg','places/pinery.jpg','places/shire-hall-reading.jpg','places/stackyard-fire.jpg','places/starveall.jpg','places/the-bell.jpg','places/the-george.jpg','places/tithe-barn.jpg','places/town-hall-hustings.jpg','places/twelve-acres.jpg','places/vicarage-gate.jpg','plan/0.jpg','plan/1.jpg','plan/2.jpg','plan/3.jpg','plan/common-0.webp','plan/common-1.webp','plan/common-2.webp','plan/common-3.webp','plan/f/barns-0.webp','plan/f/barns-1.webp','plan/f/barns-2.webp','plan/f/barns-3.webp','plan/f/brickkiln-0.webp','plan/f/brickkiln-1.webp','plan/f/brickkiln-2.webp','plan/f/brickkiln-3.webp','plan/f/butts-0.webp','plan/f/butts-1.webp','plan/f/butts-2.webp','plan/f/butts-3.webp','plan/f/camp-0.webp','plan/f/camp-1.webp','plan/f/camp-2.webp','plan/f/camp-3.webp','plan/f/carriage-0.webp','plan/f/carriage-1.webp','plan/f/carriage-2.webp','plan/f/carriage-3.webp','plan/f/chalk-0.webp','plan/f/chalk-1.webp','plan/f/chalk-2.webp','plan/f/chalk-3.webp','plan/f/cottages-0.webp','plan/f/cottages-1.webp','plan/f/cottages-2.webp','plan/f/cottages-3.webp','plan/f/drain-0.webp','plan/f/drain-1.webp','plan/f/drain-2.webp','plan/f/drain-3.webp','plan/f/fourcourse-0.webp','plan/f/fourcourse-1.webp','plan/f/fourcourse-2.webp','plan/f/fourcourse-3.webp','plan/f/hall-front-0.webp','plan/f/hall-front-1.webp','plan/f/hall-front-2.webp','plan/f/hall-front-3.webp','plan/f/hall-old-0.webp','plan/f/hall-old-1.webp','plan/f/hall-old-2.webp','plan/f/hall-old-3.webp','plan/f/icehouse-0.webp','plan/f/icehouse-1.webp','plan/f/icehouse-2.webp','plan/f/icehouse-3.webp','plan/f/kennels-0.webp','plan/f/kennels-1.webp','plan/f/kennels-2.webp','plan/f/kennels-3.webp','plan/f/malthouse-0.webp','plan/f/malthouse-1.webp','plan/f/malthouse-2.webp','plan/f/malthouse-3.webp','plan/f/meadows-0.webp','plan/f/meadows-1.webp','plan/f/meadows-2.webp','plan/f/meadows-3.webp','plan/f/merino-0.webp','plan/f/merino-1.webp','plan/f/merino-2.webp','plan/f/merino-3.webp','plan/f/mill-0.webp','plan/f/mill-1.webp','plan/f/mill-2.webp','plan/f/mill-3.webp','plan/f/oaks-0.webp','plan/f/oaks-1.webp','plan/f/oaks-2.webp','plan/f/oaks-3.webp','plan/f/paddock-0.webp','plan/f/paddock-1.webp','plan/f/paddock-2.webp','plan/f/paddock-3.webp','plan/f/parterre-0.webp','plan/f/parterre-1.webp','plan/f/parterre-2.webp','plan/f/parterre-3.webp','plan/f/peat-0.webp','plan/f/peat-1.webp','plan/f/peat-2.webp','plan/f/peat-3.webp','plan/f/pinery-0.webp','plan/f/pinery-1.webp','plan/f/pinery-2.webp','plan/f/pinery-3.webp','plan/f/plough-0.webp','plan/f/plough-1.webp','plan/f/plough-2.webp','plan/f/plough-3.webp','plan/f/school-0.webp','plan/f/school-1.webp','plan/f/school-2.webp','plan/f/school-3.webp','plan/f/spa-0.webp','plan/f/spa-1.webp','plan/f/spa-2.webp','plan/f/spa-3.webp','plan/f/thresher-0.webp','plan/f/thresher-1.webp','plan/f/thresher-2.webp','plan/f/thresher-3.webp','plan/rooks.mp4','plan/smoke.mp4','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-guilford.jpg','undertakings/dine-haunch.jpg','undertakings/dine-ice.jpg','undertakings/dine-lamb.jpg','undertakings/dine-lobscouse.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-onefootman.jpg','undertakings/dine-partridge.jpg','undertakings/dine-pitt.jpg','undertakings/dine-regrets.jpg','undertakings/dine-snow.jpg','undertakings/dine-swans.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/dine-whist.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-barleybread.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-coverley.jpg','undertakings/home-drip.jpg','undertakings/home-fish.jpg','undertakings/home-flannel.jpg','undertakings/home-flea.jpg','undertakings/home-indians.jpg','undertakings/home-linen.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/home-sextant.jpg','undertakings/home-stocking.jpg','undertakings/home-swing.jpg','undertakings/ride-arrears.jpg','undertakings/ride-barley.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-cottages.jpg','undertakings/ride-coxswain.jpg','undertakings/ride-dear.jpg','undertakings/ride-edmund.jpg','undertakings/ride-ewes.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-gout.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-house.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-pond.jpg','undertakings/ride-quickset.jpg','undertakings/ride-rooks.jpg','undertakings/ride-school.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-drum.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-hassock.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rate.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-admiralty.jpg','undertakings/town-brooks.jpg','undertakings/town-burdett.jpg','undertakings/town-candles.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-levee.jpg','undertakings/town-partners.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
+/* The plan of the estate. Between quarter days the squire is out of the book and on his land: the places on the plan are the menu,
+   and whatever happens to him is struck off as a numbered plate. The book (ui.js) is opened on quarter day and at the end. */
+let VIEW = 'book', SHEET = '', PLATEUP = false, PROGRESS = -1, PSTEP = '', SEC = '', ROUND = false, CALLKEY = '', CALLAT = '';
+const isBuilt = id => typeof worksList === 'function' && worksList().some(w => w.id === id && w.state === 'done');
+const isLive = id => typeof venturesList === 'function' && venturesList().some(v => v.id === id && v.state === 'inHand');
+const isKept = id => typeof societyList === 'function' && societyList().some(v => v.id === id && v.state === 'inHand');
+const footing = () => typeof establishment === 'function' ? establishment().id : 'plain';
+const farmAt = id => (typeof farmsList === 'function' && farmsList().some(f => f.id === id)) || (typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id));
+
+/* n: the name lettered on the plan. at: where the lettering sits, in hundredths of the sheet. pic: the aquatint shown on the place's paper. */
+const PLACES = {
+  hall:{n:'Hatherley Hall', at:[50.5, 58.6], pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
+  home:{n:'The Home Farm', at:[67, 45], pic:() => 'places/estate-office'},
+  longbarrow:{n:'Long Barrow', at:[42.5, 27.2], farm:'longbarrow', pic:() => 'places/long-barrow-farm'},
+  kennet:{n:'Kennet Bottom', at:[75.5, 68.4], farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
+  church:{n:'Church Farm', at:[33.5, 68.6], farm:'church', pic:() => 'places/twelve-acres'},
+  vestry:{n:'The Church', at:[21.5, 40.6], pic:() => 'places/church-and-vestry'},
+  common:{n:'The Common', at:[15, 33.5], farm:'commonpiece', pic:() => F('enclosed') ? 'places/common-enclosed' : 'places/common'},
+  mill:{n:'The Mill', at:[65, 80.5], pic:() => isBuilt('mill') ? 'places/mill-new' : 'places/mill-old'},
+  lane:{n:'Kintbury Lane', at:[8.6, 51.2], pic:() => isBuilt('road') ? 'places/kintbury-lane-mended' : 'places/kintbury-lane'},
+  copse:{n:'Cuckoo Copse', at:[75.5, 46.4], pic:() => 'places/cuckoo-copse'},
+  hanger:{n:'Hanger Wood', at:[61, 21.6], pic:() => 'places/gallows-piece'},
+  down:{n:'The Down', at:[48.6, 11.4], pic:() => 'places/down-beacon'},
+  castle:{n:'Cullerne Castle', at:[88.6, 14.4], pic:() => 'places/cullerne-castle'},
+  wyvern:{n:'Wyvern', at:[93.2, 41.2], pic:() => 'places/market-place'},
+  turnpike:{n:'The London Road', at:[92.6, 27], pic:() => 'places/milestone'},
+  rooksnest:{n:'Rooksnest', at:[66, 26.2], farm:'rooksnest', if:() => farmAt('rooksnest')},
+  coldharbour:{n:'Coldharbour', at:[82.5, 22.6], farm:'coldharbour', if:() => farmAt('coldharbour')},
+  withymead:{n:'Withy Mead', at:[29, 79], farm:'withymead', if:() => farmAt('withymead')},
+  maddle:{n:'Maddle Farm', at:[11.5, 22.8], farm:'maddle', if:() => farmAt('maddle')},
+  starveall:{n:'Starveall', at:[88, 58.6], farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
+};
+/* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
+const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', enclosure:'common'};
+const VENT_AT = {plough:'longbarrow', merino:'home', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall'};
+const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'turnpike'};
+const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
+const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
+const placeOn = id => { const p = PLACES[id]; return p && (!p.if || p.if()); };
+const pane = () => innerWidth <= 1080 || innerWidth < innerHeight;
+
+/* Where the business of the quarter is to be found. A printed notice is posted in the town. A name in the title settles it; then where the caller lives; then the first place named. */
+const SIGNS = [[/Kennet/, 'kennet'], [/Long Barrow/, 'longbarrow'], [/Church Farm/, 'church'], [/Starveall/, 'starveall'], [/\bmill(er)?\b/i, 'mill'], [/\bcommon\b|inclosure/i, 'common'], [/copse|poach|\bhares?\b|pheasant|keeper|snare/i, 'copse'],
+  [/beacon|\bdowns?\b/i, 'down'], [/Cullerne Castle|the Castle/, 'castle'], [/vestry|church|vicar|tithe|sermon/i, 'vestry'], [/Wyvern|market|the George|\bbank\b|Sessions|the bench|hustings/i, 'wyvern'],
+  [/London|turnpike|\bcoach\b|Bath\b|Reading|the mail/i, 'turnpike'], [/cottage|Kintbury|\blane\b/i, 'lane'], [/\bwoods?\b|timber|\boaks?\b/i, 'hanger'], [/home farm|stackyard|\bricks?\b|thresh/i, 'home']];
+function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CALLAT; CALLKEY = k;
+  const hit = t => { for (const [re, at] of SIGNS) if (re.test(t) && placeOn(at)) return at; return ''; };
+  if (BILLS.has(e.id)) return CALLAT = 'wyvern';
+  const text = e.text(), who = whoOf(e.title + ' ' + text);
+  return CALLAT = hit(e.title) || (who && livesAt(who) !== 'hall' ? livesAt(who) : '') || hit(text.slice(0, 320)) || 'hall'; }
+
+/* ---------- which view is up ---------- */
+function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; return; }
+  if (!S.plates) S.plates = [];
+  const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; PSTEP = k;
+  VIEW = S.phase === 'ledger' || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
+  if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
+  if (PLATEUP) strike(); }
+function shutBook(){ VIEW = 'plan'; WHO = ''; if (S.phase === 'ledger') return next(); render(); }
+function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
+function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; ROUND = false; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
+function shutSheet(){ SHEET = ''; WHO = ''; drawPlan(); }
+function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
+function plateDown(){ PLATEUP = false; drawPlan(); }
+function showProgress(i){ PROGRESS = i === undefined ? Math.max(0, S.plates.length - 1) : i; drawPlate(); }
+function shutProgress(){ PROGRESS = -1; drawPlate(); }
+function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, behavior:'smooth'})); }
+
+/* ---------- the plates ---------- */
+const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
+const placeCut = at => { const p = PLACES[at]; return (p && p.pic && artURL(p.pic()) && p.pic()) || 'seasons/' + S.season; };
+/* An outcome is struck off once, with its number, and kept for the Progress. */
+function strike(){ const key = S.t + ':' + S.phase; if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
+  const o = S.outcome, j = S.journal[0] || {}, under = S.phase === 'undone';
+  const src = under ? (o.cut && artURL('undertakings/' + o.cut) ? 'undertakings/' + o.cut : placeCut('hall')) : (S.plateCut || placeCut('hall'));
+  S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay()}); delete S.plateCut; save(); }
+const imprint = pub => `Publish’d as the Act directs, ${esc(pub)}`;
+function printHTML(n, src, title, pub){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span>${pic(src, title)}<figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
+function plateViewHTML(){
+  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
+    const src = eventCut(e) || placeCut(eventPlace(e)); S.plateCut = src;
+    return `${printHTML(S.plates.length + 1, src, e.title, quarterDay())}
+      <div class="pside"><article class="sheet${bill ? ' bill' : ''}">${who ? `<div class="from">${medal(who)}<p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p></div>` : `<p class="kicker">${esc(stamp())}</p>`}<div class="prose">${paras(text)}</div></article>
+      <div class="answer"><p class="inhand"><span>In hand <b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b></span><span>Owing <b class="neg">${fmt(S.mortgage)}</b></span><button class="quiet" onclick="plateDown()">Look over the plan</button></p>
+      <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div></div></div>`; }
+  const o = S.outcome, p = S.plates[S.plates.length - 1] || {src:placeCut('hall'), pub:quarterDay()};
+  return `${printHTML(S.plates.length, p.src, o.title, p.pub)}
+    <div class="pside"><article class="sheet came"><p class="kicker">${esc(stamp())}</p><div class="prose lead">${paras(o.text)}</div>
+      ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}</article>
+    <div class="answer"><div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div></div></div>`; }
+/* The Progress: every plate struck so far, a dozen to the leaf, and any one of them taken up to look at. */
+function progressHTML(){ const P = S.plates, i = Math.max(0, Math.min(P.length - 1, PROGRESS)), per = 8, leaf = Math.floor(i / per), from = leaf * per, leaves = Math.ceil(P.length / per), p = P[i];
+  if (!p) return `<div class="progress"><h2>The Progress</h2><p class="fine">No plate is struck yet.</p><button class="inkbtn" onclick="shutProgress()">Put them away</button></div>`;
+  return `<div class="progress">${printHTML(i + 1, p.src, p.title, p.pub)}
+    <div class="pside"><h2>${esc(S.name)}, His Progress</h2><p class="did">${esc(p.did)}</p>
+      <div class="thumbs">${P.slice(from, from + per).map((q, k) => `<button aria-pressed="${from + k === i}" onclick="showProgress(${from + k})">${pic(q.src, q.title)}<span>${from + k + 1}</span></button>`).join('')}</div>
+      <p class="leafs">${leaves > 1 ? `<button class="quiet" onclick="showProgress(${Math.max(0, from - per)})" ${leaf ? '' : 'disabled'}>Earlier</button><span>${from + 1} to ${Math.min(P.length, from + per)} of ${P.length}</span><button class="quiet" onclick="showProgress(${Math.min(P.length - 1, from + per)})" ${leaf < leaves - 1 ? '' : 'disabled'}>Later</button>` : `<span>${P.length} of 84</span>`}</p>
+      <button class="inkbtn" onclick="shutProgress()">Put them away</button></div></div>`; }
+function drawPlate(){ const el = $('plate'), up = S && (PROGRESS >= 0 || (VIEW === 'plan' && PLATEUP && S.phase !== 'undertake'));
+  el.hidden = !up; document.body.classList.toggle('plateup', !!up); if (!up) { el.innerHTML = ''; return; }
+  const key = PROGRESS >= 0 ? 'p' : PSTEP;
+  el.className = PROGRESS >= 0 ? 'gallery' : S.phase === 'event' ? 'asks' : 'tells';
+  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`;
+  if (el.dataset.key !== key) { el.dataset.key = key; el.scrollTop = 0; const s = el.querySelector('.pside'); if (s) s.scrollTop = 0; const b = el.querySelector('.choice, .go'); if (b) b.focus({preventScroll:true}); } }
+
+/* ---------- the sheet of the plan ---------- */
+/* The pieces drawn on over the base sheet: what has been built, what is ventured, how the house is kept, and the soldiers in war time. */
+function piecesOn(){ const on = [], y = S.year, est = footing();
+  if (F('enclosed')) on.push('common');
+  for (const id of ['drain', 'fourcourse', 'mill', 'cottages', 'school', 'road', 'pinery', 'oaks', 'icehouse', 'meadows', 'barns', 'chalk']) if (isBuilt(id)) on.push(id);
+  for (const id of ['plough', 'merino', 'peat', 'thresher', 'brickkiln', 'malthouse', 'spa']) if (isLive(id)) on.push(id);
+  if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
+  if (est === 'splendid') on.push('parterre'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push('carriage');
+  if (y < 1802 || (y >= 1803 && y <= 1813) || (y === 1815 && S.season < 2)) on.push('camp');
+  if (F('volunteers') && !F('enclosed')) on.push('butts');
+  on.push(isBuilt('front') ? 'hall-front' : 'hall-old'); const lay = Object.keys(PLAN_BOX); return on.sort((a, b) => lay.indexOf(a) - lay.indexOf(b)); }
+const pieceURL = id => { const q = S.season; for (const p of ['plan/f/' + id + '-' + q, 'plan/f/' + id, 'plan/' + id + '-' + q, 'plan/' + id.replace('hall-', '') + '-' + q]) { const u = artURL(p); if (u) return u; } return ''; };
+const armsOf = () => isKept('baronet') ? 'baronet' : isKept('knight') ? 'knight' : 'esquire';
+function landHTML(){ const q = S.season, calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* Two small loops laid on in multiply: the rooks over the park, who leave when the new front goes up, and the smoke of the Hall chimneys. */
+  const moving = calm ? '' : ['smoke'].concat(isBuilt('front') ? [] : ['rooks']).map(id => { const b = PLAN_BOX[id]; return b && ART.has('plan/' + id + '.mp4') ? `<video class="mot" src="art/plan/${id}.mp4" autoplay muted loop playsinline disablepictureinpicture style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"></video>` : ''; }).join('');
+  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
+  const arms = artURL('arms/' + armsOf());
+  const caller = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : '', who = caller && !BILLS.has(S.pending) ? whoOf(byId(S.pending).title + ' ' + byId(S.pending).text()) : null;
+  const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
+  const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
+    return `<button class="lbl${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="call">${who ? medal(who) : pic('icons/hand', '')}</i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+  return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}${moving}${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
+
+const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
+function cueHTML(){
+  if (S.phase === 'event') { const e = byId(S.pending), at = PLACES[eventPlace(e)].n.replace(/^The /, 'the '); return `<button class="cue" onclick="callOn()">${BILLS.has(e.id) ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`}</button>`; }
+  if (S.phase === 'undertake') return `<button class="cue" onclick="goPlace('season')">The season is yours.</button>`;
+  return ''; }
+function cartHTML(){ const vig = (icon, label, v, words, low) => `<button class="vig${v < 40 ? ' low' : ''}" onclick="goPlace('memo')">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b></button>`;
+  return `<div class="slip day">${pic('icons/' + SEASON_ICON[S.season], '')}<p><b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></p></div>
+    <button class="slip purse" onclick="openBook()">${pic('icons/purse', '')}<p><span>In hand</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Owing <i>${fmt(S.mortgage)}</i></span></p></button>
+    <div class="slip vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
+    ${cueHTML()}
+    <div class="chips"><button onclick="openBook()">${pic('icons/accounts', '')}The Book</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>${pic('icons/parchments', '')}The Progress${S.plates.length ? `<small>${S.plates.length}</small>` : ''}</button></div>`; }
+
+/* ---------- the paper of a place ---------- */
+function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undertakingOptions();
+  const rows = o.map((c, i) => at && underAt(c.id) !== at ? '' : `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('');
+  return rows ? `<div class="choices">${rows}</div>` : ''; }
+function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="shutSheet()" aria-label="Put the paper away">×</button>`;
+  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>You may undertake one thing this season. Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
+  if (id === 'memo') return `${shut}<h2>${esc('Mr ' + steward())}’s Memoranda</h2><div class="memo">
+      ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
+      ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}
+      ${meter('Peace of the household', S.family, FAMILY_W, 'family', 'henriettaAway', 'Henrietta is away')}
+      ${S.traits && S.traits.length ? `<p class="fine born">The squire: ${S.traits.map(t => esc(traitById(t).name)).join('. ')}.</p>` : ''}</div>`;
+  const p = PLACES[id]; if (!p) return '';
+  if (WHO && S.chars[WHO] && S.chars[WHO].met) return `${shut}<h2>${esc(p.n)}</h2>${peopleHTML().replace('All persons', esc(p.n))}`;
+  const secs = [], sec = (key, title, html) => { if (html) secs.push([key, title, html]); };
+  const works = typeof worksList === 'function' && (worksList().some(w => workAt(w.id) === id) || (id === 'hanger' && typeof creditList === 'function' && creditList().some(c => c.id === 'timber')));
+  const vents = typeof venturesList === 'function' ? venturesList().filter(v => ventAt(v.id) === id) : [];
+  const folk = Object.keys(S.chars).filter(k => S.chars[k].met && PEOPLE[k] && livesAt(k) === id);
+  sec('under', 'The season’s undertaking', underHTML(id));
+  if (p.farm && farmAt(p.farm)) sec('farm', 'The Rent Roll', farmsHTML(p.farm));
+  if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
+  if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
+  if (vents.length) sec('vents', 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
+  if (id === 'castle' && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house), true, 'beginSociety', 'endSociety', 'Pay for it'));
+  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>${raiseHTML(['annuity', 'redeem'])}`); }
+  if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
+  const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
+  const glb = id === 'hall' ? (isBuilt('front') && ART.has('hall/hall-front.glb') ? 'hall-front' : ART.has('hall/hall-old.glb') ? 'hall-old' : '') : '';
+  const view = glb && ROUND ? `<figure class="plate round"><model-viewer src="art/hall/${glb}.glb" alt="Hatherley Hall" camera-controls auto-rotate rotation-per-second="14deg" camera-orbit="30deg 68deg auto" shadow-intensity=".6" exposure="1.05" interaction-prompt="none" disable-zoom></model-viewer></figure>`
+    : `<figure class="plate has">${platePic(p.pic && artURL(p.pic()) ? p.pic() : 'seasons/' + S.season, p.n)}${glb ? `<button class="turn" onclick="turnHall()">In the round</button>` : ''}</figure>`;
+  return `${shut}<h2>${esc(p.n)}</h2>${view}
+    ${secs.map(([k, t, h]) => `<details class="sec" name="sec" ${k === open ? 'open' : ''} ontoggle="if(this.open)SEC='${k}'"><summary>${t}</summary><div>${h}</div></details>`).join('')}`; }
+/* The model of the Hall is fetched only when asked for. */
+function turnHall(){ ROUND = true; if (!window.customElements || !customElements.get('model-viewer')) { const s = document.createElement('script'); s.type = 'module'; s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'; s.onerror = () => { ROUND = false; drawPlan(); }; document.head.appendChild(s); } drawPlan(); }
+
+let LANDKEY = '';
+function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.toggle('planview', on); $('plan').hidden = !on; drawPlate(); if (!on) { LANDKEY = ''; return; }
+  const land = $('land'), sheet = $('sheet'), p = PLACES[SHEET];
+  /* the sheet itself is redrawn only when what is on it changes, so the moving picture does not start again at every touch */
+  const key = JSON.stringify([S.season, piecesOn(), armsOf(), S.phase, S.pending, PLATEUP, SHEET, Object.keys(PLACES).filter(placeOn)]);
+  if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key; land.innerHTML = landHTML();
+    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
+  $('cart').innerHTML = cartHTML();
+  const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
+  sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
+  sheet.innerHTML = SHEET ? sheetHTML() : ''; sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
+addEventListener('keydown', e => { if (e.key !== 'Escape' || !S) return; if (PROGRESS >= 0) shutProgress(); else if (SHEET && VIEW === 'plan' && !PLATEUP) shutSheet(); });
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
-const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['household', 'Household'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
+/* The book is opened on quarter day. Works, ventures, the household and society are found at their places on the plan (plan.js). */
+const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
@@ -9101,6 +9430,7 @@ let STEP = '', LEAFUP = true;
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
+  if (typeof planSync === 'function') planSync();
   if (!S) { LEAF = -1; stage.classList.remove('turn');
     stage.innerHTML = `<figure class="plate band${artURL('frontispiece') ? ' has' : ''}">${sceneSVG(1)}${platePic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
     const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
@@ -9108,12 +9438,11 @@ function render(){
     $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
-  if (S.phase === 'event') { if (PAPER !== S.t + ':' + S.pending) { PAPER = S.t + ':' + S.pending; TAB = 'paper'; } } else { PAPER = ''; if (TAB === 'paper') TAB = 'accounts'; }
   { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }
-  stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
+  stage.innerHTML = S.phase === 'end' ? endHTML() : ledgerHTML();
   drawBook();
+  if (typeof drawPlan === 'function') drawPlan();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
-  const first = stage.querySelector('button'); if (first && S.phase !== 'ledger') first.focus({preventScroll:true});
 }
 /* the opening is sized to the window, so the will and the choosing are read without scrolling */
 function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; if (S || innerWidth <= 1080) return;
@@ -9122,11 +9451,11 @@ function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
   document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
-  const leaf = S.phase === 'event' ? ['paper', 'The Paper'] : ['leaf', S.phase === 'ledger' ? 'The Quarter' : S.phase === 'end' ? 'Finis' : 'The Season'];
+  const leaf = ['leaf', S.phase === 'end' ? 'Finis' : 'The Quarter'];
   $('tabs').innerHTML = [leaf].concat(TABS).map(([id, n]) => `<button class="${id === 'leaf' || id === 'paper' ? 'leaf' : ''}${id === 'leaf' ? ' phone' : ''}" aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
 /* On a phone one page shows at a time: LEAFUP is the paper in hand, otherwise the tab chosen. */
 function showTab(t){ LEAFUP = t === 'leaf' || t === 'paper'; if (t !== 'leaf') TAB = t; WHO = ''; drawBook(); if (innerWidth <= 1080) window.scrollTo({top:0}); }
-function showWho(id){ WHO = id; drawBook(); }
+function showWho(id){ WHO = id; if (typeof VIEW !== 'undefined' && VIEW === 'plan') drawPlan(); else drawBook(); }
 
 function introHTML(){ const has = !!load();
   return `<article class="card opening">
@@ -9195,7 +9524,7 @@ function ledgerHTML(){
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
     ${digestHTML()}
-    <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</span></button></div>`; }
+    <div class="row">${S.dead ? `<button class="go" onclick="next()"><span>Face the creditors</span></button>` : `<button class="go" onclick="shutBook()"><span>Shut the book</span></button>`}</div>`; }
 
 function paperHTML(){ const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text);
   return `${runhead(bill ? 'Posted this quarter' : 'Papers received this quarter', `fo. ${Math.min(S.t + 1, 84)}`)}
@@ -9229,7 +9558,7 @@ function endHTML(){ const r = reckoning();
       <div class="prose">${r.P.map(p => '<p>' + esc(p) + '</p>').join('')}</div>
       ${r.score !== null ? `<p class="score">Esteem of the county <b>${r.score}</b><span> in the hundred</span></p>` : ''}
     </article>
-    <div class="row"><button class="go" onclick="wipe()"><span>Inherit again</span></button></div>`; }
+    <div class="row"><button class="go" onclick="wipe()"><span>Inherit again</span></button>${S.plates && S.plates.length ? `<button class="quiet" onclick="showProgress()">The Progress, in ${S.plates.length} plates</button>` : ''}</div>`; }
 
 function meter(label, v, words, key, flag, trouble){ const m = typeof marks === 'function' && key ? marks() : null, at = m ? Math.max(0, Math.min(100, m[key])) : null;
   const bar = `<i><u style="width:${v}%"></u>${at === null ? '' : `<s style="left:${at}%" title="Settles at ${at}"></s>`}</i>`, bad = flag && F(flag) ? `<em>${trouble}</em>` : '';
@@ -9274,12 +9603,12 @@ function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id =
 /* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
 function raiseHTML(ids){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
   return `<h3 class="orn">Raising money</h3><div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
-function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
+function worksHTML(at){ const list = worksList().filter(w => !at || at(w.id)), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
     ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
     ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${fxHTML(w) || `<p>${esc(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
-    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${raiseHTML(['timber'])}`; }
+    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${at && !at('timber') ? '' : raiseHTML(['timber'])}`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
 const DRAFT_FARMS = [
@@ -9294,12 +9623,13 @@ const DRAFT_VENTURES = [
   {name: 'A threshing machine', where: 'The home farm', cost: 120, well: 'Saves about £50 a year in wages.'},
   {name: 'A partner’s share in the Wyvern Bank', where: 'The estate', cost: 1000, well: 'Fifteen per cent, and a seat in the bank parlour.'},
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
-function farmsHTML(){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sale = live && typeof farmsForSale === 'function' ? farmsForSale() : [];
+function farmsHTML(only){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sale = live && typeof farmsForSale === 'function' ? farmsForSale() : [];
   const lv = f => !f.canLevel ? '' : `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}</span>`;
   const raised = f => f.sellToYou === undefined ? f.sellPrice : f.sellToYou + (f.sellToMortgage || 0), sum = f => raised(f) ? amt(raised(f), 1) : fmt(0), tf = typeof trustFund === 'function' ? trustFund() : null;
   const held = f => `<details name="lot"><summary><b>${esc(f.name)} <small>${amt(f.rent, 1)} a year</small></b><span>${f.sellPrice ? `<i class="tag">Sell</i>${sum(f)}` : fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p><p class="terms">${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${f.sellPrice ? `<ul class="fx">${f.sellToYou === undefined ? `<li class="pos">+${fmt(f.sellPrice)} if sold</li>` : `${f.sellToYou ? `<li class="pos">+${fmt(f.sellToYou)} in hand if sold</li>` : ''}${f.sellToMortgage ? `<li class="pos">+${fmt(f.sellToMortgage)} off the mortgage if sold</li>` : ''}${raised(f) ? '' : '<li>Settled land. The price goes to the trustees</li>'}`}<li class="neg">−${fmt(f.rent)} a year in rent</li></ul>` : ''}${lv(f)}
     <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${sum(f)}</button>` : ''}</span></div></details>`;
   const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span><i class="tag">Buy</i>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}</p>${f.value ? `<ul class="fx"><li class="neg">−${fmt(f.price)} to buy</li><li class="pos">+${fmt(f.value)} a year in rent</li></ul>` : ''}<p class="terms">${f.down !== undefined ? amt(f.down, -1) + ' down' + (f.loan ? ', ' + amt(f.loan, -1) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
+  if (only) { const f = list.find(x => x.id === only), s = sale.find(x => x.id === only); return `<div class="lots flat">${f ? held(f) : s ? lot(s) : ''}</div>`.replace('<details name="lot">', '<details name="lot" open>'); }
   return `<dl class="bal slim"><div><dt>The rental</dt><dd>${amt(list.reduce((a, f) => a + f.rent, 0), 1)}</dd></div><div><dt>Acres let</dt><dd>${list.reduce((a, f) => a + f.acres, 0).toLocaleString('en-GB')}</dd></div><div><dt>Farms</dt><dd>${list.length} of 8</dd></div></dl>
     <div class="lots flat">${list.map(held).join('')}</div>${sale.length ? `<h3 class="orn">To be had</h3><div class="lots">${sale.map(lot).join('')}</div>` : ''}`; }
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
