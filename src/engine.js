@@ -118,6 +118,8 @@ function beginSeason(){
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
   line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
+  if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
+  if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
   if (F('wages')) line('Home farm wages above the common rate', -30);
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
@@ -126,9 +128,9 @@ function beginSeason(){
   if (q === 3) {
     line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1));
     line('Land tax', -110);
-    if (T('court')) line('Salary as Deputy Keeper of the Swans', 90);
+    if (T('court') && !F('courtLost') && !F('courtSold')) line('Salary as Deputy Keeper of the Swans', 90);
     if (T('play')) line('Losses at whist and hazard', -(70 + Math.floor(Math.random() * 12) * 10));
-    if (T('gout')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household walks on tiptoe, and is shouted at for it.'); }
+    if (T('gout') && !F('goutEased')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household walks on tiptoe, and is shouted at for it.'); }
     if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1)); }
   }
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
@@ -182,7 +184,7 @@ function choose(i){
 }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill: T('gout') ? 2 : 4}); return pick([
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill: T('gout') && !F('goutEased') ? 2 : 4}); return pick([
       `You ride the eleven farms in a day and a half and are given, in order: cider, perry, a cold pie, more cider, advice about your horse, and a dog you did not ask for.`,
       `At Kennet Bottom the Widow Harris shows you the place where her roof lets in the rain, and then, that there may be no mistake, the rain. You promise a thatcher. She looks at you as one who has been promised thatchers before.`,
       `A wet week in the saddle learning the names of children. By Friday you have thirty-one, three of whom were christened after your uncle, which tells you something about your uncle.`,
