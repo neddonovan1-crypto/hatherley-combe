@@ -19,6 +19,7 @@ for (let i = 0; i < runs; i++){
   ends[r.title] = (ends[r.title]||0)+1; if (r.score !== null){ stats.money += A.S.money - A.S.mortgage; stats.sc += r.score; stats.n++; }
 }
 console.log('endings', ends); const fin=A.S;  console.log('avg net', Math.round(stats.money/stats.n), 'avg score', Math.round(stats.sc/stats.n));
+console.log('sales by order', seen.hammer||0, '| meetings at the George', seen.georgeMeeting||0, 'in', runs, 'lives');
 const never = A.EVENTS.filter(e => !seen[e.id]).map(e => e.id); console.log('never seen:', never.join(', ') || 'none');
 console.log('events per life', (Object.values(seen).reduce((a,b)=>a+b,0)/runs).toFixed(1));
 

@@ -132,10 +132,10 @@ function beginSeason(){
     if (dear && q === 3) S.notes.push('Bread at famine price. The parish looks at the Hall, and counts its chimneys.'); }
   S.ledger = L;
   S.news = NEWS[y + '-' + q] || null;
+  creditCheck();
   S.pending = pickEvent();
   S.vignette = S.pending ? null : pick(VIGNETTES[q]);
   S.phase = 'ledger';
-  if (S.money < -3000) { S.dead = 'ruin'; }
   save();
 }
 
@@ -224,7 +224,7 @@ function next(){
 function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
 
 function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
-function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && S.mortgage < mortCap()) { S.mortgage += 500; S.money += 500; } save(); render(); }
+function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += 500; } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){

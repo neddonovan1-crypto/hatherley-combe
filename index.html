@@ -574,10 +574,10 @@ function beginSeason(){
     if (dear && q === 3) S.notes.push('Bread at famine price. The parish looks at the Hall, and counts its chimneys.'); }
   S.ledger = L;
   S.news = NEWS[y + '-' + q] || null;
+  creditCheck();
   S.pending = pickEvent();
   S.vignette = S.pending ? null : pick(VIGNETTES[q]);
   S.phase = 'ledger';
-  if (S.money < -3000) { S.dead = 'ruin'; }
   save();
 }
 
@@ -666,7 +666,7 @@ function next(){
 function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
 
 function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
-function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && S.mortgage < mortCap()) { S.mortgage += 500; S.money += 500; } save(); render(); }
+function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += 500; } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
@@ -2632,6 +2632,60 @@ PROJECTS.commonpiece = { name:'Fence Common Piece and build a farmhouse', season
   blurb:`Three hundred acres of the old common, staked out by the award. No hedge, no barn, no house.`, gain:'A new farm to let',
   done:() => { const f = addFarm('commonpiece', {own:false}); if (!f) return `The quick is planted round Common Piece. The land is laid to Church Farm.`;
     return `The quick is planted round Common Piece and the farmhouse has its roof on. ${f.tenant} takes the three hundred acres from year to year at ${fmt(f.rent)}. He begins by burning the furze.`; }};
+
+/* ---------- credit, and ruin by stages ---------- */
+// Years when Consols yielded five per cent or more. The law holds a mortgage to five, so nobody lends on land.
+const TIGHT = [1797, 1798, 1799, 1803, 1804, 1805, 1812, 1813, 1815];
+const moneyTight = y => TIGHT.includes(y);
+const canBorrow = () => S.mortgage < mortCap() && !moneyTight(S.year);
+const borrowWhy = () => moneyTight(S.year) ? 'The Funds pay five per cent this year. Mr Tidmarsh has nothing to lend on land.' : S.mortgage >= mortCap() ? 'The estate will carry no more.' : '';
+const salePrice = f => Math.round(26 * (f.void ? 0.9 * lettingValue(f, S.year) : rentDue(f)) / 10) * 10;
+const boughtFarm = () => S.farms.filter(f => f.own).sort((a, b) => b.base - a.base)[0];
+const edmundSigns = () => farm('longbarrow') && !F('edmundDead') && S.chars.edmund.r > -3 && !F('soldLongBarrow');
+function sellFarm(f){ const p = salePrice(f); S.farms.splice(S.farms.indexOf(f), 1); S.money += p; return p; }
+/* Called each quarter before the season's paper is chosen. Bills first, then the tradesmen, then the land, then the packet to Douglas. */
+function creditCheck(){
+  const first = id => { S.queue = S.queue.filter(x => x.id !== id); S.queue.unshift({id, at:S.t}); };
+  if (S.money < -3000) { if (boughtFarm() || edmundSigns()) first('hammer'); else S.dead = 'ruin'; }
+  else if (S.money < -1500 && (S.stoppedAt === undefined || S.t - S.stoppedAt >= 8)) { S.stoppedAt = S.t; first('georgeMeeting'); }
+  if (S.season === 0 && moneyTight(S.year) && !moneyTight(S.year - 1)) S.notes.push('Consols are below sixty. Mr Tidmarsh writes that he can find nothing on mortgage while the Funds pay better than five per cent.');
+}
+
+ev({ id:'georgeMeeting', follow:true, cond:() => S.money < -800, title:'The Meeting at the George',
+  text:() => `${steward()} brings a paper up from Wyvern. It is signed by the butcher, the chandler, the coal merchant, the saddler and nine others.
+
+They met at the George on Tuesday. They are owed ${fmt(-S.money)} between them. They have resolved to send nothing more to the Hall until it is paid.
+
+Mrs Bunce has asked what she is to do about Sunday’s joint.`,
+  choices:[
+    {t:'Borrow it from Mr Tidmarsh on the land.', note:() => 'Mortgage +' + fmt(Math.ceil(-S.money / 500) * 500), if:() => canBorrow() && S.mortgage + Math.ceil(-S.money / 500) * 500 <= mortCap(), go:() => { const a = Math.ceil(-S.money / 500) * 500; S.mortgage += a; S.money += a;
+      return `Mr Tidmarsh finds ${fmt(a)} in a week at five per cent. ${steward()} drives into Wyvern with the notes and pays every name on the paper at his own door. The butcher’s boy is at the kitchen door before the gig is back.`; }},
+    {t:'Fell the oaks in Hanger Wood.', note:() => '+' + fmt(Math.round(75 * (1 + 0.035 * (S.year - 1795))) * 10), if:() => (S.timber === undefined ? 3 : S.timber) > 0, go:() => { const t = Math.round(75 * (1 + 0.035 * (S.year - 1795))) * 10; S.timber = (S.timber === undefined ? 3 : S.timber) - 1; add({money:t, standing:-3});
+      return `The timber merchant from Reading goes through Hanger Wood with a scribing iron and marks two hundred oaks. He pays ${fmt(t)} down. The sawyers dig their pit that week. The fall can be heard from the terrace.`; }},
+    {t:'Put down the carriage and shut up half the house.', note:'+£300', go:() => { add({money:300, standing:-6, family:-6}); reg('henrietta', -1, 'You put down her carriage');
+      return `The carriage horses go to Reading fair. Two footmen and the under-gardener are paid off at the month. The dining-room shutters are closed and the family dines in the breakfast parlour.
+
+The chandler is paid in part.`; }},
+    {t:'Ask them to wait.', go:() => { add({standing:-5});
+      return `${steward()} carries the answer down. The paper is read aloud at the George. On Saturday the butcher sends the joint, with a bill pinned to the cloth. The bill is marked “ready money”.`; }}
+  ]});
+
+ev({ id:'hammer', follow:true, cond:() => S.money < -2000 && (boughtFarm() || edmundSigns()), title:'A Sale by Order',
+  text:() => `You owe ${fmt(-S.money)} in Wyvern and Reading on bills and notes of hand. Two of the holders have taken out writs.
+
+Mr Tidmarsh comes out from the bank and asks for the estate map. He unrolls it on the library table and stands the inkwell on one corner.
+
+“Something must go, sir,” he says. “The question is what.”`,
+  choices:[
+    {t:() => 'Sell ' + boughtFarm().name + '.', note:() => 'About ' + fmt(salePrice(boughtFarm())) + '. It is your own to sell', if:() => !!boughtFarm(), go:() => { const f = boughtFarm(), p = sellFarm(f); add({standing:-5});
+      return `${f.name} is put up at the George by Mr Skinner in one lot. It is knocked down at ${fmt(p)} to a brewer from Reading. Mr Tidmarsh pays off the writs the same afternoon and brings you a draft for the balance.`; }},
+    {t:'Sell Long Barrow out of the settlement.', note:() => 'About ' + fmt(salePrice(farm('longbarrow'))) + '. Edmund must sign', if:() => !!edmundSigns(), go:() => { const p = sellFarm(farm('longbarrow')), off = Math.max(0, Math.min(S.mortgage, Math.floor((S.money - 200) / 500) * 500)); S.mortgage -= off; S.money -= off; fl('soldLongBarrow'); add({standing:-8, family:-12}); reg('edmund', -2, 'You sold Long Barrow out of his inheritance'); reg('cullerne', 1);
+      return `The deed of consent goes to Edmund by the post. It comes back signed in three weeks. There is no letter with it.
+
+Long Barrow is sold by private treaty to Lord Cullerne’s agent for ${fmt(p)}. ${off ? `The mortgagees take ${fmt(off)} of it. ` : ''}The estate map is sent to Wyvern to be drawn again.`; }},
+    {t:'Sell nothing.', go:() => { S.dead = 'ruin';
+      return `Mr Tidmarsh rolls up the map. He says he is sorry for it. The writs are served on Thursday.`; }}
+  ]});
 const ART = new Set(['frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/persons.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png']);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
