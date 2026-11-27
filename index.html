@@ -101,6 +101,24 @@ dl.money dd{margin:0;font-family:var(--display);font-size:1.7rem;line-height:1.1
 .score{font-family:var(--caps);letter-spacing:.1em;border-block:1px solid var(--ink);padding:10px 0;margin:18px 0 0}
 .score b{font-family:var(--display);font-weight:400;font-size:2rem;color:var(--madder);padding:0 .2em;letter-spacing:0}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+.traits{grid-column:1/-1;border:0;border-top:3px double var(--rule);margin:14px 0 0;padding:12px 0 0;min-width:0}
+.traits legend{font-family:var(--display);font-size:1.45rem;padding:0 10px 0 0}
+.traits h3{font-family:var(--caps);font-weight:400;letter-spacing:.14em;font-size:.9rem;color:var(--muted);margin:16px 0 8px}
+.traits .fine{font-size:.95rem;max-width:60ch} #pts{font-family:var(--display);font-size:1.5rem;font-style:normal;color:var(--madder);padding:0 .1em} #pts.neg{color:var(--bad);text-decoration:underline wavy}
+.names{max-width:none} .names > label{max-width:10rem} .names > input{max-width:18rem}
+.pickrow{display:grid;grid-template-columns:9rem minmax(0,26rem);gap:2px 14px;align-items:baseline;margin-top:12px}
+.pickrow label{font-family:var(--caps);letter-spacing:.08em;font-size:.9rem;color:var(--muted)}
+.pickrow select{font:inherit;font-family:var(--display);font-size:1.12rem;color:var(--ink);background:var(--card);border:0;border-bottom:1px solid var(--ink);padding:4px 2px;min-width:0;width:100%;cursor:pointer}
+.pickblurb{grid-column:2;margin:4px 0 0;font-style:italic;font-size:.93rem;line-height:1.45;color:var(--muted);max-width:26rem}
+.pickblurb:empty{display:none}
+.pickblurb span{display:block;font-family:var(--caps);font-style:normal;font-size:.78rem;letter-spacing:.06em;color:var(--gold);margin-top:2px}
+@media (max-width:520px){ .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1} }
+.go:disabled{background:var(--muted);cursor:not-allowed}
+.born{line-height:1.45}
+.works details{margin-top:8px} .works summary{cursor:pointer;font-family:var(--caps);letter-spacing:.08em;font-size:.85rem;color:var(--muted)}
+.works details ul{margin-top:8px} .work button{flex:none;background:transparent;border:1px solid var(--ink);font-family:var(--caps);font-size:.78rem;letter-spacing:.08em;padding:2px 10px}
+.work button:hover:not(:disabled){background:var(--ink);color:var(--card)} .work button:disabled{opacity:.35;cursor:not-allowed}
+.work.done b{color:var(--muted)}
 </style>
 <div class="wrap">
   <header class="mast">
@@ -249,6 +267,79 @@ function fmt(n){ const a = Math.abs(Math.round(n)).toLocaleString('en-GB'); retu
 function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
 function chance(p){ return Math.random() < p; }
+/* The making of a squire. Boons cost points; encumbrances pay them back. */
+const TRAIT_POINTS = 3;
+const TRAITS = [
+  // boons
+  { id:'soldier', group:'past', name:'Served in the American war', cost:1, effect:'Standing higher; Volunteers at half cost; no duel will kill you',
+    blurb:`You carried the colours of the 23rd at Guilford Court House in ’81. A ball went through your leg. You tell the story at dinner. There are Indians in it now.`,
+    apply:() => { add({standing:5}); reg('edmund', 1, 'Brought up on your stories of the American war'); }},
+  { id:'captain', group:'past', name:'A post-captain, come ashore', cost:1, effect:'Prize money; your old crew run the house, cheaply and by the bell',
+    blurb:`Twenty-two years at sea. The last six you commanded the Dryad, thirty-six guns. When she paid off, eleven of her people followed you up the Bath road in a wagon. Your coxswain is butler. There are hammocks in the attics. The gallery is holystoned at five each morning. Henrietta’s bed is under the gallery.`,
+    apply:() => { S.money += 350; add({standing:4, family:-5}); reg('henrietta', -1, 'Woken at five by eleven seamen scrubbing the gallery'); reg('edmund', 1, 'Brought up on the quarterdeck of your stories'); }},
+  { id:'court', group:'past', name:'Favour at Court', cost:2, effect:'Standing much higher; a sinecure of \u00a390 a year',
+    blurb:`You held the King’s horse at Windsor once. He talked to you for forty minutes about mangel-wurzels. He has asked after you twice since. You are Deputy Keeper of the Swans at ninety pounds a year. Nobody has shown you a swan.`,
+    apply:() => { add({standing:12}); reg('cullerne', 1); }},
+  { id:'legacy', group:'fortune', name:'A legacy from an aunt in Bath', cost:2, effect:'Purse +£1,200',
+    blurb:`An aunt in Bath left you twelve hundred pounds. You had admired her pug. You were looking at the cake behind it.`,
+    apply:() => { S.money += 1200; }},
+  { id:'clear', group:'fortune', name:'The mortgage half paid', cost:2, effect:'Mortgage £2,000 instead of £4,000',
+    blurb:`In 1789 your uncle paid off half the mortgage. He spoke of it bitterly every Lady Day until he died.`,
+    apply:() => { S.mortgage = 2000; }},
+  { id:'bred', group:'past', name:'Bred to the land', cost:2, effect:'Better yields; works cost less',
+    blurb:`You can tell a ewe’s age by her mouth. You can tell a field by its weeds. You can tell when a bailiff is lying by where he puts his feet.`,
+    apply:() => { S.improve += 1; reg('hartopp', 1); }},
+  { id:'beloved', group:'gift', name:'Known in the parish from a boy', cost:2, effect:'Goodwill much higher; Jem Pryor remembers',
+    blurb:`You went bird’s-nesting with half of Hatherley. The other half thrashed you. Most of the parish saw you fall in the mill pond.`,
+    apply:() => { add({goodwill:15}); reg('pryor', 1, 'You went bird’s-nesting together as boys'); }},
+  { id:'connexions', group:'gift', name:'Good connexions', cost:2, effect:'Standing much higher; Lord Cullerne civil',
+    blurb:`Your mother was second cousin to a marquess. She said so at every dinner for forty years. The county has it by heart.`,
+    apply:() => { add({standing:15}); reg('cullerne', 1); }},
+  { id:'silver', group:'gift', name:'A persuasive tongue', cost:1, effect:'Elections likelier won; the bench listens',
+    blurb:`You once talked a turnpike keeper into paying you the toll.`,
+    apply:() => {}},
+  { id:'lovematch', group:'marriage', name:'A love match', cost:1, effect:'Household happier; Henrietta fond',
+    blurb:`Her mother wanted a baronet for her. She met you at the Newbury assembly and danced with you four times. Her mother counted.`,
+    apply:() => { add({family:12}); reg('henrietta', 2, 'She married you for love, against advice'); }},
+  { id:'figures', group:'gift', name:'A head for figures', cost:1, effect:'Household runs cheaper; nobody skims',
+    blurb:`You add a column twice. The second time you add it upwards. Crabbe has watched you do it.`,
+    apply:() => { reg('crabbe', -1); }},
+  // encumbrances
+  { id:'debts', group:'fortune', name:'Your uncle’s debts of honour', cost:-2, effect:'Purse −£700',
+    blurb:`Your uncle lost seven hundred pounds at Brooks’s. The gentleman waited for the funeral. He came to it.`,
+    apply:() => { S.money -= 700; }},
+  { id:'second', group:'fortune', name:'A second mortgage', cost:-2, effect:'Mortgage £6,000',
+    blurb:`The attorneys found it in a tin box behind a stuffed pike. Two thousand pounds more, at five per cent.`,
+    apply:() => { S.mortgage = 6000; }},
+  { id:'play', group:'failing', name:'A gambling man', cost:-2, effect:'Losses at cards every winter',
+    blurb:`You do not call yourself a gambler. The luck is about to turn. You have known it since 1783.`,
+    apply:() => {}},
+  { id:'enemy', group:'failing', name:'An enemy at the Castle', cost:-2, effect:'Lord Cullerne hostile from the first',
+    blurb:`At nineteen you shot Lord Cullerne’s favourite pointer. It was a mistake. His lordship was standing beside her. Her name was Duchess.`,
+    apply:() => { reg('cullerne', -4, 'You shot his pointer in 1768'); add({standing:-3}); }},
+  { id:'stranger', group:'past', name:'A stranger to the country', cost:-1, effect:'Goodwill lower',
+    blurb:`You were brought up in Marylebone. You know wheat when it is bread. You know barley when it is beer.`,
+    apply:() => { add({goodwill:-12}); }},
+  { id:'whig', group:'failing', name:'A Whig among Tories', cost:-1, effect:'Standing lower; Hartopp approves',
+    blurb:`You said at the Tamworths’ table that Mr Fox had a point. Three gentlemen put down their glasses.`,
+    apply:() => { add({standing:-10}); reg('cullerne', -1); reg('hartopp', 1); }},
+  { id:'portion', group:'marriage', name:'Married for her portion', cost:-1, effect:'Household colder; Henrietta cool',
+    blurb:`She brought eight thousand pounds. It went on the roof. She has never spoken of it. When it rains she looks up.`,
+    apply:() => { add({family:-12}); reg('henrietta', -2, 'Knows you married her eight thousand pounds'); }},
+  { id:'gout', group:'failing', name:'Gout', cost:-1, effect:'Riding the estate does less; winters are worse',
+    blurb:`It is in the left foot. Your father had it there. The surgeon calls it “a very fine gout”.`,
+    apply:() => {}}
+];
+const TRAIT_GROUPS = [
+  ['past', 'His past', 'Nothing to speak of'],
+  ['fortune', 'His fortune', 'As your uncle left it'],
+  ['marriage', 'His marriage', 'A sensible match'],
+  ['gift', 'His advantage', 'None in particular'],
+  ['failing', 'His failing', 'None he will admit to']
+];
+const traitById = id => TRAITS.find(t => t.id === id);
+const pointsLeft = ids => TRAIT_POINTS - ids.reduce((a, id) => a + traitById(id).cost, 0);
+const T = id => S.traits && S.traits.includes(id);
 /* The engine: seasons, ledger, undertakings, and the reckoning. */
 let S = null;
 const SAVE_KEY = 'hatherley-combe-save-v1';
@@ -276,8 +367,12 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
   if (e === 'farmer') return 'Farming Kennet Bottom';
   return 'At home, learning the estate'; }
 
+/* Estate works. Long business, commissioned whenever the squire pleases, paid by instalments in the quarter's accounts.
+   They run alongside the seasons and do not use up the season's undertaking. */
+const MAX_WORKS = 2;
 const PROJECTS = {
   enclosure:{ name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
+    blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Rental up by a third',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
 
@@ -291,10 +386,12 @@ Jem Pryor stands up at the back. His family has turned a cow out there since Que
 
 “Have you that in writing?” says the clerk.`; }},
   drain:{ name:'Drain and marl the clay at Kennet Bottom', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
+    blurb:`Nine miles of stone drains under the low fields. They stand in water from November to May.`, gain:'Yields and rents up',
     done:() => { S.improve += 2; return `The drains are in at Kennet Bottom. There are nine miles of them, laid with stone and blackthorn.
 
 You walk the low fields from end to end. Your boots come home on your feet.`; }},
   fourcourse:{ name:'Put the home farm under the Norfolk four-course', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
+    blurb:`Wheat, turnips, barley, clover. No field lies fallow.`, gain:'Yields and rents up',
     done:() => { S.improve += 1; reg('hartopp',1); return `Wheat, turnips, barley, clover. Then wheat again. There is no fallow on the home farm this year.
 
 The old carter stands at the gate of Twelve Acres.
@@ -302,7 +399,15 @@ The old carter stands at the gate of Twelve Acres.
 “That ground ent had a rest since Lady Day twelvemonth, sir.”
 
 He shakes his head at it.`; }},
+  mill:{ name:'Rebuild Hatherley Mill with an iron wheel', seasons:2, cost:() => 420,
+    blurb:`The present wheel is of elm. Your grandfather’s father put it in.`, gain:'Rental up; the parish pleased',
+    done:() => { fl('newMill'); S.rentAdj *= 1.04; add({goodwill:3}); return `The new wheel turns at Hatherley Mill. It is cast iron, from the foundry at Reading. Eighteen feet across. Painted red.
+
+It grinds before noon what the old wheel ground in a day. Pocock the miller walks round it twice with his hands behind him.
+
+“Her’ll never last,” he says.`; }},
   cottages:{ name:'Build six brick cottages on the Kintbury lane', seasons:2, cost:() => 360,
+    blurb:`Six on the lane are past mending. The ivy holds up two of them.`, gain:'Goodwill',
     done:() => { fl('cottages'); add({goodwill:9}); return `Six cottages stand on the Kintbury lane. Brick walls. Tiled roofs. Two bedrooms, a bread oven and a pigsty to each.
 
 The six families walk through on Saturday. Nobody speaks. They put their hands on the walls.
@@ -310,26 +415,69 @@ The six families walk through on Saturday. Nobody speaks. They put their hands o
 One woman stops at the foot of the stairs.
 
 “Is the upstairs ours and all, sir?”`; }},
+  school:{ name:'Endow a dame school in the old tithe barn', seasons:1, cost:() => 160,
+    blurb:`Letters, the catechism and plain sewing for forty children.`, gain:'Goodwill',
+    done:() => { fl('school'); add({goodwill:6}); if (!F('gallDead')) reg('gall',-1); return `The school opens in the tithe barn. Forty children. Twenty slates. Hannah Gurney’s niece has them for letters, the catechism and knitting.
+
+“Reading will only make them discontented,” says ${F('gallDead') ? 'old Dewey' : 'Dr Gall'}.
+
+On Friday there is a word chalked on ${F('gallDead') ? 'his yard gate' : 'the vicarage gate'}. It is spelt correctly.`; }},
+  road:{ name:'Mend the Kintbury road, and the bridge with it', seasons:1, cost:() => 240,
+    blurb:`Last winter it took two carts and the curate’s pony. The parish has been bound to mend it since Queen Anne.`, gain:'Goodwill and standing',
+    done:() => { fl('road'); add({goodwill:3, standing:3}); return `The Kintbury road is made. Flints broken small, rammed and cambered. A ditch on either side. The bridge has a parapet.
+
+The carrier calls twice a week now. On Tuesday a post-chaise goes through at a trot. The children run out to look at it.`; }},
+  front:{ name:'New-front the Hall in Bath stone', seasons:3, cost:() => 900,
+    blurb:`A portico, a pediment and six columns across the park front.`, gain:'Standing; Henrietta',
+    done:() => { fl('newFront'); add({standing:9, family:4}); reg('henrietta',2,'You gave the Hall a front she could ask people to'); return `The scaffolding comes down. The Hall has a front of Bath stone, six Ionic columns and a pediment with your arms cut in it. Behind it the old chimneys smoke as before.
+
+Henrietta has the Tamworths to dinner on Thursday. She receives them on the steps.`; }},
+  pinery:{ name:'Build a pinery and raise pine-apples', seasons:1, cost:() => 200,
+    blurb:`A glass house, a pit of tanner’s bark and a Scotch gardener. A pine-apple takes two years.`, gain:'Standing; the household',
+    done:() => { fl('pinery'); add({standing:4, family:2}); return `The first pine-apple is cut. It has had two years, forty loads of bark and a Scotchman to itself.
+
+Nobody eats it. It stands in the middle of the table through eleven dinners. Then the Lovedays send to borrow it.`; }},
   oaks:{ name:'Plant forty acres of oak for the Navy', seasons:1, cost:() => 120,
+    blurb:`A seventy-four takes two thousand grown oaks.`, gain:'Standing; posterity',
     done:() => { fl('oaks'); add({standing:2}); return `Forty acres of acorns are dibbled in on Gallows Piece.
 
 The nurseryman from Newbury says they will make ship timber in a hundred and twenty years. You ask him to say it again.
 
 You ride home at a walk.`; }},
   icehouse:{ name:'Sink an ice-house in the north shrubbery', seasons:1, cost:() => 140,
+    blurb:`A brick egg under ground, filled from the carp pond in a hard frost.`, gain:'The household',
     done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk in the north shrubbery. It is a brick egg under a mound of earth. The men are to fill it from the carp pond at the first hard frost.
 
 Henrietta has written to Gunter’s for a receipt for lemon ice. She has asked the Tamworths already.`; }}
 };
-function startProject(id){ const p = PROJECTS[id]; const cost = p.cost(); S.project = {id, left:p.seasons, per:Math.round(cost / p.seasons)}; S.projectsDone[id] = 'begun'; }
+const projCost = id => Math.round(PROJECTS[id].cost() * (T('bred') ? 0.85 : 1) / 10) * 10;
+function startProject(id){ const p = PROJECTS[id]; S.works.push({id, left:p.seasons, per:Math.round(projCost(id) / p.seasons)}); S.projectsDone[id] = 'begun'; }
+/* What the page needs to know about works. */
+function worksInHand(){ return S.works.map(w => ({id:w.id, name:PROJECTS[w.id].name, left:w.left, per:w.per})); }
+function worksDone(){ return Object.keys(PROJECTS).filter(id => S.projectsDone[id] === 'done').map(id => ({id, name:PROJECTS[id].name})); }
+function worksList(){ const busy = S.works.filter(w => !PROJECTS[w.id].hidden).length;
+  return Object.keys(PROJECTS).filter(id => !PROJECTS[id].hidden || S.projectsDone[id]).map(id => { const p = PROJECTS[id], cost = projCost(id), per = Math.round(cost / p.seasons);
+    const state = S.projectsDone[id] === 'done' ? 'done' : S.projectsDone[id] === 'begun' ? 'inHand' : 'open'; const w = S.works.find(x => x.id === id);
+    let why = '';
+    if (state === 'open') { if (S.phase === 'end' || S.dead) why = 'The books are closed.';
+      else if (busy >= MAX_WORKS) why = 'Two works in hand already. There is one estate carpenter, and he is on both.';
+      else if (S.money < per) why = 'The purse will not stand the first instalment of ' + fmt(per) + '.'; }
+    return {id, name:p.name, blurb:p.blurb, gain:p.gain, cost, seasons:p.seasons, per,
+      note:fmt(cost) + (p.seasons > 1 ? ', in ' + p.seasons + ' quarterly instalments' : ''), state, left:w ? w.left : 0, can:state === 'open' && !why, why}; }); }
+function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || !w.can) return false;
+  startProject(id); S.journal.unshift({when:stamp(), title:'Works', did:'Put in hand: ' + PROJECTS[id].name});
+  save(); render(); return true; }
 
-function newGame(first, sur){
+function newGame(first, sur, traits){
   S = { name:(first + ' ' + sur).trim(), sur, t:0, year:FIRST_YEAR, season:0, phase:'ledger',
     money:900, mortgage:4000, standing:40, goodwill:50, family:60,
     improve:0, rentPolicy:1, rentAdj:1, poorMult:1, game:3, canal:0, yearIncome:0,
-    flags:{}, chars:{}, queue:[], seen:{}, journal:[], project:null, projectsDone:{}, dead:null,
+    flags:{}, chars:{}, queue:[], seen:{}, journal:[], works:[], projectsDone:{}, dead:null,
     ledger:[], notes:[], pending:null, vignette:null, outcome:null, priceSeen:[] };
   for (const id in PEOPLE) S.chars[id] = {r:PEOPLE[id].r, met:PEOPLE[id].met, notes:[]};
+  S.traits = (traits || []).filter(id => traitById(id));
+  for (const id of S.traits) traitById(id).apply();
+  for (const id in S.chars) S.chars[id].notes = S.chars[id].notes.map(n => n.replace(/, 1795$/, ''));
   beginSeason();
 }
 
@@ -354,16 +502,21 @@ function beginSeason(){
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
+  if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
+  if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
   if (F('wages')) line('Home farm wages above the common rate', -30);
-  if (F('crabbeSkims') && !F('crabbeGone')) line('“Sundries” (Mr Crabbe)', -45);
+  if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
-  if (S.project) { line(PROJECTS[S.project.id].name, -S.project.per); S.project.left--;
-    if (S.project.left <= 0) { const id = S.project.id; S.project = null; S.projectsDone[id] = 'done'; S.notes.push(PROJECTS[id].done()); } }
+  for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
+    if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
   if (q === 3) {
     line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1));
     line('Land tax', -110);
+    if (T('court') && !F('courtLost') && !F('courtSold')) line('Salary as Deputy Keeper of the Swans', 90);
+    if (T('play')) line('Losses at whist and hazard', -(70 + Math.floor(Math.random() * 12) * 10));
+    if (T('gout') && !F('goutEased')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household goes on tiptoe. You shout at them for creeping.'); }
     if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1)); }
   }
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
@@ -417,7 +570,7 @@ function choose(i){
 }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill:4}); return pick([
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill: T('gout') && !F('goutEased') ? 2 : 4}); return pick([
       `You ride the eleven farms in a day and a half. You are given cider. Then perry. A cold pie. Cider again. At Starveall the tenant lifts your horse’s off fore and tells you what he would do. At the mill you are given a dog.`,
       `At Kennet Bottom the Widow Harris takes you up her stairs. She shows you the hole in the thatch. It comes on to rain while you stand under it.
 
@@ -447,7 +600,7 @@ At eleven old Mrs Loveday sits down on the first fiddler’s bow. A new bow, 7s.
       `Venison for nine magistrates and a colonel.
 
 At the second bottle the Colonel takes Paris. At the third the Chairman gets the harvest in. At the fourth Mr Tamworth walks into the china closet and wishes the company good night.`]); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { const g = pick([-2, 0, 2, 3]); add({standing:3, goodwill:g}); return pick([
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { const g = pick([-2, 0, 2, 3]); add({standing: T('silver') ? 5 : 3, goodwill:g}); return pick([
       `A man has stolen a goose. You order him whipped. A woman stole it back from him. One month.
 
 The goose is brought into court in a hamper. It bites the clerk.`,
@@ -498,8 +651,6 @@ The rooks come over to the Hall roof. They are there each morning when you go ou
 
 function undertakingOptions(){
   const o = UNDERTAKINGS.filter(u => !u.if || u.if()).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
-  if (!S.project) for (const id in PROJECTS){ const p = PROJECTS[id]; if (p.hidden || S.projectsDone[id]) continue;
-    o.push({t:p.name, note:fmt(p.cost()) + (p.seasons > 1 ? ' over ' + p.seasons + ' seasons' : ''), hint:'A work', project:true, run:() => { startProject(id); return `The work is put in hand. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} brings the estimate in his best copperplate. It is two pages. You sign at the foot of the first.`; }}); }
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); const text = u.run();
@@ -529,6 +680,9 @@ function reckoning(){
     return {title:'Sold Up', P, score:null}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
+  if (T('captain')) P.push(F('crewGone') ? `He was a sea officer. He still goes down a staircase backwards. His old Dryads are afloat again. He follows their ships in the Navy List.` : `Dinner at the Hall is announced by a boatswain’s pipe. A guest who comes late is entered in the log.`);
+  if (T('play')) P.push(`He is known at every card table between Reading and Bath. He is welcome at all of them. He loses.`);
+  if (T('enemy')) P.push(S.chars.cullerne.r >= 1 ? `He and Lord Cullerne now speak. The matter of the pointer lay between them near fifty years.` : `Lord Cullerne has not forgiven the pointer. The dog has been dead forty years.`);
   P.push(net > 4000 ? `He is a richer man than his uncle was. The estate stands clear by some ${fmt(net)}.`
     : net > -1500 ? `His affairs balance. Set the mortgage against the purse and there is ${net >= 0 ? fmt(net) + ' to the good' : fmt(-net) + ' wanting'}. Few landed gentlemen can show as much at the end of this war.`
     : `His debts are put at ${fmt(-net)}, secured upon every acre. The clerks at Tidmarsh’s take off their hats when he passes the Bank.`);
@@ -582,7 +736,7 @@ function reckoning(){
 
 /* ---------- saving ---------- */
 function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (err) {} }
-function load(){ try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.chars && s.phase) return s; } catch (err) {} return null; }
+function load(){ try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.chars && s.phase) { if (!s.works) { s.works = s.project ? [s.project] : []; delete s.project; } return s; } } catch (err) {} return null; }
 function wipe(){ try { localStorage.removeItem(SAVE_KEY); } catch (err) {} S = null; render(); }
 /* The fixed calendar: what history brings to the door, and when. */
 const EVENTS = [];
@@ -748,7 +902,7 @@ He rides the farms. He learns a sound ewe from a rotten one. He learns which ten
 In the evenings he is in the gun room. You look in at eight. He is cleaning a fowling piece. You look in at ten. It is the same fowling piece. The Gazette is open on the bench beside him.`; }}
   ]});
 
-function electionWin(){ return chance(clamp(0.3 + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
+function electionWin(){ return chance(clamp((T('silver') ? 0.5 : 0.3) + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
 
 ev({ id:'election96', fixed:'1796-1', title:'Burgage Votes',
   text:() => `A cart from Cullerne Castle is at the kitchen door. In it, under a cloth, is a haunch of venison. The groom has a note.
@@ -877,8 +1031,8 @@ ${F('crabbeGone') ? 'Lark has ruled a sheet ready and sharpened two pens.' : 'Cr
 The return goes to Reading on Saturday.
 
 On Sunday nobody stays to talk in the churchyard. Old Dewey stops you at the gate. He asks whether his wagon is the King’s now.`; }},
-    {t:'Raise and equip the Hatherley Volunteers.', note:'£300', go:() => { fl('volunteers'); add({money:-300, standing:7, goodwill:2}); reg('cullerne',1);
-      return `Forty men come forward. You buy green cloth for forty coats, and a drum. Three hundred pounds.
+    {t:'Raise and equip the Hatherley Volunteers.', note:() => T('soldier') ? '£150' : '£300', go:() => { fl('volunteers'); add({money: T('soldier') ? -150 : -300, standing:7, goodwill:2}); reg('cullerne',1);
+      return `Forty men come forward. You buy green cloth for forty coats, and a drum. ${T('soldier') ? 'A hundred and fifty' : 'Three hundred'} pounds.
 
 There are no muskets to be had in England. The blacksmith makes forty pike-heads in a fortnight.
 
@@ -1090,8 +1244,8 @@ There is a handbill on the church door. “BRITONS! To Arms!”`,
 Form line. Form square. Charge pikes. By November they can do all three. One man has been stuck in the leg.
 
 The blacksmith is serjeant. He stands six foot four with a pike in his fist. The men watch him and do what he does.`; }},
-    {t:'Raise a corps of Volunteers now.', note:'£320', if:() => !F('volunteers'), go:() => { fl('volunteers'); add({money:-320, standing:6, goodwill:2});
-      return `Forty men give their names at the vestry. Three hundred and twenty pounds for green coats, a drum and forty pike-heads.
+    {t:'Raise a corps of Volunteers now.', note:() => T('soldier') ? '£160' : '£320', if:() => !F('volunteers'), go:() => { fl('volunteers'); add({money: T('soldier') ? -160 : -320, standing:6, goodwill:2});
+      return `Forty men give their names at the vestry. ${T('soldier') ? 'A hundred and sixty' : 'Three hundred and twenty'} pounds for green coats, a drum and forty pike-heads.
 
 The ladies of the parish work a flag. It shows a yellow animal on a green field. Henrietta says it is a lion.
 
@@ -1673,7 +1827,15 @@ You are down the stairs with your boots in your hand. Half of Hatherley is at th
 It goes up on the church door, at the Bell and on the turnpike gate. Fifty guineas would keep a Hatherley family for three years. A week goes by. A month. The rain brings down the one on the church door. Nobody has knocked.
 
 Three hundred pounds of wheat.`; }},
-    {t:'Take a bucket and join the line.', go:() => { add({money:-300, goodwill:3});
+    {t:'Take a bucket and join the line.', go:() => { if (T('captain') && !F('crewGone')) { add({money:-110, goodwill:4, standing:2});
+      return `Tarbuck has the Dryads out of their hammocks before you are down the stairs. Two chains from the horse pond. Wet sailcloth over the second rick. The gunner is on the barn roof with an axe.
+
+“As for a fire in the forehold, sir,” says Tarbuck.
+
+One rick is lost. The other stands and steams. A hundred and ten pounds of wheat.
+
+The village came to see a fire. It stays to watch the drill.`; }
+      add({money:-300, goodwill:3});
       return `You pick up a bucket and walk to the horse pond. The wheelwright comes after you. Then a boy of about ten. Then the rest.
 
 Both ricks are gone by two o’clock. Three hundred pounds of wheat. The line keeps on regardless and wets the barn thatch until it is light.
@@ -1845,7 +2007,7 @@ ev({ id:'duel', follow:true, cond:() => S.chars.vane.met, title:'Pistols on Hath
 
 He has it all arranged. The old chalk pit on Hatherley Down. Thursday, at first light. Twelve paces. He will bring the pistols.`,
   choices:[
-    {t:'Accept.', go:() => { const r = Math.random();
+    {t:'Accept.', go:() => { const r = T('soldier') ? 0.1 + Math.random() * 0.4 : Math.random();
       if (r < 0.1) { S.dead = 'duel'; return `A grey morning. There are larks over the Down.
 
 The lieutenant drops the handkerchief.
@@ -2207,7 +2369,7 @@ Fined one shilling.
 The Bell runs dry by ten that night. Jem Pryor proposes your health. At the vicarage the blinds are down, and they are down every time you pass for a year.`; }}
   ]});
 
-ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.project && !F('encloseRefused'), title:'The Common Question',
+ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.projectsDone.enclosure && !F('encloseRefused'), title:'The Common Question',
   text:() => `Lord Cullerne’s carriage is at the door. ${F('gallDead') ? 'His man of business' : 'Dr Gall'} gets out of it after him.
 
 They have a plan of Hatherley Common unrolled on your library table before the wine is poured. Four hundred acres. Gorse, geese, a pond, and forty cottagers’ cows.
@@ -2597,7 +2759,7 @@ You read it over. It is dull. You seal it.
 
 His next letter has a postscript.
 
-“${E() === 'army' ? 'Tamworth asks whether the bay mare is sold. The mess has money on it.' : 'Mr Pascoe asks whether the bay mare is sold. The gunroom has money on it.'}”`; }},
+“${E() === 'army' ? 'Tamworth asks whether the bay mare is sold. The mess has money on it.' : 'Mr Hallett asks whether the bay mare is sold. The gunroom has money on it.'}”`; }},
     {t:'Let Henrietta answer. She has knitted him something.', go:() => { add({family:1}); reg('henrietta',1);
       return `Henrietta writes eleven sides. She packs two flannel waistcoats, a plum cake and a receipt against the flux.
 
@@ -2783,6 +2945,810 @@ Then he rides to the parish bounds at a walk. The constable goes at his stirrup.
 
 The Register has Hatherley on three Saturdays running. The first piece is headed “A BERKSHIRE JUSTICE”. The second is about your cottages. The third is about your uncle.`; }}
   ]});
+
+ev({ id:'crew', from:1795, to:1802, weight:6, cond:() => T('captain'), title:'All Hands at Hatherley',
+  text:() => `The household has been six months under naval discipline. Tarbuck, your coxswain, strikes the bell in the hall every half hour. At eight bells the footmen are piped to dinner.
+
+There is a flagstaff on the leads. When Lord Cullerne’s carriage turns in at the lodge it flies “Enemy in sight”.
+
+Old Pascoe was cook of the Dryad. He lost a leg at the Saintes. He has one receipt, for lobscouse, and he wants the copper for it. Mrs Bunce has the copper. The housemaids can splice.
+
+This morning Tarbuck called Henrietta “the Captain’s lady, bless her”. He said it to her face.
+
+“Do I live in a house or a frigate?” she asks you. Her voice is very level.`,
+  choices:[
+    {t:'A frigate. The routine stands.', go:() => { add({family:-7, goodwill:4, standing:2}); reg('henrietta',-2,'You told her she lived in a frigate');
+      return `“A frigate, my dear.”
+
+The routine stands. The brass on the front door is polished twice a day. The gravel is raked fore and aft. At noon the village children are brought to the lodge gates to hear the bell.
+
+Henrietta sleeps with wool in her ears. To Mrs Tamworth she calls you “the Admiralty”.`; }},
+    {t:'A house. Strike the hammocks and stop the bell.', go:() => { fl('crewGone'); add({family:6}); reg('henrietta',2,'You sent the ship’s routine ashore for her sake');
+      return `The hammocks come down. The Dryads try beds for a week.
+
+“It don’t swing, sir,” says Tarbuck.
+
+A frigate is fitting out at Portsmouth. Nine of the eleven go for her. Each shakes your hand at the gate. Tarbuck pipes them over the side of the wagon.
+
+You engage ordinary servants at ordinary wages. The Hall is quiet. You wake at five all the same.`; }},
+    {t:'Draw a line at the green baize door: ship below stairs, house above.', go:() => { add({family:2, goodwill:1}); reg('henrietta',1);
+      return `You draw the line at the green baize door. Below it, bells, pipes and lobscouse. Above it, silence until nine. Nobody is to say “aye aye” to a lady.
+
+It holds.
+
+In the kitchen Pascoe chalks a line down the flags. He does not speak across it. Nor does Mrs Bunce. The salt goes over by a housemaid.`; }}
+  ]});
+
+ev({ id:'press', from:1803, to:1811, weight:5, cond:() => T('captain') && !F('crewGone'), title:'A Lieutenant with a Warrant',
+  text:() => `A press gang has come up the Kennet as far as Wyvern. Nobody in Wyvern has seen one before. There is a lieutenant, a midshipman of about twelve and eight hands with cudgels. They are quartered at the George.
+
+Somebody has told them about Hatherley Hall. Eleven prime seamen, rated butler, footmen and gardeners. Not one has a protection in his pocket.
+
+A note comes up from the George. The lieutenant presents his compliments. He will call tomorrow at ten. He trusts he will find your servants at home.`,
+  choices:[
+    {t:'Receive him in your old uniform, and ask to see his warrant.', go:() => { add({standing:3}); reg('henrietta',1);
+      return `You receive him in the library in a post-captain’s full dress, both epaulettes. The coat fits. The waistcoat does not.
+
+You read his warrant through. It runs to seafaring men found “upon the rivers and the coast”.
+
+“Which of those is my library, sir?”
+
+He is twenty-three. You were made post before he was breeched. He drinks one glass of Madeira standing. His gang is in Reading by dark.`; }},
+    {t:'Put the Dryads in the ice-house till he has gone.', go:() => { const ice = F('icehouse'); add({goodwill:2, standing:-1});
+      return ice ? `Eleven seamen go into the ice-house with a ham, a keg and a pack of cards. They are there two nights.
+
+The lieutenant searches the Hall from the leads to the cellar. In the butler’s pantry he finds a cutlass. He does not find a butler.
+
+He looks at you. You look at him. You both bow.
+
+The Dryads come out blue. They have eleven shillings of the gunner’s.` : `There is no ice-house. You put them in the hay loft at Long Barrow.
+
+The midshipman is twelve. He walks under the loft and looks up. A tarred pigtail hangs through a gap in the boards.
+
+You speak to the lieutenant for twenty minutes, captain to lieutenant. He takes his gang away without them.
+
+By noon it is all over Wyvern that the Squire hides deserters.`; }},
+    {t:'Muster them and let any man volunteer who chooses.', go:() => { fl('crewGone'); add({standing:4, family:3}); reg('edmund',1);
+      return `You muster them on the gravel.
+
+“The King wants seamen. No man of mine shall be pressed. No man of mine shall be hindered.”
+
+They look at their boots. Tarbuck steps forward. Then the gunner. Inside a minute all but old Pascoe have stepped forward. The lieutenant enters them as volunteers, with the bounty.
+
+They march out behind him singing.
+
+That evening Pascoe makes lobscouse for two.`; }}
+  ]});
+/* What a man brings with him. One event for each choice made at the inheritance.
+   Written in the Hatherley hand (docs/voice/VOICE.md): plain narrator, inside the year, the wit left to the people and the sums. */
+const first = () => S.name.split(' ')[0];
+const steward = () => F('crabbeGone') ? 'Lark' : 'Crabbe';
+
+/* ---- his past ---- */
+
+ev({ id:'tSoldier', from:1796, to:1801, weight:5, cond:() => T('soldier'), title:'A Man at the Kitchen Door',
+  text:() => `Mrs Bunce sends up to say there is a soldier in the yard who will not go away and will not come in.
+
+He is standing by the pump with his hat off. He is sixty, and his left sleeve is pinned up at the elbow. He has a magistrate’s pass from Portsmouth to his parish in Shropshire, a penny a mile.
+
+“Fogg, sir. Serjeant. Your company, the Twenty-third. I had the left of the line at Guilford.”
+
+You had the colours. He carried you a quarter of a mile after the ball went through your leg.
+
+“They gave me nothing at Chelsea, sir. They said it was the wrong arm.”`,
+  choices:[
+    {t:'Give him the south lodge and the keeping of the gate.', note:'£12 a year', go:() => { fl('fogg'); add({money:-12, goodwill:3, family:1}); if (F('volunteers')) add({standing:2});
+      return `“There is a lodge at the south gate, Serjeant. Two rooms and a copper.”
+
+He looks at the lodge for some time before he answers.
+
+“I can open a gate, sir.”
+
+He is at the gate next morning before the carrier. He salutes every carriage with the arm he has.${F('volunteers') ? ' On Sundays he drills the Volunteers on the common, from a chair.' : ''}`; }},
+    {t:'Write to the Board at Chelsea in his behalf.', go:() => { if (chance(0.5 + (S.standing - 40) / 100)) { add({standing:2, goodwill:2});
+        return `You write four sides to the Commissioners of Chelsea Hospital and sign them with your rank.
+
+The answer comes in nine weeks. “Daniel Fogg, late Serjeant, 23rd Foot, is admitted an Out-Pensioner at five pence a day from Lady Day last.”
+
+Fogg has the letter read to him twice. He asks if he may keep the cover it came in.`; }
+      add({goodwill:1});
+      return `You write four sides to the Commissioners of Chelsea Hospital and sign them with your rank.
+
+The answer comes in nine weeks. “The Board regrets that the Man’s name does not appear upon the Regimental return for the year in question.”
+
+Fogg hears it standing. He thanks you for the paper and the ink. He is gone up the Oxford road before breakfast.`; }},
+    {t:'Give him a guinea and his dinner, and let him go on.', note:'£1', go:() => { add({money:-1, goodwill:-1});
+      return `He eats in the kitchen. He puts the guinea inside his shoe.
+
+“Thank you, Captain.”
+
+You were a lieutenant. He goes out by the back drive. Mrs Bunce does not speak to anybody for the rest of the day.`; }}
+  ]});
+
+ev({ id:'tCourt', from:1797, to:1806, weight:5, cond:() => T('court') && S.season === 1, title:'A Letter from the Board of Green Cloth',
+  text:() => `Windsor Castle, the 2nd of July.
+
+“Sir, I am commanded to acquaint you that His Majesty’s Swans upon the Thames between Staines and Henley are to be taken up, marked and numbered in the third week of this month. The Deputy Keeper is expected to attend the Royal barge in person, in the scarlet coat of his Office.
+
+“The coat is not provided.
+
+“I have the honour to be, Sir, your most obedient humble servant, Jno. Meux, Clerk.”
+
+A tailor in Reading will make the coat for nineteen guineas. A week at Windsor is forty more.`,
+  choices:[
+    {t:'Go to Windsor.', note:'£62', go:() => { add({money:-62, standing:6}); reg('henrietta',1);
+      return `You stand five days in the bows of a barge in a scarlet coat. The swans are caught with a crook. They object.
+
+On the Thursday the King is rowed out from Datchet. He is in a blue coat and has his own hat in his hand.
+
+“What, what? ${S.sur}! The mangel-wurzel man. How do they do in Berkshire? Hey? Do the sheep eat ’em?”
+
+“They do, sir.”
+
+“Good. Good. Tell them to eat the tops.” He is rowed away.
+
+The Reading Mercury prints it on the Monday.`; }},
+    {t:'Plead the harvest and stay at home.', go:() => { if (chance(0.4)) { fl('courtLost'); add({standing:-4});
+        return `You write that the harvest cannot spare you.
+
+Mr Meux replies by return. “His Majesty has been pleased to appoint Colonel Disbrowe to be Deputy Keeper of the Swans, vice ${S.sur}, who has business.”
+
+The salary stops at Michaelmas.`; }
+      add({standing:-1});
+      return `You write that the harvest cannot spare you.
+
+Mr Meux replies in three lines. The Deputy Keeper’s absence has been noted in the book. He is to send two guineas for the watermen’s dinner.`; }},
+    {t:'Sell the place to a Windsor attorney who has asked for it.', note:'+£400', go:() => { fl('courtSold'); add({money:400, standing:-3});
+      return `Mr Tebbutt of Peascod Street gives four hundred pounds for the reversion. The deed is two skins of parchment.
+
+He has the scarlet coat made the same week. He wears it to church.`; }}
+  ]});
+
+ev({ id:'tBred', from:1797, to:1807, weight:5, cond:() => T('bred'), title:'Mr Young Wants Particulars',
+  text:() => `A letter, franked from the Board of Agriculture in Sackville Street.
+
+“Dear Sir, I am told by Mr Hartopp that you have drilled wheat at nine inches upon the chalk at Hatherley these three seasons. I beg you will favour the Board with the particulars: seed per acre, produce per acre, the expence, and your failures. Gentlemen send me their successes by every post.
+
+“Yours faithfully, Arthur Young.”
+
+Your wheat did well. Your drilled beans on Gallows Piece came up in June and were dead by July. Hartopp does not know about the beans.`,
+  choices:[
+    {t:'Send him everything, the beans included.', go:() => { add({standing:4}); reg('hartopp',1);
+      return `You give him five sides, with the sums ruled.
+
+The Annals of Agriculture print it in the spring number under the head “Berkshire. Experiments of ${first()} ${S.sur}, Esq.” The beans have a paragraph to themselves.
+
+Hartopp rides over with the number in his pocket.
+
+“You told him about the beans.”
+
+“He asked.”
+
+“Nobody tells him about the beans.” He stays to dinner. He asks to see Gallows Piece.`; }},
+    {t:'Answer him by asking the tenants up to see the drill at work.', note:'£20', go:() => { S.improve += 1; add({money:-20, goodwill:3});
+      return `Eleven farmers stand at the top of Hall Close on a Tuesday and watch the drill go down the field and back.
+
+Nobody says anything. Old Dewey walks out and puts his thumb into a row.
+
+“How deep?”
+
+“Two inches.”
+
+He measures it against his thumbnail. He walks back.
+
+Four of them send to borrow the drill before Michaelmas. You write to Mr Young that the particulars will follow.`; }},
+    {t:'Send the wheat figures and leave out the beans.', go:() => { add({standing:2});
+      return `The Annals print the wheat. Mr Young adds a line of his own beneath it.
+
+“We should have been glad to hear of this gentleman’s beans.”`; }}
+  ]});
+
+ev({ id:'tStranger', from:1795, to:1798, weight:6, cond:() => T('stranger'), title:'Two Ears in the Corn Market',
+  text:() => `Wyvern corn market, Thursday. The farmers stand along the wall of the Exchange with their sample bags open.
+
+Old Dewey of Starveall steps out as you come by. He has an ear of corn in each hand and holds them up to you, level.
+
+“Morning, sir. Which of these be the wheat?”
+
+The wall has gone quiet. ${steward()} is at your elbow. One ear has a beard on it. The other has not. That is all you can see.`,
+  choices:[
+    {t:'Point to one.', go:() => { if (chance(0.5)) { add({goodwill:4, standing:1});
+        return `You take the one without the beard.
+
+“That.”
+
+Dewey looks at it. He looks along the wall.
+
+“So ’tis.”
+
+Somebody at the far end says a London man might have a brother in the trade. Dewey puts both ears back in his pocket and gives you the wall.`; }
+      add({goodwill:-3, standing:-1});
+      return `You take the one with the beard.
+
+“That.”
+
+“That be barley, sir.”
+
+Nobody laughs until you are past the pump. You hear it then.
+
+At the rent audit in the spring there is a bearded ear laid across your plate.`; }},
+    {t:'“I cannot tell, Mr Dewey. Show me.”', go:() => { add({goodwill:6});
+      return `Dewey lowers his hands.
+
+“Well. That’s said plain.”
+
+He gives you the bearded one. “Barley. See her whiskers.” He gives you the other. “Wheat. Bite un.”
+
+You bite it. It is hard and sweet.
+
+He keeps you twenty minutes on smut and mildew. Three of the others come off the wall to correct him.`; }},
+    {t:'Let the steward answer for you.', go:() => { add({goodwill:-4}); if (!F('crabbeGone')) reg('crabbe',1);
+      return `“The left, Mr Dewey,” says ${steward()}. “As you are aware.”
+
+“I asked the squire.”
+
+“The squire employs me to know.”
+
+Dewey puts the ears away. He touches his hat to ${steward()}, and then to you.`; }}
+  ]});
+
+/* ---- his fortune ---- */
+
+ev({ id:'tLegacy', from:1795, to:1797, weight:7, cond:() => T('legacy'), title:'The Residuary Legatee',
+  text:() => `A hamper comes by the Bath coach, carriage unpaid, three and fourpence. There is a letter tied to the handle.
+
+“Bath, Milsom Street. Sir, By the fourth clause of the late Miss Venables’s Will, the Legacy to yourself is charged with the maintenance of her Dog, Pompey, during his natural life. I am to wait upon you each Lady Day to satisfy myself that the animal continues in health. Should he not, the Legacy passes to the Bath Infirmary.
+
+“Your obedient servant, Saml. Stroud, Attorney.”
+
+The hamper is growling. Pompey is a pug, fourteen years old, and very fat. He bites the footman who lifts him out.`,
+  choices:[
+    {t:'Keep him at the Hall.', go:() => { fl('pompey'); add({family:-3}); reg('henrietta',-1,'Has a pug of fourteen in her drawing room');
+      return `Pompey takes the hearth rug in the drawing room and holds it.
+
+He bites Dr Gall in October and the piano tuner at Christmas. He is carried up and down stairs by John.
+
+On Lady Day Mr Stroud comes out from Bath, looks at the dog for a full minute, and writes “Alive” in a pocket-book.`; }},
+    {t:'Board him with the Widow Harris at two shillings a week.', note:'£5 a year', go:() => { fl('pompey'); add({money:-5, goodwill:2});
+      return `The Widow Harris has never had two shillings a week from anybody.
+
+Pompey sleeps in her bed. He has the top of the milk. By Christmas he is seen walking as far as the gate.
+
+On Lady Day Mr Stroud is taken down to Kennet Bottom to view him. He writes “Alive. Thinner.”`; }},
+    {t:'Give him to Kitty for her own.', if:() => K() === 'free', go:() => { fl('pompey'); add({family:3}); reg('kitty',1,'You gave her the Bath pug');
+      return `Kitty ties a blue ribbon on him. He lets her.
+
+She reads to him. He is carried about the garden in a basket and bites nobody but the curate.
+
+On Lady Day Mr Stroud writes “Alive” in his pocket-book. Kitty asks him if he would like to hear the dog sing. He says he would not.`; }}
+  ]});
+
+ev({ id:'tClear', from:1796, to:1804, weight:5, cond:() => T('clear'), title:'Starveall Comes to the Hammer',
+  text:() => `A printed bill is up at the George.
+
+“TO BE SOLD BY AUCTION, by Mr Skinner, on Thursday se’nnight, the FREEHOLD FARM called STARVEALL, 180 Acres, adjoining the Lands of ${first()} ${S.sur}, Esq., and in the occupation of Mr Dewey. None but Principals will be treated with.”
+
+Mr Tidmarsh has come out from the bank about it. He has your mortgage deed with him.
+
+“You owe two thousand upon an estate that would carry six, sir. Starveall will fetch fifteen hundred. I should be happy to find it.”`,
+  choices:[
+    {t:'Buy Starveall on Tidmarsh’s money.', note:'Mortgage +£1,500', go:() => { fl('starveall'); S.mortgage += 1500; S.rentAdj *= 1.09; add({standing:3});
+      return `It is knocked down to you at fourteen hundred and eighty, against a brewer from Reading.
+
+Dewey comes up to the Hall the next morning in his market coat.
+
+“I hear I be yours.”
+
+“You are, Mr Dewey.”
+
+“Same rent?”
+
+“The same.”
+
+He puts his hat back on.`; }},
+    {t:'Let Starveall go, and pay off five hundred more instead.', note:'£500', if:() => S.money >= 500, go:() => { S.mortgage = Math.max(0, S.mortgage - 500); add({money:-500});
+      return `Tidmarsh counts the notes twice and writes the sum off on the back of the deed.
+
+“It is not what I came for, sir.”
+
+Starveall goes to the brewer from Reading. He raises Dewey’s rent by forty pounds at Michaelmas.`; }},
+    {t:'Do neither.', go:() => { 
+      return `Tidmarsh drinks a glass of sherry and takes the deed home.
+
+Starveall goes to a brewer from Reading. He puts up a board at the boundary. It says PRIVATE.`; }}
+  ]});
+
+ev({ id:'tDebts', from:1795, to:1798, weight:6, cond:() => T('debts'), title:'A Second Note of Hand',
+  text:() => `A gentleman is shown into the library. His card says Mr Raikes, of Jermyn Street. He does not sit down.
+
+He lays a paper on the table.
+
+“I promise to pay Mr Jos. Raikes or bearer Three Hundred Pounds, value received. Barnaby ${S.sur}. Brooks’s, 14th March 1794.”
+
+“Your late uncle, sir. I held it back from the executors out of delicacy.”
+
+You paid seven hundred at the funeral, to a colonel. The signature has your uncle’s B. The ${S.sur} slopes the other way.`,
+  choices:[
+    {t:'Pay it. The name is the name.', note:'£300', go:() => { add({money:-300, standing:2});
+      return `You write the draft. He reads it through and folds it small.
+
+“I knew I had to do with a gentleman.”
+
+He is seen that night at the George, buying for the room.`; }},
+    {t:'Ask him to leave the note with you till Tidmarsh has compared the hand.', go:() => { if (chance(0.6)) { add({standing:3});
+        return `“By all means,” says Mr Raikes. He does not let go of the paper.
+
+“The bank has forty of my uncle’s signatures, sir. It will take an afternoon.”
+
+He looks at the clock. He recollects that he is expected at Marlborough.
+
+He takes the note with him. It is not presented again.`; }
+      add({money:-340, standing:-2});
+      return `Tidmarsh lays the note beside the signature book and gets out a glass.
+
+“It is his hand, sir. He wrote so when he had dined.”
+
+Mr Raikes has waited at the George at your charge. Three hundred, and forty for his time and his attorney’s.`; }},
+    {t:'Offer him a hundred and fifty, now, for the paper.', note:'£150', go:() => { add({money:-150});
+      return `He considers the ceiling.
+
+“Guineas.”
+
+“Pounds.”
+
+He takes the pounds. He hands you the note. You put it on the fire, and he watches it burn with his head on one side.`; }}
+  ]});
+
+ev({ id:'tSecond', from:1796, to:1802, weight:5, cond:() => T('second'), title:'Miss Skrine Gives Notice',
+  text:() => `Bath, Gay Street, the 9th of the month.
+
+“Sir, I hold a Mortgage upon your Estate for Two Thousand Pounds at Five per Cent, made to your late Uncle in the year ’84. Money is now worth Six. I am Seventy-three and have my Chair-men to pay.
+
+“I must therefore ask Six per Cent from Michaelmas, or my Principal in Six Months.
+
+“I remain, Sir, your humble servant, Letitia Skrine.”
+
+${steward()} has brought the deed up from the tin box. She may do it.`,
+  choices:[
+    {t:'Agree to her six per cent.', note:'£20 a year more', go:() => { fl('skrine');
+      return `You write that six will be paid.
+
+Her receipt comes at Michaelmas, in the same hand. There is a line under her name.
+
+“Punctual. I had not expected it of a ${S.sur}.”`; }},
+    {t:'Have Tidmarsh take the mortgage over at five.', note:'£60 in fees', go:() => { add({money:-60});
+      return `Tidmarsh pays her off in Bank paper. The transfer is three skins and costs sixty pounds in stamps and attorneys.
+
+Miss Skrine sends a receipt for the principal. She has checked the interest to the day and finds you owe her four shillings.`; }},
+    {t:'Go to Bath and wait upon her, with a basket of Hatherley pears.', note:'£15', go:() => { add({money:-15}); if (chance(0.35 + S.standing / 150)) { add({standing:1});
+        return `Gay Street, a first floor. She is in a wing chair with a rug over her knees and a parrot behind her.
+
+She eats a pear with a silver knife. She does not offer you one.
+
+“Your uncle brought me a pine-apple in ’84. It was not ripe.”
+
+“These are ripe, ma’am.”
+
+“So I find.” She wipes the knife. “Five, then. While the pears last.”
+
+You send a basket every October.`; }
+      fl('skrine');
+      return `Gay Street, a first floor. She is in a wing chair with a rug over her knees and a parrot behind her.
+
+She looks at the pears.
+
+“I cannot eat fruit, sir. Six per cent, from Michaelmas.”
+
+The parrot says “Michaelmas.” You bring the pears home.`; }}
+  ]});
+
+/* ---- his marriage ---- */
+
+ev({ id:'tLove', from:1797, to:1806, weight:5, cond:() => T('lovematch'), title:'Her Mother Sends for Her',
+  text:() => `A letter for Henrietta from Cheltenham, in her brother’s hand. She reads it standing at the window.
+
+“My mother is sinking. She asks for you. She does not ask for Mr ${S.sur} and I think it better you should come alone. Jas. Venn.”
+
+Mrs Venn had a baronet in view for her daughter in the year ’74. She has not written your name in twenty years. She directs her letters to “Miss Venn, at Hatherley”.
+
+Henrietta folds the sheet.
+
+“I shall want the chaise at six.”`,
+  choices:[
+    {t:'Go with her.', go:() => { add({family:5}); if (chance(0.5)) { reg('henrietta',2,'You came with her to Cheltenham, and were let in');
+        return `You wait two days in the parlour of the house in Cheltenham. On the third the nurse comes down for you.
+
+Mrs Venn is very small in the bed. She looks at you for a long time.
+
+“You have kept her well, sir. I will say that.”
+
+She says nothing more. She dies on the Sunday. Henrietta holds your arm the whole length of the churchyard.`; }
+      reg('henrietta',1,'You came with her to Cheltenham, and waited below');
+      return `You wait four days in the parlour of the house in Cheltenham. You are not sent for.
+
+Mrs Venn dies on the Sunday. Her will leaves Henrietta a pair of candlesticks and you a shilling.
+
+Henrietta puts the shilling in the poor box herself. She rides home with her hand in yours and does not speak before Cirencester.`; }},
+    {t:'Let her go alone, and send a letter up to the old lady by her hand.', go:() => { add({family:3}); reg('henrietta',1);
+      return `You write half a sheet. You say that Henrietta has been the making of Hatherley and of you.
+
+Henrietta is gone nine days. She comes home in black.
+
+“Did she read it?”
+
+“James read it to her.”
+
+“What did she say?”
+
+“She said you wrote a good plain hand.” Henrietta takes off her gloves. “She had him read it twice.”`; }},
+    {t:'It is the week of the audit. Ask her to wait till Monday.', go:() => { add({family:-9}); reg('henrietta',-3,'You kept her from her mother’s deathbed for the rent audit');
+      return `She waits till Monday.
+
+Mrs Venn dies on the Sunday night. The express meets the chaise at Faringdon.
+
+Henrietta has the horses turned round. She says nothing about it to you then or afterwards.`; }}
+  ]});
+
+ev({ id:'tPortion', from:1796, to:1804, weight:5, cond:() => T('portion'), title:'Mr Venn Asks for an Account',
+  text:() => `Henrietta’s brother writes from Lincoln’s Inn.
+
+“Dear ${S.sur}, I am going through my late father’s papers. By the marriage articles of 1774, two thousand of my sister’s eight were to be settled to her separate use. I find no settlement. I find a receipt from a slater at Newbury.
+
+“I am her trustee. You will oblige me with an account. Yours, Jas. Venn.”
+
+The letter came under cover to you. Henrietta is in the next room, re-covering a chair. There is a pan on the floor beside her to catch the drip.`,
+  choices:[
+    {t:'Settle a thousand on her now, raised on the estate.', note:'Mortgage +£1,000', go:() => { S.mortgage += 1000; add({family:10}); reg('henrietta',3,'You settled a thousand pounds on her, twenty years late');
+      return `Venn draws the deed. A thousand pounds in the Three per Cents, to her separate use, her receipt alone to be a discharge.
+
+You carry it in to her yourself. She reads it to the end.
+
+“It was to be two.”
+
+“It was.”
+
+She puts it in her work-box and turns the key. She moves the pan an inch to the left with her foot.
+
+“Thank you, ${first()}.”`; }},
+    {t:'Send Venn the roof accounts. The money is over her head.', go:() => { add({family:-7}); reg('henrietta',-2,'Learned from her brother where her two thousand pounds went');
+      return `You send him nine years of slaters’ bills, tied with tape.
+
+He does not answer you. He writes to his sister.
+
+Henrietta comes in to dinner with the letter in her hand and lays it by her plate. She does not open it at table. She does not need to.`; }},
+    {t:'Take the letter in to her, and ask what she would have.', go:() => { add({money:-200, family:6}); reg('henrietta',2,'You showed her the letter and asked what she wanted');
+      return `She reads it. She goes on with the chair until the tack she is holding is in.
+
+“I knew it was the roof.”
+
+“What will you have, Hetty?”
+
+“My pin money, that you stopped in ’89. Fifty a year. And the arrears.”
+
+You pay her two hundred pounds that night, in notes. She writes you a receipt.`; }}
+  ]});
+
+/* ---- his advantage ---- */
+
+ev({ id:'tBeloved', from:1796, to:1806, weight:5, cond:() => T('beloved'), title:'Will Ayres Before the Bench',
+  text:() => `Petty Sessions in the justice room. The constable has brought in Will Ayres, carter to Mr Pocock.
+
+“Asleep on the shafts, sir, on the turnpike, at ten at night, and no lantern. The Bath mail had to take the bank.”
+
+The fine is ten shillings. Ayres earns nine in a week.
+
+You and Will Ayres robbed the vicarage orchard together in the summer of 1760. He took the thrashing for both. He stands with his hat in his hands and looks at you quite easily.
+
+“’Twas a long day, ${first()}.”
+
+The constable looks at the ceiling.`,
+  choices:[
+    {t:'“Ten shillings, Ayres. And it is ‘sir’ in this room.”', go:() => { add({standing:2, goodwill:-3}); reg('pryor',-1);
+      return `He pays it at a shilling a week. He says “sir” in the justice room and in the lane.
+
+At harvest home he is asked for the song about the squire and the mill pond. He says he has forgot the words.`; }},
+    {t:'Fine him the ten shillings, and send the money down to his wife that night.', note:'10s.', go:() => { add({money:-1, goodwill:3});
+      return `“Ten shillings.”
+
+“Yes, sir.”
+
+Mudge takes a half-guinea down to the cottage after dark. He is told to say it comes from nobody.
+
+On Sunday there is a basket of pippins on the Hall steps. They are vicarage pippins.`; }},
+    {t:'Dismiss it. The mail may keep a better look-out.', go:() => { add({goodwill:3, standing:-3}); if (!F('gallDead')) reg('gall',-1);
+      return `“Discharged.”
+
+“Thankee, ${first()}.”
+
+The constable writes it in the book. He writes the “${first()}” too.
+
+The proprietors of the Bath mail send a letter to the Chairman of Quarter Sessions. He reads it out, at dinner, to eleven magistrates.`; }}
+  ]});
+
+ev({ id:'tConnexions', from:1796, to:1808, weight:5, cond:() => T('connexions'), title:'A Cousin of the Marquess',
+  text:() => `Stanmore House, Piccadilly.
+
+“My dear ${S.sur}, You are, I think, my cousin, through the Lofts. I write on behalf of another: Mr Peregrine Loft, a young man of the first fashion, who finds it convenient to be out of London for a twelvemonth. There was a misunderstanding at Brooks’s. There was also a tailor.
+
+“He is no trouble in a house. He shoots a little. I shall take it very kindly.
+
+“Stanmore.”
+
+The Marquess has not written to you before. Mr Loft’s valet has already written to ask the dimensions of the bedroom.`,
+  choices:[
+    {t:'Have Mr Loft to stay.', note:'£160', go:() => { add({money:-160, standing:7, family:-4}); reg('henrietta',1);
+      return `He comes with a valet, eleven trunks and a parrot. He rises at one.
+
+He drinks the ’88 claret to the last bottle. He teaches the Miss Tamworths the waltz, which their mother stops. The county calls every day of the week to look at his neckcloth.
+
+In March the Marquess sends a haunch, a civil letter, and a draft for the tailor. Mr Loft leaves on the Tuesday. He takes John with him as second footman.`; }},
+    {t:'Offer him the Dower House and thirty pounds, and no more.', note:'£60', go:() => { add({money:-60, standing:2});
+      return `Mr Loft views the Dower House from his chaise without getting down.
+
+He stays a month. He is heard to say at the Wyvern Assembly that he is rusticated among the Goths.
+
+He goes on to a cousin in Wiltshire. The Marquess does not write.`; }},
+    {t:'Regret that the house is full.', go:() => { add({standing:-3});
+      return `You regret it in the third person.
+
+The Marquess of Stanmore regrets it also, on a card. Lady Cullerne is found to know the whole matter by Sunday. She asks Henrietta after “your cousin the Marquess”, twice, in the church porch.`; }}
+  ]});
+
+ev({ id:'tSilver', from:1797, to:1797, weight:9, cond:() => T('silver'), title:'The County Meeting at Reading',
+  text:() => `The High Sheriff has called a meeting of the freeholders at Reading town hall. The requisition is to petition the King to dismiss his Ministers and make peace with France.
+
+There are six hundred in the hall and more on the stairs. Lord Cullerne’s people have a Loyal Address ready to move against it. Hartopp has the petition in his coat.
+
+Each has been to you at the inn.
+
+“You have a voice, ${S.sur}. Speak for us.”
+
+The Sheriff is looking down the hall for the next man. Somebody behind you says your name.`,
+  choices:[
+    {t:'Speak for the Loyal Address.', go:() => { add({standing:6, goodwill:-3}); reg('cullerne',2,'You spoke for the Loyal Address at Reading'); reg('hartopp',-2);
+      return `You speak for twenty minutes on the King, the Constitution and the guillotine. They cheer the guillotine.
+
+The Address is carried by a show of hats. Lord Cullerne has you to sit beside him at the ordinary.
+
+“Deuced good. Didn’t know you had it in you.”
+
+Hartopp dines at the other inn.`; }},
+    {t:'Speak for peace.', go:() => { add({standing:-4, goodwill:6}); reg('hartopp',2,'You spoke for peace at the county meeting'); reg('cullerne',-2,'You spoke for the peace petition at Reading');
+      return `You speak for twenty minutes. You give them the price of the loaf in each year of the war.
+
+The petition is lost by a show of hats. The back of the hall cheers you out into the street.
+
+The Mercury prints the speech entire. It is read aloud at the Bell on Saturday by Mr Oakes, who does it very well.`; }},
+    {t:'Speak for the King and for peace, both.', go:() => { if (chance(0.6)) { add({standing:3, goodwill:3});
+        return `You say that no man loves the King better than he who would spare him a war. You say it four ways.
+
+Both sides cheer. Each prints the speech as its own.
+
+“Which were you for?” says Henrietta.
+
+“I was very well received.”`; }
+      add({standing:-3});
+      return `You say that no man loves the King better than he who would spare him a war.
+
+“Which way do you vote, sir?” calls a hatter from the gallery.
+
+You say it again. The hall begins to stamp. The Sheriff calls the next man.`; }}
+  ]});
+
+ev({ id:'tFigures', from:1797, to:1808, weight:5, cond:() => T('figures'), title:'The Overseer’s Book',
+  text:() => `The Easter vestry. Mr Nokes the overseer lays the poor book on the table for the ratepayers to pass, as he has done these nine years. Nobody opens it. Nobody ever has.
+
+You open it.
+
+“To Widow Gurney, 2s. weekly, 52 weeks.” Hannah Gurney was buried in March of last year. “To shoes for Jno. Coombes’s boy, 4s. 6d.” Five times.
+
+You add the right-hand column, upward. It comes to thirty-eight pounds more than the parish has paid out.
+
+Nokes is the Wyvern grocer. Half the vestry owe at his shop. He is watching your pencil.`,
+  choices:[
+    {t:'Read the column out to the vestry.', go:() => { fl('nokesOut'); S.poorMult *= 0.9; add({standing:2, goodwill:4});
+      return `You read it out, line by line. You come to Widow Gurney.
+
+“She’s dead,” says the blacksmith.
+
+“She has had five pound four since.”
+
+Nokes stands up. He says he keeps the book as his father kept it. He sits down.
+
+The vestry votes Farmer Dewey overseer for the year. The rate comes down a penny in the pound.`; }},
+    {t:'Close the book, and call at the shop tomorrow.', go:() => { S.poorMult *= 0.95; add({goodwill:1});
+      return `You call at nine. Nokes takes you through to the back, among the candles.
+
+You put the paper on the tea chest. He reads it and takes off his apron.
+
+“I can find twenty by Midsummer.”
+
+“Thirty-eight. And I shall add the book each Easter.”
+
+He finds it. The dead come off the list.`; }},
+    {t:'Pass the book with the rest.', go:() => {
+      return `You close it and slide it down the table. It is passed.
+
+Nokes sends a Stilton up to the Hall on Saturday, with his duty. Nothing has been ordered.`; }}
+  ]});
+
+/* ---- his failing ---- */
+
+ev({ id:'tPlay', from:1796, to:1810, weight:5, repeatGap:22, cond:() => T('play'), title:'Faro at the Tamworths’',
+  text:() => `The Tamworths’ card room, past midnight. A Major Cathcart of the Militia has set up a faro bank on the green table and is dealing from a box.
+
+You came with forty pounds in your pocket-book. You have eleven.
+
+The queen has lost four times together. She cannot lose a fifth.
+
+Cathcart squares the pack.
+
+“Do you go on, sir? I can take your note.”
+
+Henrietta is in the doorway with her cloak on.`,
+  choices:[
+    {t:'Go on, upon a note of hand.', go:() => { if (chance(0.35)) { add({money:310, family:-2});
+        return `You put two hundred on the queen, on paper.
+
+She wins. She wins again.
+
+You get up three hundred and ten pounds to the good. Cathcart pays in Bank notes. He is quite as civil as before.
+
+“You will give me my revenge on Thursday.”
+
+Henrietta counts it in the carriage. She keeps it.`; }
+      add({money:-260, family:-5}); reg('henrietta',-1,'Stood in the Tamworths’ doorway while you lost two hundred and sixty pounds');
+      return `You put two hundred on the queen, on paper.
+
+She loses. You put fifty on the knave to fetch it back.
+
+You sign for two hundred and sixty pounds at the corner of the table. Cathcart sands the note for you.
+
+Henrietta has gone out to the carriage. She has taken the rug.`; }},
+    {t:'Give Henrietta the pocket-book and get up.', go:() => { add({family:3}); reg('henrietta',1);
+      return `You hand it to her across the room. She puts it in her muff.
+
+“Mrs ${S.sur} does not play?” says Cathcart.
+
+“Mrs ${S.sur} has eleven pounds, sir, and means to keep them.”
+
+In the carriage she gives you back the book. There are eleven pounds in it. She has counted.`; }},
+    {t:'Ask Cathcart to let you cut the pack.', go:() => { if (chance(0.5)) { add({standing:3});
+        return `“Before you deal, Major. Oblige me.”
+
+He holds the box out. You turn it over. The queens are all four at the bottom, together.
+
+Nobody speaks. Tamworth rings for the Major’s horse.
+
+Your twenty-nine pounds are returned to you by the Colonel of the regiment, with a letter.`; }
+      add({standing:-4});
+      return `“Before you deal, Major. Oblige me.”
+
+He hands you the pack. It is as honest as a prayer book.
+
+“Are you satisfied, sir?”
+
+You say that you are. The table hears you say it. Tamworth asks if you will take a glass of something before you go.`; }}
+  ]});
+
+ev({ id:'tEnemy', from:1796, to:1806, weight:5, cond:() => T('enemy'), title:'A Pointer in Cuckoo Copse',
+  text:() => `Mudge is at the gun room door. He has a pointer bitch on a length of cord. She is liver and white, and the collar is brass.
+
+“Took her in Cuckoo Copse, sir. She had a hen pheasant.”
+
+You turn the collar to the light. “CULLERNE.” Under it, smaller: “Duchess.”
+
+It is the third of that name. You shot the first in 1768.
+
+“I could lose her, sir,” says Mudge. “Nobody saw.”
+
+She sits down on your foot.`,
+  choices:[
+    {t:'Walk her up to the Castle yourself.', go:() => { add({standing:1}); reg('cullerne',3,'You brought his pointer home on a cord, on foot');
+      return `It is four miles. You go on foot, with the cord round your wrist.
+
+His lordship is on the steps in a shooting jacket. He looks at the bitch. He looks at you.
+
+“You ain’t shot her, then.”
+
+“No, my lord.”
+
+“Hm.” He takes the cord. “You’d better have some sherry.”
+
+It is the first time you have been inside the house.`; }},
+    {t:'Send her home with Mudge, and a note.', go:() => { reg('cullerne',1);
+      return `“Mr ${S.sur}’s compliments, and he returns Lord Cullerne’s pointer, found straying.”
+
+Mudge is given a shilling at the stable door.
+
+There is no answer. At church on Sunday his lordship nods, an inch.`; }},
+    {t:'Keep her in the kennel till she is asked for.', go:() => { add({standing:-2}); reg('cullerne',-1,'You kept his pointer nine days');
+      return `She is nine days in your kennel. On the tenth a groom rides over.
+
+“His lordship’s compliments, and is his bitch here?”
+
+“She is. She has had a hen pheasant of mine.”
+
+The groom puts half a crown on the mounting block and takes the dog.`; }}
+  ]});
+
+ev({ id:'tWhig', from:1797, to:1800, weight:8, cond:() => T('whig') && S.season === 3, title:'Mr Fox’s Birthday',
+  text:() => `A card, by hand, from the Crown at Reading.
+
+“The Friends of Freedom in the County of Berks will dine together on the 24th of January, being the Birth-Day of the Right Hon. C. J. FOX. Dinner on Table at Four. Tickets 10s. 6d., Wine included.”
+
+Hartopp has written on the back. “You will come. We are thirty.”
+
+Last year, at the dinner in London, the Duke of Norfolk gave the toast “Our Sovereign, the People”. The King struck him off as Lord Lieutenant within the week. The names of those who dine at Reading will be in the Mercury.`,
+  choices:[
+    {t:'Dine, and drink every toast.', note:'10s. 6d.', go:() => { fl('foxite'); add({money:-1, standing:-5, goodwill:4}); reg('hartopp',2,'You drank “the People” at Mr Fox’s dinner'); reg('cullerne',-1);
+      return `Thirty-one sit down. The chairman is a brewer.
+
+“Gentlemen. Our Sovereign: the People.”
+
+You stand and drink it. So does Hartopp. A clergyman at the bottom of the table drinks it in water.
+
+The Mercury gives the list on Monday. You are sixth. Dr Gall preaches on the thirteenth of Romans. The Bell drinks your health the same evening, by name.`; }},
+    {t:'Dine, and keep your seat for that one.', note:'10s. 6d.', go:() => { add({money:-1, standing:-1}); reg('hartopp',-1);
+      return `Thirty-one sit down. The chairman is a brewer.
+
+“Gentlemen. Our Sovereign: the People.”
+
+Thirty stand. You look at your plate.
+
+The Mercury prints your name with the rest. Hartopp rides home without waiting for you.`; }},
+    {t:'Send the half-guinea, and a cold.', note:'10s. 6d.', go:() => { add({money:-1}); reg('hartopp',-1);
+      return `You send the money and your regrets. You have a cold.
+
+Hartopp returns the half-guinea the next morning in a twist of paper. There is nothing written on the paper.`; }}
+  ]});
+
+ev({ id:'tGout', from:1798, to:1810, weight:5, cond:() => T('gout') && !F('goutEased'), title:'The Left Foot',
+  text:() => `The gout came on at Quarter Sessions. You were carried out of the Shire Hall between two constables and have lain eleven days with the foot on a stool.
+
+Ferris the surgeon has been. He looked at the foot. He looked at the decanter.
+
+“No port for a twelvemonth, sir. No red meat after noon. Water.”
+
+There is also a bottle on the table, sent over by Lord Cullerne’s housekeeper. “L’Eau Médicinale d’Husson. One Guinea.” It is brown. Nobody will say what is in it.
+
+Mrs Bunce has sent up a beefsteak.`,
+  choices:[
+    {t:'Do as Ferris says.', go:() => { fl('goutEased'); add({family:-2, standing:-1});
+      return `You drink water for a year. You dine out on boiled fowl.
+
+The county thinks you unwell. Henrietta thinks you a changed man and tells you so at breakfast.
+
+The foot goes into a boot at Michaelmas. You walk to church.`; }},
+    {t:'Take the French water.', note:'A guinea a bottle', go:() => { add({money:-12}); if (chance(0.55)) { fl('goutEased');
+        return `You take a wineglass of it at night.
+
+By morning the pain is gone out of the foot. So is everything else out of you. Ferris is sent for at four and sits by the bed with his watch.
+
+“Meadow saffron,” he says, smelling the cork. “It will cure you or kill you. I should not take the second glass.”
+
+You take it in halves, for a year. The foot holds.`; }
+      return `You take a wineglass of it at night.
+
+You are extremely ill for three days. The foot is exactly as it was.
+
+Ferris smells the cork and says nothing. He sends in his bill for the three days.`; }},
+    {t:'Eat the beefsteak.', go:() => { add({family:1});
+      return `You eat it. You send down for the port.
+
+The foot is on the stool until Lady Day. John learns to carry you upstairs without touching it.`; }}
+  ]});
+/* Interim Works panel for the side column. The Steward's Book layout replaces this with its own Works tab. */
+function worksPanelHTML(){ const list = worksList(); const hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
+  const row = w => `<li class="work ${w.state}"><div><b>${esc(w.name)}</b>${w.state === 'open' ? `<button onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'} title="${esc(w.why)}">Begin</button>` : ''}</div>
+    <small>${w.state === 'inHand' ? w.left + ' season' + (w.left > 1 ? 's' : '') + ' more, at ' + fmt(w.per) + ' the quarter' : w.state === 'done' ? 'Finished' : esc(w.note) + '. ' + esc(w.gain) + '.'}</small>${w.state === 'open' ? `<q>${esc(w.blurb)}</q>` : ''}</li>`;
+  const blocked = open.find(w => w.why);
+  return `<section class="panel works"><h3>Works</h3>
+    <p class="fine">Begin them when you please. They are paid for in the quarter's accounts and do not cost you the season.</p>
+    ${hand.length ? `<ul class="people">${hand.map(row).join('')}</ul>` : ''}
+    <details${hand.length >= MAX_WORKS ? '' : ' open'}><summary>${open.length} that might be put in hand</summary>${blocked && open.every(w => w.why === blocked.why) ? `<p class="fine">${esc(blocked.why)}</p>` : ''}<ul class="people">${open.map(row).join('')}</ul></details>
+    ${done.length ? `<details><summary>${done.length} finished</summary><ul class="people">${done.map(row).join('')}</ul></details>` : ''}
+  </section>`; }
 /* The page: drawing the state on to paper. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -2791,7 +3757,7 @@ const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 
 
 function render(){
   const stage = $('stage');
-  if (!S) { document.body.classList.add('intro'); stage.innerHTML = introHTML(); $('side').innerHTML = ''; $('journal').innerHTML = ''; $('plate').innerHTML = 'Lady Day, 1795'; drawTimeline(0); return; }
+  if (!S) { document.body.classList.add('intro'); stage.innerHTML = introHTML(); $('side').innerHTML = ''; $('journal').innerHTML = ''; $('plate').innerHTML = 'Lady Day, 1795'; drawTimeline(0); syncTraits(); return; }
   document.body.classList.remove('intro');
   $('plate').innerHTML = S.phase === 'end' ? 'The Reckoning' : esc(QUARTER[S.season]) + ' <span>' + esc(stamp()) + '</span>';
   drawTimeline(S.t);
@@ -2819,10 +3785,24 @@ function introHTML(){ const has = !!load();
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
-      <div class="row"><button class="go" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
+      <fieldset class="traits">
+        <legend>What manner of man inherits</legend>
+        <p class="fine">You have <b id="pts">${pointsLeft(pickList())}</b> <span id="ptsw">points</span> in hand. An advantage costs them; a burden pays them back. Leave all five alone to start as plain as your uncle left you.</p>
+        ${TRAIT_GROUPS.map(([g, label, plain]) => `<div class="pickrow"><label for="pick-${g}">${label}</label>
+          <select id="pick-${g}" onchange="setPick('${g}', this.value)"><option value="">${plain}</option>${TRAITS.filter(t => t.group === g).map(t => `<option value="${t.id}"${PICKS[g] === t.id ? ' selected' : ''}>${esc(t.name)} (${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)})</option>`).join('')}</select>
+          <p class="pickblurb" id="blurb-${g}"></p></div>`).join('')}
+      </fieldset>
+      <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
-function start(){ const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s); render(); window.scrollTo({top:0}); }
+let PICKS = {};
+const pickList = () => Object.values(PICKS).filter(Boolean);
+function setPick(g, id){ PICKS[g] = id || null; syncTraits(); }
+function syncTraits(){ if (!$('pts')) return; const left = pointsLeft(pickList());
+  for (const [g] of TRAIT_GROUPS){ const t = PICKS[g] && traitById(PICKS[g]); $('blurb-' + g).innerHTML = t ? esc(t.blurb) + ' <span>' + esc(t.effect) + '</span>' : ''; }
+  $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
+  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn. Give something up, or take on a burden' : 'Take possession'; }
+function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 
 function ledgerHTML(){ let rows = '', tot = 0;
@@ -2843,7 +3823,7 @@ function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c =
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>
     <div class="prose">${paras(e.text())}</div>
-    <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
+    <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${c.note ? `<em>${esc(typeof c.note === 'function' ? c.note() : c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 
 function outcomeHTML(){ const o = S.outcome;
@@ -2857,8 +3837,8 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand. It wants ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. You may undertake one thing besides.' : 'You may undertake one thing this season.'}</p></div>
-    <div class="choices">${o.map((c, i) => `<button class="choice${c.project ? ' work' : ''}" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
+    <div class="prose"><p>You may undertake one thing this season. Works on the estate may be put in hand at any time.</p></div>
+    <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 
 function endHTML(){ const r = reckoning();
@@ -2886,7 +3866,9 @@ function sideHTML(){
       <h4>Rents</h4>
       <div class="seg" role="group" aria-label="Rent policy">${pol.map(([v, n]) => `<button class="${S.rentPolicy === v ? 'on' : ''}" onclick="setRent(${v})">${n}</button>`).join('')}</div>
       <p class="fine">Half-year rental due: ${fmt(halfRent())}. ${S.rentPolicy > 1 ? 'Rack-rents pay until they don’t.' : S.rentPolicy < 1 ? 'They drink your health at the audit.' : 'As your uncle left them.'}</p>
+      ${S.traits && S.traits.length ? `<h4>The squire</h4><p class="fine born">${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}
     </section>
+    ${worksPanelHTML()}
     <section class="panel"><h3>Wheat at Wyvern Market</h3>${chartHTML()}</section>
     <section class="panel"><h3>Persons of Consequence</h3><ul class="people">${people}</ul></section>`; }
 

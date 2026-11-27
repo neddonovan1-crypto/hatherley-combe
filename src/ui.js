@@ -6,7 +6,7 @@ const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 
 
 function render(){
   const stage = $('stage');
-  if (!S) { document.body.classList.add('intro'); stage.innerHTML = introHTML(); $('side').innerHTML = ''; $('journal').innerHTML = ''; $('plate').innerHTML = 'Lady Day, 1795'; drawTimeline(0); return; }
+  if (!S) { document.body.classList.add('intro'); stage.innerHTML = introHTML(); $('side').innerHTML = ''; $('journal').innerHTML = ''; $('plate').innerHTML = 'Lady Day, 1795'; drawTimeline(0); syncTraits(); return; }
   document.body.classList.remove('intro');
   $('plate').innerHTML = S.phase === 'end' ? 'The Reckoning' : esc(QUARTER[S.season]) + ' <span>' + esc(stamp()) + '</span>';
   drawTimeline(S.t);
@@ -34,10 +34,24 @@ function introHTML(){ const has = !!load();
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
-      <div class="row"><button class="go" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
+      <fieldset class="traits">
+        <legend>What manner of man inherits</legend>
+        <p class="fine">You have <b id="pts">${pointsLeft(pickList())}</b> <span id="ptsw">points</span> in hand. An advantage costs them; a burden pays them back. Leave all five alone to start as plain as your uncle left you.</p>
+        ${TRAIT_GROUPS.map(([g, label, plain]) => `<div class="pickrow"><label for="pick-${g}">${label}</label>
+          <select id="pick-${g}" onchange="setPick('${g}', this.value)"><option value="">${plain}</option>${TRAITS.filter(t => t.group === g).map(t => `<option value="${t.id}"${PICKS[g] === t.id ? ' selected' : ''}>${esc(t.name)} (${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)})</option>`).join('')}</select>
+          <p class="pickblurb" id="blurb-${g}"></p></div>`).join('')}
+      </fieldset>
+      <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
-function start(){ const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s); render(); window.scrollTo({top:0}); }
+let PICKS = {};
+const pickList = () => Object.values(PICKS).filter(Boolean);
+function setPick(g, id){ PICKS[g] = id || null; syncTraits(); }
+function syncTraits(){ if (!$('pts')) return; const left = pointsLeft(pickList());
+  for (const [g] of TRAIT_GROUPS){ const t = PICKS[g] && traitById(PICKS[g]); $('blurb-' + g).innerHTML = t ? esc(t.blurb) + ' <span>' + esc(t.effect) + '</span>' : ''; }
+  $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
+  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn. Give something up, or take on a burden' : 'Take possession'; }
+function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 
 function ledgerHTML(){ let rows = '', tot = 0;
@@ -58,7 +72,7 @@ function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c =
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>
     <div class="prose">${paras(e.text())}</div>
-    <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
+    <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${c.note ? `<em>${esc(typeof c.note === 'function' ? c.note() : c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 
 function outcomeHTML(){ const o = S.outcome;
@@ -72,8 +86,8 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand. It wants ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. You may undertake one thing besides.' : 'You may undertake one thing this season.'}</p></div>
-    <div class="choices">${o.map((c, i) => `<button class="choice${c.project ? ' work' : ''}" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
+    <div class="prose"><p>You may undertake one thing this season. Works on the estate may be put in hand at any time.</p></div>
+    <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 
 function endHTML(){ const r = reckoning();
@@ -101,7 +115,9 @@ function sideHTML(){
       <h4>Rents</h4>
       <div class="seg" role="group" aria-label="Rent policy">${pol.map(([v, n]) => `<button class="${S.rentPolicy === v ? 'on' : ''}" onclick="setRent(${v})">${n}</button>`).join('')}</div>
       <p class="fine">Half-year rental due: ${fmt(halfRent())}. ${S.rentPolicy > 1 ? 'Rack-rents pay until they don’t.' : S.rentPolicy < 1 ? 'They drink your health at the audit.' : 'As your uncle left them.'}</p>
+      ${S.traits && S.traits.length ? `<h4>The squire</h4><p class="fine born">${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}
     </section>
+    ${worksPanelHTML()}
     <section class="panel"><h3>Wheat at Wyvern Market</h3>${chartHTML()}</section>
     <section class="panel"><h3>Persons of Consequence</h3><ul class="people">${people}</ul></section>`; }
 

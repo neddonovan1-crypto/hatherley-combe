@@ -1,0 +1,73 @@
+/* The making of a squire. Boons cost points; encumbrances pay them back. */
+const TRAIT_POINTS = 3;
+const TRAITS = [
+  // boons
+  { id:'soldier', group:'past', name:'Served in the American war', cost:1, effect:'Standing higher; Volunteers at half cost; no duel will kill you',
+    blurb:`You carried the colours of the 23rd at Guilford Court House in ’81. A ball went through your leg. You tell the story at dinner. There are Indians in it now.`,
+    apply:() => { add({standing:5}); reg('edmund', 1, 'Brought up on your stories of the American war'); }},
+  { id:'captain', group:'past', name:'A post-captain, come ashore', cost:1, effect:'Prize money; your old crew run the house, cheaply and by the bell',
+    blurb:`Twenty-two years at sea. The last six you commanded the Dryad, thirty-six guns. When she paid off, eleven of her people followed you up the Bath road in a wagon. Your coxswain is butler. There are hammocks in the attics. The gallery is holystoned at five each morning. Henrietta’s bed is under the gallery.`,
+    apply:() => { S.money += 350; add({standing:4, family:-5}); reg('henrietta', -1, 'Woken at five by eleven seamen scrubbing the gallery'); reg('edmund', 1, 'Brought up on the quarterdeck of your stories'); }},
+  { id:'court', group:'past', name:'Favour at Court', cost:2, effect:'Standing much higher; a sinecure of \u00a390 a year',
+    blurb:`You held the King’s horse at Windsor once. He talked to you for forty minutes about mangel-wurzels. He has asked after you twice since. You are Deputy Keeper of the Swans at ninety pounds a year. Nobody has shown you a swan.`,
+    apply:() => { add({standing:12}); reg('cullerne', 1); }},
+  { id:'legacy', group:'fortune', name:'A legacy from an aunt in Bath', cost:2, effect:'Purse +£1,200',
+    blurb:`An aunt in Bath left you twelve hundred pounds. You had admired her pug. You were looking at the cake behind it.`,
+    apply:() => { S.money += 1200; }},
+  { id:'clear', group:'fortune', name:'The mortgage half paid', cost:2, effect:'Mortgage £2,000 instead of £4,000',
+    blurb:`In 1789 your uncle paid off half the mortgage. He spoke of it bitterly every Lady Day until he died.`,
+    apply:() => { S.mortgage = 2000; }},
+  { id:'bred', group:'past', name:'Bred to the land', cost:2, effect:'Better yields; works cost less',
+    blurb:`You can tell a ewe’s age by her mouth. You can tell a field by its weeds. You can tell when a bailiff is lying by where he puts his feet.`,
+    apply:() => { S.improve += 1; reg('hartopp', 1); }},
+  { id:'beloved', group:'gift', name:'Known in the parish from a boy', cost:2, effect:'Goodwill much higher; Jem Pryor remembers',
+    blurb:`You went bird’s-nesting with half of Hatherley. The other half thrashed you. Most of the parish saw you fall in the mill pond.`,
+    apply:() => { add({goodwill:15}); reg('pryor', 1, 'You went bird’s-nesting together as boys'); }},
+  { id:'connexions', group:'gift', name:'Good connexions', cost:2, effect:'Standing much higher; Lord Cullerne civil',
+    blurb:`Your mother was second cousin to a marquess. She said so at every dinner for forty years. The county has it by heart.`,
+    apply:() => { add({standing:15}); reg('cullerne', 1); }},
+  { id:'silver', group:'gift', name:'A persuasive tongue', cost:1, effect:'Elections likelier won; the bench listens',
+    blurb:`You once talked a turnpike keeper into paying you the toll.`,
+    apply:() => {}},
+  { id:'lovematch', group:'marriage', name:'A love match', cost:1, effect:'Household happier; Henrietta fond',
+    blurb:`Her mother wanted a baronet for her. She met you at the Newbury assembly and danced with you four times. Her mother counted.`,
+    apply:() => { add({family:12}); reg('henrietta', 2, 'She married you for love, against advice'); }},
+  { id:'figures', group:'gift', name:'A head for figures', cost:1, effect:'Household runs cheaper; nobody skims',
+    blurb:`You add a column twice. The second time you add it upwards. Crabbe has watched you do it.`,
+    apply:() => { reg('crabbe', -1); }},
+  // encumbrances
+  { id:'debts', group:'fortune', name:'Your uncle’s debts of honour', cost:-2, effect:'Purse −£700',
+    blurb:`Your uncle lost seven hundred pounds at Brooks’s. The gentleman waited for the funeral. He came to it.`,
+    apply:() => { S.money -= 700; }},
+  { id:'second', group:'fortune', name:'A second mortgage', cost:-2, effect:'Mortgage £6,000',
+    blurb:`The attorneys found it in a tin box behind a stuffed pike. Two thousand pounds more, at five per cent.`,
+    apply:() => { S.mortgage = 6000; }},
+  { id:'play', group:'failing', name:'A gambling man', cost:-2, effect:'Losses at cards every winter',
+    blurb:`You do not call yourself a gambler. The luck is about to turn. You have known it since 1783.`,
+    apply:() => {}},
+  { id:'enemy', group:'failing', name:'An enemy at the Castle', cost:-2, effect:'Lord Cullerne hostile from the first',
+    blurb:`At nineteen you shot Lord Cullerne’s favourite pointer. It was a mistake. His lordship was standing beside her. Her name was Duchess.`,
+    apply:() => { reg('cullerne', -4, 'You shot his pointer in 1768'); add({standing:-3}); }},
+  { id:'stranger', group:'past', name:'A stranger to the country', cost:-1, effect:'Goodwill lower',
+    blurb:`You were brought up in Marylebone. You know wheat when it is bread. You know barley when it is beer.`,
+    apply:() => { add({goodwill:-12}); }},
+  { id:'whig', group:'failing', name:'A Whig among Tories', cost:-1, effect:'Standing lower; Hartopp approves',
+    blurb:`You said at the Tamworths’ table that Mr Fox had a point. Three gentlemen put down their glasses.`,
+    apply:() => { add({standing:-10}); reg('cullerne', -1); reg('hartopp', 1); }},
+  { id:'portion', group:'marriage', name:'Married for her portion', cost:-1, effect:'Household colder; Henrietta cool',
+    blurb:`She brought eight thousand pounds. It went on the roof. She has never spoken of it. When it rains she looks up.`,
+    apply:() => { add({family:-12}); reg('henrietta', -2, 'Knows you married her eight thousand pounds'); }},
+  { id:'gout', group:'failing', name:'Gout', cost:-1, effect:'Riding the estate does less; winters are worse',
+    blurb:`It is in the left foot. Your father had it there. The surgeon calls it “a very fine gout”.`,
+    apply:() => {}}
+];
+const TRAIT_GROUPS = [
+  ['past', 'His past', 'Nothing to speak of'],
+  ['fortune', 'His fortune', 'As your uncle left it'],
+  ['marriage', 'His marriage', 'A sensible match'],
+  ['gift', 'His advantage', 'None in particular'],
+  ['failing', 'His failing', 'None he will admit to']
+];
+const traitById = id => TRAITS.find(t => t.id === id);
+const pointsLeft = ids => TRAIT_POINTS - ids.reduce((a, id) => a + traitById(id).cost, 0);
+const T = id => S.traits && S.traits.includes(id);

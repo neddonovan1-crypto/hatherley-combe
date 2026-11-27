@@ -162,7 +162,7 @@ He rides the farms. He learns a sound ewe from a rotten one. He learns which ten
 In the evenings he is in the gun room. You look in at eight. He is cleaning a fowling piece. You look in at ten. It is the same fowling piece. The Gazette is open on the bench beside him.`; }}
   ]});
 
-function electionWin(){ return chance(clamp(0.3 + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
+function electionWin(){ return chance(clamp((T('silver') ? 0.5 : 0.3) + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
 
 ev({ id:'election96', fixed:'1796-1', title:'Burgage Votes',
   text:() => `A cart from Cullerne Castle is at the kitchen door. In it, under a cloth, is a haunch of venison. The groom has a note.
@@ -291,8 +291,8 @@ ${F('crabbeGone') ? 'Lark has ruled a sheet ready and sharpened two pens.' : 'Cr
 The return goes to Reading on Saturday.
 
 On Sunday nobody stays to talk in the churchyard. Old Dewey stops you at the gate. He asks whether his wagon is the King’s now.`; }},
-    {t:'Raise and equip the Hatherley Volunteers.', note:'£300', go:() => { fl('volunteers'); add({money:-300, standing:7, goodwill:2}); reg('cullerne',1);
-      return `Forty men come forward. You buy green cloth for forty coats, and a drum. Three hundred pounds.
+    {t:'Raise and equip the Hatherley Volunteers.', note:() => T('soldier') ? '£150' : '£300', go:() => { fl('volunteers'); add({money: T('soldier') ? -150 : -300, standing:7, goodwill:2}); reg('cullerne',1);
+      return `Forty men come forward. You buy green cloth for forty coats, and a drum. ${T('soldier') ? 'A hundred and fifty' : 'Three hundred'} pounds.
 
 There are no muskets to be had in England. The blacksmith makes forty pike-heads in a fortnight.
 
@@ -504,8 +504,8 @@ There is a handbill on the church door. “BRITONS! To Arms!”`,
 Form line. Form square. Charge pikes. By November they can do all three. One man has been stuck in the leg.
 
 The blacksmith is serjeant. He stands six foot four with a pike in his fist. The men watch him and do what he does.`; }},
-    {t:'Raise a corps of Volunteers now.', note:'£320', if:() => !F('volunteers'), go:() => { fl('volunteers'); add({money:-320, standing:6, goodwill:2});
-      return `Forty men give their names at the vestry. Three hundred and twenty pounds for green coats, a drum and forty pike-heads.
+    {t:'Raise a corps of Volunteers now.', note:() => T('soldier') ? '£160' : '£320', if:() => !F('volunteers'), go:() => { fl('volunteers'); add({money: T('soldier') ? -160 : -320, standing:6, goodwill:2});
+      return `Forty men give their names at the vestry. ${T('soldier') ? 'A hundred and sixty' : 'Three hundred and twenty'} pounds for green coats, a drum and forty pike-heads.
 
 The ladies of the parish work a flag. It shows a yellow animal on a green field. Henrietta says it is a lion.
 

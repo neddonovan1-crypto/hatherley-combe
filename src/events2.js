@@ -150,7 +150,15 @@ You are down the stairs with your boots in your hand. Half of Hatherley is at th
 It goes up on the church door, at the Bell and on the turnpike gate. Fifty guineas would keep a Hatherley family for three years. A week goes by. A month. The rain brings down the one on the church door. Nobody has knocked.
 
 Three hundred pounds of wheat.`; }},
-    {t:'Take a bucket and join the line.', go:() => { add({money:-300, goodwill:3});
+    {t:'Take a bucket and join the line.', go:() => { if (T('captain') && !F('crewGone')) { add({money:-110, goodwill:4, standing:2});
+      return `Tarbuck has the Dryads out of their hammocks before you are down the stairs. Two chains from the horse pond. Wet sailcloth over the second rick. The gunner is on the barn roof with an axe.
+
+“As for a fire in the forehold, sir,” says Tarbuck.
+
+One rick is lost. The other stands and steams. A hundred and ten pounds of wheat.
+
+The village came to see a fire. It stays to watch the drill.`; }
+      add({money:-300, goodwill:3});
       return `You pick up a bucket and walk to the horse pond. The wheelwright comes after you. Then a boy of about ten. Then the rest.
 
 Both ricks are gone by two o’clock. Three hundred pounds of wheat. The line keeps on regardless and wets the barn thatch until it is light.
@@ -322,7 +330,7 @@ ev({ id:'duel', follow:true, cond:() => S.chars.vane.met, title:'Pistols on Hath
 
 He has it all arranged. The old chalk pit on Hatherley Down. Thursday, at first light. Twelve paces. He will bring the pistols.`,
   choices:[
-    {t:'Accept.', go:() => { const r = Math.random();
+    {t:'Accept.', go:() => { const r = T('soldier') ? 0.1 + Math.random() * 0.4 : Math.random();
       if (r < 0.1) { S.dead = 'duel'; return `A grey morning. There are larks over the Down.
 
 The lieutenant drops the handkerchief.
@@ -684,7 +692,7 @@ Fined one shilling.
 The Bell runs dry by ten that night. Jem Pryor proposes your health. At the vicarage the blinds are down, and they are down every time you pass for a year.`; }}
   ]});
 
-ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.project && !F('encloseRefused'), title:'The Common Question',
+ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.projectsDone.enclosure && !F('encloseRefused'), title:'The Common Question',
   text:() => `Lord Cullerne’s carriage is at the door. ${F('gallDead') ? 'His man of business' : 'Dr Gall'} gets out of it after him.
 
 They have a plan of Hatherley Common unrolled on your library table before the wine is poured. Four hundred acres. Gorse, geese, a pond, and forty cottagers’ cows.
@@ -1074,7 +1082,7 @@ You read it over. It is dull. You seal it.
 
 His next letter has a postscript.
 
-“${E() === 'army' ? 'Tamworth asks whether the bay mare is sold. The mess has money on it.' : 'Mr Pascoe asks whether the bay mare is sold. The gunroom has money on it.'}”`; }},
+“${E() === 'army' ? 'Tamworth asks whether the bay mare is sold. The mess has money on it.' : 'Mr Hallett asks whether the bay mare is sold. The gunroom has money on it.'}”`; }},
     {t:'Let Henrietta answer. She has knitted him something.', go:() => { add({family:1}); reg('henrietta',1);
       return `Henrietta writes eleven sides. She packs two flannel waistcoats, a plum cake and a receipt against the flux.
 
@@ -1259,4 +1267,78 @@ Mr Cobbett gives his name. He gives the name of his newspaper. He finishes the c
 Then he rides to the parish bounds at a walk. The constable goes at his stirrup.
 
 The Register has Hatherley on three Saturdays running. The first piece is headed “A BERKSHIRE JUSTICE”. The second is about your cottages. The third is about your uncle.`; }}
+  ]});
+
+ev({ id:'crew', from:1795, to:1802, weight:6, cond:() => T('captain'), title:'All Hands at Hatherley',
+  text:() => `The household has been six months under naval discipline. Tarbuck, your coxswain, strikes the bell in the hall every half hour. At eight bells the footmen are piped to dinner.
+
+There is a flagstaff on the leads. When Lord Cullerne’s carriage turns in at the lodge it flies “Enemy in sight”.
+
+Old Pascoe was cook of the Dryad. He lost a leg at the Saintes. He has one receipt, for lobscouse, and he wants the copper for it. Mrs Bunce has the copper. The housemaids can splice.
+
+This morning Tarbuck called Henrietta “the Captain’s lady, bless her”. He said it to her face.
+
+“Do I live in a house or a frigate?” she asks you. Her voice is very level.`,
+  choices:[
+    {t:'A frigate. The routine stands.', go:() => { add({family:-7, goodwill:4, standing:2}); reg('henrietta',-2,'You told her she lived in a frigate');
+      return `“A frigate, my dear.”
+
+The routine stands. The brass on the front door is polished twice a day. The gravel is raked fore and aft. At noon the village children are brought to the lodge gates to hear the bell.
+
+Henrietta sleeps with wool in her ears. To Mrs Tamworth she calls you “the Admiralty”.`; }},
+    {t:'A house. Strike the hammocks and stop the bell.', go:() => { fl('crewGone'); add({family:6}); reg('henrietta',2,'You sent the ship’s routine ashore for her sake');
+      return `The hammocks come down. The Dryads try beds for a week.
+
+“It don’t swing, sir,” says Tarbuck.
+
+A frigate is fitting out at Portsmouth. Nine of the eleven go for her. Each shakes your hand at the gate. Tarbuck pipes them over the side of the wagon.
+
+You engage ordinary servants at ordinary wages. The Hall is quiet. You wake at five all the same.`; }},
+    {t:'Draw a line at the green baize door: ship below stairs, house above.', go:() => { add({family:2, goodwill:1}); reg('henrietta',1);
+      return `You draw the line at the green baize door. Below it, bells, pipes and lobscouse. Above it, silence until nine. Nobody is to say “aye aye” to a lady.
+
+It holds.
+
+In the kitchen Pascoe chalks a line down the flags. He does not speak across it. Nor does Mrs Bunce. The salt goes over by a housemaid.`; }}
+  ]});
+
+ev({ id:'press', from:1803, to:1811, weight:5, cond:() => T('captain') && !F('crewGone'), title:'A Lieutenant with a Warrant',
+  text:() => `A press gang has come up the Kennet as far as Wyvern. Nobody in Wyvern has seen one before. There is a lieutenant, a midshipman of about twelve and eight hands with cudgels. They are quartered at the George.
+
+Somebody has told them about Hatherley Hall. Eleven prime seamen, rated butler, footmen and gardeners. Not one has a protection in his pocket.
+
+A note comes up from the George. The lieutenant presents his compliments. He will call tomorrow at ten. He trusts he will find your servants at home.`,
+  choices:[
+    {t:'Receive him in your old uniform, and ask to see his warrant.', go:() => { add({standing:3}); reg('henrietta',1);
+      return `You receive him in the library in a post-captain’s full dress, both epaulettes. The coat fits. The waistcoat does not.
+
+You read his warrant through. It runs to seafaring men found “upon the rivers and the coast”.
+
+“Which of those is my library, sir?”
+
+He is twenty-three. You were made post before he was breeched. He drinks one glass of Madeira standing. His gang is in Reading by dark.`; }},
+    {t:'Put the Dryads in the ice-house till he has gone.', go:() => { const ice = F('icehouse'); add({goodwill:2, standing:-1});
+      return ice ? `Eleven seamen go into the ice-house with a ham, a keg and a pack of cards. They are there two nights.
+
+The lieutenant searches the Hall from the leads to the cellar. In the butler’s pantry he finds a cutlass. He does not find a butler.
+
+He looks at you. You look at him. You both bow.
+
+The Dryads come out blue. They have eleven shillings of the gunner’s.` : `There is no ice-house. You put them in the hay loft at Long Barrow.
+
+The midshipman is twelve. He walks under the loft and looks up. A tarred pigtail hangs through a gap in the boards.
+
+You speak to the lieutenant for twenty minutes, captain to lieutenant. He takes his gang away without them.
+
+By noon it is all over Wyvern that the Squire hides deserters.`; }},
+    {t:'Muster them and let any man volunteer who chooses.', go:() => { fl('crewGone'); add({standing:4, family:3}); reg('edmund',1);
+      return `You muster them on the gravel.
+
+“The King wants seamen. No man of mine shall be pressed. No man of mine shall be hindered.”
+
+They look at their boots. Tarbuck steps forward. Then the gunner. Inside a minute all but old Pascoe have stepped forward. The lieutenant enters them as volunteers, with the bounty.
+
+They march out behind him singing.
+
+That evening Pascoe makes lobscouse for two.`; }}
   ]});
