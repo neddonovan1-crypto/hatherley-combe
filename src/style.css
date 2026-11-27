@@ -179,6 +179,11 @@ table.acct tr.total .n{font-size:1.3rem}
 .lots details > div{padding:0 0 12px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .lots details p{margin:0;font-size:.95rem;line-height:1.4} .lots .terms{color:var(--muted);font-size:.86rem} .lots .terms em{color:var(--bad)}
 .lots .tag{font-family:var(--caps);font-style:normal;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:7px} .lots b small{display:inline-block;font-size:.8rem;color:var(--muted);margin-left:6px;white-space:nowrap}
+.lots details.more > summary span{font-family:var(--caps);font-size:.78rem;color:var(--muted)} .lots details.more > summary span::after{content:" \25BE"} .lots details.more[open] > summary span::after{content:" \25B4"}
+.lots details.more > .lots{padding:0 0 0 18px;border-top:0;gap:0;align-items:stretch} .lots details.more > .lots > details:last-child > summary, .lots details.more > .lots > details:last-child > div{border-bottom:0}
+.lots details.off > summary b, .lots details.off > summary .amt, .lots details.off .fx li{color:var(--muted);opacity:.6} .lots details.off > summary b{text-decoration:line-through;text-decoration-thickness:1px}
+.bal dd small{font-family:var(--caps);font-size:.72rem;letter-spacing:.08em;color:var(--muted);margin-left:8px;white-space:nowrap}
+.choice em .amt{font-size:1.08rem}
 .amt{font-variant-numeric:tabular-nums;white-space:nowrap} .amt.pos{color:var(--good)} .amt.neg{color:var(--bad)}
 .inkbtn:disabled .amt{color:inherit}
 .lots .fx{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:.98rem;line-height:1.35} .lots .fx .pos{color:var(--good)} .lots .fx .neg{color:var(--bad)}
