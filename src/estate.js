@@ -104,6 +104,7 @@ function rentDay(line){
   let racked = 0, easy = 0, n = 0, asked = false;
   for (const f of S.farms){
     const able = means(hy) * farmF(f) * f.base * (0.86 + S.goodwill / 350);
+    if (f.flush) f.K = Math.max(f.K, 2 * f.rent);   // a post-captain with a prize in the agent's hands pays reliably until the peace (src/events4.js)
     if (f.void) { const v = Math.max(-0.075 * f.base, 0.175 * (able - 0.4 * f.base)); line(f.name + ', in hand', v); S.yearIncome += Math.round(v); f.void--; if (!f.void) relet(f); continue; }
     if (f.lease.type === 'corn') f.rent = five(LEVEL[f.lease.level] * 0.86 * f.base * farmF(f) * (0.5 * means(hy) + 0.5 * market(y)));
     const due = rentDue(f) / 2, surplus = able / 2 - due, val = lettingValue(f, y); let got = due;
