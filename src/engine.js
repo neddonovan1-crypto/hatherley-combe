@@ -770,11 +770,11 @@ function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.d
   const o = pick(bag); S.did[o.id] = S.t; LAST_CUT = o.id; return o.x(); }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([0, 1]) : 1}); return outcome('ride'); }},
-  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:1}); return outcome('dine'); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 2 : 1, goodwill:g}); return outcome('sessions'); }},
-  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:2}); return outcome('home'); }},
-  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:2, family:2}); reg('henrietta',1); return outcome('town'); }},
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([1, 2]) : 2}); return outcome('ride'); }},
+  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:2}); return outcome('dine'); }},
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 3 : 2, goodwill:g}); return outcome('sessions'); }},
+  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:3}); return outcome('home'); }},
+  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:3, family:3}); reg('henrietta',1); return outcome('town'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -787,8 +787,8 @@ The pine-apples die within the week. Mrs Bunce puts a black ribbon in her cap.`,
 The rooks come over to the Hall roof. They are there each morning when you go out.`]); }}
 ];
 
-/* Three undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
-const RIDES = 3;
+/* Two undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
+const RIDES = 2;
 function ridesLeft(){ return !S || S.phase === 'end' ? 0 : Math.max(0, RIDES - (S.rides || 0)); }
 function undertakingOptions(){ const rode = S.rode || [];
   const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && !rode.includes(u.id) && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));

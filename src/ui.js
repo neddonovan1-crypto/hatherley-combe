@@ -156,10 +156,11 @@ function outcomeHTML(){ const o = S.outcome;
     ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}
     <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div>`; }
 
+const ridesLine = () => { const n = typeof ridesLeft === 'function' ? ridesLeft() : 1, first = !(S.rides || 0); return `${['Nothing more', first ? 'One thing' : 'One thing more', 'Two things', 'Three things'][Math.max(0, Math.min(3, n))]} may be undertaken this quarter.`; };
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${['Nothing more', 'One thing more', 'Two things more', 'Three things'][typeof ridesLeft === 'function' ? Math.max(0, Math.min(3, ridesLeft())) : 1]} may be undertaken this quarter. Works on the estate may be put in hand at any time.</p></div>
+    <div class="prose"><p>${ridesLine()} Works on the estate may be put in hand at any time.</p></div>
     <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}${hintHTML(c.hint)}</span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function endHTML(){ const r = reckoning();

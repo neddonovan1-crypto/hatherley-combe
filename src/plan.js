@@ -194,7 +194,7 @@ function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undert
   const rows = o.map((c, i) => at && underAt(c.id) !== at ? '' : `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}${hintHTML(c.hint)}</span>${noteOf(c)}</button>`).join('');
   return rows ? `<div class="choices">${rows}</div>` : ''; }
 function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="shutSheet()" aria-label="Put the paper away">×</button>`;
-  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>${['Nothing more', 'One thing more', 'Two things more', 'Three things'][typeof ridesLeft === 'function' ? Math.max(0, Math.min(3, ridesLeft())) : 1]} may be undertaken this quarter. Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
+  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>${ridesLine()} Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
   if (id === 'memo') return `${shut}<h2>${esc('Mr ' + steward())}’s Memoranda</h2><div class="memo">
       ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}

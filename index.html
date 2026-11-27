@@ -1694,11 +1694,11 @@ function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.d
   const o = pick(bag); S.did[o.id] = S.t; LAST_CUT = o.id; return o.x(); }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([0, 1]) : 1}); return outcome('ride'); }},
-  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:1}); return outcome('dine'); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 2 : 1, goodwill:g}); return outcome('sessions'); }},
-  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:2}); return outcome('home'); }},
-  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:2, family:2}); reg('henrietta',1); return outcome('town'); }},
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([1, 2]) : 2}); return outcome('ride'); }},
+  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:2}); return outcome('dine'); }},
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 3 : 2, goodwill:g}); return outcome('sessions'); }},
+  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:3}); return outcome('home'); }},
+  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:3, family:3}); reg('henrietta',1); return outcome('town'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -1711,8 +1711,8 @@ The pine-apples die within the week. Mrs Bunce puts a black ribbon in her cap.`,
 The rooks come over to the Hall roof. They are there each morning when you go out.`]); }}
 ];
 
-/* Three undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
-const RIDES = 3;
+/* Two undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
+const RIDES = 2;
 function ridesLeft(){ return !S || S.phase === 'end' ? 0 : Math.max(0, RIDES - (S.rides || 0)); }
 function undertakingOptions(){ const rode = S.rode || [];
   const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && !rode.includes(u.id) && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
@@ -9545,7 +9545,7 @@ function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undert
   const rows = o.map((c, i) => at && underAt(c.id) !== at ? '' : `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}${hintHTML(c.hint)}</span>${noteOf(c)}</button>`).join('');
   return rows ? `<div class="choices">${rows}</div>` : ''; }
 function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="shutSheet()" aria-label="Put the paper away">×</button>`;
-  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>${['Nothing more', 'One thing more', 'Two things more', 'Three things'][typeof ridesLeft === 'function' ? Math.max(0, Math.min(3, ridesLeft())) : 1]} may be undertaken this quarter. Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
+  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>${ridesLine()} Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
   if (id === 'memo') return `${shut}<h2>${esc('Mr ' + steward())}’s Memoranda</h2><div class="memo">
       ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}
@@ -9747,10 +9747,11 @@ function outcomeHTML(){ const o = S.outcome;
     ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}
     <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div>`; }
 
+const ridesLine = () => { const n = typeof ridesLeft === 'function' ? ridesLeft() : 1, first = !(S.rides || 0); return `${['Nothing more', first ? 'One thing' : 'One thing more', 'Two things', 'Three things'][Math.max(0, Math.min(3, n))]} may be undertaken this quarter.`; };
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${['Nothing more', 'One thing more', 'Two things more', 'Three things'][typeof ridesLeft === 'function' ? Math.max(0, Math.min(3, ridesLeft())) : 1]} may be undertaken this quarter. Works on the estate may be put in hand at any time.</p></div>
+    <div class="prose"><p>${ridesLine()} Works on the estate may be put in hand at any time.</p></div>
     <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}${hintHTML(c.hint)}</span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function endHTML(){ const r = reckoning();
