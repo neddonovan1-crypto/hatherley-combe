@@ -901,6 +901,7 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   fm += put('family', [-8, 0, 4, 7][i], cap1(EST[i].name)); fm += put('family', F('newFront') ? 3 : 0, 'The new front'); fm += put('family', F('icehouse') ? 2 : 0, 'The ice-house');
   fm += put('family', S.money < 0 ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
   for (const dial in HOUSE) { const h = houseOf(dial), nm = HOUSE[dial].name + ', ' + h.label.toLowerCase(); st += put('standing', h.standing || 0, nm); g += put('goodwill', h.goodwill || 0, nm); fm += put('family', h.family || 0, nm); }
+  if (typeof castleMark === 'function') for (const [k, n, t] of castleMark()) { const v = put(k, n, t); if (k === 'standing') st += v; else if (k === 'goodwill') g += v; else fm += v; }
   // what the squire was born or married to stays with him: each choice at the start moves its mark for good by what its card says
   const born = {standing:st, goodwill:g, family:fm}; for (const k in TRAIT_MARK) for (const id in TRAIT_MARK[k]) if (T(id) && !(id === 'court' && (F('courtLost') || F('courtSold'))) && !(id === 'captain' && k === 'family' && F('crewGone'))) born[k] += put(k, TRAIT_MARK[k][id], traitById(id).name);
   return {standing:clamp(born.standing, 5, 95), goodwill:clamp(born.goodwill, 5, 95), family:clamp(born.family, 5, 95), why}; }

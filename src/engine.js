@@ -155,6 +155,7 @@ function beginSeason(){
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve) * (1 + houseOf('labour').wheat)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
   householdQuarter(line); homeFarmCosts(line);
+  if (typeof castleQuarter === 'function') castleQuarter(line);
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');

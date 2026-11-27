@@ -21,6 +21,7 @@ src/traits.js     advantages and encumbrances for character creation
 src/events1.js   the fixed calendar
 src/events2.js   the wandering pool
 src/engine.js    seasons, ledger, undertakings, the reckoning
+src/castle.js    Lord Cullerne: the votes, his court, the game, and what may be bought of him
 src/ui.js        rendering
 src/style.css    the page
 build.sh         stitches src/ into index.html

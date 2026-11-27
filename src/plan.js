@@ -56,7 +56,7 @@ const SIGNS = [[/Kennet/, 'kennet'], [/Long Barrow/, 'longbarrow'], [/Church Far
 function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CALLAT; CALLKEY = k;
   const hit = t => { for (const [re, at] of SIGNS) if (re.test(t) && placeOn(at)) return at; return ''; };
   if (BILLS.has(e.id)) return CALLAT = 'wyvern';
-  const text = e.text(), who = whoOf(e.title + ' ' + text);
+  const text = e.text(), who = e.who ? e.who() : whoOf(e.title + ' ' + text);
   return CALLAT = hit(e.title) || (who && livesAt(who) !== 'hall' ? livesAt(who) : '') || hit(text.slice(0, 320)) || 'hall'; }
 
 /* ---------- which view is up ---------- */
@@ -117,7 +117,7 @@ addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the ita
 if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
 function plateViewHTML(){
-  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
+  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : e.who ? e.who() : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
     const src = eventCut(e) || placeCut(eventPlace(e)); S.plateCut = src;
     return `${printHTML(S.plates.length + 1, src, e.title, quarterDay(), sayOf(text))}
       <div class="pside"><article class="sheet${bill ? ' bill' : ''}">${who ? `<div class="from">${medal(who)}<p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p></div>` : `<p class="kicker">${esc(stamp())}</p>`}<div class="prose">${paras(text)}</div></article>
@@ -234,6 +234,7 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   sec('under', 'The season’s undertaking', underHTML(id));
   if (p.farm && farmAt(p.farm)) sec('farm', 'The Rent Roll', farmsHTML(p.farm));
   if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
+  if (id === 'castle' && typeof castleList === 'function') { sec('castle', 'What Is Owed the Castle', castleHTML('owed')); sec('castle2', 'What May Be Had There', castleHTML('had')); }
   if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
   const brazils = id === 'london' && S.bub && S.bub.shares > 0 ? `<div class="lots"><div class="lot done"><b>The Brazil Association</b><span>${S.bub.shares} shares</span></div></div>` : '';
   if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it') + brazils);
@@ -248,6 +249,17 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
     : `<figure class="plate has">${platePic(p.pic && artURL(p.pic()) ? p.pic() : 'seasons/' + S.season, p.n)}${glb ? `<button class="turn" onclick="turnHall()">In the round</button>` : ''}</figure>`;
   return `${shut}<h2>${esc(p.n)}</h2>${view}
     ${secs.map(([k, t, h]) => `<details class="sec" name="sec" ${k === open ? 'open' : ''} ontoggle="if(this.open)SEC='${k}'"><summary>${t}</summary><div>${h}</div></details>`).join('')}`; }
+/* What is owed at the Castle, and what may be had there: three standing matters set one of three ways, and the deeds his lordship will or will not sign. */
+function castleHTML(part){ const k = castleList(), fig = n => n ? amt(n, -1) : fmt(0), yr = n => n ? `<span class="yr">${amt(n, -1)} <small>a year</small></span>` : '';
+  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; };
+  const dials = k.dials.map(d => d.off ? `<div class="dial off"><b>${esc(d.name)}</b><p class="terms"><em>${esc(d.gone)}</em></p></div>`
+    : `<div class="dial"><b>${esc(d.name)}</b><div class="seg n3">${d.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setCastle('${d.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b>${yr(l.yearly)}<small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>${whyOf(d.levels)}</div>`).join('');
+  const lots = k.lots.map(v => { const what = `<div class="rung what">${v.line ? `<small>${esc(v.line)}</small>` : ''}</div>`;
+    const seg = v.state === 'done' ? `${what}<div class="rung what"><b>${esc(v.note)}</b></div>`
+      : `${what}<button type="button" class="rung" onclick="takeCastle('${v.id}')" ${v.can ? '' : 'disabled'}${v.why ? ` title="${esc(v.why)}"` : ''}><b>${esc(v.verb)}</b><span class="yr">${fig(v.cost)}</span>${fxList(v.fx)}</button>`;
+    return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && (v.why || v.note) ? `<p class="terms"><em>${esc(v.why || v.note)}</em></p>` : ''}</div>`; }).join('');
+  return `<div class="hh lots flat castle"><p class="hhsum"><b>${esc(k.word)}</b><small>Lord Cullerne</small></p>${k.debt ? `<p class="terms"><em>His lordship holds your mortgage of ${fmt(k.owing)}.</em></p>` : ''}
+    ${k.said ? `<div class="prose said">${paras(k.said)}</div>` : ''}${part === 'owed' ? dials : lots}</div>`; }
 /* The model of the Hall is fetched only when asked for. */
 function turnHall(){ ROUND = true; if (!window.customElements || !customElements.get('model-viewer')) { const s = document.createElement('script'); s.type = 'module'; s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'; s.onerror = () => { ROUND = false; drawPlan(); }; document.head.appendChild(s); } drawPlan(); }
 
