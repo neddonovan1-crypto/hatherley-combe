@@ -818,7 +818,13 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   fm += put('family', 3 * S.chars.henrietta.r, 'Henrietta’s regard'); fm += put('family', F('edmundDead') ? 0 : S.chars.edmund.r, 'Edmund’s regard');
   fm += put('family', [-8, 0, 4, 7][i], cap1(EST[i].name)); fm += put('family', F('newFront') ? 3 : 0, 'The new front'); fm += put('family', F('icehouse') ? 2 : 0, 'The ice-house');
   fm += put('family', S.money < 0 ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
-  return {standing:clamp(st, 5, 95), goodwill:clamp(g, 5, 95), family:clamp(fm, 5, 95), why}; }
+  // what the squire was born or married to stays with him: each choice at the start moves its mark for good by what its card says
+  const born = {standing:st, goodwill:g, family:fm}; for (const k in TRAIT_MARK) for (const id in TRAIT_MARK[k]) if (T(id) && !(id === 'court' && (F('courtLost') || F('courtSold'))) && !(id === 'captain' && k === 'family' && F('crewGone'))) born[k] += put(k, TRAIT_MARK[k][id], traitById(id).name);
+  return {standing:clamp(born.standing, 5, 95), goodwill:clamp(born.goodwill, 5, 95), family:clamp(born.family, 5, 95), why}; }
+const TRAIT_MARK = {
+  standing:{soldier:5, captain:4, court:12, connexions:15, enemy:-3, whig:-10, dean:6, hunt:7, trade:-12, oxford:-4, lawsuit:-4},
+  goodwill:{beloved:15, stranger:-12, hunt:-3},
+  family:{captain:-5, lovematch:12, portion:-12, mother:-10, bottle:-6} };
 const SINK = 5;   // a figure loses a point a season for every five it stands above its mark
 /* The three duties: the tenancies, the county, the family. Each goes stale if the squire lets it lie. */
 const idle = (k, seasons) => S.t - ((S.duty && S.duty[k]) || 0) >= seasons;
