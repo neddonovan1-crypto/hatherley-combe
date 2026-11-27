@@ -136,7 +136,7 @@ On Friday there is a brace of pheasants on the kitchen step. They have not been 
   ]});
 
 ev({ id:'rickFire', follow:true, title:'Fire in the Stackyard',
-  text:() => `Henrietta shakes you awake. The bedroom ceiling is orange.
+  text:() => `${hh(`Henrietta shakes you awake.`, `One of the Johns shakes you awake.`)} The bedroom ceiling is orange.
 
 From the window you can see the home stackyard. Two wheat ricks are burning. There is no wind. The flames go straight up and the sparks go higher.
 
@@ -165,7 +165,7 @@ Both ricks are gone by two o’clock. Three hundred pounds of wheat. The line ke
 
 At dawn you sit down on the mounting block in your shirt. A hand holds out a mug of beer. “Here.” You look up to see who has forgotten to call you sir. He has gone back to his bucket.`; }},
     {t:'Go back to bed. Let it be seen that you do not frighten.', go:() => { add({money:-300, standing:1, goodwill:-2});
-      return `You watch for one minute. Then you draw the curtain and get back into bed. Henrietta stares at you.
+      return `You watch for one minute. Then you draw the curtain and get back into bed. ${hh(`Henrietta stares at you.`, `The John in the doorway stares at you.`)}
 
 In the morning the ricks are two black rings. Three hundred pounds of wheat. Mudge comes in while you are at breakfast and puts a tinder-box down by your plate. “Top of the gatepost, sir. Left where I should see it.”
 
@@ -258,9 +258,11 @@ That night there is a smell of burnt paper on the upper landing. The week after,
   ]});
 
 ev({ id:'elope', follow:true, cond:() => K() === 'free' && !F('vaneDone'), title:'A Ladder at the Window',
-  text:() => `Henrietta wakes you at four. She has a candle.
+  text:() => `${hh(`Henrietta wakes you at four. She has a candle.
 
-“Kitty’s bed has not been slept in.”
+“Kitty’s bed has not been slept in.”`, `Mrs Bunce wakes you at four. She has a candle.
+
+“Miss Kitty’s bed has not been slept in, sir.”`)}
 
 The best bonnet is gone from its box. There is a ladder against the east wall. Mudge holds the lantern to it. “That’s the vicarage ladder, sir.”
 
@@ -279,11 +281,11 @@ Kitty is in the coffee room in her bonnet. Her hands are in her lap. She gets in
     {t:'Let them go. She has chosen.', go:() => { fl('kitty','vane'); fl('vaneDone'); add({family:-10, standing:-6}); reg('kitty',1); reg('henrietta',-3,'You let Kitty go to Gretna'); later('vaneDowry', 3);
       return `“She has chosen.”
 
-Henrietta puts the candle down on the floor.
+${hh(`Henrietta puts the candle down on the floor.`, `Mrs Bunce puts the candle down on the floor. You write to Gay Street before it is light.`)}
 
 A letter comes from Carlisle in a fortnight. Four pages, crossed. They were married at Gretna by a man named Paisley. He weighs twenty stone and took his fee in brandy. She is very happy. A postscript: “Pray send on my blue pelisse.”
 
-Henrietta reads it and goes upstairs. On Sunday Mrs Tamworth presses your hand in the church porch and cannot speak.`; }},
+${hh(`Henrietta reads it and goes upstairs.`, `You send it on to Gay Street. It comes back in a cover with no line of hers.`)} On Sunday Mrs Tamworth presses your hand in the church porch and cannot speak.`; }},
     {t:'Send Mudge after them with fifty guineas for the Captain.', note:'£52', go:() => { fl('vaneDone'); add({money:-52, standing:-2}); reg('kitty',-3,'You bought the Captain off for fifty guineas, and he took it');
       return `You count fifty guineas into a bag and put Mudge on the grey.
 
@@ -308,19 +310,21 @@ There is a second sheet inside the first. It is in the Captain’s hand.
 
 Doncaster races are in September. In October Kitty writes again. One side. Everything is very well. Lucius is very well. The lodgings are very comfortable.
 
-It is half the length of her last letter. Henrietta reads it twice and holds it up to the window.`; }},
+It is half the length of her last letter. ${hh(`Henrietta reads it twice and holds it up to the window.`, `You hold it up to the window. Then you send it to Gay Street.`)}`; }},
     {t:'Settle forty pounds a year on Kitty alone, through trustees.', note:'£300', go:() => { fl('kittySettled'); add({money:-300, family:5}); reg('kitty',3,'You settled money on her where the Captain could not reach it'); reg('vane',-3); reg('henrietta',2);
       return `The lawyers take a month. Forty pounds a year to Kitty, for her sole and separate use. He cannot touch it. He cannot borrow against it. Three hundred pounds, with the fees.
 
 The Captain writes four sides. He is wounded. He had thought better of you.
 
-Kitty does not write for a month. Then a twist of paper comes with nothing in it but a lock of very fine hair. Henrietta puts it in her work-bag.`; }},
+Kitty does not write for a month. Then a twist of paper comes with nothing in it but a lock of very fine hair. ${hh(`Henrietta puts it in her work-bag.`, `It goes to Gay Street by the next post.`)}`; }},
     {t:'Reply that she made her bed.', go:() => { add({family:-8}); reg('kitty',-4,'You sent nothing when she asked'); reg('henrietta',-2);
       return `You write four lines and seal them.
 
-On Thursday the carrier calls at the back door for a parcel. It is a cushion, addressed in Henrietta’s hand to Northampton.
+${hh(`On Thursday the carrier calls at the back door for a parcel. It is a cushion, addressed in Henrietta’s hand to Northampton.
 
-Her mother’s garnets are not in the jewel case. Nor are twenty pounds of her pin money.`; }}
+Her mother’s garnets are not in the jewel case. Nor are twenty pounds of her pin money.`, `On Thursday Mrs Tamworth writes from Bath. She met Henrietta at the coach office with a parcel for Northampton. It was the shape of a cushion.
+
+She did not see the garnets at the Upper Rooms that night.`)}`; }}
   ]});
 
 ev({ id:'duel', follow:true, cond:() => S.chars.vane.met, title:'Pistols on Hatherley Down',
@@ -417,7 +421,7 @@ She has not asked your advice since her wedding day.`,
 
 She comes home in black and takes the Dower House. She is very rich. She looks thirty.
 
-Within the week she and Henrietta have quarrelled about curtains. You hear them from the garden. Kitty is shouting.`; }},
+${hh(`Within the week she and Henrietta have quarrelled about curtains. You hear them from the garden. Kitty is shouting.`, `Within the week she and Henrietta have quarrelled about curtains by post. Kitty reads you her answer before she seals it.`)}`; }},
     {t:'Advise her to free the people on it, if the law can be made to let her.', go:() => { fl('kittyWidow'); fl('kittyManumit'); add({family:8, standing:-2}); reg('kitty',4,'You told her to free the people on the Jamaica estate');
       return `It takes her four years. She employs two attorneys. Every relation Pinch had writes to her, and then stops writing. The island’s laws are made to prevent it. She pays a bond for each person freed.
 
@@ -512,7 +516,7 @@ Nobody in Berkshire calls for a month.
 
 Her letters come by way of Holland. They are three months old and smell of tar. There is a garden. There are bees. In the fourth letter there is a small Achille.
 
-Henrietta keeps them in her work-box. The folds have worn through.`; }},
+${hh(`Henrietta keeps them in her work-box. The folds have worn through.`, `You send each one on to Gay Street. They come back with the folds worn through.`)}`; }},
     {t:'Tell him to come back and ask when there is a peace.', go:() => { fl('dubreuilWaits'); add({family:1}); reg('kitty',1); reg('dubreuil',1,'You told him to ask again in peacetime');
       return `“Come back and ask me when there is a peace.”
 
@@ -3571,7 +3575,7 @@ Edmund reads it at breakfast. He reads it again. He passes you the paper. He doe
 
 “He fired first. It took the button off my sleeve. I meant to fire wide and I hit his hat. He says it was a twelve-guinea hat.”
 
-He eats four eggs. Henrietta comes down at eight. She asks why the gun room smells of powder at this hour.`}
+He eats four eggs. ${hh(`Henrietta comes down at eight. She asks why the gun room smells of powder at this hour.`, `Mrs Bunce comes in at eight. She asks who has been in the gun room at this hour.`)}`}
 };
 const fateText = () => { const P = fate(), f = FATES[P.kind]; return P.dead ? f.dead(P) : P.p === 0 ? f.kept(P) : f.alive(P); };
 
@@ -3580,46 +3584,62 @@ ev({ id:'edmundFate', follow:true, cond:() => !!S.peril && !F('edmundDead'),
   cut:() => 'fate-' + fate().kind + (fate().dead ? '-dead' : fate().p === 0 ? '-kept' : '-alive'),
   text:() => fateText(),
   choices:[
-    {t:'Go up and tell Henrietta.', if:() => fate().dead, go:() => { const duel = fate().kind === 'duel'; edmundDies(); reg('henrietta',1);
-      return duel ? `She is on the stairs. She saw the hurdle from her window.
+    {t:() => hh('Go up and tell Henrietta.', 'Go to Bath and tell Henrietta.'), if:() => fate().dead, go:() => { const duel = fate().kind === 'duel'; edmundDies(); reg('henrietta',1);
+      return duel ? `${hh(`She is on the stairs. She saw the hurdle from her window.
 
 “Not in the hall,” she says. “Carry him to his own room.”
 
-She goes up before the men to turn down the bed. She orders the blinds drawn on the south front. Every one.` : `She is at her glass. She sees the paper in your hand.
+She goes up before the men to turn down the bed. She orders the blinds drawn on the south front. Every one.`, `You are in Gay Street by dark. She is on the lodging-house stairs. She looks at your hat.
+
+“Not on the stairs,” she says.
+
+She hears it by the window with her back to you. Then she rings for her trunk. She writes to Mrs Bunce to draw the blinds on the south front. Every one.`)}` : `${hh(`She is at her glass. She sees the paper in your hand.
 
 “Not aloud,” she says.
 
-You give her the letter. She reads it standing. She folds it in four and puts it inside her gown. She rings, and orders the blinds drawn on the south front. Every one.`; }},
+You give her the letter. She reads it standing. She folds it in four and puts it inside her gown. She rings, and orders the blinds drawn on the south front. Every one.`, `You post to Bath with the letter in your coat. She is at cards in Gay Street. She sees you in the door and puts down her hand.
+
+“Not aloud,” she says.
+
+She reads it in the passage. She folds it in four and puts it inside her gown. The other three ladies have not moved.`)}`; }},
     {t:'Put up a tablet in the church.', note:'£40', if:() => fate().dead, go:() => { const rank = edmRank(), role = TOMB[fate().kind]()[0], age = edmAge(); edmundDies(); add({money:-40, standing:1});
       return `A tablet of white marble on the north wall, by a mason from Reading. Forty pounds.
 
 “${rank} Edmund ${S.sur}. ${role}. Aged ${age}.”
 
-The mason has room for one line more. Henrietta is asked for it. She says there is nothing to add to the age.`; }},
+The mason has room for one line more. ${hh(`Henrietta is asked for it. She says there is nothing to add to the age.`, `Henrietta is asked for it by letter. She writes that there is nothing to add to the age.`)}`; }},
     {t:'Go into the gun room and shut the door.', if:() => fate().dead, go:() => { edmundDies(); add({family:-3});
       return `His fowling piece is on the rack. It has not been cleaned since he last had it out.
 
 You clean it. It takes the afternoon.
 
 At six Mudge comes in. He stands a while. He takes the rod out of your hand and finishes the barrel.`; }},
-    {t:'Read it to Henrietta.', if:() => !fate().dead && !(fate().kind === 'duel'), go:() => { edmundLives(); add({family:3}); reg('henrietta',1);
-      return `You read it to her in the breakfast-room. She has you read it again.
+    {t:() => hh('Read it to Henrietta.', 'Send it on to Henrietta.'), if:() => !fate().dead && !(fate().kind === 'duel'), go:() => { edmundLives(); add({family:3}); reg('henrietta',1);
+      return `${hh(`You read it to her in the breakfast-room. She has you read it again.
 
-She takes the letter. It goes into her work-box with the others. She keeps them in order, with the dates outward.`; }},
+She takes the letter. It goes into her work-box with the others. She keeps them in order, with the dates outward.`, `You send it to Gay Street under cover. It is back in four days.
+
+She has copied it out. The copy stays at Bath. The letter is to go into her work-box here with the others, the date outward.`)}`; }},
     {t:'Answer by this post.', if:() => !fate().dead && !(fate().kind === 'duel'), go:() => { edmundLives(); reg('edmund',1);
       return `You write the same night. You cover two sheets. You tell him about the barley, the new pointer and the Tamworths’ chimney. You find no way to say the other thing.
 
 He answers in the spring. “I had yours about the barley. I understood it.”`; }},
-    {t:'Tell her he has been after rabbits.', if:() => !fate().dead && fate().kind === 'duel' && fate().p > 0, go:() => { edmundLives(); add({standing:2});
-      return `“Rabbits, my dear.”
+    {t:() => hh('Tell her he has been after rabbits.', 'Write to Bath that he has been after rabbits.'), if:() => !fate().dead && fate().kind === 'duel' && fate().p > 0, go:() => { edmundLives(); add({standing:2});
+      return `${hh(`“Rabbits, my dear.”
 
 “With a pistol?”
 
-Edmund looks at his plate. Henrietta looks at the button gone from his sleeve. She sews on another before church. She uses black thread.`; }},
-    {t:'Tell her.', if:() => !fate().dead && fate().kind === 'duel' && fate().p > 0, go:() => { edmundLives(); add({standing:2, family:-2}); reg('henrietta',-1,'You lent Edmund the pistols');
-      return `You tell her.
+Edmund looks at his plate. Henrietta looks at the button gone from his sleeve. She sews on another before church. She uses black thread.`, `You write to Gay Street that Edmund has been after rabbits.
 
-She does not speak to either of you until Sunday. On Sunday she takes Edmund’s arm into church. She does not take yours.`; }},
+She answers by return. “With a pistol?”
+
+There is a button in the letter. It is to go on his sleeve before church. She has sent black thread.`)}`; }},
+    {t:() => hh('Tell her.', 'Write and tell her.'), if:() => !fate().dead && fate().kind === 'duel' && fate().p > 0, go:() => { edmundLives(); add({standing:2, family:-2}); reg('henrietta',-1,'You lent Edmund the pistols');
+      return `${hh(`You tell her.
+
+She does not speak to either of you until Sunday. On Sunday she takes Edmund’s arm into church. She does not take yours.`, `You write it to Gay Street.
+
+No letter comes for you that week. One comes for Edmund on Thursday. He reads it in the gun room with the door shut.`)}`; }},
     {t:'Say nothing.', if:() => !fate().dead && fate().kind === 'duel' && fate().p === 0, go:() => { edmundLives(); reg('edmund',1);
       return `You say nothing. You fold the paper and lay it by his plate.
 
@@ -3970,7 +3990,7 @@ ev({ id:'royalTerrace', follow:true, cond:() => F('royalKnown') && S.year <= 180
 
 A card has come from an equerry. Mr and Mrs ${S.sur} are desired to be upon the Terrace on Sunday.
 
-Henrietta has had the card nine times in her hand. A Court suit is a hundred and twenty pounds with the sword. The mantua-maker at Reading has never made a hoop that wide.`,
+${hh(`Henrietta has had the card nine times in her hand. A Court suit is a hundred and twenty pounds with the sword. The mantua-maker at Reading has never made a hoop that wide.`, `Henrietta has the news in Gay Street by Tuesday. She writes that she will come. A Court suit is a hundred and twenty pounds with the sword. The mantua-maker at Bath wants three weeks for a hoop that wide. There are five days.`)}`,
   choices:[
     {t:'Go in full dress.', note:'£120', go:() => { add({money:-120, standing:6, family:4}); reg('henrietta',2);
       return `A hundred and twenty pounds. A plum-coloured coat with steel buttons, a bag-wig and a sword that will not hang straight.
@@ -3987,13 +4007,13 @@ The King stops. He takes hold of your lapel and feels the cloth.
 
 “English wool. Good. Good. That’s a coat. Look at this man’s coat.” The equerries look at your coat.
 
-A lady in feathers asks Henrietta whether her husband is the King’s bailiff. Henrietta does not speak between Slough and Reading.`; }},
+A lady in feathers asks Henrietta whether her husband is the King’s bailiff. ${hh(`Henrietta does not speak between Slough and Reading.`, `Henrietta does not speak between Slough and Reading. At Reading she takes the Bath coach.`)}`; }},
     {t:'Send your duty and stay at home.', go:() => { add({standing:-2, family:-4}); reg('henrietta',-2,'You would not take her to Windsor');
       return `You write to the equerry that the harvest forbids.
 
 The Tamworths go to Windsor on the Sunday and stand along the wall. The King does not stop. Mrs Tamworth says she saw the Princess Amelia’s shoe quite distinctly.
 
-Henrietta keeps the card in the frame of her glass. It is there every morning.`; }}
+${hh(`Henrietta keeps the card in the frame of her glass. It is there every morning.`, `Henrietta has the card sent to Gay Street. Mrs Loveday has seen it there in the frame of her glass.`)}`; }}
   ]});
 
 ev({ id:'royalBond', from:1805, to:1809, weight:6, cond:() => F('royalKnown') && !F('bondAsked'), title:'A Gentleman from Carlton House',
