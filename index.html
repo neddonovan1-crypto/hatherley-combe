@@ -1662,119 +1662,127 @@ const E = () => S.flags.edmund || null;
 const kittyAge = () => 17 + (S.year - 1795);
 
 ev({ id:'speen', fixed:'1795-0', title:'The Pelican at Speen',
-  text:() => `The Pelican at Speen, the sixth of May. The Berkshire bench sits down to a turbot.
+  text:() => `The magistrates of Berkshire are met at the Pelican at Speen upon the sixth of May; and, as no business of the county was ever yet opened upon an empty stomach, they sit down first to a turbot.
 
-The business is on a half-sheet beside each plate. Wheat is at seventy-five shillings. The quartern loaf is elevenpence in Newbury market. A labourer in this county has eight shillings a week. Dr Gall waits until the fish has been carried out before he stands.
+The business lies on a half-sheet beside every plate, and is soon read. Wheat stands at seventy-five shillings the quarter; the quartern loaf is elevenpence in Newbury market; and a labourer in this county, when he can find a master, has eight shillings a week with which to buy it. Dr Gall, who drew up the paper and who knows his company, waits until the fish has been carried out before he rises.
 
-“Gentlemen, I shall not ask the farmer for a penny. Let wages lie. Let the parish make each family up from the rates, by a table. When the gallon loaf is a shilling, three shillings to the man and eighteenpence to every mouth he feeds. When the loaf rises, the table rises.” He holds his paper out over the cloth. “Who is with me?”
+“Gentlemen, I shall not ask the farmer for a penny. Let wages lie where they are; and let the parish make up each family from the rates, by a table. When the gallon loaf is a shilling, three shillings to the man, and eighteenpence for every mouth he feeds; and as the loaf rises, so shall the table.” He holds his paper out over the cloth. “Who is with me?”
 
-Nobody moves. The Doctor turns his whole body in his chair until it faces you.
+Nobody stirs. The Doctor, having looked along his own side of the table without finding an eye that will meet his, turns his whole body about in his chair until it faces you.
 
 “Mr ${S.sur}?”`,
   choices:[
     {t:'Second him.', go:() => { fl('speen'); add({goodwill:4, standing:1}); reg('gall',2,'You seconded his bread scale at Speen');
-      return `“Seconded.” The show of hands takes less time than the carving did. A clerk is called in to copy the table fair for the Reading Mercury.
+      return `“Seconded.” The show of hands is over in less time than the carving took, and a clerk is called in to copy the table fair for the Reading Mercury.
 
-Hartopp has a pencil out before the cheese comes. He writes on the back of his half-sheet, turns it round and pushes it across to you. “Parish makes a man up to 9s. I pay him 6s. Parish finds 3s.” Under that he has drawn a line. Under the line: “Why pay 6?”
+Mr Hartopp, who was never known to waste either a pencil or a shilling, has the first of these out before the cheese comes. He writes upon the back of his half-sheet, turns it about, and pushes it across the cloth to you: “Parish makes a man up to 9s. I pay him 6s. Parish finds 3s.” Beneath this he has ruled a line; and beneath the line, in a larger hand, “Why pay 6?”
 
-Your name goes to Reading second on the list.`; }},
+Your name goes up to Reading the second upon the list.`; }},
     {t:'Stand. Move that the bench fix a wage by the price of bread, and pay it at Hatherley yourself.', go:() => { fl('wages'); add({goodwill:9, standing:-3}); reg('gall',-1); reg('hartopp',-1,'Thinks your wages will ruin him'); reg('pryor',1);
-      return `You stand. You say the bench has power under the statute of Elizabeth to fix a wage. You say it should fix one by the price of bread. You say the farmer who hires a man should be the one to feed him.
+      return `You rise, and tell the bench that under the statute of Elizabeth it has the power to fix a wage; that it ought to fix one by the price of bread; and that the farmer who hires a man, and not the parish which never sent for him, should have the feeding of him.
 
-“Ruin,” says Hartopp. Somebody asks whether Mr ${S.sur} holds shares in Whitbread’s brewery. Dr Gall puts it to the vote out of politeness. Three hands go up.
+“Ruin,” says Hartopp, before you are well seated. A voice lower down the table enquires whether Mr ${S.sur} holds shares in Whitbread’s brewery; and Dr Gall, who would not for the world be thought uncivil to a neighbour, puts your motion to the vote, upon which three hands go up.
 
-On Monday you raise every man at Hatherley to nine shillings. On Sunday there are faces in church from Kintbury and Inkpen that you have never seen there before. They have walked over to look at you.`; }},
+On Monday you raise every man at Hatherley to nine shillings. On the Sunday following there are faces in church from Kintbury and from Inkpen which were never seen there before; and it is soon plain, from the quarter to which they are turned throughout the sermon, that they have walked over to look at you.`; }},
     {t:'Help yourself to the turbot.', go:() => { add({goodwill:-3, standing:1});
-      return `You help yourself to the turbot. The table is carried round you.
+      return `You help yourself to the turbot; and the table, having waited a decent interval to learn whether you mean to speak, is carried without you.
 
-Afterwards, in the yard, your horse is brought by an ostler you do not know. The taproom window stands open behind him. He holds the stirrup. He does not touch his hat until you are in the saddle and looking down at him.`; }}
+In the yard afterwards, under the open window of the taproom, your horse is brought round by an ostler whom you do not know. He holds the stirrup with great attention; but it is not until you are in the saddle, and looking down at him, that he recollects to touch his hat.`; }}
   ]});
 
 ev({ id:'flour', fixed:'1795-1', title:'The Old Price',
-  text:() => `Wyvern, market day. You hear it from the bridge.
+  text:() => `It is market day at Wyvern, and you hear the business from the bridge before you can see it.
 
-Pocock’s cart is stopped in the corn market with its tailboard down. A dozen Hatherley women have his sacks open on the cobbles. Sukey Pryor has the peck measure in one hand and her youngest on her hip. “Old price! Old price and honest measure!” A girl of ten takes the money. She carries each coin across to the miller and drops it into his hat.
+Pocock’s cart stands stopped in the corn market with its tailboard down, and a dozen women of Hatherley have his sacks open upon the cobbles. Sukey Pryor, with the peck measure in one hand and her youngest upon her hip, is crying “Old price! Old price and honest measure!”; while a girl of ten, who has been set to take the money, carries each coin across to the miller as it is paid, and drops it into his hat.
 
-Pocock holds the hat in both hands. He has not put it down and he has not put it on. He sees you over the heads. “Mr ${S.sur}! You are a magistrate, sir! I call on you!”
+Pocock holds the hat in both hands, having found himself unable either to set it down or to put it on. He sees you over the heads.
 
-The selling stops. Sukey Pryor looks at you. She does not put down the measure.`,
+“Mr ${S.sur}! You are a magistrate, sir! I call on you!”
+
+The selling stops. Sukey Pryor looks at you, and keeps hold of the measure.`,
   choices:[
     {t:'Read the Riot Act and send for the Volunteers.', go:() => { fl('riotAct'); add({standing:3, goodwill:-10}); reg('pryor',-2,'You read the Riot Act at his wife'); reg('gall',1);
-      return `You climb the steps of the Corn Exchange and take off your hat. “Our Sovereign Lord the King chargeth and commandeth all persons, being assembled, immediately to disperse themselves.” It is done in under a minute. Your voice cracks on “habitations”.
+      return `You mount the steps of the Corn Exchange, take off your hat, and read: “Our Sovereign Lord the King chargeth and commandeth all persons, being assembled, immediately to disperse themselves.” The whole is got through in less than a minute; but your voice, which has carried you safely past the King, gives way at “habitations”.
 
-They have one hour by law. Nobody goes. The selling starts again, faster. You stand on the steps for fifty minutes with the Act in your hand.
+The law allows them one hour; and as not a woman offers to go, and the selling begins again faster than before, you are left to stand upon the steps for fifty minutes of it with the Act in your hand.
 
-The Volunteers trot in at ten minutes to the hour. The cobbles are white. The sacks are folded on the cart. Pocock is counting. Sukey Pryor walks past the steps with her flour on her head and the child asleep. “Good day, sir.” Nobody else from Hatherley says it to you that week.`; }},
+At ten minutes to the hour the Volunteers trot in, to find the cobbles white, the sacks folded upon the cart, and Pocock counting. Sukey Pryor walks past the steps with her flour upon her head and the child asleep.
+
+“Good day, sir.”
+
+It is the last time that week that anybody from Hatherley says as much to you.`; }},
     {t:'Buy the whole cart yourself and let them carry on.', note:'£140', go:() => { add({money:-140, goodwill:8, standing:-2}); reg('cullerne',-1,'Thinks you bought off a mob'); reg('pryor',1,'You paid for his wife’s flour');
-      return `“What is the load worth today, Pocock?” He tells you. “And at the old price?” He tells you that too. You write him a draft on Tidmarsh’s bank for the difference. One hundred and forty pounds.
+      return `“What is the load worth today, Pocock?” He tells you. “And at the old price?” He tells you that likewise; and you write him a draft upon Tidmarsh’s bank for the difference: one hundred and forty pounds.
 
-Pocock folds it small and puts it inside his coat. He does not thank you. The women do, three cheers, and then they go back to the sacks.
+Pocock folds the paper small, and puts it inside his coat without thanking you. The women give you three cheers, and go back to the sacks.
 
-Lord Cullerne’s groom is outside the George holding a horse. He has watched all of it. He will be at the Castle before you are home.`; }},
+Before the George stands Lord Cullerne’s groom, holding a horse, who has watched the whole from the beginning; and as he has the better beast and the shorter road, he will be at the Castle before you are home.`; }},
     {t:'Take Pocock aside and mention his lease.', go:() => { fl('millerCowed'); add({goodwill:4, standing:1});
-      return `You get down and take Pocock by the elbow. Ten yards off, by the pump, you ask him when his lease falls in.
+      return `You get down, take Pocock by the elbow, and walk him ten yards off to the pump, where you ask him when his lease falls in.
 
 “Michaelmas, sir.”
 
 “So I thought. It is a pretty mill.”
 
-He looks at the pump for some time. Then he walks back to his cart. “Old price,” he tells the women. “This week. Out of Christian feeling.” He says it a second time, louder.
+He considers the pump for some time. Then he walks back to his cart. “Old price,” he tells the women. “This week. Out of Christian feeling.” And as nobody appears to have heard the last part of it, he says it a second time, and louder.
 
-That evening he drives home past your gate. He keeps his eyes on the horse.`; }}
+That evening he drives home past your gate with his eyes fixed upon the horse.`; }}
   ]});
 
 ev({ id:'powder', fixed:'1795-2', title:'A Guinea a Head',
-  text:() => `The collector’s paper comes with the morning post. “Certificate for Using Hair Powder. One Guinea.” One certificate for every powdered head in the house.
+  text:() => `The collector’s paper comes with the morning post: “Certificate for Using Hair Powder. One Guinea”; and one certificate, it appears, is wanted for every powdered head in the house.
 
-You count heads at breakfast. ${hh(`Henrietta has worn powder every day since she was twelve.`, `Henrietta is at Bath and must take out her own there.`)} Edmund has not had his hair dressed for a week. He wants it cut short, the way the Duke of Bedford’s friends are wearing it. The two footmen stand by the sideboard. Both are called John. Both are white to the collar.
+You count heads at breakfast. ${hh(`Henrietta has worn powder every day since she was twelve, and would as soon come down without her gown.`, `Henrietta is at Bath, and must take out her own there.`)} Edmund, who has not had his hair dressed this week, wishes it cut short, in the manner of the Duke of Bedford’s friends. By the sideboard stand the two footmen, both of whom are called John, and both of whom are white to the collar.
 
 ${hh(`Henrietta puts down her cup. “Well?”`, `The collector’s man is waiting in the hall.`)}`,
   choices:[
     {t:'Pay for every head in the house, footmen and all.', note:'8 guineas', go:() => { add({money:-9, standing:3, family:2}); reg('henrietta',1);
-      return `You send to Wyvern with eight guineas. Eight certificates come back.
+      return `You send to Wyvern with eight guineas, and eight certificates come back.
 
-On Sunday the names are pasted on the church door, by order. Yours is at the top. The footmen are at the bottom, entered as “John” and “John”.
+On Sunday, by order, the names of all who have paid are pasted upon the church door; where yours stands at the head of the list, and the footmen at the foot of it, entered as “John” and “John”.
 
-The Morning Chronicle has a name for people who pay. Edmund reads it out at dinner. “Guinea-pigs.” ${hh(`Henrietta asks him to leave the table.`, `The Johns look at the ceiling.`)}`; }},
+The Morning Chronicle has found a name for those who pay, and Edmund reads it out at dinner. “Guinea-pigs.” ${hh(`Henrietta desires him to leave the table.`, `The Johns look at the ceiling.`)}`; }},
     {t:'Crop the lot of you.', go:() => { add({family:-4, standing:-2}); reg('henrietta',-2,'You cropped her footmen'); reg('edmund',1); reg('cullerne',-1); reg('hartopp',1);
-      return `The barber walks up from Wyvern with his scissors. He does Edmund first, then you, then the Johns in the scullery. He sweeps up enough hair to stuff a bolster and asks if he may keep it.
+      return `The barber walks up from Wyvern with his scissors, and does Edmund first, then you, and then the Johns in the scullery; after which he sweeps up as much hair as would stuff a bolster, and asks whether he may keep it.
 
-Edmund spends the afternoon in front of the hall glass. Hartopp rides over, looks at you and says, “Sensible.” On Thursday Lord Cullerne passes you in Wyvern and does not seem to know you.
+Edmund passes the afternoon before the hall glass. Hartopp rides over, looks at you, and says “Sensible”; but on Thursday Lord Cullerne, meeting you in the street at Wyvern, does not appear to know who you are.
 
-${hh(`Henrietta has her dinner sent up for three days. On the fourth she comes down in a turban.`, `Mrs Tamworth writes it all to Gay Street. A parcel comes from Bath by the Friday coach. It is a nightcap.`)}`; }},
+${hh(`Henrietta has her dinner sent up for three days, and on the fourth comes down in a turban.`, `Mrs Tamworth writes the whole of it to Gay Street; and by the Friday coach there comes a parcel from Bath, which is found to contain a nightcap.`)}`; }},
     {t:'Pay for Henrietta. Shear everyone else.', note:'1 guinea', go:() => { add({money:-1, family:1});
-      return `One guinea. One certificate. “Mrs ${S.sur}, Hatherley Combe.”
+      return `One guinea; one certificate: “Mrs ${S.sur}, Hatherley Combe.”
 
-The barber shears the rest of you on Saturday. The younger John cries in the scullery. Mrs Bunce gives him a jam tart.
+The barber shears the rest of you on Saturday. The younger John is found crying in the scullery, and is given a jam tart by Mrs Bunce.
 
-${hh(`At church Henrietta sits at the end of the pew with her head high and white. Everybody else in the pew has cold ears.`, `The certificate goes to Gay Street by the post. On Sunday everybody in the Hall pew has cold ears.`)}`; }}
+${hh(`At church Henrietta sits at the end of the pew with her head high and white, and everybody else in it has cold ears.`, `The certificate goes to Gay Street by the post; and on Sunday everybody in the Hall pew has cold ears.`)}`; }}
   ]});
 
 ev({ id:'fenn', fixed:'1795-3', title:'A Citizen at the Bell',
-  text:() => `There is a new man at the Bell. Absalom Fenn, shoemaker, walked down from London with a pack on his back. The pack is full of pamphlets.
+  text:() => `There is a new man at the Bell: one Absalom Fenn, a shoemaker, who has walked down from London with a pack upon his back, and in the pack nothing but pamphlets.
 
-Every evening at seven he stands on a settle and reads Tom Paine to the carters. He reads slowly. He stops at the long words and tells them what each one means.
+Every evening at seven he gets upon a settle and reads Tom Paine to the carters. He reads slowly; and whenever he comes to a long word he stops, and tells them what it means.
 
-Crabbe has been down to look. He stands in your library with his notebook open. “The new Act says fifty, sir. Fifty persons at a political meeting, and they must have a magistrate’s licence. I counted forty-nine. I counted on three nights.” He turns a page. “Forty-nine each night. The fiftieth waits in the yard.”`,
+Crabbe, who has been down to look, stands in your library with his notebook open.
+
+“The new Act says fifty, sir. Fifty persons at a political meeting, and they must have a magistrate’s licence. I counted forty-nine. I counted on three nights.” He turns a page. “Forty-nine each night. The fiftieth waits in the yard.”`,
   choices:[
     {t:'Have Fenn taken up as a seditious person.', go:() => { fl('fennTaken'); add({standing:3, goodwill:-5}); reg('gall',2,'You gaoled the shoemaker'); reg('cullerne',1);
-      return `The constable takes Fenn at the Bell on Friday, off the settle, with the book in his hand. He goes to Reading gaol in the carrier’s cart. Dr Gall shakes your hand after church.
+      return `The constable takes Fenn at the Bell on Friday, off the settle, with the book in his hand; and he goes to Reading gaol in the carrier’s cart. Dr Gall shakes your hand after church.
 
-The evidence is forty-nine men and a printed book. The Grand Jury throws it out.
+But as the evidence consists of forty-nine men and a printed book, the Grand Jury throws out the bill.
 
-Fenn walks back into Hatherley on a Tuesday. The carters stand him his beer. A boy asks him what “seditious” means. He climbs on the settle and tells them.`; }},
+Fenn walks back into Hatherley upon a Tuesday, and the carters stand him his beer. A boy asks him what “seditious” means; upon which he climbs on the settle, and tells them.`; }},
     {t:'Go down to the Bell and argue with him.', go:() => { fl('fennDebate'); add({goodwill:5, standing:-2}); reg('cullerne',-1); reg('pryor',1,'Saw you argue with Fenn and pay for the beer');
-      return `You walk down to the Bell at seven and take the chair by the fire. Fenn nods to you and goes on reading. When he stops, you answer him.
+      return `You walk down to the Bell at seven and take the chair by the fire. Fenn nods to you and goes on reading; and when he stops, you answer him.
 
-You give them the Constitution. King, Lords and Commons. Fenn gives them your uncle: his rents, his game, his three votes in Wyvern, the year he stopped the footpath to the mill. He has every date.
+You give them the Constitution, in its three parts, of King, Lords and Commons. Fenn, in return, gives them your uncle: his rents, his game, his three votes in Wyvern, and the year in which he stopped the footpath to the mill; for every one of which he is provided with the date.
 
-It lasts two hours. The carters decide for Fenn. You pay for the beer, all forty-nine pots. Jem Pryor lifts his to you from the corner.`; }},
+It lasts two hours, at the end of which the carters decide for Fenn, and you pay for the beer, to the number of forty-nine pots. Jem Pryor, from the corner, lifts his to you.`; }},
     {t:'Buy every copy of Paine in Wyvern and burn them.', note:'£15', go:() => { add({money:-15, standing:1});
-      return `Mr Gosling the bookseller has nineteen copies of the Rights of Man. He asks fifteen pounds for the lot. You pay it.
+      return `Mr Gosling the bookseller has nineteen copies of the Rights of Man, for which he asks fifteen pounds the lot; and you pay it.
 
-You burn them on the green on Saturday night. Most of the parish comes. Fenn comes too and warms his hands.
+On Saturday night you burn them upon the green. Most of the parish comes to see it done; and Fenn comes with the rest, and warms his hands.
 
-On Monday Gosling’s boy is at the coach office with a letter for London. The order is for forty copies.`; }}
+On Monday Gosling’s boy is at the coach office with a letter for London, in which the order is for forty.`; }}
   ]});
 
 ev({ id:'edmundFuture', fixed:'1796-0', title:'Edmund Wishes to Be Useful',
