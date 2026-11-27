@@ -186,7 +186,7 @@ const DRAFT_VENTURES = [
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
 function farmsHTML(){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sum = list.reduce((a, f) => a + f.rent, 0);
   return `<table class="acct roll"><thead><tr><th>Farm and tenant</th><th class="n">Acres</th><th class="n l">£ a year</th></tr></thead><tbody>
-    ${list.map(f => `<tr><td>${esc(f.name)}<small>${esc(f.land)}. ${esc(f.tenant)}.</small><em>${esc([f.held, f.order, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}</em>
+    ${list.map(f => `<tr><td>${esc(f.name)}<small>${esc(f.land)}. ${esc(f.tenant)}.</small><em>${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}</em>
       ${live && f.canLevel ? `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}${f.canOffer ? `<button onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}</span>` : ''}</td><td class="n">${f.acres}</td><td class="n l">${f.rent}</td></tr>`).join('')}
     <tr class="total"><td>The rental</td><td class="n">${list.reduce((a, f) => a + f.acres, 0)}</td><td class="n l">${sum.toLocaleString('en-GB')}</td></tr></tbody></table>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function', list = live ? venturesList() : DRAFT_VENTURES;

@@ -117,7 +117,7 @@ table.acct tr.total .n{font-size:1.3rem}
 .sheet .prose p:first-child::first-letter, .lead p:first-child::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
 .sheet.bill{background-color:#efe7d2;transform:rotate(.4deg);padding-top:30px}
 .sheet.bill .kicker{align-self:center;border-block:1px solid var(--ink);padding:4px 12px;color:var(--ink)}
-.sheet.bill h2{font-family:var(--fat);font-size:clamp(1.9rem,4.2vw,2.8rem);line-height:1;text-transform:uppercase;letter-spacing:.02em;padding-bottom:10px;border-bottom:4px solid var(--ink)}
+.sheet.bill h2{font-family:var(--fat);font-size:clamp(1.6rem,2.9vw,2.3rem);line-height:1;text-transform:uppercase;letter-spacing:.02em;padding-bottom:10px;border-bottom:4px solid var(--ink)}
 .sheet.bill .prose{padding-top:8px;border-top:1px solid var(--ink);margin-top:-7px}
 .sheet.bill .prose p{text-align:justify;hyphens:auto}
 .sheet.bill .prose p:first-child::first-letter{font-family:var(--fat);color:var(--ink)}
@@ -131,11 +131,11 @@ table.acct tr.total .n{font-size:1.3rem}
 
 /* answering */
 .choices{display:flex;flex-direction:column;gap:8px}
-.choice{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.45);padding:11px 14px 10px 44px;min-height:50px;box-shadow:1px 2px 3px rgba(40,30,20,.14);transition:transform .15s, box-shadow .15s, background .15s}
+.choice{position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 12px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.45);padding:11px 14px 10px 44px;min-height:50px;box-shadow:1px 2px 3px rgba(40,30,20,.14);transition:transform .15s, box-shadow .15s, background .15s}
 .choice::before{content:"\261E\FE0E";position:absolute;left:12px;top:8px;font-family:var(--body);font-size:1.35rem;line-height:1.3;color:var(--madder);opacity:.55;transition:transform .15s, opacity .15s}
-.choice span{min-width:0;font-family:var(--display);font-size:1.2rem;line-height:1.3}
+.choice span{min-width:0;flex:1 1 60%;font-family:var(--display);font-size:1.2rem;line-height:1.3}
 .choice small{display:block;font-family:var(--body);font-style:italic;font-size:.82rem;line-height:1.35;color:var(--muted);padding-top:2px}
-.choice em{font-family:var(--display);font-style:normal;font-size:1.1rem;color:var(--gold);white-space:nowrap;flex:none}
+.choice em{font-family:var(--display);font-style:normal;font-size:1.02rem;line-height:1.3;color:var(--gold);min-width:0;flex:0 1 auto}
 .choice:hover, .choice:focus-visible{background:var(--sheet);transform:translateX(4px);box-shadow:2px 5px 10px rgba(40,30,20,.25)}
 .choice:hover::before, .choice:focus-visible::before{opacity:1;transform:translateX(3px)}
 .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:8px}
@@ -231,6 +231,8 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
 
 @media (min-width:1081px) and (min-height:600px){
   body:not(.intro) .book{height:min(calc(100vh - 30px), 940px)}
+  #stage > .sheet{flex:0 1 auto;min-height:9rem;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(70,50,25,.3) transparent}
+  #stage > .orn, #stage > .choices, #stage > .runhead{flex:none}
   body:not(.intro) .page{min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(70,50,25,.3) transparent}
 }
 
