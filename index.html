@@ -78,7 +78,7 @@ h3.orn::before{clip-path:polygon(0 50%, 100% 0, 100% 100%)} h3.orn::after{clip-p
 .swell{height:5px;background:var(--ink);clip-path:polygon(0 50%, 50% 0, 100% 50%, 50% 100%);margin:2px 12%;flex:none}
 
 /* the account */
-.tablewrap{overflow-x:auto}
+.tablewrap{overflow-x:auto;flex:none}   /* never squeezed: the page scrolls before the account loses its total */
 table.acct{width:100%;border-collapse:collapse;border-top:2px solid var(--ink);border-bottom:3px double var(--ink);font-variant-numeric:tabular-nums}
 table.acct th{font-family:var(--caps);font-weight:400;font-size:.8rem;letter-spacing:.1em;color:var(--muted);text-align:left;padding:5px 0;border-bottom:1px solid var(--ink)}
 table.acct td{padding:3px 0;border-bottom:1px solid var(--rule);vertical-align:bottom}
@@ -254,6 +254,8 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
 @keyframes laid{from{opacity:0;translate:0 -14px;scale:1.03}to{opacity:1;translate:0 0;scale:1}}
 @keyframes inked{from{opacity:0}to{opacity:1}}
 #stage.turn{transform-origin:left center;animation:leaf .55s cubic-bezier(.2,.7,.2,1) both}
+/* the turning leaf swings below the boards for a moment; kept from lengthening the window */
+body:not(.intro) .desk{overflow:clip}
 .page > .sheet{animation:laid .4s ease-out both}
 #stage .choice{animation:inked .35s ease-out both} #stage .choice:nth-child(2){animation-delay:.07s} #stage .choice:nth-child(3){animation-delay:.14s} #stage .choice:nth-child(n+4){animation-delay:.2s}
 
@@ -262,6 +264,15 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
   .page > .sheet{flex:0 1 auto;min-height:9rem;overflow-y:auto}
   .page > .runhead{flex:none}
   body:not(.intro) .page{min-height:0;overflow-y:auto}
+}
+/* a short window, such as a 768-line laptop: the season's seven choices are set closer so the last is not under the fold */
+@media (min-width:1081px) and (min-height:600px) and (max-height:840px){
+  #stage .choices{gap:5px} #stage .choice{padding-block:6px 5px;min-height:0} #stage .choice::before{top:3px}
+  #stage .choice small{display:inline;padding:0 0 0 .7em}
+  #stage{gap:9px}
+  body:not(.intro) .page{padding-block:18px 16px} #verso{gap:9px} #verso .qtitle{font-size:2.3rem}
+  #verso table.acct td{padding-block:1px} #verso table.acct td:first-child{padding-block:3px 2px;font-size:1rem} #verso table.acct .n{padding-bottom:3px}
+  #verso .bal dd{font-size:2rem} #verso .memo{gap:5px} #verso .lots summary{padding-block:5px 4px}
 }
 
 /* scroll bars drawn always, since some systems hide theirs until touched */
@@ -457,7 +468,7 @@ When the cloth is drawn each one takes you aside. Each is the only farmer in Ber
 
 At dusk Mrs Pryor counts her children into the cart. She has nine. She came with seven.`,
     `In your pocket-book: “We washed 900 Sheep in the Lambourn to day. To the Washers, Beer, Bread and Cheese, and gave among them 0. 5. 0. The Shepherd stood to his Middle in the River from 6 till Noon. Sent him a Glass of Rum. Very hot. Wind S.”`,
-    `In your pocket-book: “Hatherley played Kintbury on the Common for eleven Pair of Gloves. Kintbury beat us by 14 Notches. The Smith bowled. He hit the Wicket once and the Kintbury Long-stop three times. Lost to Mr. Hartopp on the Match 0. 10. 6.”`,
+    {w:() => !F('enclosed'), x:`In your pocket-book: “Hatherley played Kintbury on the Common for eleven Pair of Gloves. Kintbury beat us by 14 Notches. The Smith bowled. He hit the Wicket once and the Kintbury Long-stop three times. Lost to Mr. Hartopp on the Match 0. 10. 6.”`},
     `Three weeks without rain. The pond is down to a green plate. The wheel of a gig stands up in the middle of it.
 
 Your uncle lost a gig in 1771. He never said where.`,
@@ -482,9 +493,9 @@ One man has a turnip in his. Nobody has asked him yet.`,
 
 The Turkish Knight raises them both.`,
     `In your pocket-book: “We killed two Pigs this Morn’. They weighed 16 Score the Pair. Sent a Spare-rib to the Vicarage and the Chitterlings to the Lodge. Gave the Pryor Children the Bladder. It was in the Carp Pond by 3 o’clock. Dinner to day, the Fry &c.”`,
-    `A hard frost. The carp pond bears. After eleven at night there are lanterns on it.
+    {w:() => keepsCarriage(), x:`A hard frost. The carp pond bears. After eleven at night there are lanterns on it.
 
-In the morning the ice is cut all over. Both footmen yawn through breakfast.`,
+In the morning the ice is cut all over. Both footmen yawn through breakfast.`},
     `Plough Monday. The plough boys drag a plough from door to door for pennies. The miller gives nothing. They draw a furrow across his yard.
 
 You send out half a crown.`
@@ -549,7 +560,7 @@ VIGNETTES[2].push(
   `Nutting. The village children are in Hatherley Copse with hooked sticks and their mothers’ aprons. Mudge says they put up the pheasants. He says it from the gate.
 
 Your uncle’s keeper took him in that copse at nine years old, with an apron.`,
-  {w:() => S.year >= 1803 && S.year <= 1813, x:`Gunpowder Treason. The boys burn the Pope on the Common. This year he has a cocked hat and they call him Boney.
+  {w:() => S.year >= 1803 && S.year <= 1813 && !F('enclosed'), x:`Gunpowder Treason. The boys burn the Pope on the Common. This year he has a cocked hat and they call him Boney.
 
 It is last year’s straw.`},
   `The hop-pickers come through from Farnham, walking home into Wiltshire. Sixty of them sleep in the great barn.
@@ -598,6 +609,7 @@ He eats his Christmas dinner on the sixth of January, alone, with his hat on.`
 );
 function vignette(q){ S.vig = S.vig || {};
   const all = VIGNETTES[q].map((v, i) => ({i, v})).filter(o => typeof o.v === 'string' || !o.v.w || o.v.w());
+  if (F('henriettaAway')) { const here = all.filter(o => !/Henrietta/.test(typeof o.v === 'string' ? o.v : String(o.v.x))); if (here.length >= 4) all.splice(0, all.length, ...here); }
   const fresh = all.filter(o => S.vig[q + '-' + o.i] === undefined);
   const set = fresh.length ? fresh : all.slice().sort((a, b) => S.vig[q + '-' + a.i] - S.vig[q + '-' + b.i]).slice(0, 4);
   const o = pick(set); S.vig[q + '-' + o.i] = S.t;
@@ -924,6 +936,12 @@ const tenantOf = id => { const f = S.farms && S.farms.find(x => x.id === id); re
 const called = f => /^Widow/.test(f.tenant) ? 'the ' + f.tenant : f.tenant;
 const Called = f => /^Widow/.test(f.tenant) ? 'The ' + f.tenant : f.tenant;
 const sheHe = f => f.she ? 'She' : 'He';
+// The Thornes hold Long Barrow of the squire: not sold, not let over their heads, not broken.
+const thorneHolds = () => { const f = tenantOf('longbarrow'); return !!f && /Thorne$/.test(f.tenant); };
+// Where the parish gathers: the common while it lies open, the green once it is inclosed.
+const ground = () => F('enclosed') ? 'the green' : 'the common';
+const keepsCarriage = () => estIdx() > 0;
+const nth = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
 const let1 = test => (S.farms || []).find(f => !f.void && test(f));
 const wheatNow = () => PRICES[S.year] || 76;
 const dear = () => wheatNow() >= 100, cheap = () => wheatNow() < 60;
@@ -1124,7 +1142,7 @@ One walks across Lady Cullerne’s glove. She does not look at it. She goes on s
 The asparagus is counted in the kitchen. A hundred and twelve heads. Seven apiece.
 
 The Bishop’s chaplain takes fifteen. Mrs Bunce hears of it before the cloth is drawn.`},
-    {id:'dine-walnuts', w:() => S.year >= 1803 && S.year <= 1805, x:() => `The ladies withdraw. Colonel Tamworth lays out the invasion on the cloth.
+    {id:'dine-walnuts', w:() => S.year >= 1803 && S.year <= 1805 && keepsCarriage(), x:() => `The ladies withdraw. Colonel Tamworth lays out the invasion on the cloth.
 
 The walnuts are the French. The salt is Dover. The decanter is Lord Keith.
 
@@ -1134,7 +1152,7 @@ At midnight the footman clears France into a napkin.`},
 Fourteen sit down. The chair on Henrietta’s right is filled by the apothecary from Wyvern.
 
 He is very good company. Henrietta does not hear a word he says.`},
-    {id:'dine-earl', w:() => S.chars.cullerne.r >= 2, x:() => `Lord Cullerne takes Henrietta in. He stays until one.
+    {id:'dine-earl', w:() => S.chars.cullerne.r >= 2 && keepsCarriage(), x:() => `Lord Cullerne takes Henrietta in. He stays until one.
 
 In the hall he says he has not laughed so much since the Regency Bill. Both footmen hear him.
 
@@ -1273,7 +1291,7 @@ You send for the parish register. Fifteen. The serjeant has his shilling back.`}
     {id:'home-backgammon', x:() => `You stay at home. You play backgammon with Henrietta every evening. She moves a man with her sleeve when you look at the fire.
 
 You look at the fire a good deal.`},
-    {id:'home-alphabet', x:() => `Rain all the week. You read Tom Jones in the library for the sixth time. Henrietta nets a purse.
+    {id:'home-alphabet', w:() => !ended('library'), x:() => `Rain all the week. You read Tom Jones in the library for the sixth time. Henrietta nets a purse.
 
 Between rows she tells you what is amiss with the families of Berkshire. She takes them by the alphabet. On Friday she is at the Lovedays.`},
     {id:'home-pocketbook', x:() => `“At home all this Week. Shot nothing, signed nothing, taught the Dogs nothing. Dined each Day upon what there was. Have not passed a better Week since Christmas.”`},
@@ -1440,7 +1458,8 @@ Henrietta puts two in her reticule.`}
 };
 let LAST_CUT = null;
 /* Draws an outcome that fits the season and has not been seen, or was seen longest ago. */
-function outcome(kind){ const all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.did = S.did || {};
+function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.did = S.did || {};
+  if (F('henriettaAway')) { const here = all.filter(o => !HEN.test(String(o.x))); if (here.length) all = here; }
   const fresh = all.filter(o => S.did[o.id] === undefined);
   const pool = fresh.length ? fresh : all.slice().sort((a, b) => S.did[a.id] - S.did[b.id]).slice(0, Math.max(1, Math.ceil(all.length / 3)));
   // a piece that needs something particular (a season, a trait, a farm) is three times as likely as one that could happen any year
@@ -1487,7 +1506,7 @@ function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mort
 /* ---------- the reckoning ---------- */
 function reckoning(){
   const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
-  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${S.year - 1795 + 46}th year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
+  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
     return {title:'Shot at Dawn', P, score:null}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
@@ -1856,7 +1875,7 @@ On Sunday nobody stays to talk in the churchyard. Old Dewey stops you at the gat
 
 There are no muskets to be had in England. The blacksmith makes forty pike-heads in a fortnight.
 
-They drill on the common on Sunday afternoons. On the first Sunday the drummer puts his foot through the drum. On the fourth they march the length of the common in step. You find you are standing very straight.`; }},
+They drill on ${ground()} on Sunday afternoons. On the first Sunday the drummer puts his foot through the drum. On the fourth they march the length of ${ground()} in step. You find you are standing very straight.`; }},
     {t:'Leave it all to Crabbe.', if:() => !F('crabbeGone'), go:() => { reg('crabbe',1); later('crabbeList', 3);
       return `“See to it, Crabbe.”
 
@@ -2059,7 +2078,7 @@ At the Tamworths’ the nurse has a new way of getting the children to bed. “B
 There is a handbill on the church door. “BRITONS! To Arms!”`,
   choices:[
     {t:'Drill the Hatherley Volunteers yourself, twice a week.', if:() => F('volunteers'), go:() => { add({standing:5, goodwill:2, family:-2});
-      return `You buy the drill book and read it on Saturday nights. On Sundays and Wednesdays you take them on the common.
+      return `You buy the drill book and read it on Saturday nights. On Sundays and Wednesdays you take them on ${ground()}.
 
 Form line. Form square. Charge pikes. By November they can do all three. One man has been stuck in the leg.
 
@@ -2089,7 +2108,7 @@ ev({ id:'beacon', fixed:'1804-0', title:'The Beacon on Hatherley Down',
 
 There is fire on Hatherley Down. There is fire on Inkpen Hill behind it. From the landing window you count five more along the valley.
 
-The Volunteers are falling in on the green. Some have coats. The smith has a pike and a nightshirt. Henrietta is on the stairs with the silver in a pillowcase.
+The Volunteers are falling in on the green. Some have coats. The smith has a pike and a nightshirt. Henrietta is on the stairs with the ${ended('plate') ? 'spoons' : 'silver'} in a pillowcase.
 
 ${F('gallDead') ? 'The sexton comes up the drive at a run. He has buried the communion plate in the vicarage asparagus bed. He wants you to know which row, in case he is killed. He cannot remember which row.' : 'Dr Gall comes up the drive in his dressing-gown. He has buried the communion plate in his asparagus bed. He wants you to know which row, in case he is killed. He cannot remember which row.'}`,
   choices:[
@@ -2129,7 +2148,7 @@ People walk out from Wyvern to stand in the road and look. Somebody starts “Ru
 
 Henrietta walks the gallery with a snuffer. She counts the candles aloud. At ten o’clock she begins putting them out.`; }},
     {t:'Roast a sheep for the village.', note:'£60', go:() => { add({money:-60, goodwill:6});
-      return `You give a sheep and three barrels. It is roasted on the common.
+      return `You give a sheep and three barrels. It is roasted on ${ground()}.
 
 They drink to Lord Nelson first. Nobody says a word. Then they drink confusion to the French. The noise can be heard at the Hall.
 
@@ -2335,7 +2354,7 @@ You are Member for Wyvern. On Sunday ${F('gallDead') ? 'the Vicar' : 'Dr Gall'} 
 
 On Tuesday night it is put about that you dined with a priest at Reading in ’98. He was a French abbé. There were nine others at table.
 
-Twelve votes. Somebody has chalked a triple crown on your carriage door. It is washed off. It shows when the sun is low.`,
+Twelve votes. Somebody has chalked a triple crown on your ${keepsCarriage() ? 'carriage' : 'hall'} door. It is washed off. It shows when the sun is low.`,
     home:() => `“I nail my own gate.”
 
 The groom puts up his hammer. He leaves the ham. He says he was told nothing about the ham.
@@ -2463,7 +2482,7 @@ Every parish in Berkshire is to roast an ox. Newbury has bought one. Wyvern has 
 
 The churchwardens are in your hall with their hats in their hands. They would like to know what Hatherley is to do.`,
   choices:[
-    {t:'Roast an ox on the common.', note:'£80', go:() => { add({money:-80, goodwill:8});
+    {t:() => `Roast an ox on ${ground()}.`, note:'£80', go:() => { add({money:-80, goodwill:8});
       return `You give the ox. Eighty pounds with the beer.
 
 It goes on the spit at four in the morning. Every dog in the parish sits round it. Six men turn. Eleven give advice.
@@ -2552,8 +2571,8 @@ She leaves it by your plate.`,
 You see the Tsar at the Opera. You see the King of Prussia at a window in St James’s. In Piccadilly the crowd takes the horses out of Blücher’s carriage and drags it to Carlton House by hand.
 
 On the first of August there are fireworks in the Park. A Chinese pagoda on the canal catches fire and falls in. Henrietta has your arm. She does not let go of it all evening.`; }},
-    {t:'Feast the village on the common.', note:'£70', go:() => { add({money:-70, goodwill:6});
-      return `Trestles on the common. Four hundred sit down to beef and plum pudding. Seventy pounds.
+    {t:() => `Feast the village on ${ground()}.`, note:'£70', go:() => { add({money:-70, goodwill:6});
+      return `Trestles on ${ground()}. Four hundred sit down to beef and plum pudding. Seventy pounds.
 
 At dusk they burn Bonaparte. He is made of straw and an old coat of Mudge’s, stuffed with squibs. He burns for ten minutes and goes off at the end.
 
@@ -2567,7 +2586,7 @@ She does not speak of London again. She reads the Tamworths’ letters upstairs.
   ]});
 
 ev({ id:'abatement', fixed:'1814-2', title:'Sunday Coats',
-  text:() => { meet('thorne'); const dewey = F('nephewFarm');
+  text:() => { meet('thorne'); const dewey = !thorneHolds();
     return `Your tenants are in the hall. They have come up together. It is a Wednesday. Every one of them is in Sunday clothes.
 
 ${dewey ? 'Old Dewey' : 'Mrs Thorne'} has a paper. ${dewey ? 'He' : 'She'} is the one among them who can add.
@@ -2668,8 +2687,8 @@ Henrietta cuts up his meat. He lets her.`; }
 Henrietta sits down on the hall floor.
 
 His letter comes nine days later. “Two horses killed under me and a ball through my hat. I am perfectly well. Pray send a hat.”`; }},
-    {t:'Ring the bells and broach a hogshead on the common.', note:'£50', if:() => !(E() === 'army' && !F('edmundDead')), go:() => { add({money:-50, goodwill:5, standing:1});
-      return `You have a hogshead rolled out on the common. Fifty pounds for that and the ringers.
+    {t:() => `Ring the bells and broach a hogshead on ${ground()}.`, note:'£50', if:() => !(E() === 'army' && !F('edmundDead')), go:() => { add({money:-50, goodwill:5, standing:1});
+      return `You have a hogshead rolled out on ${ground()}. Fifty pounds for that and the ringers.
 
 It is empty by dusk. Two old soldiers are carried round the green in kitchen chairs. One left a leg at Alexandria. One left a leg at Talavera. They argue about which was the worse place.
 
@@ -2710,7 +2729,7 @@ The new steward is a Scot of twenty-six named Lark. On his first morning you han
 At Lady Day there is a new line in the quarter’s accounts, in his best hand. “Sundries. £4. 10s.” At Midsummer it is there again. “Sundries. £6.”`; }}
   ]});
 
-ev({ id:'thorneLease', from:1795, to:1800, weight:4, title:'The Widow of Long Barrow',
+ev({ id:'thorneLease', from:1795, to:1800, weight:4, cond:() => thorneHolds(), title:'The Widow of Long Barrow',
   text:() => { meet('thorne'); const st = F('crabbeGone') ? 'Lark' : 'Crabbe';
     return `They buried Samuel Thorne on Tuesday. On Wednesday his widow is in your estate office at nine o’clock. She has brought the farm book.
 
@@ -3058,7 +3077,7 @@ He has come into Berkshire to buy two things. One is an estate. He tells you the
 
 Through the open door he can see Kitty at the pianoforte. He looked at your rent roll this morning. He is looking at her in the same way.`; },
   choices:[
-    {t:'Accept him, on Kitty’s behalf.', note:'+£3,000', go:() => { fl('kitty','pinch'); add({money:3000, family:-12, standing:2}); reg('kitty',-5,'You married her to Mr Pinch for three thousand pounds'); reg('pinch',3); reg('henrietta',-1); later('pinchDies', 20 + Math.floor(Math.random() * 12));
+    {t:'Accept him, on Kitty’s behalf.', note:'+£3,000', go:() => { fl('kitty','pinch'); add({money:3000, family:-12, standing:2}); reg('kitty',-5,'You married her to Mr Pinch for three thousand pounds'); reg('pinch',3); reg('henrietta',-1); later('pinchDies', Math.max(20 + Math.floor(Math.random() * 12), 50 - S.t));
       return `The settlements are signed in the library. Three thousand pounds.
 
 They are married at Hatherley. Kitty’s veil is Brussels lace. Pinch has had it valued. He tells the figure to the clergyman, the Tamworths and the clerk.
@@ -3174,7 +3193,7 @@ You had meant to ask him what they really think of Bonaparte. You had a good man
 
 Each afternoon he walks out to the milestone. He touches it with his cane. He walks back.
 
-Your carriage passes him on the turnpike on Thursday. He takes off his hat and bows low. He is smiling.`; }}
+${keepsCarriage() ? 'Your carriage passes' : 'You pass'} him on the turnpike on Thursday. He takes off his hat and bows low. He is smiling.`; }}
   ]});
 
 ev({ id:'dubreuilAsks', follow:true, cond:() => K() === 'free' && F('dubreuilFriend'), title:'The Lieutenant Is Exchanged',
@@ -3559,7 +3578,7 @@ Will is in the yard holding his hat. He has not asked you for anything.`,
 
 Will Tanner says, “Thank you, sir.” Nothing else.
 
-All that winter your hunters come out of the stable shining. You could shave in the bay mare’s quarters.`; }},
+All that winter your ${ended('hunters') ? 'horses' : 'hunters'} come out of the stable shining. You could shave in the bay mare’s quarters.`; }},
     {t:'Let the ballot stand. Every man must take his chance.', go:() => { add({goodwill:-3, family:-1});
       return `“Every man must take his chance, Will.”
 
@@ -3659,7 +3678,7 @@ The lambs come in the spring. The wool is fine. The butcher looks at the carcase
 He tells you so again at the Bench. He tells you at the Tamworths’. He sends you the sale prices each quarter, cut from the Farmer’s Journal.`; }}
   ]});
 
-ev({ id:'allotments', from:1796, to:1808, weight:2, cond:() => !F('enclosed') && !F('allotments') && !F('nephewFarm'), title:'A Rood for Every Cottage',
+ev({ id:'allotments', from:1796, to:1808, weight:2, cond:() => !F('enclosed') && !F('allotments') && !F('nephewFarm') && thorneHolds(), title:'A Rood for Every Cottage',
   text:() => { meet('thorne'); return `Mrs Thorne drives over from Long Barrow in her gig. She has a bundle of printed reports on the seat beside her. The Society for Bettering the Condition of the Poor.
 
 She does not sit down.
@@ -3721,7 +3740,7 @@ At the last drive the head keeper stops by your stand. He looks at your gun. He 
 Your place in the line goes to the brewer from Reading. He kills fourteen pheasants and a spaniel.`; }}
   ]});
 
-ev({ id:'hunt', from:1797, to:1814, weight:2, cond:() => !F('nephewFarm') && S.chars.thorne.met, title:'Forty Gentlemen in Pink',
+ev({ id:'hunt', from:1797, to:1814, weight:2, cond:() => !F('nephewFarm') && S.chars.thorne.met && thorneHolds(), title:'Forty Gentlemen in Pink',
   text:() => `The Craven hounds ran a fox across Long Barrow on Tuesday. Forty gentlemen in scarlet went after them. They went through Mrs Thorne’s winter wheat, two of her gates and a clamp of mangolds.
 
 On Wednesday a paper comes up to the Hall, in her round hand.
@@ -3860,7 +3879,7 @@ const EDMUND = [
   {id:'edmund-waiting', kind:'news', w:() => at('church') && yr(1804, 1815), x:() => `“My dear Father, I have now been a curate eleven years counting from my Deacon’s orders. The Rector is seventy-four and takes the waters. I asked his agent who has the next presentation. It is sold already to a gentleman in the City for his nephew. The nephew is nine. I keep a pig, a pony and a school for six farmers’ sons. How does ${F('gallDead') ? 'the new man do at Hatherley' : 'Dr Gall do'}?”`},
 
   /* ---------- at home, the heir ---------- */
-  {id:'edmund-rentbook', kind:'talk', w:() => at('home'), x:() => `Edmund comes to the book-room with the rent book under his arm.
+  {id:'edmund-rentbook', kind:'talk', w:() => at('home') && !!tenantOf('church'), x:() => `Edmund comes to the book-room with the rent book under his arm.
 
 “Church Farm has paid the same rent since 1784, sir. Wheat was forty shillings then.”
 
@@ -3899,7 +3918,7 @@ He finishes the lock. He hangs up the guns. Next week you see the pegs in Cuckoo
 He folds the paper. He asks whether you want him for anything this morning.`,
     a:() => `“Take the grey and ride to Newbury market. Sell the barley as you think fit.”
 
-He sells it at two shillings over what Crabbe had asked. He tells you the price at dinner. He does not mention the Gazette.`,
+He sells it at two shillings over what ${steward()} had asked. He tells you the price at dinner. He does not mention the Gazette.`,
     b:() => `You take him round the home farm. You ask his opinion of every field and you take it in two.
 
 At the last gate he says, “I know what you are doing, sir.”
@@ -4290,7 +4309,7 @@ His next letter is to her.`
 Henrietta has taken to dining with a book. She lays it open between the two of you and reads it.`; }}
   ]});
 
-ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home' && !F('edmundDead'), title:'Edmund and the Volunteers',
+ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home' && !F('edmundDead') && !!tenantOf('kennet'), title:'Edmund and the Volunteers',
   text:() => `Edmund is rising thirty. He knows every field on the estate and what it let for in 1790.
 
 The war has begun again. Two of his schoolfellows are at sea. One is at Malta. Edmund reads the Gazette at breakfast and leaves his egg.
@@ -4969,7 +4988,7 @@ The direction is care of a pastry-cook.`},
 She has come to borrow the Hall mangle. Theirs has broken a roller. There are four surplices in the basket and a great many small shirts.
 
 “Mr Oakes sends his duty, sir. He is writing a sermon and minding the baby. He does both with the one hand.”`},
-  {id:'kitty-oakes-pew', kind:'news', w:() => K() === 'oakes', x:() => `Sunday. Kitty sits in the ${F('oakesVicar') ? 'Vicarage' : 'curate’s'} pew under the pulpit. There are ${Math.min(5, Math.max(1, Math.floor((S.year - 1800) / 2)))} children in it with her.
+  {id:'kitty-oakes-pew', kind:'news', w:() => K() === 'oakes', x:() => `Sunday. Kitty sits in the ${F('oakesVicar') ? 'Vicarage' : 'curate’s'} pew under the pulpit. There are ${ONES[Math.min(5, Math.max(2, Math.floor((S.year - 1800) / 2)))]} children in it with her.
 
 The smallest gets out during the Litany. He walks up the aisle to the Hall pew and holds up his arms.
 
@@ -5774,7 +5793,7 @@ He is back on Thursday. Brandy, cardamom, a little tincture of cantharides. “I
 
 He has not brought the bottles. He says the analysis used them up.`; }}]},
 
-  {id:'county-fight', title:'A Fight on the Common', x:() => `There is to be a fight on Hatherley Common on Tuesday. The Wyvern butcher against a Bristol man. Twenty-five guineas a side.
+  {id:'county-fight', title:'A Fight on the Common', w:() => !F('enclosed'), x:() => `There is to be a fight on Hatherley Common on Tuesday. The Wyvern butcher against a Bristol man. Twenty-five guineas a side.
 
 A prize-fight is a breach of the peace. You are the nearest magistrate. Four thousand people are looked for, and eleven coaches from London.
 
@@ -6592,7 +6611,7 @@ Forty-one stairs. She opens the door herself. She has a pen in her hand.
 “You are out of breath,” she says.
 
 You stay four days at the White Hart. You walk in the Crescent with her at one. On the fourth day she lets you carry her shawl.`; }},
-    {t:'Send the carriage, empty, with her maid.', go:() => { add({family:-2}); reg('henrietta',-1,'You sent an empty carriage for her');
+    {t:'Send the carriage, empty, with her maid.', if:() => keepsCarriage(), go:() => { add({family:-2}); reg('henrietta',-1,'You sent an empty carriage for her');
       return `The carriage goes to Bath with her maid in it and a rug.
 
 It is back on Thursday. The maid is in it. So is the rug.
@@ -6631,7 +6650,7 @@ He looks at the lodge for some time before he answers.
 
 “I can open a gate, sir.”
 
-He is at the gate next morning before the carrier. He salutes every carriage with the arm he has.${F('volunteers') ? ' On Sundays he drills the Volunteers on the common, from a chair.' : ''}`; }},
+He is at the gate next morning before the carrier. He salutes every carriage with the arm he has.${F('volunteers') ? ' On Sundays he drills the Volunteers on ${ground()}, from a chair.' : ''}`; }},
     {t:'Write to the Board at Chelsea in his behalf.', go:() => { if (chance(0.5 + (S.standing - 40) / 100)) { add({standing:2, goodwill:2});
         return `You write four sides to the Commissioners of Chelsea Hospital and sign them with your rank.
 
@@ -7563,14 +7582,17 @@ const canBorrow = () => S.mortgage + 500 <= mortCap();
 const borrowGets = () => moneyTight(S.year) || F('cut') ? 450 : 500;
 const borrowNote = () => !canBorrow() ? '' : F('cut') && !moneyTight(S.year) ? 'Mr Tidmarsh is not at home to you. A lender at Newbury will find £500 on the land, and his attorney keeps £50 of it.' : moneyTight(S.year) ? 'Money is tight. A private lender at Newbury will find £500 on the land, and his attorney keeps £50 of it.' : 'Mr Tidmarsh lends at five per cent.';
 const borrowWhy = () => canBorrow() ? '' : 'The land will carry no more on mortgage. An annuity may still be sold, or timber.';
-const grossPrice = f => Math.round((moneyTight(S.year) ? 17 : 20) * (f.void ? 0.9 * lettingValue(f, S.year) : Math.min(rentDue(f), lettingValue(f, S.year))) / 10) * 10;
+const FLIP = 12;   // seasons
+const lately = f => !!f.paid && S.t - f.boughtT < FLIP;
+const grossPrice = f => { const g = Math.round((moneyTight(S.year) ? 17 : 20) * (f.void ? 0.9 * lettingValue(f, S.year) : Math.min(rentDue(f), lettingValue(f, S.year))) / 10) * 10; return lately(f) ? Math.min(g, f.paid) : g; };
 /* A farm under lease is sold with the tenant bought out: a year's rent, and a quarter more for each further year he had to run, up to three years. */
 const buyOut = f => f.void || f.lease.type === 'will' ? 0 : Math.round(Math.min(3, 1 + 0.25 * Math.max(0, f.lease.ends - S.year - 1)) * f.rent / 10) * 10;
 const salePrice = f => Math.max(0, grossPrice(f) - buyOut(f));
 const boughtFarm = () => S.farms.filter(f => f.own).sort((a, b) => b.base - a.base)[0];
-const settledFarm = () => S.farms.length > 1 ? S.farms.filter(f => !f.own).sort((a, b) => b.base - a.base)[0] : null;
+const settledFarm = () => S.farms.length > 1 ? S.farms.filter(f => !f.own && f.tenant !== 'Edmund').sort((a, b) => b.base - a.base)[0] : null;
 const edmundSigns = () => settledFarm() && (F('edmundDead') || S.chars.edmund.r > -3);
-function conveyFarm(f){ const p = salePrice(f); S.farms.splice(S.farms.indexOf(f), 1); S.money += p; S.soldFarms = S.soldFarms || {}; S.soldFarms[f.id] = f; return p; }
+function conveyFarm(f){ const p = salePrice(f); S.farms.splice(S.farms.indexOf(f), 1);
+  for (const id in VENTURES) if (VENTURES[id].of === f.id && live(id)) { stopVenture(id, 'Sold with the farm'); if (id === 'plough') delete f.mult; } S.money += p; S.soldFarms = S.soldFarms || {}; S.soldFarms[f.id] = f; return p; }
 /* Called each quarter before the season's paper is chosen. Bills first, then the tradesmen, then the land, then the packet to Douglas. */
 function creditCheck(){
   const first = id => { S.queue = S.queue.filter(x => x.id !== id); S.queue.unshift({id, at:S.t}); };
@@ -7607,10 +7629,10 @@ Mr Tidmarsh comes out from the bank and asks for the estate map. He unrolls it o
   choices:[
     {t:() => 'Sell ' + boughtFarm().name + '.', note:() => 'About ' + fmt(salePrice(boughtFarm())) + '. It is your own to sell', if:() => !!boughtFarm(), go:() => { const f = boughtFarm(), p = conveyFarm(f); add({standing:-5});
       return `${f.name} is put up at the George by Mr Skinner in one lot. It is knocked down at ${fmt(p)} to a brewer from Reading. Mr Tidmarsh pays off the writs the same afternoon and brings you a draft for the balance.`; }},
-    {t:() => 'Sell ' + settledFarm().name + ' out of the settlement.', note:() => 'About ' + fmt(salePrice(settledFarm())) + (F('edmundDead') ? '. The trustees must sign' : '. Edmund must sign'), if:() => !!edmundSigns(), go:() => { const f = settledFarm(), p = conveyFarm(f), r = settleProceeds(p, 200), off = r.off; S.mortCap = Math.max(0, mortCap() - 3000); if (f.id === 'longbarrow') fl('soldLongBarrow'); add({standing:-8, family:-12}); if (!F('edmundDead')) reg('edmund', -2, 'You sold ' + f.name + ' out of his inheritance'); reg('cullerne', 1);
+    {t:() => 'Sell ' + settledFarm().name + ' out of the settlement.', note:() => 'About ' + fmt(salePrice(settledFarm())) + (F('edmundDead') ? '. The trustees must sign' : '. Edmund must sign'), if:() => !!edmundSigns(), go:() => { const f = settledFarm(), p = conveyFarm(f), r = settleProceeds(p, 200), off = r.off; if (f.id === 'longbarrow') fl('soldLongBarrow'); add({standing:-8, family:-12}); if (!F('edmundDead')) reg('edmund', -2, 'You sold ' + f.name + ' out of his inheritance'); reg('cullerne', 1);
       return `${F('edmundDead') ? 'The trustees meet in Lincoln’s Inn and sign the deed. Their clerk sends it down by the mail.' : 'The deed of consent goes to Edmund by the post. It comes back signed in three weeks. There is no letter with it.'}
 
-${f.name} is sold by private treaty to Lord Cullerne’s agent for ${fmt(p)}. ${off ? `The mortgagees take ${fmt(off)} of it. ` : ''}${r.trust ? `The trustees of the settlement put ${fmt(r.trust)} into the Three per Cents in Edmund’s name. ` : ''}The estate map is sent to Wyvern to be drawn again.`; }},
+${f.name} is sold by private treaty to Lord Cullerne’s agent for ${fmt(p)}. ${off ? `The mortgagees take ${fmt(off)} of it. ` : ''}${r.trust ? `The trustees of the settlement put ${fmt(r.trust)} into the Three per Cents${F('edmundDead') ? '' : ' in Edmund’s name'}. ` : ''}The estate map is sent to Wyvern to be drawn again.`; }},
     {t:'Sell nothing.', go:() => { S.dead = 'ruin';
       return `Mr Tidmarsh rolls up the map. He says he is sorry for it. The writs are served on Thursday.`; }}
   ]});
@@ -7628,7 +7650,7 @@ const VENTURES = {
   merino:{ fx:["+£110 a year in wool", "+£150 a year in rams, 1806 to 1810", "+£400 to £1,400 if sold in time", "− Worth £60 once the fashion ends"], risk:3, odds:{"well": 0.4, "dull": 0.3, "ill": 0.3}, effects:`About £110 more wool each summer, and £150 a year in rams from 1806. The flock sells for £400 to £1,400 while the fashion lasts. If the fashion ends, the wool and the flock are worth next to nothing.`, name:'Merinos', where:'The home farm', cost:420, if:() => S.year >= 1800,
     well:'Fine wool worth £110 more at each clip, and rams that sell to gentlemen.', ill:'The price of a ram is whatever gentlemen will give this year.',
     begin:() => { fl('merino'); }, state:v => 'A flock since ' + v.year,
-    endLabel:'Sell the flock', end:() => { const y = S.year, p = y <= 1805 ? 400 : y <= 1810 ? 400 + 200 * (y - 1805) : 60; fl('merino', false); S.money += p;
+    endLabel:'Sell the flock', end:v => { const y = S.year, p = y > 1810 ? 60 : Math.min(y <= 1805 ? 400 : 400 + 200 * (y - 1805), 400 + 200 * (y - v.year)); fl('merino', false); S.money += p;
       return `The merino flock is sold at Reading. It makes ${fmt(p)}.`; }},
   peat:{ fx:["+£170 a year, nine years", "− Kennet Bottom falls a grade after"], risk:2, odds:{"well": 0.6, "dull": 0.2, "ill": 0.2}, effects:`About £170 a year for nine years. Then the peat is gone and Kennet Bottom falls a grade, unless the water meadows have been floated.`, name:'Cut the peat', where:'Kennet Bottom', cost:300, if:() => !!farm('kennet'),
     well:'About £170 a year in peat and ashes, for nine years or ten.', ill:'The peat lies under the best of the meadow.', state:v => 'Digging since ' + v.year },
@@ -7740,15 +7762,15 @@ function farmsForSale(){ estateSync(); const open = S.phase !== 'end' && !S.dead
   return ids.map(id => { const f = landFor(id), price = askPrice(f), trust = Math.min(S.trust || 0, price), loan = loanOn(price - trust), down = price - trust - loan;
     const why = !open ? 'The books are closed.' : S.farms.length >= MAX_FARMS ? 'Eight farms is as much as one steward can ride.' : S.money < down ? 'The purse will not stand ' + fmt(down) + ' down.' : '';
     return {id, name:f.name, land:LAND[id], acres:f.acres, price, down, loan, trust, order:ORDER_W[f.cond], value:lettingValue(f, S.year), can:!why, why}; }); }
-function takeFarm(id, loan){ const f = landFor(id); if (S.soldFarms) delete S.soldFarms[id];
+function takeFarm(id, loan, paid){ const f = landFor(id); f.paid = paid; f.boughtT = S.t; if (S.soldFarms) delete S.soldFarms[id];
   Object.assign(f, {own:true, arrears:0, level:'fair', lease:{type:'will'}, since:S.year}); delete f.void; delete f.rebate; if (!f.tenant || f.tenant === 'Edmund') f.tenant = incomer()[0];
   f.rent = five(0.95 * lettingValue(f, S.year)); f.K = 0.5 * f.rent; if (loan) S.mortgage += loan;
   S.farms.push(f); return f; }
 function buyFarm(id){ const x = farmsForSale().find(r => r.id === id); if (!x || !x.can) return false;
-  S.money -= x.down; const f = takeFarm(id, x.loan); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
+  S.money -= x.down; const f = takeFarm(id, x.loan, x.price); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
   S.journal.unshift({when:stamp(), title:'Land', did:'Bought ' + f.name + ', ' + f.acres + ' acres, for ' + fmt(x.price) + (x.loan ? ', ' + fmt(x.loan) + ' of it on mortgage' : '') + (x.trust ? ', ' + fmt(x.trust) + ' of it the trustees’ money' : '')}); save(); render(); return true; }
 function sellState(id){ const f = farm(id), open = S.phase !== 'end' && !S.dead, settled = !f.own;
-  const why = !open ? 'The books are closed.' : S.farms.length <= 1 ? 'The last farm cannot be sold.' : settled && !F('edmundDead') && S.chars.edmund.r <= -3 ? 'Settled land. Edmund will not sign.' : '';
+  const why = !open ? 'The books are closed.' : S.farms.length <= 1 ? 'The last farm cannot be sold.' : f.tenant === 'Edmund' && !f.void ? 'Edmund farms it himself.' : settled && !F('edmundDead') && S.chars.edmund.r <= -3 ? 'Settled land. Edmund will not sign.' : '';
   const sp = settled ? splitSettled(salePrice(f), S.money, 0) : {free:salePrice(f), off:0, trust:0};
   return {canSell:!why, sellPrice:salePrice(f), sellGross:grossPrice(f), sellPayout:buyOut(f), sellToYou:sp.free, sellToMortgage:sp.off, sellToTrust:sp.trust, sellWhy:why, settled,
     sellEffects:(buyOut(f) ? 'The tenant is paid ' + fmt(buyOut(f)) + ' to give up the lease. ' : '') + (settled ? 'Settled land: Edmund must sign. The price clears your debts and the mortgage. The rest goes to the trustees, who keep it in the Funds for Edmund and pay you the dividends. Standing and the household suffer, and the estate will carry ' + fmt(mortCap() - capWithout(f)) + ' less on mortgage.' : 'Your own to sell. The money is yours. Standing falls a little.')}; }
@@ -7774,11 +7796,11 @@ Their attorney rides over from Newbury. He will take ${fmt(p)} for the ${f.acres
 
 ${f.tenant} has the farm from year to year at ${fmt(five(0.95 * lettingValue(f, S.year)))}. Mr Tidmarsh has sent a note by the attorney. He will lend the whole sum on the farm itself at five per cent.`; },
   choices:[
-    {t:'Buy it on Mr Tidmarsh’s money.', note:() => fmt(askPrice(landFor(offerId()), 13)) + ', all of it on mortgage', go:() => { const p = askPrice(landFor(offerId()), 13), f = takeFarm(offerId(), p); add({standing:2});
+    {t:'Buy it on Mr Tidmarsh’s money.', note:() => fmt(askPrice(landFor(offerId()), 13)) + ', all of it on mortgage', go:() => { const p = askPrice(landFor(offerId()), 13), f = takeFarm(offerId(), p, p); add({standing:2});
       return `The conveyance is signed in the attorney’s office at Newbury. Mr Tidmarsh’s clerk counts ${fmt(p)} in notes on to the table and the attorney counts them again.
 
 ${steward()} rules a new page in the book and writes “${f.name}” at the head of it.`; }},
-    {t:'Buy it with your own money.', note:() => fmt(askPrice(landFor(offerId()), 13)), if:() => S.money >= askPrice(landFor(offerId()), 13), go:() => { const p = askPrice(landFor(offerId()), 13); S.money -= p; const f = takeFarm(offerId(), 0); add({standing:2});
+    {t:'Buy it with your own money.', note:() => fmt(askPrice(landFor(offerId()), 13)), if:() => S.money >= askPrice(landFor(offerId()), 13), go:() => { const p = askPrice(landFor(offerId()), 13); S.money -= p; const f = takeFarm(offerId(), 0, p); add({standing:2});
       return `You give the attorney a draft on Tidmarsh’s for ${fmt(p)}. He reads it twice and puts it in his pocket-book.
 
 ${f.name} is yours from quarter day. ${f.tenant} sends up a goose.`; }},

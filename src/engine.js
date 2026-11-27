@@ -239,6 +239,12 @@ const tenantOf = id => { const f = S.farms && S.farms.find(x => x.id === id); re
 const called = f => /^Widow/.test(f.tenant) ? 'the ' + f.tenant : f.tenant;
 const Called = f => /^Widow/.test(f.tenant) ? 'The ' + f.tenant : f.tenant;
 const sheHe = f => f.she ? 'She' : 'He';
+// The Thornes hold Long Barrow of the squire: not sold, not let over their heads, not broken.
+const thorneHolds = () => { const f = tenantOf('longbarrow'); return !!f && /Thorne$/.test(f.tenant); };
+// Where the parish gathers: the common while it lies open, the green once it is inclosed.
+const ground = () => F('enclosed') ? 'the green' : 'the common';
+const keepsCarriage = () => estIdx() > 0;
+const nth = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
 const let1 = test => (S.farms || []).find(f => !f.void && test(f));
 const wheatNow = () => PRICES[S.year] || 76;
 const dear = () => wheatNow() >= 100, cheap = () => wheatNow() < 60;
@@ -439,7 +445,7 @@ One walks across Lady Cullerne’s glove. She does not look at it. She goes on s
 The asparagus is counted in the kitchen. A hundred and twelve heads. Seven apiece.
 
 The Bishop’s chaplain takes fifteen. Mrs Bunce hears of it before the cloth is drawn.`},
-    {id:'dine-walnuts', w:() => S.year >= 1803 && S.year <= 1805, x:() => `The ladies withdraw. Colonel Tamworth lays out the invasion on the cloth.
+    {id:'dine-walnuts', w:() => S.year >= 1803 && S.year <= 1805 && keepsCarriage(), x:() => `The ladies withdraw. Colonel Tamworth lays out the invasion on the cloth.
 
 The walnuts are the French. The salt is Dover. The decanter is Lord Keith.
 
@@ -449,7 +455,7 @@ At midnight the footman clears France into a napkin.`},
 Fourteen sit down. The chair on Henrietta’s right is filled by the apothecary from Wyvern.
 
 He is very good company. Henrietta does not hear a word he says.`},
-    {id:'dine-earl', w:() => S.chars.cullerne.r >= 2, x:() => `Lord Cullerne takes Henrietta in. He stays until one.
+    {id:'dine-earl', w:() => S.chars.cullerne.r >= 2 && keepsCarriage(), x:() => `Lord Cullerne takes Henrietta in. He stays until one.
 
 In the hall he says he has not laughed so much since the Regency Bill. Both footmen hear him.
 
@@ -588,7 +594,7 @@ You send for the parish register. Fifteen. The serjeant has his shilling back.`}
     {id:'home-backgammon', x:() => `You stay at home. You play backgammon with Henrietta every evening. She moves a man with her sleeve when you look at the fire.
 
 You look at the fire a good deal.`},
-    {id:'home-alphabet', x:() => `Rain all the week. You read Tom Jones in the library for the sixth time. Henrietta nets a purse.
+    {id:'home-alphabet', w:() => !ended('library'), x:() => `Rain all the week. You read Tom Jones in the library for the sixth time. Henrietta nets a purse.
 
 Between rows she tells you what is amiss with the families of Berkshire. She takes them by the alphabet. On Friday she is at the Lovedays.`},
     {id:'home-pocketbook', x:() => `“At home all this Week. Shot nothing, signed nothing, taught the Dogs nothing. Dined each Day upon what there was. Have not passed a better Week since Christmas.”`},
@@ -755,7 +761,8 @@ Henrietta puts two in her reticule.`}
 };
 let LAST_CUT = null;
 /* Draws an outcome that fits the season and has not been seen, or was seen longest ago. */
-function outcome(kind){ const all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.did = S.did || {};
+function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.did = S.did || {};
+  if (F('henriettaAway')) { const here = all.filter(o => !HEN.test(String(o.x))); if (here.length) all = here; }
   const fresh = all.filter(o => S.did[o.id] === undefined);
   const pool = fresh.length ? fresh : all.slice().sort((a, b) => S.did[a.id] - S.did[b.id]).slice(0, Math.max(1, Math.ceil(all.length / 3)));
   // a piece that needs something particular (a season, a trait, a farm) is three times as likely as one that could happen any year
@@ -802,7 +809,7 @@ function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mort
 /* ---------- the reckoning ---------- */
 function reckoning(){
   const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
-  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${S.year - 1795 + 46}th year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
+  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
     return {title:'Shot at Dawn', P, score:null}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);

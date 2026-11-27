@@ -236,14 +236,17 @@ const canBorrow = () => S.mortgage + 500 <= mortCap();
 const borrowGets = () => moneyTight(S.year) || F('cut') ? 450 : 500;
 const borrowNote = () => !canBorrow() ? '' : F('cut') && !moneyTight(S.year) ? 'Mr Tidmarsh is not at home to you. A lender at Newbury will find £500 on the land, and his attorney keeps £50 of it.' : moneyTight(S.year) ? 'Money is tight. A private lender at Newbury will find £500 on the land, and his attorney keeps £50 of it.' : 'Mr Tidmarsh lends at five per cent.';
 const borrowWhy = () => canBorrow() ? '' : 'The land will carry no more on mortgage. An annuity may still be sold, or timber.';
-const grossPrice = f => Math.round((moneyTight(S.year) ? 17 : 20) * (f.void ? 0.9 * lettingValue(f, S.year) : Math.min(rentDue(f), lettingValue(f, S.year))) / 10) * 10;
+const FLIP = 12;   // seasons
+const lately = f => !!f.paid && S.t - f.boughtT < FLIP;
+const grossPrice = f => { const g = Math.round((moneyTight(S.year) ? 17 : 20) * (f.void ? 0.9 * lettingValue(f, S.year) : Math.min(rentDue(f), lettingValue(f, S.year))) / 10) * 10; return lately(f) ? Math.min(g, f.paid) : g; };
 /* A farm under lease is sold with the tenant bought out: a year's rent, and a quarter more for each further year he had to run, up to three years. */
 const buyOut = f => f.void || f.lease.type === 'will' ? 0 : Math.round(Math.min(3, 1 + 0.25 * Math.max(0, f.lease.ends - S.year - 1)) * f.rent / 10) * 10;
 const salePrice = f => Math.max(0, grossPrice(f) - buyOut(f));
 const boughtFarm = () => S.farms.filter(f => f.own).sort((a, b) => b.base - a.base)[0];
-const settledFarm = () => S.farms.length > 1 ? S.farms.filter(f => !f.own).sort((a, b) => b.base - a.base)[0] : null;
+const settledFarm = () => S.farms.length > 1 ? S.farms.filter(f => !f.own && f.tenant !== 'Edmund').sort((a, b) => b.base - a.base)[0] : null;
 const edmundSigns = () => settledFarm() && (F('edmundDead') || S.chars.edmund.r > -3);
-function conveyFarm(f){ const p = salePrice(f); S.farms.splice(S.farms.indexOf(f), 1); S.money += p; S.soldFarms = S.soldFarms || {}; S.soldFarms[f.id] = f; return p; }
+function conveyFarm(f){ const p = salePrice(f); S.farms.splice(S.farms.indexOf(f), 1);
+  for (const id in VENTURES) if (VENTURES[id].of === f.id && live(id)) { stopVenture(id, 'Sold with the farm'); if (id === 'plough') delete f.mult; } S.money += p; S.soldFarms = S.soldFarms || {}; S.soldFarms[f.id] = f; return p; }
 /* Called each quarter before the season's paper is chosen. Bills first, then the tradesmen, then the land, then the packet to Douglas. */
 function creditCheck(){
   const first = id => { S.queue = S.queue.filter(x => x.id !== id); S.queue.unshift({id, at:S.t}); };
@@ -280,10 +283,10 @@ Mr Tidmarsh comes out from the bank and asks for the estate map. He unrolls it o
   choices:[
     {t:() => 'Sell ' + boughtFarm().name + '.', note:() => 'About ' + fmt(salePrice(boughtFarm())) + '. It is your own to sell', if:() => !!boughtFarm(), go:() => { const f = boughtFarm(), p = conveyFarm(f); add({standing:-5});
       return `${f.name} is put up at the George by Mr Skinner in one lot. It is knocked down at ${fmt(p)} to a brewer from Reading. Mr Tidmarsh pays off the writs the same afternoon and brings you a draft for the balance.`; }},
-    {t:() => 'Sell ' + settledFarm().name + ' out of the settlement.', note:() => 'About ' + fmt(salePrice(settledFarm())) + (F('edmundDead') ? '. The trustees must sign' : '. Edmund must sign'), if:() => !!edmundSigns(), go:() => { const f = settledFarm(), p = conveyFarm(f), r = settleProceeds(p, 200), off = r.off; S.mortCap = Math.max(0, mortCap() - 3000); if (f.id === 'longbarrow') fl('soldLongBarrow'); add({standing:-8, family:-12}); if (!F('edmundDead')) reg('edmund', -2, 'You sold ' + f.name + ' out of his inheritance'); reg('cullerne', 1);
+    {t:() => 'Sell ' + settledFarm().name + ' out of the settlement.', note:() => 'About ' + fmt(salePrice(settledFarm())) + (F('edmundDead') ? '. The trustees must sign' : '. Edmund must sign'), if:() => !!edmundSigns(), go:() => { const f = settledFarm(), p = conveyFarm(f), r = settleProceeds(p, 200), off = r.off; if (f.id === 'longbarrow') fl('soldLongBarrow'); add({standing:-8, family:-12}); if (!F('edmundDead')) reg('edmund', -2, 'You sold ' + f.name + ' out of his inheritance'); reg('cullerne', 1);
       return `${F('edmundDead') ? 'The trustees meet in Lincoln’s Inn and sign the deed. Their clerk sends it down by the mail.' : 'The deed of consent goes to Edmund by the post. It comes back signed in three weeks. There is no letter with it.'}
 
-${f.name} is sold by private treaty to Lord Cullerne’s agent for ${fmt(p)}. ${off ? `The mortgagees take ${fmt(off)} of it. ` : ''}${r.trust ? `The trustees of the settlement put ${fmt(r.trust)} into the Three per Cents in Edmund’s name. ` : ''}The estate map is sent to Wyvern to be drawn again.`; }},
+${f.name} is sold by private treaty to Lord Cullerne’s agent for ${fmt(p)}. ${off ? `The mortgagees take ${fmt(off)} of it. ` : ''}${r.trust ? `The trustees of the settlement put ${fmt(r.trust)} into the Three per Cents${F('edmundDead') ? '' : ' in Edmund’s name'}. ` : ''}The estate map is sent to Wyvern to be drawn again.`; }},
     {t:'Sell nothing.', go:() => { S.dead = 'ruin';
       return `Mr Tidmarsh rolls up the map. He says he is sorry for it. The writs are served on Thursday.`; }}
   ]});
@@ -301,7 +304,7 @@ const VENTURES = {
   merino:{ fx:["+£110 a year in wool", "+£150 a year in rams, 1806 to 1810", "+£400 to £1,400 if sold in time", "− Worth £60 once the fashion ends"], risk:3, odds:{"well": 0.4, "dull": 0.3, "ill": 0.3}, effects:`About £110 more wool each summer, and £150 a year in rams from 1806. The flock sells for £400 to £1,400 while the fashion lasts. If the fashion ends, the wool and the flock are worth next to nothing.`, name:'Merinos', where:'The home farm', cost:420, if:() => S.year >= 1800,
     well:'Fine wool worth £110 more at each clip, and rams that sell to gentlemen.', ill:'The price of a ram is whatever gentlemen will give this year.',
     begin:() => { fl('merino'); }, state:v => 'A flock since ' + v.year,
-    endLabel:'Sell the flock', end:() => { const y = S.year, p = y <= 1805 ? 400 : y <= 1810 ? 400 + 200 * (y - 1805) : 60; fl('merino', false); S.money += p;
+    endLabel:'Sell the flock', end:v => { const y = S.year, p = y > 1810 ? 60 : Math.min(y <= 1805 ? 400 : 400 + 200 * (y - 1805), 400 + 200 * (y - v.year)); fl('merino', false); S.money += p;
       return `The merino flock is sold at Reading. It makes ${fmt(p)}.`; }},
   peat:{ fx:["+£170 a year, nine years", "− Kennet Bottom falls a grade after"], risk:2, odds:{"well": 0.6, "dull": 0.2, "ill": 0.2}, effects:`About £170 a year for nine years. Then the peat is gone and Kennet Bottom falls a grade, unless the water meadows have been floated.`, name:'Cut the peat', where:'Kennet Bottom', cost:300, if:() => !!farm('kennet'),
     well:'About £170 a year in peat and ashes, for nine years or ten.', ill:'The peat lies under the best of the meadow.', state:v => 'Digging since ' + v.year },
@@ -413,15 +416,15 @@ function farmsForSale(){ estateSync(); const open = S.phase !== 'end' && !S.dead
   return ids.map(id => { const f = landFor(id), price = askPrice(f), trust = Math.min(S.trust || 0, price), loan = loanOn(price - trust), down = price - trust - loan;
     const why = !open ? 'The books are closed.' : S.farms.length >= MAX_FARMS ? 'Eight farms is as much as one steward can ride.' : S.money < down ? 'The purse will not stand ' + fmt(down) + ' down.' : '';
     return {id, name:f.name, land:LAND[id], acres:f.acres, price, down, loan, trust, order:ORDER_W[f.cond], value:lettingValue(f, S.year), can:!why, why}; }); }
-function takeFarm(id, loan){ const f = landFor(id); if (S.soldFarms) delete S.soldFarms[id];
+function takeFarm(id, loan, paid){ const f = landFor(id); f.paid = paid; f.boughtT = S.t; if (S.soldFarms) delete S.soldFarms[id];
   Object.assign(f, {own:true, arrears:0, level:'fair', lease:{type:'will'}, since:S.year}); delete f.void; delete f.rebate; if (!f.tenant || f.tenant === 'Edmund') f.tenant = incomer()[0];
   f.rent = five(0.95 * lettingValue(f, S.year)); f.K = 0.5 * f.rent; if (loan) S.mortgage += loan;
   S.farms.push(f); return f; }
 function buyFarm(id){ const x = farmsForSale().find(r => r.id === id); if (!x || !x.can) return false;
-  S.money -= x.down; const f = takeFarm(id, x.loan); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
+  S.money -= x.down; const f = takeFarm(id, x.loan, x.price); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
   S.journal.unshift({when:stamp(), title:'Land', did:'Bought ' + f.name + ', ' + f.acres + ' acres, for ' + fmt(x.price) + (x.loan ? ', ' + fmt(x.loan) + ' of it on mortgage' : '') + (x.trust ? ', ' + fmt(x.trust) + ' of it the trustees’ money' : '')}); save(); render(); return true; }
 function sellState(id){ const f = farm(id), open = S.phase !== 'end' && !S.dead, settled = !f.own;
-  const why = !open ? 'The books are closed.' : S.farms.length <= 1 ? 'The last farm cannot be sold.' : settled && !F('edmundDead') && S.chars.edmund.r <= -3 ? 'Settled land. Edmund will not sign.' : '';
+  const why = !open ? 'The books are closed.' : S.farms.length <= 1 ? 'The last farm cannot be sold.' : f.tenant === 'Edmund' && !f.void ? 'Edmund farms it himself.' : settled && !F('edmundDead') && S.chars.edmund.r <= -3 ? 'Settled land. Edmund will not sign.' : '';
   const sp = settled ? splitSettled(salePrice(f), S.money, 0) : {free:salePrice(f), off:0, trust:0};
   return {canSell:!why, sellPrice:salePrice(f), sellGross:grossPrice(f), sellPayout:buyOut(f), sellToYou:sp.free, sellToMortgage:sp.off, sellToTrust:sp.trust, sellWhy:why, settled,
     sellEffects:(buyOut(f) ? 'The tenant is paid ' + fmt(buyOut(f)) + ' to give up the lease. ' : '') + (settled ? 'Settled land: Edmund must sign. The price clears your debts and the mortgage. The rest goes to the trustees, who keep it in the Funds for Edmund and pay you the dividends. Standing and the household suffer, and the estate will carry ' + fmt(mortCap() - capWithout(f)) + ' less on mortgage.' : 'Your own to sell. The money is yours. Standing falls a little.')}; }
@@ -447,11 +450,11 @@ Their attorney rides over from Newbury. He will take ${fmt(p)} for the ${f.acres
 
 ${f.tenant} has the farm from year to year at ${fmt(five(0.95 * lettingValue(f, S.year)))}. Mr Tidmarsh has sent a note by the attorney. He will lend the whole sum on the farm itself at five per cent.`; },
   choices:[
-    {t:'Buy it on Mr Tidmarsh’s money.', note:() => fmt(askPrice(landFor(offerId()), 13)) + ', all of it on mortgage', go:() => { const p = askPrice(landFor(offerId()), 13), f = takeFarm(offerId(), p); add({standing:2});
+    {t:'Buy it on Mr Tidmarsh’s money.', note:() => fmt(askPrice(landFor(offerId()), 13)) + ', all of it on mortgage', go:() => { const p = askPrice(landFor(offerId()), 13), f = takeFarm(offerId(), p, p); add({standing:2});
       return `The conveyance is signed in the attorney’s office at Newbury. Mr Tidmarsh’s clerk counts ${fmt(p)} in notes on to the table and the attorney counts them again.
 
 ${steward()} rules a new page in the book and writes “${f.name}” at the head of it.`; }},
-    {t:'Buy it with your own money.', note:() => fmt(askPrice(landFor(offerId()), 13)), if:() => S.money >= askPrice(landFor(offerId()), 13), go:() => { const p = askPrice(landFor(offerId()), 13); S.money -= p; const f = takeFarm(offerId(), 0); add({standing:2});
+    {t:'Buy it with your own money.', note:() => fmt(askPrice(landFor(offerId()), 13)), if:() => S.money >= askPrice(landFor(offerId()), 13), go:() => { const p = askPrice(landFor(offerId()), 13); S.money -= p; const f = takeFarm(offerId(), 0, p); add({standing:2});
       return `You give the attorney a draft on Tidmarsh’s for ${fmt(p)}. He reads it twice and puts it in his pocket-book.
 
 ${f.name} is yours from quarter day. ${f.tenant} sends up a goose.`; }},
