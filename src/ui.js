@@ -7,7 +7,6 @@ let TAB = 'accounts';
 const TABS = [['accounts', 'Accounts'], ['works', 'Works'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
-const steward = () => F('crabbeGone') ? 'Mr Lark' : 'Mr Crabbe';
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
 
 function render(){
@@ -66,7 +65,7 @@ function accountHTML(){ let rows = '', tot = 0;
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern have met at the George and resolved, unanimously, to give no further credit. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
-    <p class="kicker">${esc(quarterDay())}. ${esc(steward())} presents the quarter</p>
+    <p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
     <h2>The Accounts</h2>
     <div class="narrow">${accountHTML()}</div>
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
@@ -119,7 +118,7 @@ function versoHTML(){
     ${accountHTML()}
     <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
       ${over ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${S.mortgage < 9000 ? '' : 'disabled'}>Borrow £500</button></div>`}</dl>
-    <div class="memo"><h3>${esc(steward())}’s memoranda</h3>
+    <div class="memo"><h3>${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W)}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W)}
       ${meter('Peace of the household', S.family, FAMILY_W)}

@@ -1,6 +1,6 @@
 // Plays many random lives straight through the engine, to shake out runtime errors.
 const fs = require('fs'), vm = require('vm'), path = require('path');
-const src = ['data','traits','engine','events1','events2'].map(f => fs.readFileSync(path.join(__dirname,'../src',f+'.js'),'utf8')).join('\n');
+const src = ['data','traits','engine','events1','events2','events3'].map(f => fs.readFileSync(path.join(__dirname,'../src',f+'.js'),'utf8')).join('\n');
 const ctx = {console, Math, JSON, localStorage:{setItem(){},getItem(){return null},removeItem(){}}, window:{scrollTo(){}}};
 ctx.render = () => {}; vm.createContext(ctx);
 vm.runInContext(src + '\nindexEvents(); this.api={worksList,beginWork,worksInHand,worksDone,TRAITS,TRAIT_GROUPS,pointsLeft,newGame,next,choose,undertake,undertakingOptions,byId,reckoning,get S(){return S},EVENTS};', ctx);

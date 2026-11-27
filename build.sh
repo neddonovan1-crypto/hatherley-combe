@@ -6,6 +6,10 @@ cd "$(dirname "$0")"
   cat src/head.html
   echo '<style>'; cat src/style.css; echo '</style>'
   cat src/body.html
-  echo '<script>'; cat src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/ui.js; echo '</script>'
+  echo '<script>'; cat src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js src/ui.js; echo '</script>'
 } > index.html
 echo "built index.html ($(wc -c < index.html) bytes)"
+# The parts share one script, so a name declared twice breaks the whole page. Catch it here.
+if command -v node >/dev/null 2>&1; then
+  cat src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js src/ui.js | node -e "new Function(require('fs').readFileSync(0,'utf8'))" || { echo 'build.sh: the combined script does not parse' >&2; exit 1; }
+fi
