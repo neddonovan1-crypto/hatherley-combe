@@ -23,6 +23,35 @@ const PEOPLE = {
   oakes: {name:'Mr Oakes', role:() => F('oakesVicar') ? 'Vicar of Hatherley' : 'The curate, on forty pounds', r:1, met:false},
   dubreuil: {name:'Lieutenant Dubreuil', role:() => 'French officer on parole', r:0, met:false}
 };
+/* A short life of each person, for the Persons leaf. PEOPLE[id].bio() returns two to four sentences as things stand. */
+const BIOS = {
+  henrietta:() => `You married her at Reading in ’75; and she has kept ever since the keys, the linen book, and a list of who has called. Of her two wishes, that the Hall should be thought as good a house as the Tamworths’, and that Kitty should marry better than she did herself, she has only ever spoken the first.${F('henriettaAway') ? ' She is at Bath, in Gay Street.' : ''}`,
+  kitty:() => ({
+    free:`Born at the Hall in ’78, and from an early age disposed to read what she is told not to read, and to walk where she is told not to walk. Her mother wants her married; Kitty wants to be given a reason.`,
+    vane:F('vaneGone') ? `She went to Gretna with Captain Vane, who, having sold his commission, left her with his bills and a boy; and she asks nothing of anybody, and is watched to see that she does not.` : `She went to Gretna with Captain Vane, and follows the regiment from one garrison town to the next; whence she writes letters in which there is no complaint, but only the prices of things.`,
+    pinch:F('kittyWidow') ? `She married Mr Pinch of Bristol, and has buried him; by which she is possessed of his sugar, his house at Clifton, and three hundred people in Jamaica whom she has never seen, and the attorneys show her where to sign.` : `She married Mr Pinch of Bristol and eleven servants; and having a carriage, may drive upon the Downs between two and four. Her mother is satisfied.`,
+    oakes:`She married Mr Oakes upon his stipend, and has no carriage; she borrows the Hall mangle, and returns it clean, and has not once in all this time said that she is sorry.`,
+    dubreuil:`She married Lieutenant Dubreuil, a Frenchman and a prisoner, since when half the county does not call; and she is learning French, in order to be rude in it.`})[K()],
+  edmund:() => F('edmundDead') ? `Your only son. ${S.flags.edmundRoleDead || 'Killed at Waterloo, June 1815'}. His fowling piece is on the rack in the gun room. Nobody has been told to move it.` : ({
+    army:`Your only son and the heir, for whom you bought colours in the 52nd, and who writes from wherever the regiment is, and asks for boots. Hatherley is settled upon him; he has only to live to have it.`,
+    navy:`Your only son and the heir, gone to sea in Captain Holloway’s frigate, whence he writes whenever a ship is homeward bound to carry it; and his mother keeps the letters in order of date.`,
+    church:`Your only son and the heir, who wanted a red coat, and whom you steered into the Church; where he reads the lessons very clearly, and looks at the Gazette afterwards.`,
+    home:`Your only son and the heir, kept at home to learn the estate, of which he knows every field, and what it let for in 1790. His schoolfellows are at the war.`,
+    militia:`Your only son and the heir, having a company in the Berkshire Militia; that is to say a red coat, and one that stays in England, and his mother thinks it a very good arrangement.`,
+    farmer:`Your only son and the heir, who farms Kennet Bottom, and pays you rent for it; who married Miss Loveday; and who comes to the audit with the other tenants, and waits his turn.`})[E()] || `Your only son and the heir, nineteen years old, with Hatherley settled upon him, and nothing to do until he has it. His mother wants him within a day’s ride; he wants a coat with facings.`,
+  crabbe:() => F('crabbeGone') ? `He was your uncle’s steward, and afterwards yours, and lives now at Newbury; where, when you meet him, he bows from the other side of the street.` : `Steward at Hatherley since your uncle’s time, and keeper of the rent book, in which there is a column headed Sundries. He would like his nephew to have a farm; and the tenants bring him a goose at Michaelmas.`,
+  gall:() => F('gallDead') ? `He was vicar of Hatherley forty years, and a justice for thirty, and died at his own table during the second remove. His tithe book is in the vestry chest.` : `Vicar of Hatherley, a justice, and owner of the great tithes, of which he takes every tenth sheaf, and counts them himself. He dines at the Hall upon Sundays, and at the Castle when he is asked; and would have the poor kept quiet, and the Methodists kept out of the barn.`,
+  cullerne:() => `The Earl, who has Cullerne Castle, fourteen of the thirty-one votes in Wyvern, and the chair at Quarter Sessions; who wants the borough quiet, and his nephew Mr Fitzroy Bligh in the seat; and who sends venison to those he counts upon. ${F('mp') ? 'You sit for Wyvern. He has done that sum more than once.' : 'He counts your uncle’s three plots.'}`,
+  pryor:() => `A cottager upon Hatherley Common, having a cow, nine children, and no master; who takes harvest work when he chooses, and says what he thinks at the Bell, where the parish waits to hear it. ${F('enclosed') ? 'The Common is enclosed now. He has not forgotten whose name was on the bill.' : 'He wants the Common left as it is.'}`,
+  hartopp:() => `Your neighbour over the brook, who farms his own land by the new husbandry, with Swedish turnips, tile drains, and a Leicester ram; and who, having read Mr Arthur Young, will lend him to anybody. He is looking for a convert, and has fixed upon you.`,
+  thorne:() => F('nephewFarm') ? `A widow, who held Long Barrow twenty years, and farmed it better than her husband had, until you let it over her head. The other tenants still take their sums to her.` : `A widow, who has held Long Barrow since her husband died, and farms it better than he did; and who, being able to add, has the sums of the other tenants brought to her. She wants her lease renewed, and nothing else from anybody.`,
+  vane:() => `A captain in the Northamptonshire Militia, who dances well, owes his tailor, and has a theory about horses; and who wanted a wife with something settled upon her. ${K() === 'vane' ? (F('vaneGone') ? 'He had Kitty. He is thought to be in Dublin.' : 'He has Kitty.') : 'Kitty looked at him for longer than her mother liked.'}`,
+  pinch:() => F('kittyWidow') ? `He was a Bristol merchant, with sugar from Jamaica, a house at Clifton, and a new crest; and dying there, left everything to Kitty, and a mourning ring to you.` : `A Bristol merchant of fifty, and a widower, having sugar from Jamaica, a house at Clifton, and three hundred people upon an estate he has never seen; who wants a gentleman’s daughter at the head of his table. ${K() === 'pinch' ? 'He has one.' : 'Henrietta has asked what he is worth. It is eighty thousand.'}`,
+  oakes:() => F('oakesVicar') ? `He was curate here upon forty pounds a year, and is vicar now; but he goes round the cottages on foot as he did before, and preaches short sermons, none of them another man’s.${K() === 'oakes' ? ' Kitty is at the Vicarage.' : ''}` : `Dr Gall’s curate, who does the whole duty of the parish upon forty pounds a year, lodges over the schoolhouse, and goes round the cottages on foot. He wants a living. ${K() === 'oakes' ? 'He has Kitty, and no living.' : 'He has not said what else he wants.'}`,
+  dubreuil:() => K() === 'dubreuil' ? `A lieutenant of the French navy, taken at sea, who was upon his parole at Reading, and might walk one mile out of the town. He is your son-in-law; and his mother at Saint-Malo has been told.` : `A lieutenant of the French navy, taken at sea, and upon his parole at Reading; where he may walk one mile out of the town, and must be indoors by five. He draws, and speaks English with great care; and he wants to be exchanged.`
+};
+for (const id in BIOS) PEOPLE[id].bio = BIOS[id];
+
 const REGARD = ['Implacable','Hostile','Cold','Wary','Cool','Civil','Cordial','Warm','Fond','Devoted','Would die for you'];
 
 const STANDING_W = ['A laughing-stock','Overlooked','Respectable','Well regarded','A man of weight','First man in the county'];
@@ -32,21 +61,21 @@ const FAMILY_W = ['At open war','Frosty','Civil','Contented','Happy','Doting'];
 // County intelligence. Keyed year-season.
 const NEWS = {
   '1795-0':'Bread riots at Newbury, Chichester and Wells. The quartern loaf at elevenpence.',
-  '1795-1':'The Prince of Wales has married his cousin Caroline. He is said to have called for brandy on first seeing her.',
+  '1795-1':'The Prince of Wales is married to his cousin, the Princess Caroline of Brunswick.',
   '1795-2':'A stone thrown at the King’s coach on his way to open Parliament. The harvest the worst in thirty years.',
   '1795-3':'Parliament passes the Two Acts against treasonable practices and seditious meetings.',
   '1796-0':'General Bonaparte, aged twenty-six, has crossed into Italy.',
-  '1796-1':'A general election. Dr Jenner of Berkeley has put cow-pox into a gardener’s boy, to see what happens.',
+  '1796-1':'A general election. Dr Jenner of Berkeley has put matter from a cow-pox sore into a gardener’s boy.',
   '1796-3':'A French fleet with fifteen thousand men sails for Ireland and is scattered by a gale in Bantry Bay.',
   '1797-0':'The French land at Fishguard. The Bank of England stops payment in gold.',
   '1797-1':'The fleet has mutinied at Spithead, and again at the Nore. The men ask a shilling a day.',
   '1797-3':'Admiral Duncan has beaten the Dutch at Camperdown. Mr Pitt trebles the assessed taxes.',
-  '1798-1':'Rebellion in Ireland. Bonaparte has sailed from Toulon, nobody knows whither.',
+  '1798-1':'Rebellion in Ireland. Bonaparte has sailed from Toulon with four hundred ships. His destination is not known.',
   '1798-2':'Nelson has found the French fleet at the mouth of the Nile and destroyed it.',
   '1799-1':'The wettest summer in memory. Corn sprouting in the ear.',
   '1799-3':'Bonaparte makes himself First Consul. Mr Pitt’s tax on incomes comes into force.',
   '1800-1':'Wheat past a hundred shillings. Riots at Banbury, Oxford and Nottingham.',
-  '1800-2':'The Brown Bread Act forbids the miller to dress fine white flour. It is evaded by Tuesday.',
+  '1800-2':'The Brown Bread Act. Millers are forbidden to dress fine white flour.',
   '1801-0':'Union with Ireland. Mr Pitt has resigned and Mr Addington, a doctor’s son, is Minister.',
   '1801-1':'The first Census of the people. Nelson at Copenhagen puts the glass to his blind eye.',
   '1802-0':'Peace signed at Amiens. The income tax is to be repealed and the returns burnt.',
@@ -55,7 +84,7 @@ const NEWS = {
   '1804-1':'Mr Pitt returns. Bonaparte has had himself voted Emperor of the French.',
   '1805-2':'The French camp at Boulogne has broken up and marched east. Nobody knows why.',
   '1805-3':'A great victory off Cape Trafalgar. Lord Nelson killed.',
-  '1806-0':'Mr Pitt is dead, at forty-six. His last words concerned either his country or a veal pie; accounts differ.',
+  '1806-0':'Mr Pitt is dead, at forty-six. The House votes forty thousand pounds to pay his debts.',
   '1806-3':'Bonaparte, at Berlin, forbids all Europe to trade with Britain.',
   '1807-0':'The slave trade is abolished by two hundred and eighty-three votes to sixteen.',
   '1807-2':'The fleet bombards Copenhagen and carries off the Danish navy.',
@@ -64,49 +93,180 @@ const NEWS = {
   '1809-3':'The King’s Jubilee. The expedition to Walcheren dying of fever in the Dutch marshes.',
   '1810-3':'The Princess Amelia is dead, and the King’s mind has given way with grief.',
   '1811-0':'The Prince of Wales sworn in as Regent. Frame-breakers at work in Nottinghamshire.',
-  '1811-2':'A great comet, with a tail like a peacock. The vintage in France is said to be superb.',
+  '1811-2':'A great comet in the north-west every evening. The wine growers of France expect a famous vintage.',
   '1812-1':'Mr Perceval, the Prime Minister, shot dead in the lobby of the House. War with America.',
   '1812-3':'Bonaparte has entered Moscow and found it on fire.',
-  '1813-1':'Lord Wellington’s victory at Vitoria. King Joseph’s baggage taken, including his chamber pot.',
+  '1813-1':'Lord Wellington’s victory at Vitoria. King Joseph’s coach is taken, with his plate, his pictures and his chamber pot.',
   '1813-2':'The greatest harvest in living memory. Corn falling at every market.',
   '1814-0':'The Thames frozen at London. An elephant led across the ice below Blackfriars.',
   '1814-1':'Bonaparte has abdicated and gone to govern the island of Elba.',
   '1815-0':'The Corn Bill before Parliament. Bonaparte has left Elba and landed in France.',
   '1815-1':'A great battle near Brussels, at a village called Waterloo.',
-  '1815-3':'Bonaparte is landed on St Helena. Wheat at fifty-six shillings and the farmers ruined by plenty.'
+  '1815-3':'Bonaparte is landed on St Helena. Wheat at fifty-six shillings. Farms to let in every county.'
 };
 
 // Quiet seasons. One is drawn when nothing else demands you.
 const VIGNETTES = [
   [ // spring
-    `A late frost. The blossom on the orchard wall goes brown overnight and Mrs Bunce takes it as an omen, though she declines to say of what.`,
-    `The rooks are building high in the elms, which Mudge says means a fine summer. Mudge said the same last year, in the rain, without embarrassment.`,
-    `Lambing on the Down. The shepherd has not slept in a bed for three weeks and has begun to answer questions in the voice he uses for ewes.`,
-    `The rent audit dinner. Eleven farmers eat a round of beef between them and each explains, separately, that he alone is being ruined.`,
-    `Primroses in Cuckoo Copse, and a cuckoo, which arrives on the fourteenth of April as punctually as a bailiff.`
+    `A late frost having come in the night, the blossom upon the orchard wall is brown by morning.
+
+“That’s a sign,” says Mrs Bunce; but of what she will not say.`,
+    `In your pocket-book: “Rooks building in the tops of the Elms. Mudge says it is the Sign of a dry Summer. Gave him 0. 1. 0. We finished sowing Barley this Afternoon. Dinner to day, a boiled Leg of Mutton and Capers &c. Wind N.E. and cold.”`,
+    `Lambing upon the Down, where the shepherd has slept these three weeks in the hut upon wheels; and when you ask him how many twins,
+
+“Coom on then, coom on,” he says, and then begs your pardon.`,
+    `The rent audit dinner, at which the tenants finish a round of beef between them; and when the cloth is drawn, each takes you aside in his turn, and each is the only farmer in Berkshire being ruined.`,
+    `In your pocket-book: “April 14. Heard the Cuckoo in the Copse about 7 this Morn’. To the Mole-catcher for his Quarter paid 0. 10. 6. He shewed me 41 Tails. Dinner to day, a Couple of Rabbits smothered with Onions, a Gooseberry Tart &c.”`
   ],
   [ // summer
-    `Haymaking. The whole parish is in Kennet Meadow with rakes, and the beer goes out to them in buckets. By evening nobody can say with certainty whose child is whose.`,
-    `Sheep-washing in the Lambourn. The sheep object. So, after an hour up to his waist, does the shepherd.`,
-    `A cricket match on the common: Hatherley against Kintbury, for eleven pairs of gloves. The blacksmith bowls as if he held a grudge against the wicket personally.`,
-    `Three weeks without rain. The pond shrinks to a green plate and something is found in the middle of it that your uncle was known to have lost in 1771.`,
-    `A travelling show at Wyvern exhibits a Learned Pig that tells the time and picks out the greatest rogue in the company. It picks out Crabbe. Crabbe laughs longest.`
+    `Haymaking in Kennet Meadow, with the whole parish out with rakes, and the beer going down to them in buckets.
+
+At dusk Mrs Pryor counts her children into the cart; and having come with seven, finds that she has nine.`,
+    `In your pocket-book: “We washed 900 Sheep in the Lambourn to day. To the Washers, Beer, Bread and Cheese, and gave among them 0. 5. 0. The Shepherd stood to his Middle in the River from 6 till Noon. Sent him a Glass of Rum. Very hot. Wind S.”`,
+    {w:() => !F('enclosed'), x:`In your pocket-book: “Hatherley played Kintbury on the Common for eleven Pair of Gloves. Kintbury beat us by 14 Notches. The Smith bowled. He hit the Wicket once and the Kintbury Long-stop three times. Lost to Mr. Hartopp on the Match 0. 10. 6.”`},
+    `After three weeks without rain the pond is down to a green plate, in the middle of which there stands up the wheel of a gig.
+
+Your uncle lost a gig in 1771, and never said where.`,
+    `A show at Wyvern has a Learned Pig, that for a penny tells the hour by a watch, and for twopence finds the greatest rogue in the company.
+
+Having gone twice round the ring, it sits down in front of Mr Skinner the auctioneer.`
   ],
   [ // autumn
-    `Harvest home. The last load comes in with a boy on top of it dressed in ribbons, and you make the same speech your uncle made, because nobody would forgive a new one.`,
-    `The gleaners are out on Long Barrow at first light, bent double, women and children in a line. A good gleaning family will carry home six bushels, and know to the ear who took more.`,
-    `Wyvern Michaelmas Fair. Servants stand for hire in the market place: carters with whipcord in their hats, shepherds with a lock of wool, and one man with a turnip, whom nobody likes to ask.`,
-    `The first pheasants of the season, and the first argument of the season about whose they were.`,
-    `Mushrooms on the Down, mist in the combe, and the smell of every cottage copper in the parish boiling elderberries at once.`
+    `Harvest home. The last load comes down the lane with a boy on top in ribbons, and you give the speech from the wagon; but it being your uncle’s speech, the men say the last line with you.`,
+    `The gleaners are upon Long Barrow at first light, the women and children going up the stubble in a line, bent double.
+
+Mrs Pryor carries home six bushels, and can tell you what each of the others carried.`,
+    `Wyvern Michaelmas Fair, where the servants stand for hire in the market place, the carters with whipcord in their hats, and the shepherds with a lock of wool.
+
+One man has a turnip in his, and nobody has asked him yet.`,
+    `In your pocket-book: “Octbr. 1. Out by 8 this Morn’ with Mudge and both Spaniels. We killed 4 Brace of Pheasants and a Hare. Three of the Birds fell over Mr. Hartopp’s Hedge. His Man came for them before we had loaded again. Let him have a Brace. Dinner to day, the Hare rosted.”`,
+    `In your pocket-book: “Thick Mist in the Combe till 10. A great many Mushrooms on the Down. Mrs. Bunce made 11 Bottles of Catchup. Recd. of Farmer Dewey for half a Year’s Rent 62. 10. 0. Gave him back as usual 0. 2. 6. My Uncle always did.”`
   ],
   [ // winter
-    `Snow to the tops of the hedges. The mail does not get through for nine days, and you discover how little you missed it.`,
-    `The mummers come to the Hall on Christmas Eve. Saint George is killed by the Turkish Knight and raised by the Doctor, who is the wheelwright, and drunk, and has to be raised himself.`,
-    `Pig-killing week. Every cottage has a flitch in the chimney and a bladder for the children, and for a fortnight nobody in Hatherley is hungry.`,
-    `A hard frost. The carp pond bears, and the footmen skate on it after dark when they think the house is asleep.`,
-    `Plough Monday. The plough boys drag a plough from door to door, asking for pennies, and drawing a furrow across the gravel of anyone who refuses. Your gravel is spared, at a price.`
+    `In your pocket-book: “Snow as high as the Hedge Tops. No Mail these 9 Days. Read Prayers in the Hall, the Church Path being stopped. Sent Widow Harris a Sack of Coals and 0. 2. 6. At Backgammon this Evening with H. lost 0. 1. 6. Bitter cold. Wind N.”`,
+    `The mummers come to the Hall upon Christmas Eve; and the Turkish Knight having killed Saint George, the Doctor, who is the wheelwright, comes forward to raise him, and falls over Saint George.
+
+The Turkish Knight raises them both.`,
+    `In your pocket-book: “We killed two Pigs this Morn’. They weighed 16 Score the Pair. Sent a Spare-rib to the Vicarage and the Chitterlings to the Lodge. Gave the Pryor Children the Bladder. It was in the Carp Pond by 3 o’clock. Dinner to day, the Fry &c.”`,
+    {w:() => keepsCarriage(), x:`A hard frost, so that the carp pond bears, and after eleven at night there are lanterns upon it.
+
+In the morning the ice is found cut all over, and both footmen yawn through breakfast.`},
+    `Plough Monday. The plough boys drag a plough from door to door for pennies; and the miller giving nothing, they draw a furrow across his yard.
+
+You send out half a crown.`
   ]
 ];
+
+/* More leaves for the quiet seasons. A plain string may come in any year; {w, x} only when w() holds. */
+VIGNETTES[0].push(
+  `The sweep’s boy, coming down the wrong chimney, stands upon the hearth in Henrietta’s dressing-room with his brush in his hand.
+
+She gives him a shilling to go back up.`,
+  `In your pocket-book: “March 25. Lady Day. Paid my Servants their Wages. To my Cook Mrs. Bunce 12. 0. 0. To the Footman 8. 0. 0. To the Knife Boy 2. 2. 0 and a Pair of Shoes. The Boy asked might he have the Money for the Shoes instead. Told him No.”`,
+  `Mothering Sunday, and the kitchen-maid walks nine miles home to Aldbourne with a simnel cake in a cloth.
+
+She is back by dark, and has the cloth.`,
+  `Mudge has nailed the winter’s vermin to the kennel door, being eleven stoats, four hawks, and a cat; and the cat has a collar on.
+
+Mrs Tamworth’s tabby has been missing since Tuesday.`,
+  `In your pocket-book: “Sowed Peas in the Garden to day. Mr. Hartopp called and stayed 3 Hours talking of the Swedish Turnip. He drew one on the Table Cloth with a Fork. Dinner to day, a Calf’s Head boiled, Pork and Greens &c. Mr. H. eat very hearty.”`,
+  {w:() => S.year <= 1814, x:`A recruiting party is at the Bell with a fife and a drum, the serjeant having ribbons in his hat, and a purse of the King’s shillings.
+
+Three ploughboys go in to hear the music, and two come out.`},
+  `The rooks are building in the Hall elms, and Henrietta counts forty nests from her window.
+
+Your uncle, who held that rooks leave a house before a death, counted them every March for thirty years; and they were all there the spring he died.`,
+  `In your pocket-book: “Easter Monday. To the Ringers 0. 5. 0. To a poor Sailor with one Leg 0. 1. 0. To another with one Leg at the Stable Gate 0. 1. 0. I believe it was the same Sailor.”`,
+  {w:() => S.year === 1814, x:`The frost held eleven weeks, in which time they roasted a sheep upon the Thames at Blackfriars, and charged a shilling to look at it, and the Kennet bore a loaded wagon at Newbury.
+
+The thaw, coming on Tuesday, brought down the stable gutter and forty feet of the kitchen garden wall.`},
+  {w:() => S.year === 1801, x:`By Act of Parliament no baker may sell a loaf less than a day out of the oven, a stale loaf being thought to go further.
+
+The Wyvern baker accordingly bakes on Monday and sells on Tuesday, and on Tuesday bakes for Wednesday; and nobody in the town can find what the Act has altered.`}
+);
+VIGNETTES[1].push(
+  `Shearing supper in the great barn, where the captain of the shearers gives a song of nineteen verses; and losing the words at the eleventh, begins again from the first.
+
+Nobody stops him.`,
+  `In your pocket-book: “June 4. The King’s Birth Day. Gave my People a Barrel of Beer. The Bells rang from 6 in the Morn’ till 9 at Night. To the Ringers 0. 5. 0. Would have given 0. 10. 0 to have them leave off at Noon.”`,
+  `A swarm hangs upon the pear tree by the laundry, and Mrs Bunce goes out to it with a straw hive and a warming-pan.
+
+Having beaten the pan, she tells the bees what has happened in the house since Easter; and they go in.`,
+  `Strawberries being ripe, Henrietta sends a basket to the Castle, and a basket to the Tamworths.
+
+The Castle sends back a pine-apple; the Tamworths send back the basket.`,
+  `In your pocket-book: “Very hot. Bathed my Feet in the Pond before Breakfast. Mr. Hartopp’s Bull got into the Church Yard during Morning Service and looked in at the Chancel Door. The Parson did not leave off.”`,
+  `The mail guard throws down the London paper at the lodge without stopping, and today it goes into the horse-pond.
+
+It is dried before the kitchen fire, and ironed by Mrs Bunce; and half the Gazette comes off upon the iron.`,
+  {w:() => wheatNow() >= 100, x:() => `Wheat being at ${wheatNow()} shillings, the Wyvern baker has a board in his window with the price of the quartern loaf in chalk; and he has rubbed it out so often that the board is white.`},
+  `Cherry Fair at Wyvern, where a man eats a hundred cherries in a minute for a wager, and swallows the stones.
+
+The surgeon, being fetched, takes out his watch, and says they must wait.`,
+  `In your pocket-book: “July 15. St. Swithin. Rain at 4 in the Afternoon, a few Drops only. Mudge says that is 40 Days of it. Laid him 0. 2. 6 that it is not. Dinner to day, a Couple of Ducks rosted and Peas.”`,
+  `The Hatherley Friendly Society walks upon Whit Tuesday, being forty men with blue staves, and a band; and they walk to the church, to the Bell, and to the Hall, in that order.
+
+At the Hall they give three cheers, and some of them four.`
+);
+VIGNETTES[2].push(
+  `In your pocket-book: “Sept. 29. Michaelmas. Received my Rents. Gave the Tenants a Goose rosted at the Top of the Table and another at the Bottom, and Plumb Puddings. They sat from 2 till 9. One was helped upon his Horse. The Horse knew the Way.”`,
+  `Nutting. The village children are in Hatherley Copse with hooked sticks and their mothers’ aprons, and Mudge says they put up the pheasants; but he says it from the gate.
+
+Your uncle’s keeper took him in that copse at nine years old, with an apron.`,
+  {w:() => S.year >= 1803 && S.year <= 1813 && !F('enclosed'), x:`Gunpowder Treason, and the boys burn the Pope upon the Common; but this year he has a cocked hat, and they call him Boney.
+
+It is last year’s straw.`},
+  `The hop-pickers come through from Farnham, walking home into Wiltshire, and sixty of them sleep in the great barn.
+
+In the morning the barn is found swept, and a bunch of hops tied to the door.`,
+  `In your pocket-book: “Brewed a Hogshead of strong Beer to day. To my Maltster for 8 Bushels 2. 8. 0. Mrs. Bunce says Thunder will turn it. It did thunder about 5. Dinner to day, Hash Mutton and a Suet Pudding.”`,
+  {w:() => S.year === 1811, x:`The comet stands over the stable clock at nine each night, with a tail as long as a man’s arm.
+
+The shepherd says it means a hot summer, a dear loaf, or the death of a king; and being asked which, says it has always been one of the three.`},
+  {w:() => S.year === 1810, x:`The Wilts and Berks Canal is open to Abingdon, the proprietors’ boat having gone through the last lock at half past two; after which they dined in the Council Chamber until late.
+
+The hundred-pound shares are at twelve pounds ten, and Mr Tamworth has nine.`},
+  `The apple-man is in the orchard with his ladder; and of what he gathers, forty bushels of pippins are for the house, the rest for cider, and the windfalls for the pigs.
+
+By evening two of the pigs cannot stand.`,
+  `A walking postman brings the letters out from Wyvern at a penny each, being six miles out and six back.
+
+Today there is one letter, and it is for Mrs Bunce; to whom the housemaid reads it in the scullery, and then reads it again.`,
+  `In your pocket-book: “Octr. 10. Wyvern Fair. Saw a Man eat Fire, and a Woman with no Arms that cut Paper with her Feet, gave 0. 0. 6. Bought of her a Paper Cut in the Shape of a Church 0. 1. 0. Lost my Handkerchief.”`
+);
+VIGNETTES[3].push(
+  `In your pocket-book: “Decr. 21. St. Thomas. Gave to 43 poor People of this Parish 6d. each as usual, 1. 1. 6. Two came that are of Kintbury. Gave to them also, it being very cold.”`,
+  `Plough Monday. The ploughboys drag a plough to the Hall door with ribbons upon it, and ask for money; for a house that gives none has its doorstep ploughed up.
+
+Your uncle had the step relaid twice, and after that gave a shilling.`,
+  `In your pocket-book: “Jany. 9. Frost very severe. The Milk froze in the Dairy and the Ink in my Ink Stand. Wrote this with a Pencil. Sent a Chaldron of Coals to the Alms House, 1. 16. 0.”`,
+  `The carrier is four days late from Reading, having lain in a drift at Thatcham from Monday to Thursday.
+
+He lived upon the Hall’s Christmas order, and has brought the bill for it.`,
+  `Twelfth Night, for which Henrietta has a cake from the Wyvern confectioner, with a bean baked in it to make a king.
+
+Mr Tamworth, having the bean, gives orders until midnight; and Mrs Tamworth obeys none of them.`,
+  `The church singers come round at five upon Christmas morning, and sing “While Shepherds Watched” under your window, the bassoon being frozen.
+
+They sing it again, to be sure you are awake.`,
+  `In your pocket-book: “Feby. 14. Valentine’s Day. To 37 Children of the Parish that came to the Door saying Good morrow Valentine, 1d. each, 0. 3. 1. Three were the same Child in different Hats.”`,
+  {w:() => S.year === 1810, x:`A barge of stone went up the locks at Devizes on Friday night, by which the Kennet and Avon is open from London to Bath; and nobody was there to see it.
+
+Carriage to Bath is two pounds nine and sixpence the ton, that by road was six pounds three.`},
+  `The ice-house is filled, twelve men cutting the pond with saws, and wheeling the blocks up in barrows.
+
+One block has a perch in it, and Mrs Bunce says it will keep till August.`,
+  `Old Christmas Day. The oldest man in the parish will not keep the new one, nor has he kept it since they took the eleven days in ’52.
+
+He eats his Christmas dinner upon the sixth of January, alone, with his hat on.`
+);
+function vignette(q){ S.vig = S.vig || {};
+  const all = VIGNETTES[q].map((v, i) => ({i, v})).filter(o => typeof o.v === 'string' || !o.v.w || o.v.w());
+  if (F('henriettaAway')) { const here = all.filter(o => !/Henrietta/.test(typeof o.v === 'string' ? o.v : String(o.v.x))); if (here.length >= 4) all.splice(0, all.length, ...here); }
+  const fresh = all.filter(o => S.vig[q + '-' + o.i] === undefined);
+  const set = fresh.length ? fresh : all.slice().sort((a, b) => S.vig[q + '-' + a.i] - S.vig[q + '-' + b.i]).slice(0, 4);
+  const o = pick(set); S.vig[q + '-' + o.i] = S.t;
+  const x = typeof o.v === 'string' ? o.v : o.v.x; return typeof x === 'function' ? x() : x; }
 
 function fmt(n){ const a = Math.abs(Math.round(n)).toLocaleString('en-GB'); return (n < 0 ? '−' : '') + '£' + a; }
 function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
