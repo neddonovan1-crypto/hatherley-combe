@@ -172,6 +172,9 @@ table.acct tr.total .n{font-size:1.3rem}
 .lots details[open] summary{border-bottom-color:transparent} .lots details[open] summary b::before{content:"\261E\FE0E  ";color:var(--madder)}
 .lots details > div{padding:0 0 12px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .lots details p{margin:0;font-size:.95rem;line-height:1.4} .lots .terms{color:var(--muted);font-size:.86rem} .lots .terms em{color:var(--bad)}
+.lots.flat{border-top:0} .lots .lv{display:flex;gap:4px 6px} .lots .lv button{background:none;border:1px solid transparent;border-radius:50%;padding:1px 12px;font-family:var(--hand);font-size:1.3rem;line-height:1.1} .lots .lv button.on{border-color:var(--ink)}
+.lots .acts{display:flex;flex-wrap:wrap;gap:8px} .lots .inkbtn{min-height:38px;padding:6px 12px}
+.bal.slim dd{white-space:nowrap}
 .qtitle sup{font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:var(--madder);margin-left:10px;vertical-align:top}
 table.roll .lv{display:flex;flex-wrap:wrap;gap:4px 6px;padding:2px 0 6px} table.roll .lv button{background:none;border:1px solid transparent;border-radius:50%;padding:1px 10px;font-family:var(--hand);font-size:1.2rem;line-height:1.1} table.roll .lv button.on{border-color:var(--ink)} table.roll .lv button:last-child:not([aria-pressed]){font-family:var(--caps);font-size:.74rem;letter-spacing:.06em;border:1px solid var(--ink);border-radius:0;padding:4px 8px}
 .prose > img{float:right;width:46%;aspect-ratio:3/2;object-fit:cover;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.1);margin:4px 0 6px 14px;outline:1px solid var(--ink);outline-offset:2px}

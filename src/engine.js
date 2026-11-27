@@ -789,7 +789,7 @@ function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mort
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
-  const net = S.money - S.mortgage, k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
+  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
   if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${S.year - 1795 + 46}th year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
     return {title:'Shot at Dawn', P, score:null}; }
