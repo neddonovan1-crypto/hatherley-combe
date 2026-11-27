@@ -127,7 +127,7 @@ function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c =
 function outcomeHTML(){ const o = S.outcome;
   return `${runhead(S.phase === 'undone' ? 'The season’s undertaking' : 'What came of it', 'Cr.')}
     <p class="kicker">${esc(stamp())}</p><h2>${esc(o.title)}</h2><div class="swell"></div>
-    <div class="prose lead">${paras(o.text)}</div>
+    <div class="prose lead">${o.cut ? pic('undertakings/' + o.cut, '') : ''}${paras(o.text)}</div>
     ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}
     <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div>`; }
 
