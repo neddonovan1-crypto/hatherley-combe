@@ -29,7 +29,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
    They run alongside the seasons and do not use up the season's undertaking. */
 const MAX_WORKS = 2;
 const PROJECTS = {
-  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
+  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797,
     blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
@@ -770,11 +770,11 @@ function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.d
   const o = pick(bag); S.did[o.id] = S.t; LAST_CUT = o.id; return o.x(); }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? 2 : 4}); return outcome('ride'); }},
-  { id:'dine', t:'Dine the county', note:'£70', hint:'Standing', go:() => { duty('county'); add({money:-70, standing:4}); return outcome('dine'); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-2, 0, 2, 3]); add({standing: T('silver') ? 5 : 3, goodwill:g}); return outcome('sessions'); }},
-  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:5}); return outcome('home'); }},
-  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:6, family:4}); reg('henrietta',1); return outcome('town'); }},
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([0, 1]) : 1}); return outcome('ride'); }},
+  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:1}); return outcome('dine'); }},
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 2 : 1, goodwill:g}); return outcome('sessions'); }},
+  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:2}); return outcome('home'); }},
+  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:2, family:2}); reg('henrietta',1); return outcome('town'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -787,18 +787,26 @@ The pine-apples die within the week. Mrs Bunce puts a black ribbon in her cap.`,
 The rooks come over to the Hall roof. They are there each morning when you go out.`]); }}
 ];
 
-function undertakingOptions(){
-  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+/* Three undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
+const RIDES = 3;
+function ridesLeft(){ return !S || S.phase === 'end' ? 0 : Math.max(0, RIDES - (S.rides || 0)); }
+function undertakingOptions(){ const rode = S.rode || [];
+  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && !rode.includes(u.id) && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+  o.push({id:'rest', t:(S.rides || 0) ? 'Let the rest of the season go' : 'Let the season go', run:() => ''});
   return o;
 }
-function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); LAST_CUT = null; const text = u.run();
+function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
+  if (u.id === 'rest') { S.rides = RIDES; S.phase = 'undone'; return next(); }
+  const b = snapshot(); LAST_CUT = null; const text = u.run();
+  S.rides = (S.rides || 0) + 1; S.rode = (S.rode || []).concat(u.id);
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
   S.outcome = {title:u.t, text, d:deltas(b), cut:LAST_CUT}; S.phase = 'undone'; save(); render(); }
 
 function next(){
   if (S.phase === 'ledger') { if (S.dead) return finish(); S.phase = S.pending ? 'event' : 'undertake'; }
   else if (S.phase === 'outcome') { if (S.dead) return finish(); S.phase = 'undertake'; }
-  else if (S.phase === 'undone') { S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
+  else if (S.phase === 'undone' && ridesLeft() > 0 && !S.dead) S.phase = 'undertake';
+  else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
   save(); render(); window.scrollTo({top:0, behavior:'smooth'});
 }
 function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }

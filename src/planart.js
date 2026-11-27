@@ -1,15 +1,18 @@
 /* Where each drawn piece sits on the plan: left, top, width, height, in hundredths of the sheet. The pieces are art/plan/f/<id>-<season>.webp.
    The order here is the order they are laid down, so the Hall covers the park and the carriage stands before the Hall. */
 const PLAN_BOX = {
-  'common':[0.5, 16.5, 23, 25],
+  'common':[0.5, 16.5, 23.0, 25.0],
   'drain':[60.333, 49.5, 27.042, 27.562],
   'meadows':[63.792, 69.562, 31.917, 27.0],
   'fourcourse':[51.542, 57.125, 20.708, 13.312],
+  'sheepwalk':[52.5, 8.375, 28.417, 10.562],
   'plough':[40.0, 8.375, 27.625, 24.812],
+  'racecourse':[13.292, 11.0, 23.667, 9.812],
   'chalk':[29.5, 11.312, 11.458, 14.625],
   'oaks':[63.875, 14.688, 20.167, 14.625],
   'peat':[89.625, 66.438, 7.458, 21.562],
   'merino':[62.792, 38.375, 9.0, 9.875],
+  'road':[2.417, 46.312, 29.208, 5.812],
   'cottages':[2.583, 43.312, 15.5, 6.562],
   'school':[21.542, 41.875, 7.417, 8.312],
   'pinery':[53.083, 40.875, 6.125, 5.0],
@@ -22,6 +25,8 @@ const PLAN_BOX = {
   'butts':[10.417, 32.312, 10.708, 5.812],
   'kennels':[27.0, 40.938, 10.417, 9.062],
   'paddock':[50.625, 26.812, 12.625, 11.688],
+  'telegraph':[37.792, 3.75, 5.333, 7.0],
+  'turnpike':[88.708, 28.75, 8.958, 9.562],
   'camp':[79.458, 39.875, 15.75, 14.438],
   'icehouse':[37.833, 44.062, 8.208, 8.562],
   'parterre':[42.208, 53.25, 10.292, 9.812],

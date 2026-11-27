@@ -15,7 +15,7 @@ const PLACES = {
   kennet:{n:'Kennet Bottom', at:[75.5, 68.4], farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
   church:{n:'Church Farm', at:[33.5, 68.6], farm:'church', pic:() => 'places/twelve-acres'},
   vestry:{n:'The Church', at:[21.5, 40.6], pic:() => 'places/church-and-vestry'},
-  common:{n:'The Common', at:[15, 33.5], farm:'commonpiece', pic:() => F('enclosed') ? 'places/common-enclosed' : 'places/common'},
+  common:{n:'The Common', at:[15, 33.5], farm:'commonpiece', pic:() => farmAt('commonpiece') ? 'places/common-piece' : F('enclosed') ? 'places/common-enclosed' : 'places/common'},
   mill:{n:'The Mill', at:[65, 80.5], pic:() => isBuilt('mill') ? 'places/mill-new' : 'places/mill-old'},
   lane:{n:'Kintbury Lane', at:[8.6, 51.2], pic:() => isBuilt('road') ? 'places/kintbury-lane-mended' : 'places/kintbury-lane'},
   copse:{n:'Cuckoo Copse', at:[75.5, 46.4], pic:() => 'places/cuckoo-copse'},
@@ -24,18 +24,26 @@ const PLACES = {
   castle:{n:'Cullerne Castle', at:[88.6, 14.4], pic:() => 'places/cullerne-castle'},
   wyvern:{n:'Wyvern', at:[93.2, 41.2], pic:() => 'places/market-place'},
   turnpike:{n:'The London Road', at:[92.6, 27], pic:() => 'places/milestone'},
-  rooksnest:{n:'Rooksnest', at:[66, 26.2], farm:'rooksnest', if:() => farmAt('rooksnest')},
-  coldharbour:{n:'Coldharbour', at:[82.5, 22.6], farm:'coldharbour', if:() => farmAt('coldharbour')},
-  withymead:{n:'Withy Mead', at:[29, 79], farm:'withymead', if:() => farmAt('withymead')},
-  maddle:{n:'Maddle Farm', at:[11.5, 22.8], farm:'maddle', if:() => farmAt('maddle')},
+  rooksnest:{n:'Rooksnest', at:[66, 26.2], farm:'rooksnest', if:() => farmAt('rooksnest'), pic:() => 'places/rooksnest-farm'},
+  coldharbour:{n:'Coldharbour', at:[82.5, 22.6], farm:'coldharbour', if:() => farmAt('coldharbour'), pic:() => 'places/coldharbour-farm'},
+  withymead:{n:'Withy Mead', at:[29, 79], farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
+  maddle:{n:'Maddle Farm', at:[11.5, 22.8], farm:'maddle', if:() => farmAt('maddle'), pic:() => 'places/maddle-farm'},
   starveall:{n:'Starveall', at:[88, 58.6], farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
 };
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
-const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', enclosure:'common'};
-const VENT_AT = {plough:'longbarrow', merino:'home', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall'};
+const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'down', enclosure:'common'};
+const VENT_AT = {plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down'};
 const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'turnpike'};
 const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
+const forSale = id => typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id);
+/* Whether a place has any paper to show. A place with none is only lettering on the sheet. */
+function placeHas(id){ const p = PLACES[id]; if (id === 'hall' || id === 'wyvern') return true; if (p.farm && farmAt(p.farm)) return true;
+  if (S.phase === 'undertake' && undertakingOptions().some(u => underAt(u.id) === id)) return true;
+  if (typeof worksList === 'function' && worksList().some(w => workAt(w.id) === id)) return true;
+  if (id === 'hanger' && typeof creditList === 'function' && creditList().some(c => c.id === 'timber')) return true;
+  if (typeof venturesList === 'function' && venturesList().some(v => ventAt(v.id) === id)) return true;
+  return Object.keys(S.chars).some(k => S.chars[k].met && PEOPLE[k] && livesAt(k) === id); }
 const placeOn = id => { const p = PLACES[id]; return p && (!p.if || p.if()); };
 const pane = () => innerWidth <= 1080 || innerWidth < innerHeight;
 
@@ -73,25 +81,29 @@ const placeCut = at => { const p = PLACES[at]; return (p && p.pic && artURL(p.pi
 function strike(){ const key = S.t + ':' + S.phase; if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
   const o = S.outcome, j = S.journal[0] || {}, under = S.phase === 'undone';
   const src = under ? (o.cut && artURL('undertakings/' + o.cut) ? 'undertakings/' + o.cut : placeCut('hall')) : (S.plateCut || placeCut('hall'));
-  S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay()}); delete S.plateCut; save(); }
+  S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay(), say:sayOf(o.text)}); delete S.plateCut; save(); }
 const imprint = pub => `Publish’d as the Act directs, ${esc(pub)}`;
-function printHTML(n, src, title, pub){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span>${pic(src, title)}<figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
+/* The words in the balloon are the first thing said aloud in the text, cut to its first sentence if it runs long. Nothing is written for it. */
+function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').replace(/<[^>]+>/g, '')); if (!m) return ''; let q = m[1].trim();
+  if (q.length > 96) { const cut = /^(.{12,96}?[.!?])(\s|$)/.exec(q); if (!cut) return ''; q = cut[1]; }
+  return q.replace(/,$/, '.'); }
+function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${say && ART.has('ui/balloon.png') ? `<q class="balloon"><span>${esc(say)}</span></q>` : ''}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
 function plateViewHTML(){
   if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
     const src = eventCut(e) || placeCut(eventPlace(e)); S.plateCut = src;
-    return `${printHTML(S.plates.length + 1, src, e.title, quarterDay())}
+    return `${printHTML(S.plates.length + 1, src, e.title, quarterDay(), sayOf(text))}
       <div class="pside"><article class="sheet${bill ? ' bill' : ''}">${who ? `<div class="from">${medal(who)}<p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p></div>` : `<p class="kicker">${esc(stamp())}</p>`}<div class="prose">${paras(text)}</div></article>
-      <div class="answer"><p class="inhand"><span>In hand <b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b></span><span>Owing <b class="neg">${fmt(S.mortgage)}</b></span><button class="quiet" onclick="plateDown()">Look over the plan</button></p>
+      <div class="answer"><p class="inhand"><span>Your purse <b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b></span><span>Outstanding mortgage <b class="neg">${fmt(S.mortgage)}</b></span><button class="quiet" onclick="plateDown()">Look over the plan</button></p>
       <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div></div></div>`; }
   const o = S.outcome, p = S.plates[S.plates.length - 1] || {src:placeCut('hall'), pub:quarterDay()};
-  return `${printHTML(S.plates.length, p.src, o.title, p.pub)}
+  return `${printHTML(S.plates.length, p.src, o.title, p.pub, p.say)}
     <div class="pside"><article class="sheet came"><p class="kicker">${esc(stamp())}</p><div class="prose lead">${paras(o.text)}</div>
       ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}</article>
     <div class="answer"><div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div></div></div>`; }
 /* The Progress: every plate struck so far, a dozen to the leaf, and any one of them taken up to look at. */
 function progressHTML(){ const P = S.plates, i = Math.max(0, Math.min(P.length - 1, PROGRESS)), per = 8, leaf = Math.floor(i / per), from = leaf * per, leaves = Math.ceil(P.length / per), p = P[i];
   if (!p) return `<div class="progress"><h2>The Progress</h2><p class="fine">No plate is struck yet.</p><button class="inkbtn" onclick="shutProgress()">Put them away</button></div>`;
-  return `<div class="progress">${printHTML(i + 1, p.src, p.title, p.pub)}
+  return `<div class="progress">${printHTML(i + 1, p.src, p.title, p.pub, p.say)}
     <div class="pside"><h2>${esc(S.name)}, His Progress</h2><p class="did">${esc(p.did)}</p>
       <div class="thumbs">${P.slice(from, from + per).map((q, k) => `<button aria-pressed="${from + k === i}" onclick="showProgress(${from + k})">${pic(q.src, q.title)}<span>${from + k + 1}</span></button>`).join('')}</div>
       <p class="leafs">${leaves > 1 ? `<button class="quiet" onclick="showProgress(${Math.max(0, from - per)})" ${leaf ? '' : 'disabled'}>Earlier</button><span>${from + 1} to ${Math.min(P.length, from + per)} of ${P.length}</span><button class="quiet" onclick="showProgress(${Math.min(P.length - 1, from + per)})" ${leaf < leaves - 1 ? '' : 'disabled'}>Later</button>` : `<span>${P.length} of 84</span>`}</p>
@@ -108,7 +120,8 @@ function drawPlate(){ const el = $('plate'), up = S && (PROGRESS >= 0 || (VIEW =
 function piecesOn(){ const on = [], y = S.year, est = footing();
   if (F('enclosed')) on.push('common');
   for (const id of ['drain', 'fourcourse', 'mill', 'cottages', 'school', 'road', 'pinery', 'oaks', 'icehouse', 'meadows', 'barns', 'chalk']) if (isBuilt(id)) on.push(id);
-  for (const id of ['plough', 'merino', 'peat', 'thresher', 'brickkiln', 'malthouse', 'spa']) if (isLive(id)) on.push(id);
+  for (const id of ['plough', 'merino', 'peat', 'thresher', 'brickkiln', 'malthouse', 'spa', 'turnpike', 'racecourse', 'telegraph']) if (isLive(id)) on.push(id);
+  if (isLive('merino')) on.push('sheepwalk');
   if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
   if (est === 'splendid') on.push('parterre'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push('carriage');
   if (y < 1802 || (y >= 1803 && y <= 1813) || (y === 1815 && S.season < 2)) on.push('camp');
@@ -119,13 +132,16 @@ const armsOf = () => isKept('baronet') ? 'baronet' : isKept('knight') ? 'knight'
 function landHTML(){ const q = S.season, calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* Two small loops laid on in multiply: the rooks over the park, who leave when the new front goes up, and the smoke of the Hall chimneys. */
   const moving = calm ? '' : ['smoke'].concat(isBuilt('front') ? [] : ['rooks']).map(id => { const b = PLAN_BOX[id]; return b && ART.has('plan/' + id + '.mp4') ? `<video class="mot" src="art/plan/${id}.mp4" autoplay muted loop playsinline disablepictureinpicture style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"></video>` : ''; }).join('');
+  /* The mill wheel is a drawing turned by the page, laid over the wheel on the sheet. The new mill has its own wheel in another place, so it stops. */
+  const wheel = ART.has('plan/wheel.webp') && !isBuilt('mill') ? `<i class="wheel${calm ? ' calm' : ''}"><img src="art/plan/wheel.webp" alt=""></i>` : '';
   const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
   const arms = artURL('arms/' + armsOf());
   const caller = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : '', who = caller && !BILLS.has(S.pending) ? whoOf(byId(S.pending).title + ' ' + byId(S.pending).text()) : null;
   const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
-    return `<button class="lbl${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="call">${who ? medal(who) : pic('icons/hand', '')}</i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}<span>${esc(p.n)}</span></button>`; }).join('');
-  return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}${moving}${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
+    if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
+    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="call">${who ? medal(who) : pic('icons/hand', '')}</i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+  return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${wheel}${pieces}${moving}${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
 function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${line}</p><button class="act" onclick="${act}"><span>${label}</span></button></div>`;
@@ -137,7 +153,7 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
-    <div class="purse"><span>In hand</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Owing <i>${fmt(S.mortgage)}</i></span></div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span></div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${cueHTML()}
     <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
@@ -147,7 +163,7 @@ function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undert
   const rows = o.map((c, i) => at && underAt(c.id) !== at ? '' : `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('');
   return rows ? `<div class="choices">${rows}</div>` : ''; }
 function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="shutSheet()" aria-label="Put the paper away">×</button>`;
-  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>You may undertake one thing this season. Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
+  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>${['Nothing more', 'One thing more', 'Two things more', 'Three things'][typeof ridesLeft === 'function' ? Math.max(0, Math.min(3, ridesLeft())) : 1]} may be undertaken this quarter. Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
   if (id === 'memo') return `${shut}<h2>${esc('Mr ' + steward())}’s Memoranda</h2><div class="memo">
       ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}
@@ -164,7 +180,7 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
   if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
   if (vents.length) sec('vents', 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
-  if (id === 'castle' && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house), true, 'beginSociety', 'endSociety', 'Pay for it'));
+  if (id === 'hall' && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house), true, 'beginSociety', 'endSociety', 'Pay for it'));
   if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>${raiseHTML(['annuity', 'redeem'])}`); }
   if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
   const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
