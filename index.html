@@ -1426,16 +1426,30 @@ Three Hatherley men were in the battle. Two come home.`; }}
 /* The wandering pool: people, with their memories, turning up when they please. */
 
 ev({ id:'crabbeSums', from:1796, to:1802, weight:3, cond:() => !F('crabbeGone') && !F('crabbeWatched') && !F('crabbeSkims'), title:'Mr Crabbe’s Arithmetic',
-  text:() => `Out of idleness you have been reading the estate accounts, and have discovered that Mr Crabbe adds up beautifully, but in an unusual direction. Over three years some three hundred pounds have left the rent roll for a destination you cannot trace.
+  text:() => `It rains for three days. On the third you take down the estate ledgers and add them up yourself.
 
-Crabbe, invited to explain, folds his hands. The books, he says, are a little like the Book of Revelation: “perfectly clear, sir, to those who have the key.”`,
+The rents come in on the left-hand page. On the right-hand page they are fewer. You go back three years with a pencil. Three hundred pounds has gone somewhere between the two pages.
+
+You send for Crabbe. He looks at your pencil marks. He folds his hands.
+
+“The books are like the Book of Revelation, sir. Perfectly clear to those who have the key.”`,
   choices:[
     {t:'Dismiss him.', go:() => { fl('crabbeGone'); add({goodwill:3}); reg('crabbe',-5,'Dismissed over three hundred pounds');
-      return `Crabbe goes, taking a writing desk you were fairly sure was yours, and sets up in Newbury as a land agent. Within the year he manages the estates of three of your neighbours, who speak of him very highly. Your new steward is a young Scot named Lark, so honest it is unsettling; he gives you a receipt for a receipt.`; }},
+      return `“You will be out of the steward’s house by Saturday.”
+
+He bows. On Saturday a cart takes his boxes to Newbury. Your uncle’s writing desk is on the cart. Within the month a brass plate goes up in Northbrook Street. “Crabbe. Land Agent.”
+
+The new steward is a Scot of twenty-six named Lark. On his first morning you hand him the office key. He writes you a receipt for it.`; }},
     {t:'Make him pay it back, by instalments, and keep him.', note:'+£150', go:() => { fl('crabbeWatched'); add({money:150}); reg('crabbe',-2,'Made to refund three hundred pounds');
-      return `He repays half at once, from a purse that was evidently standing ready, and promises the rest. He bears no malice. That is the unnerving part: he treats the whole affair as a move in a game, well played on your side, and adjusts his opinion of you upward, as of a dog that has learnt to open a gate.`; }},
+      return `“You will pay it back. All of it.”
+
+“Certainly, sir.” He takes a purse from his coat and counts a hundred and fifty pounds on to the ledger. He had the purse on him when he came in.
+
+“The rest by Michaelmas.” He bows at the door. He looks at you a moment longer than he ever has before. Then he goes back to his desk.`; }},
     {t:'Let it pass. He knows where everything is.', go:() => { fl('crabbeSkims'); reg('crabbe',2,'You overlooked the three hundred pounds');
-      return `You close the ledger. Crabbe bows. From this day a line appears in each quarter’s accounts, in his beautiful hand, reading “Sundries”. It is never a large sum. It is never absent.`; }}
+      return `You shut the ledger. Crabbe bows and takes it away.
+
+At Lady Day there is a new line in the quarter’s accounts, in his best hand. “Sundries. £4. 10s.” At Midsummer it is there again. “Sundries. £6.”`; }}
   ]});
 
 ev({ id:'thorneLease', from:1795, to:1800, weight:4, title:'The Widow of Long Barrow',
@@ -1514,16 +1528,36 @@ He puts her back inside his frock and nods to you. Mudge will not open the door 
   ]});
 
 ev({ id:'pryorFriend', from:1798, to:1814, weight:3, cond:() => S.chars.pryor.r >= 2, title:'Something at the Back Door',
-  text:() => `Every Friday this winter a brace of pheasants has appeared at the kitchen door, plucked, drawn, and wrapped in a cabbage leaf. They are, presumably, your own pheasants. Mrs Bunce roasts them without comment.
+  text:() => `Every Friday this winter there has been a brace of pheasants on the kitchen step. Plucked. Drawn. Wrapped in a cabbage leaf. Mrs Bunce roasts them and asks no questions.
 
-This Friday there is something else in the cabbage leaf: a scrap of paper, in a hand that has fought for every letter. “Sir. Ther is men from Kintbury say they will fire Pococks mill & yr grate barn nex it. Saterday nite. Burn this. A Frend.”`,
+They are your pheasants.
+
+This Friday there is a scrap of paper inside the leaf.
+
+“Sir. Ther is men from Kintbury say they will fire Pococks mill & yr grate barn nex it. Saterday nite. Burn this. A Frend.”`,
   choices:[
     {t:'Sit up in the barn on Saturday with Mudge.', go:() => { add({standing:2, goodwill:3}); reg('pryor',1,'You acted on his warning and named nobody');
-      return `Towards one o’clock, four men come along the mill leat with a dark lantern and a tar barrel. You stand up out of the straw and bid them good evening. Nobody runs; it would be undignified. One of them says it is a mild night for the season. You agree. They carry the barrel away again, and you never ask their names, and there are no fires in Hatherley that year.`; }},
+      return `You and Mudge lie in the straw from ten o’clock.
+
+Towards one, four men come along the mill leat. They have a dark lantern and a tar barrel. You stand up.
+
+“Good evening.”
+
+Nobody runs. One of them says it is a mild night for the season. You say it is. They pick up the barrel and carry it back the way they came.
+
+You do not ask Mudge who they were. He does not tell you.`; }},
     {t:'Lay the letter before the bench and have troops sent.', go:() => { add({standing:3, goodwill:-6}); reg('pryor',-3,'You showed his letter to the magistrates');
-      return `A troop of yeomanry lies up behind the mill and takes four men of Kintbury with a tar barrel. Two are transported for seven years. The bench wishes very much to know who “A Frend” may be, and everyone in Hatherley can make a guess. Jem Pryor’s windows are broken twice that winter. There are no more pheasants at the back door.`; }},
+      return `You lay the paper before the bench. A troop of yeomanry lies up behind the mill on Saturday night. They take four Kintbury men and a tar barrel. Two of the four get seven years’ transportation.
+
+The paper is read aloud in court. “A Frend.” The whole of Hatherley can guess.
+
+Jem Pryor’s windows are broken twice before Christmas. On Friday the kitchen step is bare.`; }},
     {t:'Burn it and do nothing.', go:() => { add({money:-280, goodwill:-1});
-      return `You burn it, as instructed, and tell yourself it is alehouse talk. On Saturday night Pocock’s mill goes up like a firework, and the great barn with it: forty quarters of wheat and your uncle’s travelling chariot, which had not moved since 1774. The pheasants continue to come on Fridays, but there is a reproach in the way they are trussed.`; }}
+      return `You burn it. Alehouse talk.
+
+On Saturday night Pocock’s mill burns to the wheel. The great barn goes with it. Forty quarters of wheat. Your uncle’s travelling chariot, which had stood in there since 1774.
+
+On Friday there is a brace of pheasants on the kitchen step. They have not been plucked.`; }}
   ]});
 
 ev({ id:'rickFire', follow:true, title:'Fire in the Stackyard',
@@ -1556,217 +1590,523 @@ They are still talking of it in Wyvern at the end of the week. Some of them call
   ]});
 
 ev({ id:'hartoppShearing', from:1797, to:1810, weight:2, title:'Three Days of Tups and Toasts',
-  text:() => `Mr Hartopp is holding a sheep-shearing after the manner of Mr Coke at Holkham: three days of rams, turnips and speeches, attended by two hundred farmers, a Russian count who is making a study of the English plough, and Mr Arthur Young, who writes everything down.
+  text:() => `Mr Hartopp is holding a sheep-shearing. Three days. Mr Coke does it at Holkham, and Hartopp has been to Holkham.
 
-Hartopp has put a smock on over his coat for the occasion, and delivers an address on the subject of dung that brings tears to his own eyes.`,
+Two hundred farmers have come. So has a Russian count with an interpreter. Mr Arthur Young sits on a hurdle with a notebook on his knee. He writes down everything he hears.
+
+Hartopp has put a shepherd’s smock on over his coat. He stands on a wagon and speaks for an hour on dung. Twice he has to stop and blow his nose.`,
   choices:[
     {t:'Go, listen, and take notes.', go:() => { fl('hartoppFriend'); add({standing:2}); reg('hartopp',2,'You sat through his address on dung');
-      return `You come home knowing more about the Swedish turnip than you had supposed there was to know. Hartopp presses on you a drill plough “on trial”, six pamphlets, and a promise to send his own man over whenever you mean to improve. He is as good as his word; your works will come cheaper for it.`; }},
+      return `You listen to the whole hour. You write down the weight of a Swedish turnip.
+
+Hartopp finds you afterwards. He walks you to a cart and loads it. A drill plough, “on trial”. Six pamphlets. A bag of turnip seed.
+
+“When you mean to improve, send to me. You shall have my man for nothing.”`; }},
     {t:'Go, and bid for his prize New Leicester tup.', note:'£120', go:() => { fl('hartoppFriend'); S.improve += 1; add({money:-120, standing:3}); reg('hartopp',3,'You paid a hundred and twenty for his tup');
-      return `The tup is called Bonaparte, on account of his temper and his ambitions. He costs a hundred and twenty pounds and travels home in a cart with a rug over him. By the second spring your lambs are squarer, heavier, and stupider, which Hartopp says is exactly what one wants in a sheep.`; }},
+      return `The tup comes into the ring on the second day. His name is Bonaparte. He has already put a shepherd over a hurdle.
+
+You bid a hundred and twenty pounds. Hartopp shakes your hand in front of Mr Young. Mr Young writes it down.
+
+Bonaparte rides home in a cart with a rug over him. Two springs on, your lambs are squarer and heavier. Hartopp comes to look. “Stupider, too,” he says. “That is what you want in a sheep.”`; }},
     {t:'Plead a previous engagement.', go:() => { reg('hartopp',-2,'You missed his sheep-shearing');
-      return `You stay away. Mr Young’s account in the Annals of Agriculture lists the gentlemen present and remarks that “some neighbouring proprietors, it is to be regretted, yet slumber.” Hartopp has underlined it, and sent you the number.`; }}
+      return `You send your regrets.
+
+A month later a copy of the Annals of Agriculture comes by post. Mr Young’s account of the shearing fills nine pages. He lists the gentlemen present. Then: “Some neighbouring proprietors, it is to be regretted, yet slumber.”
+
+The line is underscored in ink. There is no letter with it.`; }}
   ]});
 
 ev({ id:'vaneBall', from:1796, to:1799, weight:4, cond:() => K() === 'free', title:'The Militia Come to Wyvern',
-  text:() => { meet('vane'); return `The Northamptonshire Militia are quartered on Wyvern for the summer, and the town has caught them like a rash. At the Assembly Rooms on Thursday a Captain Lucius Vane danced with Kitty three times, which is once more than is proper and twice more than is safe.
+  text:() => { meet('vane'); return `The Northamptonshire Militia are quartered in Wyvern for the summer. There are red coats in every shop.
 
-He has remarkable legs, a regimental coat that fits him like a rumour, and, according to the landlord of the George, a bill there of forty-one pounds.`; },
+On Thursday there is a ball at the Assembly Rooms. A Captain Lucius Vane dances with Kitty. He dances with her again. Henrietta puts her fan down. He dances with her a third time.
+
+On Friday you make enquiries. He has a good leg. He has a coat from a London tailor. The landlord of the George shows you his slate. “Capt. Vane. £41.”`; },
   choices:[
     {t:'Forbid her to see him.', go:() => { fl('vaneForbidden'); add({family:-4}); reg('kitty',-2,'You forbade her the Captain'); reg('vane',-2); later('elope', 2);
-      return `You forbid it. Kitty hears you out with her eyes on the carpet and says, “Yes, Papa,” so meekly that you ought to have been warned. In every novel she has ever borrowed, the father forbids it in chapter four.`; }},
+      return `“You will not see Captain Vane again.”
+
+Kitty looks at the carpet. “Yes, Papa.”
+
+She goes up to her room. She has three volumes from the Newbury circulating library on the table by her bed. In the first of them, a father forbids it in chapter four.`; }},
     {t:'Ask him to dinner, and have a look at him.', go:() => { reg('kitty',1); later('vaneDines', 1);
-      return `A card goes down to the George. The Captain accepts within the hour, in a hand full of flourishes, on paper that smells of bergamot. Mrs Bunce is told eight to dinner. Kitty changes her mind about her sash four times.`; }},
+      return `You send a card down to the George.
+
+The answer is back within the hour. The paper smells of bergamot. There is a flourish under the signature as long as the signature.
+
+Mrs Bunce is told eight to dinner. Kitty comes down in the white sash. She goes up and comes down in the blue. Then the white again.`; }},
     {t:'Let it run. She is eighteen and it is summer.', go:() => { add({family:2}); reg('kitty',2); later('elope', 2);
-      return `You let it run. There are picnics on the Down and a great deal of sketching, in the course of which very little is sketched. Henrietta asks whether you have enquired into the young man’s expectations. You say that you are sure they are considerable. You are right; that is exactly what they are.`; }}
+      return `You let it run.
+
+There are picnics on the Down. Kitty takes her sketch-book every time. You look in it one evening. The pages are blank.
+
+“Have you asked about the young man’s expectations?” says Henrietta.
+
+“I am told they are considerable.”`; }}
   ]});
 
 ev({ id:'vaneDines', follow:true, cond:() => K() === 'free', title:'Captain Vane Over the Port',
-  text:() => `Captain Vane dines, and is charming to Henrietta, attentive to Kitty, and deferential to you in a way that puts you in mind of Crabbe.
+  text:() => `Captain Vane dines. He admires Henrietta’s china. He turns the pages for Kitty at the pianoforte. He calls you “sir” eleven times before the cloth is drawn.
 
-Afterwards, when the ladies have gone up, he moves the decanter an inch and mentions that he finds himself momentarily embarrassed. Might you see your way to advancing two hundred pounds against his expectations? These are from an aunt at Kettering: “very old, sir, very fond of me, and very nearly dead.”`,
+The ladies go up. He moves the decanter an inch towards you.
+
+“I find myself embarrassed, sir. For the moment only. Two hundred pounds would set me entirely right. I have expectations.” He fills his glass. “An aunt at Kettering. Very old, sir. Very fond of me. And very nearly dead.”`,
   choices:[
     {t:'Lend him the two hundred.', note:'£200', go:() => { add({money:-200}); reg('vane',2,'You lent him two hundred pounds'); later('elope', 2);
-      return `He writes you a note of hand with a beautiful flourish under the name. You have since learned that there are, by conservative estimate, nine such notes in circulation in Wyvern alone, and that the aunt at Kettering has been very nearly dead since 1789.`; }},
+      return `You write the draft. He writes you a note of hand. The flourish goes right across the sheet.
+
+On Saturday you are at Tidmarsh’s bank. The clerk sees the note in your pocket-book. He has seen nine like it, he says, in Wyvern alone.
+
+“And the aunt, sir? At Kettering? She has been nearly dead since ’89.”`; }},
     {t:'Ring for his horse.', go:() => { fl('vaneDone'); reg('vane',-4,'You showed him the door over the port'); reg('kitty',-1); if (chance(0.6)) later('duel', 2);
-      return `You ring. He takes it well, in the sense that he finishes his glass first. At the door he remarks that he had understood himself to be dining with a gentleman. Kitty does not speak to you for a week, and then only about the weather.`; }},
+      return `You ring the bell. “Captain Vane’s horse.”
+
+He finishes his glass. He takes his time over it. At the door he turns.
+
+“I had understood, sir, that I was dining with a gentleman.”
+
+Kitty does not speak to you for a week. On the eighth day she says it looks like rain.`; }},
     {t:'Refuse him civilly, and tell Kitty in the morning what he asked.', go:() => { fl('vaneDone'); add({family:3}); reg('kitty',1,'You told her the truth about the Captain, and let her judge');
-      return `You tell her at breakfast, plainly, as you would tell a man. She goes white, then red, and says nothing. That evening she is seen to burn something in her bedroom grate, and the next week, when the Captain bows to her in Wyvern High Street, she looks at him as one looks at a shop that has changed hands.`; }}
+      return `“I regret I cannot oblige you, Captain.”
+
+At breakfast you tell Kitty what he asked for, and how. You tell it as you would tell a man. She goes white. She goes red. She does not say a word.
+
+That night there is a smell of burnt paper on the upper landing. The week after, the Captain bows to her in Wyvern High Street. She walks on.`; }}
   ]});
 
 ev({ id:'elope', follow:true, cond:() => K() === 'free' && !F('vaneDone'), title:'A Ladder at the Window',
-  text:() => `Henrietta wakes you at four. Kitty’s bed has not been slept in, her best bonnet is gone, and there is a ladder against the east wall that Mudge says belongs to the vicarage.
+  text:() => `Henrietta wakes you at four. She has a candle.
 
-Captain Vane’s curricle was seen at midnight on the Oxford road, going north at a great pace. In Scotland a girl may be married without her father’s leave, over an anvil, by a blacksmith; and it is three hundred and twenty miles to Gretna Green.`,
+“Kitty’s bed has not been slept in.”
+
+The best bonnet is gone from its box. There is a ladder against the east wall. Mudge holds the lantern to it. “That’s the vicarage ladder, sir.”
+
+The turnpike man at the Oxford road was knocked up at midnight. A curricle, two horses, going north. An officer driving. A lady beside him.
+
+It is three hundred and twenty miles to Gretna Green.`,
   choices:[
     {t:'Order the chaise and go after them.', note:'£45', go:() => { fl('vaneDone'); add({money:-45, standing:-3, family:-2}); reg('kitty',-2,'You fetched her back from the Gretna road'); reg('vane',-3); if (chance(0.5)) later('duel', 1);
-      return `You come up with them at Towcester, at the Saracen’s Head, at nine in the morning. There has been no need to hurry. The Captain sat down to hazard with a horse dealer at the first change and has lost the whole of the journey money, the curricle, and Kitty’s pearl ear-rings. Kitty is in the coffee room in her bonnet, with her hands in her lap, having had six hours to think. She gets into your chaise without a word, and cries from Brackley to Bicester.`; }},
+      return `Four horses, and fresh ones at every stage. Forty-five pounds.
+
+You come up with them at nine in the morning, at the Saracen’s Head in Towcester. The curricle is in the yard with a horse dealer’s man sitting in it.
+
+The Captain sat down to hazard at the first change. He has lost the journey money. He has lost the curricle. He has lost Kitty’s pearl ear-rings.
+
+Kitty is in the coffee room in her bonnet. Her hands are in her lap. She gets into your chaise without a word. She cries from Brackley to Bicester.`; }},
     {t:'Let them go. She has chosen.', go:() => { fl('kitty','vane'); fl('vaneDone'); add({family:-10, standing:-6}); reg('kitty',1); reg('henrietta',-3,'You let Kitty go to Gretna'); later('vaneDowry', 3);
-      return `They are married at Gretna Green by a man named Paisley, who weighs twenty stone and takes his fee in brandy. Kitty writes from Carlisle: four pages, very happy, crossed, with a postscript asking whether her blue pelisse might be sent on. Henrietta reads it and goes upstairs. The county reads it too, in a manner of speaking, and for a year the Tamworths cannot meet you without their sympathy showing.`; }},
+      return `“She has chosen.”
+
+Henrietta puts the candle down on the floor.
+
+A letter comes from Carlisle in a fortnight. Four pages, crossed. They were married at Gretna by a man named Paisley. He weighs twenty stone and took his fee in brandy. She is very happy. A postscript: “Pray send on my blue pelisse.”
+
+Henrietta reads it and goes upstairs. On Sunday Mrs Tamworth presses your hand in the church porch and cannot speak.`; }},
     {t:'Send Mudge after them with fifty guineas for the Captain.', note:'£52', go:() => { fl('vaneDone'); add({money:-52, standing:-2}); reg('kitty',-3,'You bought the Captain off for fifty guineas, and he took it');
-      return `Mudge overtakes them at Brackley and puts the proposition through the curricle window: fifty guineas, on the nail, to drive on alone. The Captain takes about as long to consider as it takes to count the money. Kitty comes home on the pillion behind Mudge. She has learned her own market price, and that it was paid, and she does not forgive either of you the information.`; }}
+      return `You count fifty guineas into a bag and put Mudge on the grey.
+
+He comes up with the curricle at Brackley. He holds the bag in at the window. “Fifty guineas, Captain. To drive on by yourself.”
+
+The Captain counts it. Then he hands Kitty down.
+
+She rides home on the pillion behind Mudge. She heard the sum. She watched it counted. She will not look at you or at him.`; }}
   ]});
 
 ev({ id:'vaneDowry', follow:true, cond:() => K() === 'vane', title:'A Letter from Mrs Vane',
-  text:() => `Kitty writes from lodgings in Northampton. The regiment is to move; the Captain has “had a reverse”; there is, she mentions in the last line, to be a child.
+  text:() => `A letter from Kitty. Lodgings in Northampton, over a hatter’s.
 
-Enclosed is a second sheet, in the Captain’s flourishing hand, observing that no settlement was made upon his wife at marriage, an omission he is sure you will wish to repair. He names eight hundred pounds.`,
+“The regiment is to move. Lucius has had a reverse.” Then the weather. Then the last line. “I am to be confined in the autumn.”
+
+There is a second sheet inside the first. It is in the Captain’s hand.
+
+“Sir, No settlement was made upon my wife at our marriage. I am sure you will wish to repair the omission. Eight hundred pounds would answer.”`,
   choices:[
     {t:'Send the eight hundred.', note:'£800', go:() => { add({money:-800, family:3}); reg('kitty',2); reg('vane',2,'You paid eight hundred pounds on demand'); reg('henrietta',1);
-      return `It lasts him until the Doncaster races. Kitty’s letters grow shorter and more cheerful, which is the worst sign there is.`; }},
+      return `You send a draft for eight hundred pounds.
+
+Doncaster races are in September. In October Kitty writes again. One side. Everything is very well. Lucius is very well. The lodgings are very comfortable.
+
+It is half the length of her last letter. Henrietta reads it twice and holds it up to the window.`; }},
     {t:'Settle forty pounds a year on Kitty alone, through trustees.', note:'£300', go:() => { fl('kittySettled'); add({money:-300, family:5}); reg('kitty',3,'You settled money on her where the Captain could not reach it'); reg('vane',-3); reg('henrietta',2);
-      return `The lawyers tie it up so that the Captain cannot touch a penny, anticipate it, or borrow against it. He writes you a very wounded letter. Kitty writes none for a month, and then sends a lock of the baby’s hair in a twist of paper, with nothing else, which Henrietta carries about in her work-bag for the rest of her life.`; }},
+      return `The lawyers take a month. Forty pounds a year to Kitty, for her sole and separate use. He cannot touch it. He cannot borrow against it. Three hundred pounds, with the fees.
+
+The Captain writes four sides. He is wounded. He had thought better of you.
+
+Kitty does not write for a month. Then a twist of paper comes with nothing in it but a lock of very fine hair. Henrietta puts it in her work-bag.`; }},
     {t:'Reply that she made her bed.', go:() => { add({family:-8}); reg('kitty',-4,'You sent nothing when she asked'); reg('henrietta',-2);
-      return `You write four lines. Henrietta, you afterwards discover, has sent twenty pounds of her own and her mother’s garnets, by the carrier, sewn into a cushion.`; }}
+      return `You write four lines and seal them.
+
+On Thursday the carrier calls at the back door for a parcel. It is a cushion, addressed in Henrietta’s hand to Northampton.
+
+Her mother’s garnets are not in the jewel case. Nor are twenty pounds of her pin money.`; }}
   ]});
 
 ev({ id:'duel', follow:true, cond:() => S.chars.vane.met, title:'Pistols on Hatherley Down',
-  text:() => `Captain Vane has sent a friend to wait upon you: a lieutenant with a lisp and a very clean pair of gloves, who regrets to say that the Captain conceives himself insulted and requires satisfaction.
+  text:() => `A lieutenant of the Northamptonshire Militia is shown into the library. He has very clean gloves and a lisp.
 
-Duelling is against the law, which is to say that it takes place at dawn instead of noon. The lieutenant suggests the old chalk pit on Hatherley Down, on Thursday, at twelve paces.`,
+“I come from Captain Vane, sir. He conceives himself insulted. He requires thatithfaction.”
+
+He has it all arranged. The old chalk pit on Hatherley Down. Thursday, at first light. Twelve paces. He will bring the pistols.`,
   choices:[
     {t:'Accept.', go:() => { const r = Math.random();
-      if (r < 0.1) { S.dead = 'duel'; return `A grey morning, with larks. The handkerchief falls. You have just time to think that the Captain is a better shot than his debts would suggest.`; }
+      if (r < 0.1) { S.dead = 'duel'; return `A grey morning. There are larks over the Down.
+
+The lieutenant drops the handkerchief.
+
+The Captain has always been a better shot than a paymaster.`; }
       if (r < 0.45) { add({standing:6, family:-3}); reg('vane',-2); reg('henrietta',-1,'You fought a duel and told her afterwards');
-        return `You fire, and to the astonishment of everyone, yourself first among them, you hit him: in the right calf, the better of the two. He is carried to the George, where he lies up for a month on credit. You are the hero of the county for a season. Men who have never met you describe your coolness. In truth your hand shook so that you were aiming at the chalk pit generally.`; }
+        return `A grey morning. There are larks over the Down. The lieutenant drops the handkerchief.
+
+Your hand is shaking. You point the pistol at the chalk pit and pull.
+
+The Captain sits down. The ball is in his right calf. They carry him to the George, where he lies a month on credit.
+
+At the Wyvern assembly three men you have never met describe your coolness to you.`; }
       add({standing:3, family:-2});
-      return `Both pistols go off. A lark stops singing. Nobody is hit, the Captain’s ball having gone into the chalk and yours, the seconds think, into Oxfordshire. Honour is declared satisfied, everyone shakes hands with enormous relief, and the Captain breakfasts at your expense at the Bell, on chops.`; }},
+      return `A grey morning. There are larks over the Down. The lieutenant drops the handkerchief.
+
+Both pistols go off. A lark stops singing. The Captain’s ball is in the chalk. The seconds look for yours and cannot find it.
+
+“Honour is thatithfied,” says the lieutenant. Everybody shakes hands.
+
+The Captain breakfasts at the Bell. Chops. The landlord puts it on your account.`; }},
     {t:'Decline. You have a family, and no quarrel worth a funeral.', go:() => { add({standing:-6, family:4}); reg('henrietta',2,'You refused a duel and let the county think what it liked');
-      return `You decline in writing. For a month the officers of the Northamptonshire Militia turn their shoulders to you in Wyvern, and somebody chalks a white feather on your gate. Then the regiment marches for Ipswich, leaving bills at every shop in the High Street, and the town discovers that it thinks you a man of sense after all.`; }},
+      return `You decline in writing.
+
+For a month the officers of the Militia turn their backs on you in Wyvern. One morning there is a white feather chalked on your gate.
+
+Then the regiment marches for Ipswich. It leaves a bill at every shop in the High Street. The saddler rubs the feather off your gate himself.`; }},
     {t:'Have the pair of them bound over to keep the peace.', go:() => { add({standing:-3}); reg('vane',-2); if (!F('gallDead')) reg('gall',1);
-      return `As a magistrate you take the lieutenant’s message for what it legally is, an incitement to a breach of the peace, and have ${F('gallDead') ? 'a brother justice' : 'Dr Gall'} bind both officers over in fifty pounds. It is unanswerable, and thought rather shabby. The lieutenant, in particular, had been looking forward to it.`; }}
+      return `You are a magistrate. A challenge is an incitement to a breach of the peace.
+
+${F('gallDead') ? 'A brother justice' : 'Dr Gall'} binds both officers over in fifty pounds apiece.
+
+The lieutenant signs the recognizance. He does not lisp once while he does it. He had bought new flints.`; }}
   ]});
 
 ev({ id:'pinchSuit', from:1798, to:1804, weight:3, cond:() => K() === 'free', title:'Mr Pinch of Bristol',
-  text:() => { meet('pinch'); return `Mr Lumley Pinch has come to stay. He is fifty-two, has made sixty thousand pounds in sugar, and has the build and colouring of a boiled ham that has just been told good news.
+  text:() => { meet('pinch'); return `Mr Lumley Pinch of Bristol is staying a week. He is fifty-two. He has sixty thousand pounds, made in sugar. He is red in the face before dinner and redder after.
 
-He is come into Berkshire to buy an estate and a wife, and lets it be understood that he will settle three thousand pounds on the father of any young lady who will have him. He has been looking at Kitty in exactly the way he looks at your rent roll.`; },
+He has come into Berkshire to buy two things. One is an estate. He tells you the other over the port.
+
+“A wife, sir. A young lady of family. I would settle three thousand pounds on her father the day the settlements are signed.”
+
+Through the open door he can see Kitty at the pianoforte. He looked at your rent roll this morning. He is looking at her in the same way.`; },
   choices:[
     {t:'Accept him, on Kitty’s behalf.', note:'+£3,000', go:() => { fl('kitty','pinch'); add({money:3000, family:-12, standing:2}); reg('kitty',-5,'You married her to Mr Pinch for three thousand pounds'); reg('pinch',3); reg('henrietta',-1); later('pinchDies', 20 + Math.floor(Math.random() * 12));
-      return `The settlements are signed in the library. Kitty is married at Hatherley in a veil of Brussels lace that Pinch has had valued, and tells people the figure. She goes through the service like a person repeating a lesson in a language she does not know. They leave for Clifton in a new chariot, with his arms on the door, granted last March.`; }},
+      return `The settlements are signed in the library. Three thousand pounds.
+
+They are married at Hatherley. Kitty’s veil is Brussels lace. Pinch has had it valued. He tells the figure to the clergyman, the Tamworths and the clerk.
+
+She makes every response. Her voice does not change from the first to the last.
+
+They leave for Clifton in a new chariot. There is a coat of arms on the door. The paint is not quite dry.`; }},
     {t:'Tell him the answer must be Kitty’s.', go:() => { reg('kitty',2,'You left Mr Pinch’s proposal to her'); reg('pinch',-2); add({family:3});
-      return `Pinch proposes in the conservatory, on one knee, which he then cannot get up from; the under-gardener has to be sent for. Kitty refuses him with great kindness and comes out looking as if she had been asked to buy something. Pinch bears it like a man of business. There are, he says, other properties on his list.`; }},
+      return `“You must ask her yourself.”
+
+He asks her in the conservatory, on one knee. Then he cannot get up. The under-gardener is sent for.
+
+Kitty comes out. “I thanked him, Papa. I said no.”
+
+Pinch is at the sideboard helping himself to ham. “No matter, sir. I have four other properties on my list.”`; }},
     {t:'Tell him your daughter is not on the market.', go:() => { add({family:2}); reg('kitty',3,'You sent Mr Pinch packing'); reg('pinch',-4,'You told him Kitty was not for sale'); reg('henrietta',-1);
-      return `He goes very red, which with his complexion is a matter of degree, and leaves before luncheon. Henrietta observes that three thousand pounds does not call every day. Kitty kisses the top of your head on her way through the hall, which she has not done since she was nine.`; }}
+      return `“My daughter is not for sale, sir.”
+
+He goes a darker red. His chaise is at the door within the hour.
+
+“Three thousand pounds does not call every day,” says Henrietta.
+
+Kitty passes behind your chair on her way through the hall. She kisses the top of your head. She has not done that since she was nine.`; }}
   ]});
 
 ev({ id:'pinchDies', follow:true, cond:() => K() === 'pinch', title:'A Death at Clifton',
-  text:() => `Mr Pinch is dead, at Clifton, of an apoplexy, in the middle of a turtle dinner given by the Society of Merchant Venturers. He was carried out between the second course and the speeches.
+  text:() => `A letter from Kitty, sealed with black wax.
 
-He has left Kitty everything: the house on the Downs, the sixty thousand, and the Jamaica estate with ${S.year >= 1807 ? 'its three hundred souls' : 'three hundred souls upon it'}. She has written to ask what she ought to do. It is the first time she has asked your opinion of anything since her wedding day.`,
+“Mr Pinch died on Tuesday. It was at the Merchant Venturers’ dinner. They had come to the turtle. He was carried out before the speeches.
+
+He has left me everything. The house on the Downs. The sixty thousand. The estate in Jamaica, with three hundred people on it.
+
+What ought I to do? Pray tell me.”
+
+She has not asked your advice since her wedding day.`,
   choices:[
     {t:'Advise her to sell Jamaica and come home.', go:() => { fl('kittyWidow'); add({family:10}); reg('kitty',3,'You told her to sell the plantation and come home');
-      return `She sells the estate, at a loss, to a man who will work it exactly as before, which she knows and which troubles her. Then she comes home to Hatherley in black, very rich, thirty years old in the face, and takes the Dower House. She and Henrietta quarrel about curtains within the week, and you understand that she is going to be all right.`; }},
+      return `She sells Jamaica, at a loss. The buyer is a Liverpool man. He will work it as it was worked before. She says so in her letter. She says it twice.
+
+She comes home in black and takes the Dower House. She is very rich. She looks thirty.
+
+Within the week she and Henrietta have quarrelled about curtains. You hear them from the garden. Kitty is shouting.`; }},
     {t:'Advise her to free the people on it, if the law can be made to let her.', go:() => { fl('kittyWidow'); fl('kittyManumit'); add({family:8, standing:-2}); reg('kitty',4,'You told her to free the people on the Jamaica estate');
-      return `It takes her four years, two attorneys and a quarrel with every relation Pinch possessed, and it cannot be done cleanly; the colony’s laws are built to prevent it. But she does it. Bristol thinks her mad. She comes home to the Dower House a good deal poorer than she might have been, and you notice that she has stopped looking at the carpet when she speaks.`; }},
+      return `It takes her four years. She employs two attorneys. Every relation Pinch had writes to her, and then stops writing. The island’s laws are made to prevent it. She pays a bond for each person freed.
+
+It is done. In Bristol they say Mrs Pinch has lost her wits and most of her money.
+
+She comes home to the Dower House. She looks straight at you when she speaks.`; }},
     {t:'Advise her that she is rich, and to enjoy it.', go:() => { fl('kittyWidow'); add({family:2, standing:2, money:500}); reg('kitty',-1);
-      return `She takes the advice, or part of it. She sends you five hundred pounds “towards the roof”, takes a house in Bath, and is to be seen in the Pump Room in half-mourning with a very small dog. She keeps the Jamaica property. She does not speak of it, and neither do you, and the money arrives every quarter all the same.`; }}
+      return `She sends you five hundred pounds. “Towards the roof.”
+
+She takes a house in Bath. Mrs Tamworth sees her in the Pump Room in half-mourning, carrying a very small dog.
+
+She keeps Jamaica. She does not write of it. The remittances come to her banker every quarter.`; }}
   ]});
 
 ev({ id:'oakes', from:1799, to:1806, weight:3, cond:() => K() === 'free', title:'The Curate Turns His Hat',
-  text:() => { meet('oakes'); return `Mr Oakes, the curate, does all of ${F('gallDead') ? 'the parish’s' : 'Dr Gall’s'} work for forty pounds a year${F('gallDead') ? '' : ', while Dr Gall takes the other four hundred and the credit'}. He is thin, shy, and so good that it gets on people’s nerves.
+  text:() => { meet('oakes'); return `Mr Oakes the curate asks to see you in the library. He ${F('gallDead') ? 'has done the work of the parish for years' : 'does all Dr Gall’s work'} for forty pounds a year. ${F('gallDead') ? '' : 'Dr Gall keeps the other four hundred. '}His coat is green at the seams.
 
-He has asked to see you in the library, and has stood there some minutes turning his hat round and round, as if winding himself up. He would like, he says at last, to marry Kitty. He has nothing. Kitty, sent for, goes the colour of a radish and says that she has always liked him better than anybody, which is the first you have heard of it.`; },
+He stands on the hearthrug. He turns his hat round by the brim. It goes round nine times.
+
+“I should like to marry Miss Kitty, sir. I have nothing. I thought you should hear it from me.”
+
+You send for Kitty. She comes in and sees him. She goes red to the neck.
+
+“I have always liked him better than anybody, Papa.”`; },
   choices:[
     {t:'Consent, and promise him the living when it falls vacant.', go:() => { fl('kitty','oakes'); fl('livingPromised'); add({family:8, standing:-2, goodwill:3}); reg('kitty',4,'You let her marry the curate'); reg('oakes',4,'You gave him Kitty, and the promise of the living'); reg('henrietta',-1); if (!F('gallDead')) reg('gall',-2,'Knows you have promised away his living');
-      return `They are married in October by ${F('gallDead') ? 'the rural dean' : 'Dr Gall himself, who reads the service as if conducting a sale of his own furniture'}. The village turns out to the last child. They go to live in four rooms over the old schoolhouse, where Kitty, who never did a hand’s turn at the Hall, is found a week later on her knees, blackleading a grate and singing.`; }},
+      return `“You shall have her. And you shall have the living, when it falls.”
+
+They are married in October. ${F('gallDead') ? 'The rural dean takes the service.' : 'Dr Gall takes the service. He knows what you have promised. He reads every line of it at a walk.'} The whole village is in the churchyard.
+
+They go to live in four rooms over the old schoolhouse. A week later Henrietta calls. She finds Kitty on her knees, blackleading the grate. Kitty is singing.`; }},
     {t:'Consent, with a thousand pounds to start them.', note:'£1,000', go:() => { fl('kitty','oakes'); add({money:-1000, family:10, goodwill:3}); reg('kitty',5,'You let her marry the curate, and portioned her'); reg('oakes',3,'You gave him Kitty and a thousand pounds'); reg('henrietta',1);
-      return `A thousand pounds in the Funds is fifty a year, which more than doubles the curate’s income and allows Henrietta to describe the match in Wyvern as “perfectly prudent”. They are married in October. Oakes gets through the responses without stammering, a thing nobody has heard him do before.`; }},
+      return `“You shall have her. And a thousand pounds in the funds.”
+
+A thousand pounds is fifty a year. With his forty, ninety. Henrietta does the sum. In Wyvern she calls the match “perfectly prudent”.
+
+They are married in October. Oakes has stammered since he was a boy. He makes every response without a stop.`; }},
     {t:'Refuse. Forty pounds a year will not keep her in gloves.', go:() => { add({family:-6}); reg('kitty',-4,'You refused her the curate'); reg('oakes',-2,'You refused him Kitty');
-      return `Oakes bows, says he had expected nothing else, and goes away to read the burial service over a pauper. Kitty does not weep or rage. She takes up botany. For years afterwards she is to be seen on the Down in all weathers with a tin box, and nobody who watches her go by in the direction of the schoolhouse lane supposes she is looking only for orchids.`; }}
+      return `“Forty pounds a year, Mr Oakes. No.”
+
+He bows. “I expected it, sir.” He has a pauper to bury at three o’clock. He goes to do it.
+
+Kitty does not cry. The next week she orders a tin specimen box from Reading. She is out on the Down with it in all weathers. The path to the Down goes by the schoolhouse lane.`; }}
   ]});
 
 ev({ id:'dubreuil', from:1804, to:1811, weight:2, title:'A Frenchman at the Milestone',
-  text:() => { meet('dubreuil'); return `Lieutenant Achille Dubreuil of the Imperial Navy, taken in a frigate off Ushant, is one of forty French officers living on parole at Wyvern. He may walk one mile from the Market Cross along the turnpike and no further, a limit he keeps with an exactness that is almost an insult.
+  text:() => { meet('dubreuil'); return `Forty French officers are living at Wyvern on parole. Each may walk one mile from the Market Cross along the turnpike. No further.
 
-He plays chess beautifully, and loses, beautifully, on purpose. ${F('gallDead') ? 'The churchwardens think' : 'Dr Gall thinks'} him a spy. He writes to ask if he may call. The milestone at the foot of your drive, he has ascertained by pacing it, stands at one mile exactly.`; },
+One of them is a Lieutenant Achille Dubreuil of the Imperial Navy, taken in a frigate off Ushant. He walks his mile every afternoon. He stops at the stone. He turns round.
+
+${F('gallDead') ? 'The churchwardens have' : 'Dr Gall has'} told the bench he is a spy.
+
+A note comes up to the Hall, in a neat upright hand.
+
+“Monsieur, The milestone at the foot of your avenue is one mile from the Cross. I have paced it. Your door is two hundred yards beyond. May I have the honour to call?”`; },
   choices:[
     {t:'Make him free of the house.', go:() => { fl('dubreuilFriend'); add({family:4, standing:-3}); reg('dubreuil',3,'You opened your house to an enemy officer'); reg('henrietta',1); if (!F('gallDead')) reg('gall',-1); if (K() === 'free' && kittyAge() < 34) later('dubreuilAsks', 5);
-      return `He comes on Tuesdays and Saturdays, walking up from the milestone with his hat under his arm. He teaches Mrs Bunce an omelette, corrects everyone’s French, and carves from mutton bones a model of his ship, with every gun, which he gives to Henrietta. You discover that an enemy at your own fireside is a very difficult thing to keep hating.`; }},
+      return `He comes on Tuesdays and Saturdays. He walks up from the milestone with his hat under his arm.
+
+He shows Mrs Bunce how to make an omelette. She lets him. He plays chess with you and loses in thirty moves. You suspect he could win in twenty.
+
+Over the winter he carves a frigate out of mutton bones. Thirty-eight guns, each one bored. He gives it to Henrietta. She puts it on the drawing-room chimney-piece, in front of the clock.`; }},
     {t:'Receive him once, correctly, and no more.', go:() => { reg('dubreuil',1);
-      return `He drinks one dish of tea, admires the Gainsborough of your uncle, and takes his leave at the fortieth minute by the clock. Nothing could be more correct. You find afterwards that you had wanted to ask him a hundred things, beginning with what they truly think of Bonaparte.`; }},
+      return `He drinks one dish of tea. He admires the Gainsborough of your uncle. At the fortieth minute by the clock he stands up and takes his leave.
+
+You watch him down the avenue to the milestone.
+
+You had meant to ask him what they really think of Bonaparte. You had a good many questions. You did not ask one.`; }},
     {t:'Reply that the milestone is the limit, and so is your patience.', go:() => { add({standing:1}); reg('dubreuil',-2); if (!F('gallDead')) reg('gall',1);
-      return `He does not write again. He walks out to the milestone each afternoon, touches it with his cane, and walks back, and when he passes your carriage he bows as if nothing in the world could please him more.`; }}
+      return `He does not write again.
+
+Each afternoon he walks out to the milestone. He touches it with his cane. He walks back.
+
+Your carriage passes him on the turnpike on Thursday. He takes off his hat and bows low. He is smiling.`; }}
   ]});
 
 ev({ id:'dubreuilAsks', follow:true, cond:() => K() === 'free' && F('dubreuilFriend'), title:'The Lieutenant Is Exchanged',
-  text:() => `Lieutenant Dubreuil is to be exchanged for an English officer of the same rank, and sails from Portsmouth in a cartel within the month. He has come up from the milestone in his best coat.
+  text:() => `Lieutenant Dubreuil comes up from the milestone on a Wednesday. It is not his day. He is wearing his best coat.
 
-He asks for Kitty. He has, he says, a small property near Saint-Malo, an old mother, and the half-pay of a lieutenant whose Emperor does not much love the navy. Kitty is ${kittyAge()}. She has been reading Racine with him for two years, and she is standing by the window looking at you, not at him.`,
+“I am exchanged, monsieur. For an English lieutenant. I sail from Portsmouth within the month.”
+
+He stands very straight.
+
+“I have a small property near Saint-Malo. An old mother. The half-pay of a lieutenant. I ask for Miss Kitty.”
+
+Kitty is ${kittyAge()}. For two years she has read Racine with him on Tuesdays and Saturdays. She is by the window. She is looking at you.`,
   choices:[
     {t:'Give them your blessing.', go:() => { fl('kitty','dubreuil'); add({family:-3, standing:-7}); reg('kitty',5,'You let her marry a Frenchman in the middle of the war'); reg('dubreuil',4,'You gave him your daughter'); reg('henrietta',-2);
-      return `They are married by licence at Wyvern, quietly, and cross in the cartel with the returning prisoners. Berkshire is scandalised to its foundations. For years her letters come by way of Holland, smuggled, three months old, smelling of tar: there is a garden, there are bees, there is, in time, a small Achille. Henrietta reads them to pieces.`; }},
+      return `They are married by licence at Wyvern, on a weekday, with the church door shut. They cross to France in the cartel with the returning prisoners.
+
+Nobody in Berkshire calls for a month.
+
+Her letters come by way of Holland. They are three months old and smell of tar. There is a garden. There are bees. In the fourth letter there is a small Achille.
+
+Henrietta keeps them in her work-box. The folds have worn through.`; }},
     {t:'Tell him to come back and ask when there is a peace.', go:() => { fl('dubreuilWaits'); add({family:1}); reg('kitty',1); reg('dubreuil',1,'You told him to ask again in peacetime');
-      return `He bows over your hand, and then over Kitty’s, a little longer. “Then I shall pray for peace, monsieur,” he says, “which for a sailor of the Emperor is a species of treason.” He leaves the mutton-bone frigate on the hall table. Kitty dusts it herself.`; }},
+      return `“Come back and ask me when there is a peace.”
+
+He bows over your hand. He bows over Kitty’s.
+
+“Then I shall pray for peace, monsieur. In the Emperor’s navy that is very nearly treason.”
+
+He leaves the mutton-bone frigate on the hall table. The maids are not allowed to touch it. Kitty dusts it.`; }},
     {t:'Refuse. She is not marrying into the enemy.', go:() => { add({family:-5, standing:1}); reg('kitty',-3,'You refused her the Lieutenant'); reg('dubreuil',-3);
-      return `He takes it like an officer. Kitty takes it like your daughter, which is to say she does not speak of it, ever, and continues to read Racine alone, aloud, in a room at the top of the house.`; }}
+      return `“My daughter does not marry the enemy, sir.”
+
+He bows and goes down the avenue. He does not look back.
+
+Kitty says nothing that day. She says nothing about it the day after. In the evenings there is a voice in the room at the top of the house. It is reading French, aloud.`; }}
   ]});
 
 ev({ id:'dubreuilReturns', from:1814, to:1815, weight:9, cond:() => F('dubreuilWaits') && K() === 'free', title:'A Caller at the Milestone',
-  text:() => `A post-chaise has stopped at the foot of the drive, by the milestone, and a man has got down from it and is standing there with his hat off, as if waiting for leave to come further.
+  text:() => `A post-chaise stops at the foot of the avenue. A man gets down. He stands by the milestone with his hat in his hand. He comes no further.
 
-It is Dubreuil. He is greyer, he has a scar from eyebrow to ear that he got at Leipzig serving guns ashore, and he has travelled from Saint-Malo in nine days, having set out the morning the peace was proclaimed.`,
+You take the glass to the window. It is Dubreuil.
+
+He is grey. There is a scar from his eyebrow to his ear. The chaise is white with dust to the roof.
+
+Peace was proclaimed nine days ago.`,
   choices:[
     {t:'Walk down the drive yourself and bring him in.', go:() => { fl('kitty','dubreuil'); add({family:10, standing:-1}); reg('kitty',5,'You kept your word about the Lieutenant'); reg('dubreuil',5,'You walked down the drive to fetch him');
-      return `You bring him up the drive on your arm. Kitty is on the steps. She is ${kittyAge()}, and has on her old blue pelisse, and what passes between them is not for you to watch, so you find a sudden interest in the state of the gravel. They are married in the autumn. The county, which would have fainted six years ago, sends silver.`; }},
+      return `You walk down the avenue. You give him your arm at the milestone and bring him up.
+
+“Leipzig,” he says, touching the scar. “They put the sailors to the guns.”
+
+Kitty is on the steps. She is ${kittyAge()}. She has on the old blue pelisse.
+
+You stop to look at the gravel. It wants raking.
+
+They are married in the autumn. The Tamworths send a silver teapot.`; }},
     {t:'Send word that Miss Kitty is not at home.', go:() => { add({family:-10}); reg('kitty',-5,'You turned the Lieutenant away after he had waited six years'); reg('dubreuil',-5);
-      return `The chaise turns in the road. Kitty sees it from the top window, going away. She was at home. She will now always be at home.`; }}
+      return `You send John down the avenue. “Miss Kitty is not at home.”
+
+The man at the milestone puts on his hat. The chaise turns in the road.
+
+Kitty is at the top window. She watches it as far as the bend.`; }}
   ]});
 
 ev({ id:'gallDies', from:1806, to:1813, weight:3, cond:() => !F('gallDead'), title:'The Living of Hatherley',
-  text:() => { meet('oakes'); return `Dr Gall is dead, in his seventy-ninth year, at his own table, during the second remove, of a goose. The funeral is largely attended. Several people come to make sure.
+  text:() => { meet('oakes'); return `Dr Gall died on Sunday, at his own table. He was seventy-eight. It was during the second remove. The goose is thought to have done it.
 
-The living is worth four hundred a year and is yours to give. Lord Cullerne has mentioned his chaplain, a Mr Spragg. A clerical agent in Holborn offers fourteen hundred pounds for the next presentation, no questions asked. ${E() === 'church' ? 'Edmund is in orders, and Henrietta has had the vicarage measured for carpets. ' : ''}And there is Mr Oakes, who has done the whole work of the parish these many years on forty pounds${K() === 'oakes' ? ', and who is your son-in-law' : ''}.`; },
+The church is full for the funeral.
+
+The living is four hundred a year, and it is yours to give. By Wednesday you have three letters.
+
+Lord Cullerne recommends his chaplain, a Mr Spragg. A clerical agent in Holborn offers fourteen hundred pounds for the presentation. “No enquiries will be made.” ${E() === 'church' ? 'Henrietta has not written. She has had the vicarage measured for carpets. Edmund is in orders. ' : ''}The third letter is two lines from Mr Oakes${K() === 'oakes' ? ', your son-in-law' : ''}. He has taken the services for years on forty pounds. He asks only whether he is to take them next Sunday.`; },
   choices:[
     {t:'Present Mr Oakes.', go:() => { fl('gallDead'); fl('oakesVicar'); add({goodwill:8, family: K() === 'oakes' ? 8 : 1}); reg('oakes',4,'You gave him the living'); if (K() === 'oakes') reg('kitty',3,'You kept your promise about the living'); reg('cullerne',-1); if (E() === 'church') reg('henrietta',-2,'You gave the living away from Edmund');
-      return `Oakes is inducted on a wet Thursday and tolls the bell himself, as the form requires, to tell the parish it has a new incumbent. The parish had worked that out. His first act is to raise the new curate to eighty pounds. His second is to give the tithe pig back.`; }},
+      return `Oakes is inducted on a wet Thursday. The form requires him to toll the bell himself. He tolls it.
+
+On Friday he raises the new curate to eighty pounds.
+
+On Saturday Dewey’s tithe pig is driven back up the lane to Dewey’s, with a note tied to its ear.`; }},
     {t:'Present Edmund.', if:() => E() === 'church', go:() => { fl('gallDead'); fl('edmundVicar'); add({family:5, goodwill:-2}); reg('henrietta',3,'You put Edmund in the vicarage'); reg('edmund',-1); reg('oakes',-3,'Passed over for the living after all his years'); if (K() === 'oakes' || F('livingPromised')) { reg('kitty',-4,'You broke your promise about the living'); add({family:-8}); }
-      return `Edmund reads himself in. He preaches for eleven minutes on the text “Here am I; send me”, with an irony that goes over the congregation’s head like a flight of duck. Mr Oakes remains curate, on forty pounds, and congratulates him with a sincerity that is harder to bear than a blow.`; }},
+      return `Edmund reads himself in. His text is Isaiah. “Here am I; send me.” He preaches eleven minutes. He looks at you once.
+
+Henrietta has the carpets down by Michaelmas.
+
+Mr Oakes stays on as curate at forty pounds. He shakes Edmund’s hand at the church door. “I am very glad for you,” he says. He is.`; }},
     {t:'Present Lord Cullerne’s Mr Spragg.', go:() => { fl('gallDead'); fl('spragg'); add({standing:3, goodwill:-4}); reg('cullerne',4,'You gave his chaplain the living'); reg('oakes',-3,'Passed over for Lord Cullerne’s chaplain'); if (K() === 'oakes' || F('livingPromised')) { reg('kitty',-4,'You broke your promise about the living'); add({family:-8}); }
-      return `Mr Spragg arrives with eleven trunks and a pianoforte. He hunts three days a week, and has the pulpit lowered, so that he may be seen as well as heard. Oakes goes on doing the work, on forty pounds, exactly as before. Very little changes in the cure of souls at Hatherley except the weight of the man who draws the tithe.`; }},
+      return `Mr Spragg arrives with eleven trunks and a pianoforte. He hunts three days a week. He has the pulpit lowered by a foot. He can now be seen from the Cullerne pew.
+
+Oakes goes on taking the services. Forty pounds.
+
+At the tithe audit Spragg weighs seventeen stone on the corn-factor’s scales. Dr Gall never went above eleven.`; }},
     {t:'Sell the presentation to the agent in Holborn.', note:'+£1,400', go:() => { fl('gallDead'); fl('soldLiving'); add({money:1400, standing:-5, goodwill:-5}); reg('oakes',-3,'You sold the living over his head'); if (K() === 'oakes' || F('livingPromised')) { reg('kitty',-5,'You sold the living you promised her husband'); add({family:-10}); }
-      return `Fourteen hundred pounds. The purchaser proves to be a wine merchant of Mark Lane, buying for a son who is not yet ordained, and until he shall be the cure is served, at forty pounds, by Mr Oakes. The Bishop writes you a letter. It contains the word “simony”, twice, and is signed “your faithful brother in Christ”, which you take to be episcopal for something else.`; }}
+      return `Fourteen hundred pounds. The buyer is a wine merchant of Mark Lane. He wants it for a son who is not yet ordained. Until he is, Mr Oakes will serve the cure. Forty pounds.
+
+The Bishop writes. The word “simony” is in the letter twice. It is signed “Your faithful brother in Christ”.
+
+The Bishop does not dine at Hatherley on his next visitation.`; }}
   ]});
 
 ev({ id:'vaccine', from:1800, to:1808, weight:2, title:'The Cow-Pox',
-  text:() => `There is smallpox at Kintbury: four children dead, and the rest marked for life. A young surgeon of Newbury, Mr Ferris, has read Dr Jenner’s treatise and offers to inoculate Hatherley with matter from the cow-pox, which is mild, and which, he swears, makes a person proof against the other for ever.
+  text:() => `There is smallpox at Kintbury. Four children are dead. The rest will carry the marks.
 
-There is resistance. A print going round the alehouses shows the vaccinated sprouting horns and udders. ${F('gallDead') ? 'The clerk has been heard to say' : 'Dr Gall has preached'} that it is impious to mix the beasts of the field with the image of God.`,
+Mr Ferris, a young surgeon from Newbury, calls at the Hall. He has Dr Jenner’s book under his arm. He will scratch every arm in Hatherley with matter from the cow-pox. It is a mild thing. A person who has had it cannot take the smallpox.
+
+“Never, sir. I will stake my practice on it.”
+
+There is a print pinned up at the Bell. It shows a doctor with a lancet. His patients have horns. One has an udder. ${F('gallDead') ? 'The parish clerk has been saying' : 'Dr Gall preached on Sunday'} that man is made in God’s image and a cow is not.`,
   choices:[
     {t:'Pay for the whole parish, and go first yourself, in public.', note:'£60', go:() => { fl('vaccinated'); add({money:-60, goodwill:7, standing:2, family:2}); if (!F('gallDead')) reg('gall',-2,'You were vaccinated on the green in the teeth of his sermon');
-      return `You bare your arm on the green, on a kitchen chair, and Ferris scratches you with a lancet while the parish watches for horns. For a fortnight you are examined every time you take off your hat. No horns appear. Two hundred and sixty are done by Midsummer, and when the smallpox comes down the valley that autumn it goes round Hatherley as a stream goes round a stone.`; }},
+      return `You have a kitchen chair carried out to the green. You sit on it and roll up your sleeve. Ferris scratches your arm. The parish stands round in a ring.
+
+For a fortnight people look at your forehead when you lift your hat.
+
+Two hundred and sixty are done by Midsummer. Sixty pounds. In the autumn the smallpox comes down the valley. It is at Kintbury. It is at Inkpen. Nobody in Hatherley takes it.`; }},
     {t:'Pay for any who wish it, and say no more.', note:'£25', go:() => { add({money:-25, goodwill:3});
-      return `Some ninety come, chiefly mothers, after dark, with shawls over their heads as if to a christening that must not be spoken of. It is not enough. The smallpox takes three in Hatherley that autumn. All three were from houses that had laughed at the print.`; }},
+      return `You tell Ferris you will pay for any who come. Twenty-five pounds.
+
+About ninety come. Most are mothers. They come to the surgery door after dark with shawls over their heads.
+
+The smallpox reaches Hatherley in the autumn. Three die. None of the three had been to Ferris. The print comes down off the wall at the Bell.`; }},
     {t:'Leave physic to Providence.', go:() => { add({goodwill:-5, family:-2}); if (!F('gallDead')) reg('gall',1);
-      return `Providence sends the smallpox in October. Nine die in Hatherley, seven of them under ten years old, and the blacksmith’s youngest is left blind. Mr Ferris passes your gate daily on his way to the cottages, and takes off his hat to it with the utmost civility.`; }}
+      return `“We shall leave it to Providence, Mr Ferris.”
+
+The smallpox comes in October. Nine die in Hatherley. Seven are under ten years old. The blacksmith’s youngest lives. She is blind.
+
+Ferris rides past your gate every day on his way to the cottages. Every day he takes off his hat to it.`; }}
   ]});
 
 ev({ id:'manTraps', from:1797, to:1812, weight:2, cond:() => !F('traps'), title:'Mudge Proposes Iron',
-  text:() => `Mudge the keeper reports that pheasants are leaving Cuckoo Copse at a rate which argues either poachers or one very large and discriminating owl. He proposes man-traps and spring-guns: an iron jaw to take a man by the leg, and a gun on a wire that fires at whoever trips it. Both are entirely legal.
+  text:() => `Mudge the keeper has counted the pheasants in Cuckoo Copse. There are forty fewer than at Michaelmas.
 
-“There’s a board you put up,” says Mudge, “to say they’re set. Most of ’em can’t read it. But that’s not our fault, is it, sir?”`,
+He has a printed list from an ironmonger in Reading. He puts it on your desk and holds it flat with his thumb. Man-traps, at two guineas. Spring-guns, at four. A trap takes a man by the leg. A gun is set on a wire. It fires at whoever walks into the wire.
+
+“It’s all legal, sir. There’s a board you put up to say they’re set.” He thinks. “Most of ’em can’t read it. But that ent our fault, is it?”`,
   choices:[
     {t:'Set them.', note:'£30', go:() => { fl('traps'); S.game += 2; add({money:-30, goodwill:-7, standing:1}); reg('cullerne',1); reg('pryor',-1); later('trapCatch', 2);
-      return `Six traps and two guns, from an ironmonger in Reading whose bill is headed “Humane Man-Traps, Without Teeth, For The Nobility”. The board goes up. Children are forbidden the copse. For a month the pheasants are undisturbed, and so, you notice, are you; nobody comes up the back drive at all.`; }},
+      return `Six traps and two guns. Thirty pounds. The ironmonger’s bill is headed “Humane Man-Traps, Without Teeth, For The Nobility and Gentry”.
+
+Mudge sets them on Monday. The board goes up at the stile. Children are kept out of the copse.
+
+No pheasants go that month. Nobody comes up the back drive either. The baker leaves the bread at the lodge.`; }},
     {t:'Put up the board, and set nothing.', go:() => { fl('trapBluff'); add({goodwill:-2}); S.game += 1;
-      return `The board says MAN TRAPS AND SPRING GUNS ARE SET IN THESE WOODS. It is a lie, and for two seasons it does very well. Then one morning Mudge finds a line added beneath, in chalk, in a careful hand: “No they ent.”`; }},
+      return `The board goes up at the stile. “MAN TRAPS AND SPRING GUNS ARE SET IN THESE WOODS.” There is nothing in the woods.
+
+It answers for two seasons.
+
+One morning Mudge fetches you down to the stile. There is a line of chalk under the paint, in careful letters. “No they ent.”`; }},
     {t:'Refuse. You will not maim a man for a bird.', go:() => { add({goodwill:2}); reg('pryor',1); S.game -= 1;
-      return `Mudge receives this as an old soldier receives news of a peace: correctly, and with private disgust. The pheasants continue to go. You find that you can eat a chicken with a perfectly easy mind.`; }}
+      return `“I will not take a man’s leg off for a bird, Mudge.”
+
+“No, sir.” He folds the list and puts it inside his hat.
+
+The pheasants go on going. On Sunday there is a roast fowl on your table. You eat it with a good appetite.`; }}
   ]});
 
 ev({ id:'trapCatch', follow:true, cond:() => F('traps'), title:'What the Spring-Gun Caught',
-  text:() => F('gallDead') ? `The spring-gun in Cuckoo Copse went off at first light. Mudge ran to it hoping for Jem Pryor, and found a boy of eleven, Tom Gurney, who had gone in after a hazel for a fishing rod, with nine shot in his legs.
+  text:() => F('gallDead') ? `The spring-gun in Cuckoo Copse goes off at first light. Mudge runs to it.
 
-He will walk, Ferris says, though not as he did. His mother has not come up to the Hall. Nobody has come up to the Hall.` : `The spring-gun in Cuckoo Copse went off at first light. Mudge ran to it hoping for Jem Pryor, and found instead Dr Gall, in a nightcap, with a basket of morels and twelve shot in his left buttock.
+It is not Jem Pryor. It is Tom Gurney, who is eleven. He had gone in to cut a hazel for a fishing rod. There are nine shot in his legs.
 
-He had, he explains from his bed, face downward, been gathering mushrooms, as he has every May for thirty years, upon what he always understood to be the glebe. It is not the glebe. It has never been the glebe.`,
+Mr Ferris has been. The boy will walk. He will not walk as he did.
+
+His mother has not come to the Hall. Nobody has come to the Hall.` : `The spring-gun in Cuckoo Copse goes off at first light. Mudge runs to it.
+
+It is not Jem Pryor. It is Dr Gall, in his nightcap. There is a basket of morels beside him. There are twelve shot in his left buttock.
+
+He is carried home on a hurdle, face down. You call at the vicarage. He speaks into the pillow.
+
+“I have gathered mushrooms on that ground every May for thirty years. It is glebe.”
+
+It is not glebe. The tithe map is quite clear.`,
   choices:[
     {t:'Take up every trap and gun, today.', go:() => { fl('traps', false); S.game -= 2; add({goodwill:5}); if (!F('gallDead')) reg('gall',1); else add({money:-20});
-      return F('gallDead') ? `The iron goes into the pond. You pay Ferris’s bill and send the boy a rod, a proper one, from London, with a brass reel. It is not accepted for a month. Then one evening you see him on the bridge with it, sitting, since he cannot stand long, and he lifts a hand an inch off the rail as you go by.` : `The iron goes into the pond, where the carp regard it with suspicion. Dr Gall preaches from a cushion for six Sundays, on forgiveness, standing.`; }},
+      return F('gallDead') ? `The traps and the guns go into the pond before noon.
+
+You pay Ferris’s bill. You send to London for a fishing rod with a brass reel and have it left at the Gurneys’ door. It stays in its wrapper for a month.
+
+One evening the boy is on the bridge with it. He is sitting. He cannot stand long. He lifts one hand an inch off the rail as you go by.` : `The traps and the guns go into the pond before noon.
+
+Dr Gall preaches for six Sundays standing on a cushion. His text each Sunday is forgiveness. He looks at your pew during the text.`; }},
     {t:() => F('gallDead') ? 'Leave them. The board was plain enough.' : 'Leave them set, and send the Doctor a ham.', go:() => { add({goodwill:-6, money:-3}); if (!F('gallDead')) reg('gall',-3,'You left the spring-guns set after one shot him'); else reg('pryor',-2);
-      return F('gallDead') ? `The board was plain. Tom Gurney cannot read. You have the law wholly on your side, and you are welcome to it.` : `The ham comes back. With it comes a note stating that Dr Gall will in future gather his mushrooms where he pleases, and that he has loaded his own fowling piece. Mudge, for the first time in his life, looks thoughtful.`; }},
+      return F('gallDead') ? `“The board was plain enough.”
+
+Tom Gurney cannot read.
+
+The guns stay. The law is on your side. Mr Ferris sends his bill to the Gurneys.` : `You send a ham to the vicarage. The guns stay.
+
+The ham comes back the same afternoon. There is a note under the string.
+
+“Dr Gall will gather his mushrooms where he pleases. He has loaded his fowling piece.”
+
+Mudge reads it over your shoulder. He takes off his hat and scratches his head.`; }},
     {t:'Prosecute Dr Gall for trespass in pursuit of fungus.', if:() => !F('gallDead'), go:() => { add({goodwill:6, standing:-3}); reg('gall',-5,'You had him fined a shilling for trespass, with shot still in him'); reg('pryor',2);
-      return `The case of ${S.sur} v. Gall is heard at Wyvern before a bench that cannot keep its face straight. He is fined a shilling. The Bell is drunk dry that night. No magistrate has ever been so popular in Hatherley, and no squire so cordially hated at his own vicarage; the Doctor will carry both the shot and the shilling to his grave.`; }}
+      return `${S.sur} v. Gall is heard at Wyvern. The Doctor gives his evidence standing. Two of the bench have their handkerchiefs out.
+
+Fined one shilling.
+
+The Bell runs dry by ten that night. Jem Pryor proposes your health. At the vicarage the blinds are down, and they are down every time you pass for a year.`; }}
   ]});
 
 ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.project && !F('encloseRefused'), title:'The Common Question',
