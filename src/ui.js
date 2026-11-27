@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
-let TAB = 'accounts', LEAF = -1, PAPER = '';
+let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '';
 const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
@@ -57,7 +57,8 @@ addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready)
 function drawBook(){ $('verso').innerHTML = versoHTML();
   document.body.classList.toggle('reading', TAB === 'paper');
   $('tabs').innerHTML = (S.phase === 'event' ? [['paper', 'The Paper']] : []).concat(TABS).map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
-function showTab(t){ TAB = t; drawBook(); }
+function showTab(t){ TAB = t; WHO = ''; drawBook(); }
+function showWho(id){ WHO = id; drawBook(); }
 
 function introHTML(){ const has = !!load();
   return `<article class="card opening">
@@ -155,9 +156,9 @@ function versoHTML(){
   const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
   if (TAB === 'paper' && S.phase === 'event') return paperHTML();
   if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll${typeof farmsList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + farmsHTML();
-  if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + venturesHTML();
-  if (TAB === 'society') return head + `<h2 class="qtitle">Figure and Consequence${typeof societyList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + societyHTML();
-  if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2>` + worksHTML();
+  if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">Money put out at hazard. Some of it comes home every year and some is never seen again.</p>` + venturesHTML();
+  if (TAB === 'society') return head + `<h2 class="qtitle">Figure and Consequence${typeof societyList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">What the county sees of you. Most of it costs something every year to keep.</p>` + societyHTML();
+  if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2><p class="lede">Building and mending, paid for by the quarter. Two may be in hand at once.</p>` + worksHTML();
   if (TAB === 'persons') return head + `<h2 class="qtitle">Persons of Consequence</h2>` + peopleHTML();
   if (TAB === 'wheat') return head + `<h2 class="qtitle">Wheat at Wyvern Market</h2>` + chartHTML();
   if (TAB === 'daybook') return head + `<h2 class="qtitle">The Squire’s Day-Book</h2>` + journalHTML();
@@ -172,11 +173,19 @@ function versoHTML(){
       ${meter('Peace of the household', S.family, FAMILY_W)}
       ${S.traits && S.traits.length ? `<p class="fine born">The squire: ${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}</div>`; }
 
+/* Money in the lists: green with a plus where it comes in, red with a minus where it goes out. */
+const amt = (n, sign) => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${fmt(Math.abs(n))}</span>`;
+const tint = (t, sign) => esc(t).replace(/£[\d,]+/g, m => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${m}</span>`);
+const fxHTML = v => v.fx && v.fx.length ? `<ul class="fx">${v.fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
+function hazardHTML(v){
+  if (v.odds) { const o = v.odds, pc = x => Math.round((x || 0) * 100); return `<span class="hazard"><span>Hazard</span><span class="oddsbar" role="img" aria-label="${pc(o.well)} in 100 well, ${pc(o.dull)} middling, ${pc(o.ill)} ill"><i class="w" style="flex:${pc(o.well)}"></i><i class="d" style="flex:${pc(o.dull)}"></i><i class="l" style="flex:${pc(o.ill)}"></i></span></span>`; }
+  if (!Number.isFinite(v.risk)) return '';
+  return `<span class="hazard" role="img" aria-label="Hazard ${v.risk} of 4"><span>Hazard</span>${[1, 2, 3, 4].map(i => `<i class="pip${i <= v.risk ? ' on' : ''}"></i>`).join('')}</span>`; }
 function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
     ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
-    ${open.map(w => `<details name="lot"><summary><b>${esc(w.name)}</b><span>${fmt(w.cost)}</span></summary><div><p>${esc(w.blurb)}</p><p class="terms">${esc(w.note)}. ${esc(w.gain)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
+    ${open.map(w => `<details name="lot"><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${fxHTML(w) || `<p>${esc(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
     ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
@@ -194,16 +203,16 @@ const DRAFT_VENTURES = [
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
 function farmsHTML(){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sale = live && typeof farmsForSale === 'function' ? farmsForSale() : [];
   const lv = f => !f.canLevel ? '' : `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}</span>`;
-  const held = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span>${fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p><p class="terms">${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${lv(f)}
-    <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${fmt(f.sellPrice)}</button>` : ''}</span></div></details>`;
-  const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span>${fmt(f.price)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}${f.value ? ' Worth ' + fmt(f.value) + ' a year.' : ''}</p><p class="terms">${f.down !== undefined ? fmt(f.down) + ' down' + (f.loan ? ', ' + fmt(f.loan) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
+  const held = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span>${amt(f.rent, 1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p><p class="terms">${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}.${f.sellPayout ? ` Sold now, ${amt(f.sellGross, 1)} less ${amt(f.sellPayout, -1)} to buy out the tenant.` : ''}${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${lv(f)}
+    <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${amt(f.sellPrice, 1)}</button>` : ''}</span></div></details>`;
+  const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}${f.value ? ' Worth ' + amt(f.value, 1) + ' a year.' : ''}</p><p class="terms">${f.down !== undefined ? amt(f.down, -1) + ' down' + (f.loan ? ', ' + fmt(f.loan) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
   return `<dl class="bal slim"><div><dt>The rental</dt><dd>${fmt(list.reduce((a, f) => a + f.rent, 0))}</dd></div><div><dt>Acres let</dt><dd>${list.reduce((a, f) => a + f.acres, 0).toLocaleString('en-GB')}</dd></div><div><dt>Farms</dt><dd>${list.length} of 8</dd></div></dl>
     <div class="lots flat">${list.map(held).join('')}</div>${sale.length ? `<h3 class="orn">To be had</h3><div class="lots">${sale.map(lot).join('')}</div>` : ''}`; }
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
 function lotsHTML(list, live, begin, end, verb){
   const row = v => v.state === 'ended' ? `<div class="lot done"><b>${esc(v.name)}</b><span>${esc(v.note || 'Ended')}</span></div>`
-    : `<details name="lot"><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : fmt(v.cost)}</span></summary><div><p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p><p class="terms">${esc([v.where, v.note].filter(Boolean).join('. ').replace(/\.$/, ''))}${v.where || v.note ? '.' : ''}${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
-      ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="${end}('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${esc(v.endLabel)}</button>` : '') : `<button class="inkbtn" onclick="${begin}('${v.id}')" ${v.can ? '' : 'disabled'}>${esc(v.verb || verb)}</button>`}</div></details>`;
+    : `<details name="lot"><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}<p class="terms">${tint([v.where, v.note].filter(Boolean).join('. ').replace(/\.$/, ''), -1)}${v.where || v.note ? '.' : ''}${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
+      ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="${end}('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${tint(v.endLabel, end === 'endSociety' ? 1 : -1)}</button>` : '') : `<button class="inkbtn" onclick="${begin}('${v.id}')" ${v.can ? '' : 'disabled'}>${esc(v.verb || verb)}</button>`}</div></details>`;
   return `<div class="lots">${list.map(row).join('')}</div>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function'; return lotsHTML(live ? venturesList() : DRAFT_VENTURES, live, 'beginVenture', 'endVenture', 'Venture it'); }
 const DRAFT_SOCIETY = [
@@ -216,8 +225,13 @@ const DRAFT_SOCIETY = [
 function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it'); }
 
 function peopleHTML(){
-  return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id]; const note = c.notes[c.notes.length - 1];
-    return `<li title="${esc(p.role() + (note ? '. ' + note : ''))}">${medal(id)}<div><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></div></li>`; }).join('')}</ul>`; }
+  if (WHO && S.chars[WHO] && S.chars[WHO].met) { const c = S.chars[WHO], p = PEOPLE[WHO], full = pic('portraits/' + WHO, p.name), notes = c.notes.slice().reverse();
+    return `<div class="who">${full ? `<figure class="plate">${full}</figure>` : medal(WHO, true)}<div><h3>${esc(p.name)}</h3><p class="role">${esc(p.role())}</p>
+      <p class="regard"><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span><span class="scale" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i === c.r + 5 ? 'on' : ''}"></i>`).join('')}</span></p>
+      ${notes.length ? `<ul class="dealings">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : `<p class="role">No dealings entered.</p>`}
+      <button class="inkbtn" onclick="showWho('')">All persons</button></div></div>`; }
+  return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id];
+    return `<li><button onclick="showWho('${id}')">${medal(id)}<span class="pp"><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`; }
 
 function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YEAR + 1, bw = (W - pad) / n; let bars = '';
   const yOf = v => H - 16 - (v / 130) * (H - 28);
