@@ -71,7 +71,7 @@ for (const f of FILES) {
     if (idm) { tot.events++; tot.simile += sim; tot.which += wh; tot.punch += tl; tot.strings += sn; tot.hind += hind; }
     if (idm && sim > 2) notes.push('similes: ' + sim + ' (ration is one, two at a pinch)');
     if (idm && wh > 1) notes.push('", which is" deflations: ' + wh);
-    if (idm && sn >= 8 && tl > sn / 3) notes.push('statement, comma, aside: ' + tl + ' of ' + sn + ' sentences end after a comma and a joiner. Read each: a member that carries the action on is well, a remark upon the fact is not');
+    if (idm && sn >= 8 && tl > sn / 2) notes.push('statement, comma, aside: ' + tl + ' of ' + sn + ' sentences end after a comma and a joiner. Read each: a member that carries the action on is well, a remark upon the fact is not');
     let pw = 0, pn = 0, pr = 0; for (const x of ss) { if (/^In your pocket-book|^“/.test(x)) continue; const [a, b, c] = pace(x); pw += a; pn += b; pr = Math.max(pr, c); }
     if (idm && pn >= 6 && (pw / pn < 13 || pr >= 4)) { tot.stac++; notes.push('staccato: ' + (pw / pn).toFixed(0) + ' words to a sentence, ' + pr + ' short ones running (write in periods; three short running is the limit)'); }
     if (hind) notes.push('hindsight: the narrator knows the future ' + hind + ' time' + (hind > 1 ? 's' : ''));
