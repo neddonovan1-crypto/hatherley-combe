@@ -113,6 +113,11 @@ function accountHTML(){ let rows = '', tot = 0;
   rows += `<tr class="total${tot < 0 ? ' neg' : ''}"><td>Carried to the purse</td>${cells(tot)}</tr>`;
   return `<div class="tablewrap"><table class="acct"><thead><tr><th>Particulars</th><th class="n l">£</th><th class="n">s.</th><th class="n">d.</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
 
+/* The right-hand leaf, under the plate: what the quarter came to, and what was lately done. */
+function digestHTML(){ let inn = 0, out = 0; for (const [, a] of S.ledger) { if (a > 0) inn += a; else out -= a; }
+  const net = inn - out, last = S.journal.slice(0, 3);
+  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div></dl>
+    ${last.length ? `<h3 class="orn">Lately</h3><ol class="daybook">${last.map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : ''}</div>`; }
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
@@ -123,6 +128,7 @@ function ledgerHTML(){
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
+    ${digestHTML()}
     <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</span></button></div>`; }
 
 function paperHTML(){ const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text);
