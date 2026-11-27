@@ -59,7 +59,9 @@ Half the village has turned out to watch. Some of them have brought buckets. Not
   choices:[
     {t:'Post a reward of fifty guineas for the incendiary.', note:'£52', go:() => { add({money:-300 - 52, goodwill:-4, standing:1});
       return `The bill is posted on the church door and at the Bell. Nobody claims the money. Fifty guineas is more than a Hatherley man will see in three years, and still nobody claims it, and you find that this tells you more about your standing in the parish than the fire did. The wheat was worth three hundred.`; }},
-    {t:'Take a bucket and join the line.', go:() => { add({money:-300, goodwill:3});
+    {t:'Take a bucket and join the line.', go:() => { if (T('captain') && !F('crewGone')) { add({money:-110, goodwill:4, standing:2});
+      return `You have no need to take a bucket. Tarbuck has the Dryads out of their hammocks and rigged as a fire party before you are down the stairs: a double chain from the horse pond, wet sailcloth over the next rick, and the gunner on the barn roof with an axe, as for a fire in the forehold. One rick is lost. The other is saved, steaming. The village, which had come to watch a fire, stays to watch a drill, and is frankly impressed.`; }
+      add({money:-300, goodwill:3});
       return `You carry water from the horse pond until dawn, in your shirt, between the wheelwright and a boy of ten. The ricks are lost all the same; three hundred pounds of wheat gone up in an hour. But towards the end there are more buckets in the line than there were at the beginning, and when it is over, somebody hands you a mug of beer without calling you sir.`; }},
     {t:'Go back to bed. Let it be seen that you do not frighten.', go:() => { add({money:-300, standing:1, goodwill:-2});
       return `You look at it from the window for a minute, and then draw the curtain. It is thought very cool. It is also three hundred pounds, and Mudge finds a tinderbox by the stackyard gate next morning, laid on the post where it could not be missed, like a card left by a caller.`; }}
@@ -135,7 +137,7 @@ ev({ id:'duel', follow:true, cond:() => S.chars.vane.met, title:'Pistols on Hath
 
 Duelling is against the law, which is to say that it takes place at dawn instead of noon. The lieutenant suggests the old chalk pit on Hatherley Down, on Thursday, at twelve paces.`,
   choices:[
-    {t:'Accept.', go:() => { const r = Math.random();
+    {t:'Accept.', go:() => { const r = T('soldier') ? 0.1 + Math.random() * 0.4 : Math.random();
       if (r < 0.1) { S.dead = 'duel'; return `A grey morning, with larks. The handkerchief falls. You have just time to think that the Captain is a better shot than his debts would suggest.`; }
       if (r < 0.45) { add({standing:6, family:-3}); reg('vane',-2); reg('henrietta',-1,'You fought a duel and told her afterwards');
         return `You fire, and to the astonishment of everyone, yourself first among them, you hit him: in the right calf, the better of the two. He is carried to the George, where he lies up for a month on credit. You are the hero of the county for a season. Men who have never met you describe your coolness. In truth your hand shook so that you were aiming at the chalk pit generally.`; }
@@ -279,7 +281,7 @@ He had, he explains from his bed, face downward, been gathering mushrooms, as he
       return `The case of ${S.sur} v. Gall is heard at Wyvern before a bench that cannot keep its face straight. He is fined a shilling. The Bell is drunk dry that night. No magistrate has ever been so popular in Hatherley, and no squire so cordially hated at his own vicarage; the Doctor will carry both the shot and the shilling to his grave.`; }}
   ]});
 
-ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.project && !F('encloseRefused'), title:'The Common Question',
+ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.projectsDone.enclosure && !F('encloseRefused'), title:'The Common Question',
   text:() => `Lord Cullerne and ${F('gallDead') ? 'his man of business' : 'Dr Gall'} have called on you together, which is like being visited by both blades of a pair of scissors.
 
 Hatherley Common is four hundred acres of gorse, geese and independence. It is, his lordship says, wasted on cottagers who keep a cow and a pig there, cut their furze, and suppose themselves free. Enclosed, hedged and let, it would add a third to your rental. ${F('gallDead') ? 'The tithe' : 'Dr Gall’s tithe'} would be commuted for land, and no more counting of piglets. It wants a private Act of Parliament, a surveyor, three commissioners, and about twelve hundred pounds.
@@ -525,4 +527,30 @@ He has asked at the Bell whose estate this is. He dines there tonight. Whatever 
       add({standing:-3}); return `The Register gives Hatherley a paragraph. It contains the phrase “skin and grief”. You are not named. Everybody in Berkshire can supply the name.`; }},
     {t:'Have the constable move him on as a vagrant.', go:() => { add({standing:-6, goodwill:-3});
       return `It is, perhaps, the least wise act of your magistracy. Mr Cobbett owns a newspaper. For three successive Saturdays, forty thousand readers are entertained with the history of the Squire of Hatherley, his constable, his cottages, and his uncle.`; }}
+  ]});
+
+ev({ id:'crew', from:1795, to:1802, weight:6, cond:() => T('captain'), title:'All Hands at Hatherley',
+  text:() => `The household has now been six months under naval discipline. Tarbuck, your coxswain, runs it by the bell: eight strokes at noon, and the footmen piped to dinner. A flagstaff has appeared on the leads. When Lord Cullerne’s carriage turns in at the lodge, it flies “Enemy in sight”.
+
+Old Pascoe, who lost a leg at the Saintes and was the Dryad’s cook, has moved into the kitchen with a single receipt, for lobscouse, and is at war with Mrs Bunce over the copper. The housemaids have learned to splice. Henrietta has been addressed as “the Captain’s lady, bless her” to her face, and has asked you, in a very level voice, whether she lives in a house or a frigate.`,
+  choices:[
+    {t:'A frigate. The routine stands.', go:() => { add({family:-7, goodwill:4, standing:2}); reg('henrietta',-2,'You told her she lived in a frigate');
+      return `The routine stands. The brass on the front door could be shaved in, and the gravel is raked fore and aft. Hatherley village adores it; children are brought to the lodge gates at noon to hear the bell. Henrietta takes to sleeping with wool in her ears, and to referring to you, among her friends, as “the Admiralty”.`; }},
+    {t:'A house. Strike the hammocks and stop the bell.', go:() => { fl('crewGone'); add({family:6}); reg('henrietta',2,'You sent the ship’s routine ashore for her sake');
+      return `The hammocks come down. The Dryads try beds, and report that they cannot sleep in a thing that does not swing. Within the quarter nine of the eleven have gone back to Portsmouth, where a frigate is fitting out; they shake your hand at the gate one by one, and Tarbuck pipes them over the side of the wagon. Ordinary servants are engaged, at ordinary wages. The Hall is very quiet. You find that you wake at five all the same.`; }},
+    {t:'Draw a line at the green baize door: ship below stairs, house above.', go:() => { add({family:2, goodwill:1}); reg('henrietta',1);
+      return `A treaty is signed. Below the baize door, bells, pipes and lobscouse; above it, silence until nine, and nobody to say “aye aye” to a lady. It holds, on the whole. Pascoe and Mrs Bunce divide the kitchen by a chalk line down the flags, across which they do not speak, and pass the salt by way of a housemaid.`; }}
+  ]});
+
+ev({ id:'press', from:1803, to:1811, weight:5, cond:() => T('captain') && !F('crewGone'), title:'A Lieutenant with a Warrant',
+  text:() => `The fleet wants forty thousand men and cannot find them. A press gang has come up the Kennet as far as Wyvern, which has not seen one in living memory: a lieutenant, a midshipman of about twelve, and eight hands with cudgels, quartered at the George.
+
+Somebody has told them that there are eleven prime seamen living at Hatherley Hall, rated as butler, footmen and gardeners, and not one with a protection in his pocket. The lieutenant has sent his compliments. He proposes to call tomorrow, and trusts that he will find your servants at home.`,
+  choices:[
+    {t:'Receive him in your old uniform, and ask to see his warrant.', go:() => { add({standing:3}); reg('henrietta',1);
+      return `You receive him in the library in a post-captain’s full dress, both epaulettes, which fits everywhere but the waistcoat. The warrant, read closely, extends to seafaring men found “upon the rivers and the coast”, and you invite him to point out which of these Hatherley Hall may be. He is twenty-three. You were made post before he was breeched. He drinks one glass of your Madeira standing up, and his gang is in Reading by nightfall.`; }},
+    {t:'Put the Dryads in the ice-house till he has gone.', go:() => { const ice = F('icehouse'); add({goodwill:2, standing:-1});
+      return ice ? `Eleven seamen spend two nights in the ice-house with a ham, a keg and a pack of cards, and come out blue, cheerful, and eleven shillings up on the gunner. The lieutenant searches the Hall from the leads to the cellar and finds a butler’s pantry with a cutlass in it, and no butler. He knows perfectly well. So do you. You bow to one another very low.` : `There being no ice-house, they are put in the hay loft at Long Barrow, where the midshipman, who is twelve and misses nothing, finds a tarred pigtail hanging through a gap in the boards. It costs you twenty minutes of the plainest speaking of your life, captain to lieutenant, to send the gang away without them. It is all over Wyvern by noon that the squire hides deserters, which they are not.`; }},
+    {t:'Muster them and let any man volunteer who chooses.', go:() => { fl('crewGone'); add({standing:4, family:3}); reg('edmund',1);
+      return `You muster them on the gravel and say that the King wants seamen and that no man of yours shall be pressed, or hindered. They look at their boots. Then Tarbuck steps forward, and the gunner, and inside a minute all but old Pascoe have stepped forward with them, and are entered as volunteers, with the bounty. They march out behind the lieutenant singing. The Hall, that evening, is quieter than a church. Pascoe makes lobscouse for two.`; }}
   ]});
