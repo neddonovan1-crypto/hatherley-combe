@@ -120,7 +120,7 @@ function worksList(){ const busy = S.works.filter(w => !PROJECTS[w.id].hidden).l
     if (state === 'open') { if (S.phase === 'end' || S.dead) why = 'The books are closed.';
       else if (busy >= MAX_WORKS) why = 'Two works in hand already. There is one estate carpenter, and he is on both.';
       else if (S.money < per) why = 'The purse will not stand the first instalment of ' + fmt(per) + '.'; }
-    return {id, name:p.name, blurb:p.blurb, gain:p.gain, effects:p.effects || p.gain, fx:p.fx, cost, seasons:p.seasons, per,
+    return {id, name:p.name, blurb:p.blurb, gain:p.gain, effects:p.effects || p.gain, fx:typeof p.fx === 'function' ? p.fx() : p.fx, cost, seasons:p.seasons, per,
       note:fmt(cost) + (p.seasons > 1 ? ', in ' + p.seasons + ' quarterly instalments' : ''), state, left:w ? w.left : 0, can:state === 'open' && !why, why}; }); }
 function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || !w.can) return false;
   startProject(id); S.journal.unshift({when:stamp(), title:'Works', did:'Put in hand: ' + PROJECTS[id].name});
