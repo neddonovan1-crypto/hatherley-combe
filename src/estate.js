@@ -103,7 +103,7 @@ function rentDay(line){
   if (q === 0) ladyDay();
   let racked = 0, easy = 0, n = 0, asked = false;
   for (const f of S.farms){
-    const able = means(hy) * farmF(f) * f.base * (0.94 + S.goodwill / 800);
+    const able = means(hy) * farmF(f) * f.base * (0.86 + S.goodwill / 350);
     if (f.void) { const v = Math.max(-0.075 * f.base, 0.175 * (able - 0.4 * f.base)); line(f.name + ', in hand', v); S.yearIncome += Math.round(v); f.void--; if (!f.void) relet(f); continue; }
     if (f.lease.type === 'corn') f.rent = five(LEVEL[f.lease.level] * 0.86 * f.base * farmF(f) * (0.5 * means(hy) + 0.5 * market(y)));
     const due = rentDue(f) / 2, surplus = able / 2 - due, val = lettingValue(f, y); let got = due;
@@ -233,8 +233,8 @@ const moneyTight = y => TIGHT.includes(y);
    When the land will carry no more, there is still an annuity on the squire's life, and the oaks. */
 const capWithout = f => { const i = S.farms.indexOf(f); S.farms.splice(i, 1); const c = mortCap(); S.farms.splice(i, 0, f); return c; };
 const canBorrow = () => S.mortgage + 500 <= mortCap();
-const borrowGets = () => moneyTight(S.year) ? 450 : 500;
-const borrowNote = () => !canBorrow() ? '' : moneyTight(S.year) ? 'Money is tight. A private lender at Newbury will find £500 on the land, and his attorney keeps £50 of it.' : 'Mr Tidmarsh lends at five per cent.';
+const borrowGets = () => moneyTight(S.year) || F('cut') ? 450 : 500;
+const borrowNote = () => !canBorrow() ? '' : F('cut') && !moneyTight(S.year) ? 'Mr Tidmarsh is not at home to you. A lender at Newbury will find £500 on the land, and his attorney keeps £50 of it.' : moneyTight(S.year) ? 'Money is tight. A private lender at Newbury will find £500 on the land, and his attorney keeps £50 of it.' : 'Mr Tidmarsh lends at five per cent.';
 const borrowWhy = () => canBorrow() ? '' : 'The land will carry no more on mortgage. An annuity may still be sold, or timber.';
 const grossPrice = f => Math.round((moneyTight(S.year) ? 17 : 20) * (f.void ? 0.9 * lettingValue(f, S.year) : Math.min(rentDue(f), lettingValue(f, S.year))) / 10) * 10;
 /* A farm under lease is sold with the tenant bought out: a year's rent, and a quarter more for each further year he had to run, up to three years. */
@@ -396,9 +396,7 @@ function estOptions(){ const i = estIdx(), y = S.year, o = [];
 function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing + societyMark() - 6 * (S.settledSold || 0), 5, 95);
   if (S.annuities) line(S.annuities > 1 ? 'Annuities on your life, ' + numWords(S.annuities) : 'Annuity on your life', -25 * S.annuities);
   line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
-  if (S.t > 0) { add({standing: S.standing > tgt + 15 ? -2 : S.standing > tgt ? -1 : S.standing < tgt - 8 ? 1 : 0});
-    societyQuarter(line);
-    if (i === 0 && S.season % 2 === 0) add({family:-1}); if (i === 3 && S.season === 0) add({family:1}); } }
+  if (S.t > 0) societyQuarter(line); }
 /* The home farm pays its men by the week, and the vicar his tenth. */
 const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
 function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
@@ -791,3 +789,46 @@ function societyFx(id){ const d = SOCIETY[id], k = socKeep(id), x = SOCIETY_FX[i
 const soldWhy = d => d && d.of && !farm(d.of) ? landFor(d.of).name + ' is sold.' : '';
 for (const [id, of] of [['drain', 'kennet'], ['mill', 'kennet'], ['meadows', 'kennet'], ['barns', 'church'], ['chalk', 'longbarrow']]) PROJECTS[id].of = of;
 for (const [id, of] of [['plough', 'longbarrow'], ['peat', 'kennet'], ['brickkiln', 'kennet']]) VENTURES[id].of = of;
+
+/* ---------- standing, goodwill and peace ----------
+   Each of the three has a mark it settles at, set by how the squire lives: his establishment and honours, his rents and what he has built for the parish,
+   his wife's regard and the state of the purse. What he does in a season lifts a figure above its mark for a while, and it sinks back, faster the higher it stands.
+   One undertaking a season will not hold all three up. To keep a figure high he must move its mark, and every mark is moved with money or at the cost of another.
+   Below a line each of the three bites: the parish breaks and burns, the county shuts its doors and the bank calls for its money, and Henrietta goes to Bath. */
+function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]}; const put = (k, n, t) => { if (n) why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); return n; };
+  let st = EST[i].standing; why.standing.push(EST[i].standing + ' ' + cap1(EST[i].name));
+  st += put('standing', societyMark(), 'Society'); st += put('standing', -6 * (S.settledSold || 0), 'Settled land sold');
+  st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 6) ? -4 : 0, 'Not seen in the county this year and more'); st += put('standing', S.money < 0 ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
+  let g = 44; why.goodwill.push('44 The parish as you found it');
+  const rack = S.farms.filter(f => f.level === 'rack').length, easy = S.farms.filter(f => f.level === 'easy').length;
+  g += put('goodwill', -4 * Math.min(4, rack), 'Rack rents'); g += put('goodwill', 2 * Math.min(4, easy), 'Easy rents'); g += put('goodwill', idle('ride', 6) ? -5 : 0, 'The tenants have not seen you this year and more');
+  g += put('goodwill', F('cottages') ? 4 : 0, 'The cottages'); g += put('goodwill', F('school') ? 3 : 0, 'The school'); g += put('goodwill', F('wages') ? 5 : 0, 'Wages by the loaf'); g += put('goodwill', F('soup') ? 2 : 0, 'The soup kitchen');
+  g += put('goodwill', F('enclosed') ? (F('allotments') ? -3 : -9) : 0, 'The common inclosed'); g += put('goodwill', vent('thresher') && !vent('thresher').ended ? -5 : 0, 'The threshing machine');
+  g += put('goodwill', held('harriers') ? -2 : 0, 'Harriers over the wheat'); g += put('goodwill', i === 3 ? -4 : i === 0 ? 2 : 0, i === 3 ? 'A splendid house in a hungry parish' : 'A plain table');
+  g += put('goodwill', PRICES[S.year] >= 95 && !F('soup') && !F('wages') ? -8 : 0, 'Bread at famine price');
+  let fm = 45; why.family.push('45 The house as you found it'); fm += put('family', idle('home', 4) ? -6 : 0, 'You have not kept at home this twelvemonth');
+  fm += put('family', 3 * S.chars.henrietta.r, 'Henrietta’s regard'); fm += put('family', F('edmundDead') ? 0 : S.chars.edmund.r, 'Edmund’s regard');
+  fm += put('family', [-8, 0, 4, 7][i], cap1(EST[i].name)); fm += put('family', F('newFront') ? 3 : 0, 'The new front'); fm += put('family', F('icehouse') ? 2 : 0, 'The ice-house');
+  fm += put('family', S.money < 0 ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
+  return {standing:clamp(st, 5, 95), goodwill:clamp(g, 5, 95), family:clamp(fm, 5, 95), why}; }
+const SINK = 5;   // a figure loses a point a season for every five it stands above its mark
+/* The three duties: the tenancies, the county, the family. Each goes stale if the squire lets it lie. */
+const idle = (k, seasons) => S.t - ((S.duty && S.duty[k]) || 0) >= seasons;
+function duty(k){ S.duty = S.duty || {}; S.duty[k] = S.t; }
+function regardQuarter(line){ const m = marks(), q = S.season, d = {};
+  for (const k of ['standing', 'goodwill', 'family']) { const over = S[k] - m[k]; d[k] = over > 0 ? -Math.ceil(over / SINK) : over <= -20 ? 2 : over <= -5 ? 1 : 0; }
+  add(d);
+  // the parish
+  if (S.goodwill < 38 && !F('sullen')) { fl('sullen'); S.notes.push(`No hat is touched in Hatherley street this morning. Eleven men stand at the door of the Bell. They look at the road.`); }
+  else if (S.goodwill >= 46 && F('sullen')) fl('sullen', false);
+  if (F('sullen')) { if (S.goodwill < 28 && S.seen.rickFire === undefined && !S.queue.some(x => x.id === 'rickFire')) later('rickFire', 1);
+    if (q === 3 || (S.goodwill < 22 && q === 1)) { const [what, cost] = pick([['Gates lifted and hedges broken in the night', 35], ['A hayrick fired at the home farm', 95], ['Harness cut in the cart-house', 25], ['Two ewes found with their throats cut', 6], ['Young oaks barked in Hanger Wood', 40]]); line(what, -cost); } }
+  // the county
+  if (S.standing < 33 && !F('cut')) { fl('cut'); S.notes.push(`The Tamworths give a ball at Wyvern. No card comes to the Hall.`); }
+  else if (S.standing >= 40 && F('cut')) fl('cut', false);
+  if (F('cut') && S.standing < 24 && q === 1 && S.mortgage >= 500) { line('Mr Tidmarsh calls in £500 of his principal', -500); S.mortgage -= 500; S.notes.push(`Mr Tidmarsh writes for five hundred pounds of his principal. He gives six weeks.`); }
+  if (S.standing >= 70 && q === 1) line('Subscriptions: the Infirmary, the hunt, the Assembly Rooms', -Math.round((S.standing - 52) * 3 / 5) * 5);
+  // the house
+  if (S.family < 35 && !F('henriettaAway')) { fl('henriettaAway'); reg('henrietta', -1, 'Went to Bath sooner than stay in the house'); S.notes.push(`Henrietta has her trunks brought down. She has taken lodgings in Gay Street, Bath. She does not say for how long.`); }
+  else if (S.family >= 46 && F('henriettaAway')) { fl('henriettaAway', false); S.notes.push(`A chaise from Bath sets Henrietta down at the door. Mrs Bunce has had the fire lit in the blue room since Tuesday.`); }
+  if (F('henriettaAway')) line('Lodgings in Gay Street, Bath, and a chair', -55); }

@@ -311,3 +311,7 @@ details.pick .opts button:hover:not(:disabled), details.pick .opts button:focus-
 details.pick .opts button[aria-selected="true"] b::before{content:"\261E\FE0E  ";color:var(--madder)}
 details.pick .opts button:disabled{opacity:.42;cursor:not-allowed}
 details.pick.up .opts{top:auto;bottom:calc(100% + 3px)}
+details.meter{display:block} details.meter > summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:1px 12px;list-style:none;cursor:pointer} details.meter > summary::-webkit-details-marker{display:none}
+details.meter > summary:hover span{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.meter s{position:absolute;bottom:-1px;width:0;height:11px;border-left:2px solid var(--madder);text-decoration:none} .meter span em{font-family:var(--caps);font-style:normal;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad);margin-left:9px}
+details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--display);font-size:.95rem;line-height:1.3;columns:2;column-gap:18px} details.meter .fx .pos{color:var(--good)} details.meter .fx .neg{color:var(--bad)} details.meter .fx li:first-child{color:var(--muted)}

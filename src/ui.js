@@ -159,7 +159,11 @@ function endHTML(){ const r = reckoning();
     </article>
     <div class="row"><button class="go" onclick="wipe()"><span>Inherit again</span></button></div>`; }
 
-function meter(label, v, words){ return `<div class="meter${v < 40 ? ' low' : ''}"><span>${label}</span><i><u style="width:${v}%"></u></i><b>${esc(band(v, words))}</b></div>`; }
+function meter(label, v, words, key, flag, trouble){ const m = typeof marks === 'function' && key ? marks() : null, at = m ? Math.max(0, Math.min(100, m[key])) : null;
+  const bar = `<i><u style="width:${v}%"></u>${at === null ? '' : `<s style="left:${at}%" title="Settles at ${at}"></s>`}</i>`, bad = flag && F(flag) ? `<em>${trouble}</em>` : '';
+  if (!m) return `<div class="meter${v < 40 ? ' low' : ''}"><span>${label}</span>${bar}<b>${esc(band(v, words))}</b></div>`;
+  return `<details name="lot" class="meter${v < 40 ? ' low' : ''}"><summary><span>${label}${bad}</span>${bar}<b>${esc(band(v, words))}</b></summary>
+    <ul class="fx"><li>Stands at ${Math.round(v)}, settles at ${at}</li>${m.why[key].map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul></details>`; }
 
 function versoHTML(){
   const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
@@ -177,9 +181,9 @@ function versoHTML(){
     <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}${typeof mortCap === 'function' ? `<small>of ${fmt(mortCap())}</small>` : ''}</dd></div>
       ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}</dl>${over || typeof creditList !== 'function' ? '' : creditHTML()}
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
-      ${meter('Standing in the county', S.standing, STANDING_W)}
-      ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W)}
-      ${meter('Peace of the household', S.family, FAMILY_W)}
+      ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
+      ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}
+      ${meter('Peace of the household', S.family, FAMILY_W, 'family', 'henriettaAway', 'Henrietta is away')}
       ${S.traits && S.traits.length ? `<p class="fine born">The squire: ${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}</div>`; }
 
 /* Money in the lists: green with a plus where it comes in, red with a minus where it goes out. */
