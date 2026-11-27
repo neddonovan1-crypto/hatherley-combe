@@ -261,11 +261,11 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
 
 /* scroll bars drawn always, since some systems hide theirs until touched */
 html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#172018} html::-webkit-scrollbar-thumb{background:#8a6a3c;border:3px solid #172018;border-radius:7px}
-.sheet::-webkit-scrollbar, .page::-webkit-scrollbar{width:11px}
-.sheet::-webkit-scrollbar-track, .page::-webkit-scrollbar-track{background:rgba(70,50,25,.1);border-left:1px solid rgba(70,50,25,.25)}
-.sheet::-webkit-scrollbar-thumb, .page::-webkit-scrollbar-thumb{background:#5a3a22;border:2px solid transparent;border-left-width:3px;background-clip:padding-box;border-radius:6px}
-.sheet::-webkit-scrollbar-thumb:hover, .page::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
-@supports not selector(::-webkit-scrollbar){ .sheet, .page{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} html{scrollbar-color:#8a6a3c #172018} }
+.book ::-webkit-scrollbar{width:11px}
+.book ::-webkit-scrollbar-track{background:rgba(70,50,25,.1);border-left:1px solid rgba(70,50,25,.25)}
+.book ::-webkit-scrollbar-thumb{background:#5a3a22;border:2px solid transparent;border-left-width:3px;background-clip:padding-box;border-radius:6px}
+.book ::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
+@supports not selector(::-webkit-scrollbar){ .book *{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} html{scrollbar-color:#8a6a3c #172018} }
 
 /* a phone: one page at a time, the paper in hand first */
 @media (max-width:1080px){
@@ -292,3 +292,22 @@ html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#17
   #tabs button{font-size:.72rem} #tabs button img{display:none}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+
+/* Choosing the squire: favours as pips, each row a list that drops over the page. */
+.favours{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:4px 0 2px} .favours > span{font-family:var(--caps);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.favours #pts{font-weight:400;font-size:1.4rem;letter-spacing:.18em;color:var(--good);text-decoration:none;padding:0;font-family:var(--body)} .favours small{flex-basis:100%;font-size:.88rem;color:var(--muted)}
+.fav{flex:none;font-size:1.05rem;letter-spacing:.12em;white-space:nowrap} .fav.pos{color:var(--good)} .fav.neg{color:var(--bad)}
+.plabel{font-family:var(--caps);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);align-self:center}
+details.pick{position:relative;min-width:0}
+details.pick > summary{display:flex;justify-content:space-between;align-items:baseline;gap:10px;list-style:none;cursor:pointer;padding:5px 30px 5px 12px;border:1px solid rgba(42,35,32,.5);border-radius:5px;background:rgba(255,255,255,.35);position:relative}
+details.pick > summary::-webkit-details-marker{display:none} details.pick > summary::after{content:"\25BE";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+details.pick > summary b{font-family:var(--display);font-weight:400;font-size:1.12rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.pick[open] > summary{border-color:var(--ink);background:var(--sheet)}
+details.pick .opts{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 3px);display:flex;flex-direction:column;background:#f3ecd6;border:1px solid var(--ink);box-shadow:3px 8px 18px rgba(30,20,10,.4);max-height:19rem;overflow-y:auto}
+details.pick .opts button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 12px;align-items:baseline;text-align:left;background:none;border:0;border-bottom:1px solid var(--rule);padding:7px 12px 6px;color:inherit;font:inherit;cursor:pointer}
+details.pick .opts button:last-child{border-bottom:0} details.pick .opts button b{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.2}
+details.pick .opts button small{grid-column:1/-1;font-size:.82rem;line-height:1.3;color:var(--muted)}
+details.pick .opts button:hover:not(:disabled), details.pick .opts button:focus-visible{background:rgba(255,255,255,.6)}
+details.pick .opts button[aria-selected="true"] b::before{content:"\261E\FE0E  ";color:var(--madder)}
+details.pick .opts button:disabled{opacity:.42;cursor:not-allowed}
+details.pick.up .opts{top:auto;bottom:calc(100% + 3px)}

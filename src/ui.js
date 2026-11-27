@@ -76,21 +76,25 @@ function introHTML(){ const has = !!load();
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
       <fieldset class="traits">
         <legend>What manner of man inherits</legend>
-        <p class="fine">You have <b id="pts">${pointsLeft(pickList())}</b> <span id="ptsw">points</span> in hand. An advantage costs them; a burden pays them back. Leave all five alone to start as plain as your uncle left you.</p>
-        ${TRAIT_GROUPS.map(([g, label, plain]) => `<div class="pickrow"><label for="pick-${g}">${label}</label>
-          <select id="pick-${g}" onchange="setPick('${g}', this.value)"><option value="">${plain}</option>${TRAITS.filter(t => t.group === g).map(t => `<option value="${t.id}"${PICKS[g] === t.id ? ' selected' : ''}>${esc(t.name)} (${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)})</option>`).join('')}</select>
-          <p class="pickblurb" id="blurb-${g}"></p></div>`).join('')}
+        <div id="picks">${picksHTML()}</div>
       </fieldset>
       <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
 let PICKS = {};
 const pickList = () => Object.values(PICKS).filter(Boolean);
-function setPick(g, id){ PICKS[g] = id || null; syncTraits(); }
-function syncTraits(){ if (!$('pts')) return; const left = pointsLeft(pickList());
-  for (const [g] of TRAIT_GROUPS){ const t = PICKS[g] && traitById(PICKS[g]); $('blurb-' + g).innerHTML = t ? esc(t.blurb) + ' <span>' + esc(t.effect) + '</span>' : ''; }
-  $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
-  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn. Give something up, or take on a burden' : 'Take possession'; }
+/* Favours: three to begin. An advantage spends one or two, a burden earns them back. Each row opens a list; what cannot be afforded is greyed. */
+const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
+function picksHTML(){ const left = pointsLeft(pickList());
+  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${left > 0 ? '●'.repeat(left) : 'none'}</b><small>An advantage spends them. A burden earns them back.</small></p>
+    ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
+      const opt = (id, name, cost, effect) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${effect ? `<small>${esc(effect)}</small>` : ''}</button>`;
+      return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
+        <div class="opts" role="listbox">${opt('', plain, 0, '')}${TRAITS.filter(t => t.group === g).map(t => opt(t.id, t.name, t.cost, t.effect)).join('')}</div></details>
+        <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
+function setPick(g, id){ PICKS[g] = id || null; if ($('picks')) { $('picks').innerHTML = picksHTML(); fitLeaf(); } }
+function syncTraits(){ if ($('picks')) $('picks').innerHTML = picksHTML(); }
+document.addEventListener('click', e => { if (!e.target.closest('details.pick')) document.querySelectorAll('details.pick[open]').forEach(d => d.open = false); });
 function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 

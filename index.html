@@ -265,11 +265,11 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
 
 /* scroll bars drawn always, since some systems hide theirs until touched */
 html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#172018} html::-webkit-scrollbar-thumb{background:#8a6a3c;border:3px solid #172018;border-radius:7px}
-.sheet::-webkit-scrollbar, .page::-webkit-scrollbar{width:11px}
-.sheet::-webkit-scrollbar-track, .page::-webkit-scrollbar-track{background:rgba(70,50,25,.1);border-left:1px solid rgba(70,50,25,.25)}
-.sheet::-webkit-scrollbar-thumb, .page::-webkit-scrollbar-thumb{background:#5a3a22;border:2px solid transparent;border-left-width:3px;background-clip:padding-box;border-radius:6px}
-.sheet::-webkit-scrollbar-thumb:hover, .page::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
-@supports not selector(::-webkit-scrollbar){ .sheet, .page{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} html{scrollbar-color:#8a6a3c #172018} }
+.book ::-webkit-scrollbar{width:11px}
+.book ::-webkit-scrollbar-track{background:rgba(70,50,25,.1);border-left:1px solid rgba(70,50,25,.25)}
+.book ::-webkit-scrollbar-thumb{background:#5a3a22;border:2px solid transparent;border-left-width:3px;background-clip:padding-box;border-radius:6px}
+.book ::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
+@supports not selector(::-webkit-scrollbar){ .book *{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} html{scrollbar-color:#8a6a3c #172018} }
 
 /* a phone: one page at a time, the paper in hand first */
 @media (max-width:1080px){
@@ -296,6 +296,25 @@ html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#17
   #tabs button{font-size:.72rem} #tabs button img{display:none}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+
+/* Choosing the squire: favours as pips, each row a list that drops over the page. */
+.favours{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:4px 0 2px} .favours > span{font-family:var(--caps);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.favours #pts{font-weight:400;font-size:1.4rem;letter-spacing:.18em;color:var(--good);text-decoration:none;padding:0;font-family:var(--body)} .favours small{flex-basis:100%;font-size:.88rem;color:var(--muted)}
+.fav{flex:none;font-size:1.05rem;letter-spacing:.12em;white-space:nowrap} .fav.pos{color:var(--good)} .fav.neg{color:var(--bad)}
+.plabel{font-family:var(--caps);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);align-self:center}
+details.pick{position:relative;min-width:0}
+details.pick > summary{display:flex;justify-content:space-between;align-items:baseline;gap:10px;list-style:none;cursor:pointer;padding:5px 30px 5px 12px;border:1px solid rgba(42,35,32,.5);border-radius:5px;background:rgba(255,255,255,.35);position:relative}
+details.pick > summary::-webkit-details-marker{display:none} details.pick > summary::after{content:"\25BE";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+details.pick > summary b{font-family:var(--display);font-weight:400;font-size:1.12rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.pick[open] > summary{border-color:var(--ink);background:var(--sheet)}
+details.pick .opts{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 3px);display:flex;flex-direction:column;background:#f3ecd6;border:1px solid var(--ink);box-shadow:3px 8px 18px rgba(30,20,10,.4);max-height:19rem;overflow-y:auto}
+details.pick .opts button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 12px;align-items:baseline;text-align:left;background:none;border:0;border-bottom:1px solid var(--rule);padding:7px 12px 6px;color:inherit;font:inherit;cursor:pointer}
+details.pick .opts button:last-child{border-bottom:0} details.pick .opts button b{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.2}
+details.pick .opts button small{grid-column:1/-1;font-size:.82rem;line-height:1.3;color:var(--muted)}
+details.pick .opts button:hover:not(:disabled), details.pick .opts button:focus-visible{background:rgba(255,255,255,.6)}
+details.pick .opts button[aria-selected="true"] b::before{content:"\261E\FE0E  ";color:var(--madder)}
+details.pick .opts button:disabled{opacity:.42;cursor:not-allowed}
+details.pick.up .opts{top:auto;bottom:calc(100% + 3px)}
 </style>
 <div class="desk">
   <div class="book">
@@ -7795,7 +7814,7 @@ function societyFx(id){ const d = SOCIETY[id], k = socKeep(id), x = SOCIETY_FX[i
 const soldWhy = d => d && d.of && !farm(d.of) ? landFor(d.of).name + ' is sold.' : '';
 for (const [id, of] of [['drain', 'kennet'], ['mill', 'kennet'], ['meadows', 'kennet'], ['barns', 'church'], ['chalk', 'longbarrow']]) PROJECTS[id].of = of;
 for (const [id, of] of [['plough', 'longbarrow'], ['peat', 'kennet'], ['brickkiln', 'kennet']]) VENTURES[id].of = of;
-const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/cobbett.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/hartoppShearing.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jubilee.jpg','events/kittyBotany.jpg','events/ludd.jpg','events/manTraps.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/farms.jpg','icons/persons.jpg','icons/society.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png']);
+const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/cobbett.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/hartoppShearing.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jubilee.jpg','events/kittyBotany.jpg','events/ludd.jpg','events/manTraps.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/farms.jpg','icons/persons.jpg','icons/society.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-haunch.jpg','undertakings/dine-lamb.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-partridge.jpg','undertakings/dine-snow.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-fish.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/ride-arrears.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-dear.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-rooks.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -7874,21 +7893,25 @@ function introHTML(){ const has = !!load();
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
       <fieldset class="traits">
         <legend>What manner of man inherits</legend>
-        <p class="fine">You have <b id="pts">${pointsLeft(pickList())}</b> <span id="ptsw">points</span> in hand. An advantage costs them; a burden pays them back. Leave all five alone to start as plain as your uncle left you.</p>
-        ${TRAIT_GROUPS.map(([g, label, plain]) => `<div class="pickrow"><label for="pick-${g}">${label}</label>
-          <select id="pick-${g}" onchange="setPick('${g}', this.value)"><option value="">${plain}</option>${TRAITS.filter(t => t.group === g).map(t => `<option value="${t.id}"${PICKS[g] === t.id ? ' selected' : ''}>${esc(t.name)} (${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)})</option>`).join('')}</select>
-          <p class="pickblurb" id="blurb-${g}"></p></div>`).join('')}
+        <div id="picks">${picksHTML()}</div>
       </fieldset>
       <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
 let PICKS = {};
 const pickList = () => Object.values(PICKS).filter(Boolean);
-function setPick(g, id){ PICKS[g] = id || null; syncTraits(); }
-function syncTraits(){ if (!$('pts')) return; const left = pointsLeft(pickList());
-  for (const [g] of TRAIT_GROUPS){ const t = PICKS[g] && traitById(PICKS[g]); $('blurb-' + g).innerHTML = t ? esc(t.blurb) + ' <span>' + esc(t.effect) + '</span>' : ''; }
-  $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
-  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn. Give something up, or take on a burden' : 'Take possession'; }
+/* Favours: three to begin. An advantage spends one or two, a burden earns them back. Each row opens a list; what cannot be afforded is greyed. */
+const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
+function picksHTML(){ const left = pointsLeft(pickList());
+  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${left > 0 ? '●'.repeat(left) : 'none'}</b><small>An advantage spends them. A burden earns them back.</small></p>
+    ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
+      const opt = (id, name, cost, effect) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${effect ? `<small>${esc(effect)}</small>` : ''}</button>`;
+      return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
+        <div class="opts" role="listbox">${opt('', plain, 0, '')}${TRAITS.filter(t => t.group === g).map(t => opt(t.id, t.name, t.cost, t.effect)).join('')}</div></details>
+        <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
+function setPick(g, id){ PICKS[g] = id || null; if ($('picks')) { $('picks').innerHTML = picksHTML(); fitLeaf(); } }
+function syncTraits(){ if ($('picks')) $('picks').innerHTML = picksHTML(); }
+document.addEventListener('click', e => { if (!e.target.closest('details.pick')) document.querySelectorAll('details.pick[open]').forEach(d => d.open = false); });
 function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 
