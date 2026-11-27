@@ -235,10 +235,17 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
 
 @media (min-width:1081px) and (min-height:600px){
   body:not(.intro) .book{height:min(calc(100vh - 30px), 940px)}
-  #stage > .sheet{flex:0 1 auto;min-height:9rem;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(70,50,25,.3) transparent}
+  #stage > .sheet{flex:0 1 auto;min-height:9rem;overflow-y:auto}
   #stage > .orn, #stage > .choices, #stage > .runhead{flex:none}
-  body:not(.intro) .page{min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(70,50,25,.3) transparent}
+  body:not(.intro) .page{min-height:0;overflow-y:auto}
 }
+
+/* scroll bars drawn always, since some systems hide theirs until touched */
+.sheet::-webkit-scrollbar, .page::-webkit-scrollbar{width:11px}
+.sheet::-webkit-scrollbar-track, .page::-webkit-scrollbar-track{background:rgba(70,50,25,.1);border-left:1px solid rgba(70,50,25,.25)}
+.sheet::-webkit-scrollbar-thumb, .page::-webkit-scrollbar-thumb{background:#5a3a22;border:2px solid transparent;border-left-width:3px;background-clip:padding-box;border-radius:6px}
+.sheet::-webkit-scrollbar-thumb:hover, .page::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
+@supports not selector(::-webkit-scrollbar){ .sheet, .page{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} }
 
 /* a phone: one page at a time, the paper in hand first */
 @media (max-width:1080px){
