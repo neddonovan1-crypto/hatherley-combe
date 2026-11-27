@@ -1,7 +1,7 @@
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
+const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
 const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];

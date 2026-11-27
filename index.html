@@ -121,13 +121,13 @@ table.acct tr.total .n{font-size:1.3rem}
 .sheet .from h2, .sheet .from .kicker{text-align:left}
 .sheet .from div{min-width:0;display:flex;flex-direction:column;gap:4px}
 .prose p{margin:0 0 .8em;font-size:.95rem;line-height:1.58;hanging-punctuation:first} .prose p:last-child{margin-bottom:0}
-.sheet .prose p:first-child::first-letter, .lead p:first-child::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
+.sheet .prose p:first-child:not(.nocap)::first-letter, .lead p:first-child:not(.nocap)::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
 .sheet.bill{background-color:#efe7d2;transform:rotate(.4deg);padding-top:30px}
 .sheet.bill .kicker{align-self:center;border-block:1px solid var(--ink);padding:4px 12px;color:var(--ink)}
 .sheet.bill h2{font-family:var(--fat);font-size:clamp(1.6rem,2.9vw,2.3rem);line-height:1;text-transform:uppercase;letter-spacing:.02em;padding-bottom:10px;border-bottom:4px solid var(--ink)}
 .sheet.bill .prose{padding-top:8px;border-top:1px solid var(--ink);margin-top:-7px}
 .sheet.bill .prose p{text-align:justify;hyphens:auto}
-.sheet.bill .prose p:first-child::first-letter{font-family:var(--fat);color:var(--ink)}
+.sheet.bill .prose p:first-child:not(.nocap)::first-letter{font-family:var(--fat);color:var(--ink)}
 .sheet.clip{background-color:var(--clip);transform:rotate(.5deg);padding:14px 18px 14px;gap:5px;align-self:flex-start;max-width:30rem}
 .sheet.clip::before{display:none}
 .sheet.clip span{font-family:'UnifrakturCook', var(--fat);font-size:1.25rem;line-height:1;text-align:center;border-bottom:3px double var(--ink);padding-bottom:5px}
@@ -8163,7 +8163,7 @@ const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allot
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
+const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
 const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
