@@ -72,7 +72,7 @@ Henrietta wants him in holy orders. Dr Gall is old, you hold the next presentati
       return `Edmund stays. He learns to tell a sound ewe from a rotten one, a sound tenant from a rotten one, and your claret from Crabbe’s. He also learns to sulk in the gun room, where he will clean the same fowling piece for an hour together, thinking about Italy.`; }}
   ]});
 
-function electionWin(){ return chance(clamp(0.3 + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
+function electionWin(){ return chance(clamp((T('silver') ? 0.5 : 0.3) + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
 
 ev({ id:'election96', fixed:'1796-1', title:'Burgage Votes',
   text:() => `There is to be a general election. The borough of Wyvern sends two members to Parliament on the votes of whoever owns thirty-one ancient burgage plots, most of them now pigsties. Three, through your uncle’s foresight, are yours. Lord Cullerne owns fourteen, and has lately decided that he should like to name both members instead of one.

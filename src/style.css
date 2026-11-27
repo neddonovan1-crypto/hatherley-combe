@@ -97,3 +97,19 @@ dl.money dd{margin:0;font-family:var(--display);font-size:1.7rem;line-height:1.1
 .score{font-family:var(--caps);letter-spacing:.1em;border-block:1px solid var(--ink);padding:10px 0;margin:18px 0 0}
 .score b{font-family:var(--display);font-weight:400;font-size:2rem;color:var(--madder);padding:0 .2em;letter-spacing:0}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+.traits{grid-column:1/-1;border:0;border-top:3px double var(--rule);margin:14px 0 0;padding:12px 0 0;min-width:0}
+.traits legend{font-family:var(--display);font-size:1.45rem;padding:0 10px 0 0}
+.traits h3{font-family:var(--caps);font-weight:400;letter-spacing:.14em;font-size:.9rem;color:var(--muted);margin:16px 0 8px}
+.traits .fine{font-size:.95rem;max-width:60ch} #pts{font-family:var(--display);font-size:1.5rem;font-style:normal;color:var(--madder);padding:0 .1em} #pts.neg{color:var(--bad);text-decoration:underline wavy}
+.names{max-width:none} .names > label{max-width:10rem} .names > input{max-width:18rem}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:9px}
+.trait{display:flex;flex-direction:column;gap:4px;text-align:left;background:transparent;border:1px solid var(--rule);padding:10px 12px;min-width:0;transition:background .15s}
+.trait:not(.on):hover{background:var(--wash)}
+.trait.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.trait .tn{font-family:var(--display);font-size:1.08rem;line-height:1.2;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.trait .tn i{font-family:var(--caps);font-style:normal;font-size:.76rem;letter-spacing:.06em;color:var(--gold);white-space:nowrap}
+.trait .tb{font-size:.88rem;line-height:1.4;font-style:italic;opacity:.85}
+.trait .te{font-family:var(--caps);font-size:.78rem;letter-spacing:.05em;color:var(--muted)}
+.trait.on .tn i, .trait.on .te{color:inherit;opacity:.8}
+.go:disabled{background:var(--muted);cursor:not-allowed}
+.born{line-height:1.45}

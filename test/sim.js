@@ -1,12 +1,12 @@
 // Plays many random lives straight through the engine, to shake out runtime errors.
 const fs = require('fs'), vm = require('vm'), path = require('path');
-const src = ['data','engine','events1','events2'].map(f => fs.readFileSync(path.join(__dirname,'../src',f+'.js'),'utf8')).join('\n');
+const src = ['data','traits','engine','events1','events2'].map(f => fs.readFileSync(path.join(__dirname,'../src',f+'.js'),'utf8')).join('\n');
 const ctx = {console, Math, JSON, localStorage:{setItem(){},getItem(){return null},removeItem(){}}, window:{scrollTo(){}}};
 ctx.render = () => {}; vm.createContext(ctx);
-vm.runInContext(src + '\nindexEvents(); this.api={newGame,next,choose,undertake,undertakingOptions,byId,reckoning,get S(){return S},EVENTS};', ctx);
+vm.runInContext(src + '\nindexEvents(); this.api={TRAITS,pointsLeft,newGame,next,choose,undertake,undertakingOptions,byId,reckoning,get S(){return S},EVENTS};', ctx);
 const A = ctx.api, runs = +process.argv[2] || 300, seen = {}, ends = {}, stats = {money:0, sc:0, n:0};
 for (let i = 0; i < runs; i++){
-  A.newGame('Thomas','Merridew'); let guard = 0;
+  const tr=[]; for (const t of A.TRAITS.slice().sort(()=>Math.random()-.5)){ if (Math.random()<.4 && A.pointsLeft(tr.concat(t.id))>=0 && !(t.id==='second'&&tr.includes('clear')) && !(t.id==='clear'&&tr.includes('second'))) tr.push(t.id); } A.newGame('Thomas','Merridew',tr); let guard = 0;
   while (A.S.phase !== 'end' && guard++ < 2000){
     const S = A.S;
     if (S.phase === 'event'){ const e = A.byId(S.pending); seen[e.id] = (seen[e.id]||0)+1; const t = e.text(); if (/undefined|NaN|\[object/.test(t)) throw new Error('bad text '+e.id+': '+t);

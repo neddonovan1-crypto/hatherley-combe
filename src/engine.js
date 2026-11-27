@@ -40,15 +40,19 @@ const PROJECTS = {
   icehouse:{ name:'Sink an ice-house in the north shrubbery', seasons:1, cost:() => 140,
     done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk: a brick egg under a mound of earth. It is filled in January from the carp pond, and in July Henrietta serves a lemon ice to the Tamworths with the face of a general accepting a surrender.`; }}
 };
-function startProject(id){ const p = PROJECTS[id]; const cost = p.cost(); S.project = {id, left:p.seasons, per:Math.round(cost / p.seasons)}; S.projectsDone[id] = 'begun'; }
+const projCost = id => Math.round(PROJECTS[id].cost() * (T('bred') ? 0.85 : 1) / 10) * 10;
+function startProject(id){ const p = PROJECTS[id]; const cost = projCost(id); S.project = {id, left:p.seasons, per:Math.round(cost / p.seasons)}; S.projectsDone[id] = 'begun'; }
 
-function newGame(first, sur){
+function newGame(first, sur, traits){
   S = { name:(first + ' ' + sur).trim(), sur, t:0, year:FIRST_YEAR, season:0, phase:'ledger',
     money:900, mortgage:4000, standing:40, goodwill:50, family:60,
     improve:0, rentPolicy:1, rentAdj:1, poorMult:1, game:3, canal:0, yearIncome:0,
     flags:{}, chars:{}, queue:[], seen:{}, journal:[], project:null, projectsDone:{}, dead:null,
     ledger:[], notes:[], pending:null, vignette:null, outcome:null, priceSeen:[] };
   for (const id in PEOPLE) S.chars[id] = {r:PEOPLE[id].r, met:PEOPLE[id].met, notes:[]};
+  S.traits = (traits || []).filter(id => traitById(id));
+  for (const id of S.traits) traitById(id).apply();
+  for (const id in S.chars) S.chars[id].notes = S.chars[id].notes.map(n => n.replace(/, 1795$/, ''));
   beginSeason();
 }
 
@@ -73,16 +77,18 @@ function beginSeason(){
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('wages')) line('Home farm wages above the common rate', -30);
-  if (F('crabbeSkims') && !F('crabbeGone')) line('“Sundries” (Mr Crabbe)', -45);
+  if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
   if (S.project) { line(PROJECTS[S.project.id].name, -S.project.per); S.project.left--;
     if (S.project.left <= 0) { const id = S.project.id; S.project = null; S.projectsDone[id] = 'done'; S.notes.push(PROJECTS[id].done()); } }
   if (q === 3) {
     line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1));
     line('Land tax', -110);
+    if (T('play')) line('Losses at whist and hazard', -(70 + Math.floor(Math.random() * 12) * 10));
+    if (T('gout')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household walks on tiptoe, and is shouted at for it.'); }
     if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1)); }
   }
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
@@ -136,7 +142,7 @@ function choose(i){
 }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill:4}); return pick([
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill: T('gout') ? 2 : 4}); return pick([
       `You ride the eleven farms in a day and a half and are given, in order: cider, perry, a cold pie, more cider, advice about your horse, and a dog you did not ask for.`,
       `At Kennet Bottom the Widow Harris shows you the place where her roof lets in the rain, and then, that there may be no mistake, the rain. You promise a thatcher. She looks at you as one who has been promised thatchers before.`,
       `A wet week in the saddle learning the names of children. By Friday you have thirty-one, three of whom were christened after your uncle, which tells you something about your uncle.`,
@@ -146,7 +152,7 @@ const UNDERTAKINGS = [
       `Dinner at the Tamworths’, at the Lovedays’, at Hartopp’s, and then at your own table, where Mrs Bunce sends up a haunch hung until it can very nearly speak. The county pronounces it excellent. The county has no sense of smell.`,
       `A ball at the Wyvern Assembly Rooms, of which you are steward, and therefore answerable for the candles, the negus, and the moment at which old Mrs Loveday sits down on the fiddler’s bow.`,
       `You give a venison dinner to nine magistrates and a colonel. By the second bottle the war is won; by the third, the harvest is saved; by the fourth, nobody can find the door.`]); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { const g = pick([-2, 0, 2, 3]); add({standing:3, goodwill:g}); return pick([
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { const g = pick([-2, 0, 2, 3]); add({standing: T('silver') ? 5 : 3, goodwill:g}); return pick([
       `You sentence a man to be whipped for stealing a goose and a woman to a month for stealing it back from him. The goose is produced in evidence, and bites the clerk.`,
       `A bastardy case, in which three men of Kintbury are each named as the father, and each swears upon oath that it was one of the other two. You order all three to pay. It is as near to justice as you will come this year.`,
       `A long day in the Shire Hall deciding who must mend a bridge that every parish in the hundred says belongs to the next. By evening it is settled that the bridge belongs to no one, which is what the bridge has always suspected.`,
@@ -170,7 +176,7 @@ const UNDERTAKINGS = [
 function undertakingOptions(){
   const o = UNDERTAKINGS.filter(u => !u.if || u.if()).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
   if (!S.project) for (const id in PROJECTS){ const p = PROJECTS[id]; if (p.hidden || S.projectsDone[id]) continue;
-    o.push({t:p.name, note:fmt(p.cost()) + (p.seasons > 1 ? ' over ' + p.seasons + ' seasons' : ''), hint:'A work', project:true, run:() => { startProject(id); return `The work is put in hand. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} draws up the estimate in his best copperplate, and you sign it without reading the second page, as is traditional.`; }}); }
+    o.push({t:p.name, note:fmt(projCost(id)) + (p.seasons > 1 ? ' over ' + p.seasons + ' seasons' : ''), hint:'A work', project:true, run:() => { startProject(id); return `The work is put in hand. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} draws up the estimate in his best copperplate, and you sign it without reading the second page, as is traditional.`; }}); }
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); const text = u.run();
@@ -200,6 +206,8 @@ function reckoning(){
     return {title:'Sold Up', P, score:null}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years, and the county, which was not consulted at the time, has had leisure to form a view.`);
+  if (T('play')) P.push(`He is known at every card table between Reading and Bath, and welcome at all of them, as a man is welcome who loses.`);
+  if (T('enemy')) P.push(S.chars.cullerne.r >= 1 ? `It is counted a wonder that he and Lord Cullerne now speak, the matter of the pointer having lain between them for near fifty years.` : `Lord Cullerne has not forgiven the pointer, and it is now thought that he will be buried unreconciled, beside the dog.`);
   P.push(net > 4000 ? `He is richer than his uncle was, which nobody had thought possible and several think indecent. The estate stands clear by some ${fmt(net)}.`
     : net > -1500 ? `His affairs balance, more or less, in the way that a man balances on a gate. Set the mortgage against the purse and there is ${net >= 0 ? fmt(net) + ' to the good' : fmt(-net) + ' wanting'}, which for a landed gentleman at the end of a great war is a species of triumph.`
     : `His debts are spoken of in Wyvern with something approaching awe: ${fmt(-net)} at the last computation, secured upon every acre, and Mr Tidmarsh’s successors are observed to raise their hats to him rather lower each year, as to a monument.`);

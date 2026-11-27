@@ -101,6 +101,22 @@ dl.money dd{margin:0;font-family:var(--display);font-size:1.7rem;line-height:1.1
 .score{font-family:var(--caps);letter-spacing:.1em;border-block:1px solid var(--ink);padding:10px 0;margin:18px 0 0}
 .score b{font-family:var(--display);font-weight:400;font-size:2rem;color:var(--madder);padding:0 .2em;letter-spacing:0}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+.traits{grid-column:1/-1;border:0;border-top:3px double var(--rule);margin:14px 0 0;padding:12px 0 0;min-width:0}
+.traits legend{font-family:var(--display);font-size:1.45rem;padding:0 10px 0 0}
+.traits h3{font-family:var(--caps);font-weight:400;letter-spacing:.14em;font-size:.9rem;color:var(--muted);margin:16px 0 8px}
+.traits .fine{font-size:.95rem;max-width:60ch} #pts{font-family:var(--display);font-size:1.5rem;font-style:normal;color:var(--madder);padding:0 .1em} #pts.neg{color:var(--bad);text-decoration:underline wavy}
+.names{max-width:none} .names > label{max-width:10rem} .names > input{max-width:18rem}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:9px}
+.trait{display:flex;flex-direction:column;gap:4px;text-align:left;background:transparent;border:1px solid var(--rule);padding:10px 12px;min-width:0;transition:background .15s}
+.trait:not(.on):hover{background:var(--wash)}
+.trait.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.trait .tn{font-family:var(--display);font-size:1.08rem;line-height:1.2;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.trait .tn i{font-family:var(--caps);font-style:normal;font-size:.76rem;letter-spacing:.06em;color:var(--gold);white-space:nowrap}
+.trait .tb{font-size:.88rem;line-height:1.4;font-style:italic;opacity:.85}
+.trait .te{font-family:var(--caps);font-size:.78rem;letter-spacing:.05em;color:var(--muted)}
+.trait.on .tn i, .trait.on .te{color:inherit;opacity:.8}
+.go:disabled{background:var(--muted);cursor:not-allowed}
+.born{line-height:1.45}
 </style>
 <div class="wrap">
   <header class="mast">
@@ -229,6 +245,66 @@ function fmt(n){ const a = Math.abs(Math.round(n)).toLocaleString('en-GB'); retu
 function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
 function chance(p){ return Math.random() < p; }
+/* The making of a squire. Boons cost points; encumbrances pay them back. */
+const TRAIT_POINTS = 3;
+const TRAITS = [
+  // boons
+  { id:'legacy', name:'A legacy from an aunt in Bath', cost:2, effect:'Purse +£1,200',
+    blurb:`She left it to you because you once admired her pug. You had not admired the pug. You had been looking at the cake behind it.`,
+    apply:() => { S.money += 1200; }},
+  { id:'clear', name:'The mortgage half paid', cost:2, effect:'Mortgage £2,000 instead of £4,000',
+    blurb:`Your uncle, in a fit of prudence in 1789, paid off half the debt. He regretted it at once and spoke of it bitterly until he died.`,
+    excl:'second', apply:() => { S.mortgage = 2000; }},
+  { id:'bred', name:'Bred to the land', cost:2, effect:'Better yields; works cost less',
+    blurb:`You can tell the age of a ewe by her mouth, the state of a field by its weeds, and a lying bailiff by the way he stands.`,
+    apply:() => { S.improve += 1; reg('hartopp', 1); }},
+  { id:'beloved', name:'Known in the parish from a boy', cost:2, effect:'Goodwill much higher; Jem Pryor remembers',
+    blurb:`You went bird’s-nesting with half of Hatherley and were thrashed by the other half. It is hard to be afraid of a squire one has seen fall in the mill pond.`,
+    apply:() => { add({goodwill:15}); reg('pryor', 1, 'You went bird’s-nesting together as boys'); }},
+  { id:'connexions', name:'Good connexions', cost:2, effect:'Standing much higher; Lord Cullerne civil',
+    blurb:`Your mother was second cousin to a marquess, a fact she mentioned so regularly that it wore a groove in the conversation.`,
+    apply:() => { add({standing:15}); reg('cullerne', 1); }},
+  { id:'silver', name:'A persuasive tongue', cost:1, effect:'Elections likelier won; the bench listens',
+    blurb:`You once talked a turnpike keeper into paying you the toll.`,
+    apply:() => {}},
+  { id:'lovematch', name:'A love match', cost:1, effect:'Household happier; Henrietta fond',
+    blurb:`She did hope for a baronet. Then she met you at the Newbury assembly, and revised her hopes downward with every sign of pleasure.`,
+    apply:() => { add({family:12}); reg('henrietta', 2, 'She married you for love, against advice'); }},
+  { id:'figures', name:'A head for figures', cost:1, effect:'Household runs cheaper; nobody skims',
+    blurb:`You add a column twice, the second time upward. Stewards find this discouraging.`,
+    apply:() => { reg('crabbe', -1); }},
+  { id:'deadshot', name:'A dead shot', cost:1, effect:'You will not die in a duel',
+    blurb:`You can snuff a candle at fifteen paces. You have never been asked to, and mention it rather often.`,
+    apply:() => { add({standing:2}); }},
+  // encumbrances
+  { id:'debts', name:'Your uncle’s debts of honour', cost:-2, effect:'Purse −£700',
+    blurb:`He lost seven hundred pounds at Brooks’s to a man who has kindly waited for the funeral.`,
+    apply:() => { S.money -= 700; }},
+  { id:'second', name:'A second mortgage', cost:-2, effect:'Mortgage £6,000',
+    blurb:`Discovered by the attorneys in a tin box, behind a stuffed pike.`,
+    excl:'clear', apply:() => { S.mortgage = 6000; }},
+  { id:'play', name:'A taste for play', cost:-2, effect:'Losses at cards every winter',
+    blurb:`You are not a gambler. You merely know that the luck is about to change, and have known it since 1783.`,
+    apply:() => {}},
+  { id:'enemy', name:'An enemy at the Castle', cost:-2, effect:'Lord Cullerne hostile from the first',
+    blurb:`At nineteen you shot his lordship’s favourite pointer, by mistake, in front of his lordship. The dog was called Duchess. So is his wife.`,
+    apply:() => { reg('cullerne', -4, 'You shot his pointer in 1768'); add({standing:-3}); }},
+  { id:'stranger', name:'A stranger to the country', cost:-1, effect:'Goodwill lower',
+    blurb:`You were brought up in Marylebone, and cannot tell wheat from barley until it is bread or beer.`,
+    apply:() => { add({goodwill:-12}); }},
+  { id:'whig', name:'A Whig among Tories', cost:-1, effect:'Standing lower; Hartopp approves',
+    blurb:`You have been heard to say that Mr Fox has a point. In Berkshire this is classed with poaching.`,
+    apply:() => { add({standing:-10}); reg('cullerne', -1); reg('hartopp', 1); }},
+  { id:'portion', name:'Married for her portion', cost:-1, effect:'Household colder; Henrietta cool',
+    blurb:`Eight thousand pounds, since spent on the roof. She has never once referred to it. She does not need to; she looks at the roof.`,
+    apply:() => { add({family:-12}); reg('henrietta', -2, 'Knows you married her eight thousand pounds'); }},
+  { id:'gout', name:'Gout', cost:-1, effect:'Riding the estate does less; winters are worse',
+    blurb:`In the left foot, hereditary, and of a violence that the surgeon describes as “very fine”.`,
+    apply:() => {}}
+];
+const traitById = id => TRAITS.find(t => t.id === id);
+const pointsLeft = ids => TRAIT_POINTS - ids.reduce((a, id) => a + traitById(id).cost, 0);
+const T = id => S.traits && S.traits.includes(id);
 /* The engine: seasons, ledger, undertakings, and the reckoning. */
 let S = null;
 const SAVE_KEY = 'hatherley-combe-save-v1';
@@ -271,15 +347,19 @@ const PROJECTS = {
   icehouse:{ name:'Sink an ice-house in the north shrubbery', seasons:1, cost:() => 140,
     done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk: a brick egg under a mound of earth. It is filled in January from the carp pond, and in July Henrietta serves a lemon ice to the Tamworths with the face of a general accepting a surrender.`; }}
 };
-function startProject(id){ const p = PROJECTS[id]; const cost = p.cost(); S.project = {id, left:p.seasons, per:Math.round(cost / p.seasons)}; S.projectsDone[id] = 'begun'; }
+const projCost = id => Math.round(PROJECTS[id].cost() * (T('bred') ? 0.85 : 1) / 10) * 10;
+function startProject(id){ const p = PROJECTS[id]; const cost = projCost(id); S.project = {id, left:p.seasons, per:Math.round(cost / p.seasons)}; S.projectsDone[id] = 'begun'; }
 
-function newGame(first, sur){
+function newGame(first, sur, traits){
   S = { name:(first + ' ' + sur).trim(), sur, t:0, year:FIRST_YEAR, season:0, phase:'ledger',
     money:900, mortgage:4000, standing:40, goodwill:50, family:60,
     improve:0, rentPolicy:1, rentAdj:1, poorMult:1, game:3, canal:0, yearIncome:0,
     flags:{}, chars:{}, queue:[], seen:{}, journal:[], project:null, projectsDone:{}, dead:null,
     ledger:[], notes:[], pending:null, vignette:null, outcome:null, priceSeen:[] };
   for (const id in PEOPLE) S.chars[id] = {r:PEOPLE[id].r, met:PEOPLE[id].met, notes:[]};
+  S.traits = (traits || []).filter(id => traitById(id));
+  for (const id of S.traits) traitById(id).apply();
+  for (const id in S.chars) S.chars[id].notes = S.chars[id].notes.map(n => n.replace(/, 1795$/, ''));
   beginSeason();
 }
 
@@ -304,16 +384,18 @@ function beginSeason(){
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('wages')) line('Home farm wages above the common rate', -30);
-  if (F('crabbeSkims') && !F('crabbeGone')) line('“Sundries” (Mr Crabbe)', -45);
+  if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
   if (S.project) { line(PROJECTS[S.project.id].name, -S.project.per); S.project.left--;
     if (S.project.left <= 0) { const id = S.project.id; S.project = null; S.projectsDone[id] = 'done'; S.notes.push(PROJECTS[id].done()); } }
   if (q === 3) {
     line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1));
     line('Land tax', -110);
+    if (T('play')) line('Losses at whist and hazard', -(70 + Math.floor(Math.random() * 12) * 10));
+    if (T('gout')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household walks on tiptoe, and is shouted at for it.'); }
     if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1)); }
   }
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
@@ -367,7 +449,7 @@ function choose(i){
 }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill:4}); return pick([
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill: T('gout') ? 2 : 4}); return pick([
       `You ride the eleven farms in a day and a half and are given, in order: cider, perry, a cold pie, more cider, advice about your horse, and a dog you did not ask for.`,
       `At Kennet Bottom the Widow Harris shows you the place where her roof lets in the rain, and then, that there may be no mistake, the rain. You promise a thatcher. She looks at you as one who has been promised thatchers before.`,
       `A wet week in the saddle learning the names of children. By Friday you have thirty-one, three of whom were christened after your uncle, which tells you something about your uncle.`,
@@ -377,7 +459,7 @@ const UNDERTAKINGS = [
       `Dinner at the Tamworths’, at the Lovedays’, at Hartopp’s, and then at your own table, where Mrs Bunce sends up a haunch hung until it can very nearly speak. The county pronounces it excellent. The county has no sense of smell.`,
       `A ball at the Wyvern Assembly Rooms, of which you are steward, and therefore answerable for the candles, the negus, and the moment at which old Mrs Loveday sits down on the fiddler’s bow.`,
       `You give a venison dinner to nine magistrates and a colonel. By the second bottle the war is won; by the third, the harvest is saved; by the fourth, nobody can find the door.`]); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { const g = pick([-2, 0, 2, 3]); add({standing:3, goodwill:g}); return pick([
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { const g = pick([-2, 0, 2, 3]); add({standing: T('silver') ? 5 : 3, goodwill:g}); return pick([
       `You sentence a man to be whipped for stealing a goose and a woman to a month for stealing it back from him. The goose is produced in evidence, and bites the clerk.`,
       `A bastardy case, in which three men of Kintbury are each named as the father, and each swears upon oath that it was one of the other two. You order all three to pay. It is as near to justice as you will come this year.`,
       `A long day in the Shire Hall deciding who must mend a bridge that every parish in the hundred says belongs to the next. By evening it is settled that the bridge belongs to no one, which is what the bridge has always suspected.`,
@@ -401,7 +483,7 @@ const UNDERTAKINGS = [
 function undertakingOptions(){
   const o = UNDERTAKINGS.filter(u => !u.if || u.if()).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
   if (!S.project) for (const id in PROJECTS){ const p = PROJECTS[id]; if (p.hidden || S.projectsDone[id]) continue;
-    o.push({t:p.name, note:fmt(p.cost()) + (p.seasons > 1 ? ' over ' + p.seasons + ' seasons' : ''), hint:'A work', project:true, run:() => { startProject(id); return `The work is put in hand. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} draws up the estimate in his best copperplate, and you sign it without reading the second page, as is traditional.`; }}); }
+    o.push({t:p.name, note:fmt(projCost(id)) + (p.seasons > 1 ? ' over ' + p.seasons + ' seasons' : ''), hint:'A work', project:true, run:() => { startProject(id); return `The work is put in hand. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} draws up the estimate in his best copperplate, and you sign it without reading the second page, as is traditional.`; }}); }
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); const text = u.run();
@@ -431,6 +513,8 @@ function reckoning(){
     return {title:'Sold Up', P, score:null}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years, and the county, which was not consulted at the time, has had leisure to form a view.`);
+  if (T('play')) P.push(`He is known at every card table between Reading and Bath, and welcome at all of them, as a man is welcome who loses.`);
+  if (T('enemy')) P.push(S.chars.cullerne.r >= 1 ? `It is counted a wonder that he and Lord Cullerne now speak, the matter of the pointer having lain between them for near fifty years.` : `Lord Cullerne has not forgiven the pointer, and it is now thought that he will be buried unreconciled, beside the dog.`);
   P.push(net > 4000 ? `He is richer than his uncle was, which nobody had thought possible and several think indecent. The estate stands clear by some ${fmt(net)}.`
     : net > -1500 ? `His affairs balance, more or less, in the way that a man balances on a gate. Set the mortgage against the purse and there is ${net >= 0 ? fmt(net) + ' to the good' : fmt(-net) + ' wanting'}, which for a landed gentleman at the end of a great war is a species of triumph.`
     : `His debts are spoken of in Wyvern with something approaching awe: ${fmt(-net)} at the last computation, secured upon every acre, and Mr Tidmarsh’s successors are observed to raise their hats to him rather lower each year, as to a monument.`);
@@ -560,7 +644,7 @@ Henrietta wants him in holy orders. Dr Gall is old, you hold the next presentati
       return `Edmund stays. He learns to tell a sound ewe from a rotten one, a sound tenant from a rotten one, and your claret from Crabbe’s. He also learns to sulk in the gun room, where he will clean the same fowling piece for an hour together, thinking about Italy.`; }}
   ]});
 
-function electionWin(){ return chance(clamp(0.3 + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
+function electionWin(){ return chance(clamp((T('silver') ? 0.5 : 0.3) + (S.standing - 40) / 110 + (S.goodwill - 50) / 250, 0.1, 0.85)); }
 
 ev({ id:'election96', fixed:'1796-1', title:'Burgage Votes',
   text:() => `There is to be a general election. The borough of Wyvern sends two members to Parliament on the votes of whoever owns thirty-one ancient burgage plots, most of them now pigsties. Three, through your uncle’s foresight, are yours. Lord Cullerne owns fourteen, and has lately decided that he should like to name both members instead of one.
@@ -1026,7 +1110,7 @@ ev({ id:'duel', follow:true, cond:() => S.chars.vane.met, title:'Pistols on Hath
 
 Duelling is against the law, which is to say that it takes place at dawn instead of noon. The lieutenant suggests the old chalk pit on Hatherley Down, on Thursday, at twelve paces.`,
   choices:[
-    {t:'Accept.', go:() => { const r = Math.random();
+    {t:'Accept.', go:() => { const r = T('deadshot') ? 0.1 + Math.random() * 0.4 : Math.random();
       if (r < 0.1) { S.dead = 'duel'; return `A grey morning, with larks. The handkerchief falls. You have just time to think that the Captain is a better shot than his debts would suggest.`; }
       if (r < 0.45) { add({standing:6, family:-3}); reg('vane',-2); reg('henrietta',-1,'You fought a duel and told her afterwards');
         return `You fire, and to the astonishment of everyone, yourself first among them, you hit him: in the right calf, the better of the two. He is carried to the George, where he lies up for a month on credit. You are the hero of the county for a season. Men who have never met you describe your coolness. In truth your hand shook so that you were aiming at the chalk pit generally.`; }
@@ -1450,10 +1534,27 @@ function introHTML(){ const has = !!load();
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
-      <div class="row"><button class="go" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
+      <fieldset class="traits">
+        <legend>What manner of man inherits</legend>
+        <p class="fine">You have <b id="pts">${pointsLeft(PICKS)}</b> <span id="ptsw">${pointsLeft(PICKS) === 1 ? 'point' : 'points'}</span> to lay out. Advantages cost them. Encumbrances pay them back. Take none, if you prefer to start as plain as your uncle left you.</p>
+        <h3>Advantages</h3><div class="tgrid">${TRAITS.filter(t => t.cost > 0).map(traitHTML).join('')}</div>
+        <h3>Encumbrances</h3><div class="tgrid">${TRAITS.filter(t => t.cost < 0).map(traitHTML).join('')}</div>
+      </fieldset>
+      <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
-function start(){ const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s); render(); window.scrollTo({top:0}); }
+let PICKS = [];
+function traitHTML(t){ const on = PICKS.includes(t.id);
+  return `<button type="button" class="trait${on ? ' on' : ''}" id="trait-${t.id}" aria-pressed="${on}" onclick="toggleTrait('${t.id}')">
+    <span class="tn">${esc(t.name)}<i>${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)}</i></span><span class="tb">${esc(t.blurb)}</span><span class="te">${esc(t.effect)}</span></button>`; }
+function toggleTrait(id){ const t = traitById(id);
+  if (PICKS.includes(id)) PICKS = PICKS.filter(x => x !== id); else { PICKS = PICKS.filter(x => x !== t.excl); PICKS.push(id); }
+  syncTraits(); }
+function syncTraits(){ const left = pointsLeft(PICKS);
+  for (const t of TRAITS){ const b = $('trait-' + t.id); if (!b) continue; const on = PICKS.includes(t.id); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }
+  $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
+  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn: shed an advantage or take on a burden' : 'Take possession'; }
+function start(){ if (pointsLeft(PICKS) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, PICKS.slice()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 
 function ledgerHTML(){ let rows = '', tot = 0;
@@ -1517,6 +1618,7 @@ function sideHTML(){
       <h4>Rents</h4>
       <div class="seg" role="group" aria-label="Rent policy">${pol.map(([v, n]) => `<button class="${S.rentPolicy === v ? 'on' : ''}" onclick="setRent(${v})">${n}</button>`).join('')}</div>
       <p class="fine">Half-year rental due: ${fmt(halfRent())}. ${S.rentPolicy > 1 ? 'Rack-rents pay until they don’t.' : S.rentPolicy < 1 ? 'They drink your health at the audit.' : 'As your uncle left them.'}</p>
+      ${S.traits && S.traits.length ? `<h4>The squire</h4><p class="fine born">${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}
     </section>
     <section class="panel"><h3>Wheat at Wyvern Market</h3>${chartHTML()}</section>
     <section class="panel"><h3>Persons of Consequence</h3><ul class="people">${people}</ul></section>`; }

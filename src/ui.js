@@ -31,10 +31,27 @@ function introHTML(){ const has = !!load();
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
-      <div class="row"><button class="go" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
+      <fieldset class="traits">
+        <legend>What manner of man inherits</legend>
+        <p class="fine">You have <b id="pts">${pointsLeft(PICKS)}</b> <span id="ptsw">${pointsLeft(PICKS) === 1 ? 'point' : 'points'}</span> to lay out. Advantages cost them. Encumbrances pay them back. Take none, if you prefer to start as plain as your uncle left you.</p>
+        <h3>Advantages</h3><div class="tgrid">${TRAITS.filter(t => t.cost > 0).map(traitHTML).join('')}</div>
+        <h3>Encumbrances</h3><div class="tgrid">${TRAITS.filter(t => t.cost < 0).map(traitHTML).join('')}</div>
+      </fieldset>
+      <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
-function start(){ const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s); render(); window.scrollTo({top:0}); }
+let PICKS = [];
+function traitHTML(t){ const on = PICKS.includes(t.id);
+  return `<button type="button" class="trait${on ? ' on' : ''}" id="trait-${t.id}" aria-pressed="${on}" onclick="toggleTrait('${t.id}')">
+    <span class="tn">${esc(t.name)}<i>${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)}</i></span><span class="tb">${esc(t.blurb)}</span><span class="te">${esc(t.effect)}</span></button>`; }
+function toggleTrait(id){ const t = traitById(id);
+  if (PICKS.includes(id)) PICKS = PICKS.filter(x => x !== id); else { PICKS = PICKS.filter(x => x !== t.excl); PICKS.push(id); }
+  syncTraits(); }
+function syncTraits(){ const left = pointsLeft(PICKS);
+  for (const t of TRAITS){ const b = $('trait-' + t.id); if (!b) continue; const on = PICKS.includes(t.id); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }
+  $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
+  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn: shed an advantage or take on a burden' : 'Take possession'; }
+function start(){ if (pointsLeft(PICKS) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, PICKS.slice()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 
 function ledgerHTML(){ let rows = '', tot = 0;
@@ -98,6 +115,7 @@ function sideHTML(){
       <h4>Rents</h4>
       <div class="seg" role="group" aria-label="Rent policy">${pol.map(([v, n]) => `<button class="${S.rentPolicy === v ? 'on' : ''}" onclick="setRent(${v})">${n}</button>`).join('')}</div>
       <p class="fine">Half-year rental due: ${fmt(halfRent())}. ${S.rentPolicy > 1 ? 'Rack-rents pay until they don’t.' : S.rentPolicy < 1 ? 'They drink your health at the audit.' : 'As your uncle left them.'}</p>
+      ${S.traits && S.traits.length ? `<h4>The squire</h4><p class="fine born">${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}
     </section>
     <section class="panel"><h3>Wheat at Wyvern Market</h3>${chartHTML()}</section>
     <section class="panel"><h3>Persons of Consequence</h3><ul class="people">${people}</ul></section>`; }
