@@ -4,7 +4,7 @@
    Errors (exit 1): dashes and banned words. Everything else is advice. */
 const fs = require('fs'), path = require('path');
 const SRC = path.join(__dirname, '..', 'src');
-const FILES = ['events1.js', 'events2.js', 'events3.js', 'events4.js', 'traits.js', 'data.js', 'engine.js', 'estate.js', 'common.js', 'endings.js', 'ui.js'].filter(f => fs.existsSync(path.join(SRC, f)));
+const FILES = ['events1.js', 'events2.js', 'events3.js', 'events4.js', 'traits.js', 'data.js', 'engine.js', 'estate.js', 'common.js', 'farmworks.js', 'endings.js', 'ui.js'].filter(f => fs.existsSync(path.join(SRC, f)));
 const showAll = process.argv.includes('--all');
 
 // Hard rules. These fail the run.
