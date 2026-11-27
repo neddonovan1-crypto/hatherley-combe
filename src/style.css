@@ -15,7 +15,7 @@
 *{box-sizing:border-box}
 body{background:var(--baize);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
   background-image:radial-gradient(60rem 40rem at 12% -6%, rgba(255,196,120,.24), transparent 70%), radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.5) 100%), var(--weave);
-  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:34px 60px}
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:15px 15px}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--madder);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -25,7 +25,7 @@ button:focus-visible, input:focus-visible, select:focus-visible{outline:2px soli
 .book{--edge:clamp(64px,9.4vw,134px);position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:clamp(12px,2vw,30px);
   background:var(--paper) padding-box;border-style:solid;border-color:var(--board);border-width:clamp(22px,3.3vw,48px) var(--edge) clamp(24px,3.5vw,50px);
   border-image:url(art/ui/book.jpg) 5.4% 10.3% 5.6% fill stretch;clip-path:inset(0 round 14px)}
-.page{position:relative;min-width:0;min-height:47rem;padding:26px clamp(12px,2.2vw,38px) 30px;display:flex;flex-direction:column;gap:14px}
+.page{position:relative;min-width:0;min-height:min(47rem, calc(100vh - 135px));padding:26px clamp(12px,2.2vw,38px) 30px;display:flex;flex-direction:column;gap:14px}
 #ribbon{display:none}
 #tabs{position:absolute;left:calc(100% + var(--edge) * .1);top:30px;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
 #tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:calc(var(--edge) * .62);min-height:54px;padding:6px 4px;border:0;border-radius:0 5px 5px 0;
@@ -39,8 +39,7 @@ body.intro #verso::after{content:none}
 
 /* the flyleaf: marbled endpaper facing the title page */
 body.intro #tabs, body.intro #ribbon{display:none}
-body.intro #verso{background:linear-gradient(90deg, rgba(0,0,0,.12), transparent 8%, transparent 78%, rgba(30,15,5,.45)), url(art/ui/marble.jpg) center top/100% auto repeat-y;margin:-4px 0 -4px -4px;align-items:center;justify-content:center;min-height:0}
-body.intro #stage{min-height:0}
+body.intro .page{min-height:0;gap:10px}
 .bookplate{width:min(100%, 21rem);background:var(--sheet);background-image:var(--grain);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.4);outline:1px solid var(--ink);outline-offset:-7px;border:1px solid var(--ink)}
 .bookplate .plate{width:100%}
 .bookplate b{font-family:var(--hand);font-weight:400;font-size:2.5rem;line-height:1}
@@ -182,10 +181,13 @@ table.roll .n{width:4rem;vertical-align:top;padding-top:10px} table.roll tr.tota
 .daybook b{font-weight:400;font-style:italic}
 
 /* taking possession: the title page */
-.titlepage::before{content:"";display:block;height:clamp(84px,11vw,132px);margin-bottom:10px;background:url(art/ui/headpiece.png) center/contain no-repeat}
-.titlepage{margin:0 0 6px;padding-bottom:12px;border-bottom:3px double var(--ink);text-align:center;font-family:var(--hand);font-size:clamp(2.6rem,8vw,4rem);line-height:1}
+.titlepage::before{content:"";display:block;height:clamp(70px,7vw,104px);margin-bottom:6px;background:url(art/ui/headpiece.png) center/contain no-repeat}
+.titlepage{margin:0 0 6px;padding-bottom:12px;border-bottom:3px double var(--ink);text-align:center;font-family:var(--hand);font-size:clamp(2.4rem,4.6vw,3.4rem);line-height:1}
 .titlepage small{display:block;font-family:var(--caps);font-size:.9rem;letter-spacing:.14em;color:var(--muted);padding-top:8px}
-.opening{display:flex;flex-direction:column;gap:12px}
+.opening{display:flex;flex-direction:column;gap:9px}
+.opening h2{margin:0}
+.plate.band{aspect-ratio:4.2;flex:none} .plate.band svg{position:absolute;inset:0;width:100%;height:100%} .plate.band img{object-position:50% 78%}
+body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:8px} body.intro .pickrow{margin-top:7px} body.intro .traits .fine{margin:4px 0 0}
 .opening > p:not(.kicker){margin:0;max-width:64ch;font-size:1.02rem}
 .opening > p:nth-of-type(2)::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
 .names{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 14px;align-items:center;margin-top:10px}
@@ -219,7 +221,7 @@ table.roll .n{width:4rem;vertical-align:top;padding-top:10px} table.roll tr.tota
   .book{grid-template-columns:minmax(0,1fr);border-width:16px clamp(26px,7vw,48px) 20px 9px;border-image:url(art/ui/book-leaf.jpg) 5.4% 20.5% 5.6% 2.5% fill stretch;clip-path:inset(0 round 0 12px 12px 0)}
   .page{min-height:0;padding-inline:clamp(10px,3.4vw,30px)}
   #stage{order:1} #tabs{order:2} #verso{order:3}
-  body.intro #verso{order:0;padding:22px 16px;margin:0}
+  body.intro #verso{order:0}
   #tabs{position:static;width:auto;padding:0;flex-direction:row;flex-wrap:wrap;gap:0;border-block:3px double var(--ink)}
   #tabs button, #tabs button[aria-pressed="true"], #tabs button:hover, #tabs button[aria-pressed="true"]:hover{flex:1 1 22%;width:auto;min-height:50px;border-radius:0;background:transparent;color:var(--ink);box-shadow:none}
   #tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)} #tabs button[aria-pressed="true"] img{filter:invert(1);mix-blend-mode:screen}

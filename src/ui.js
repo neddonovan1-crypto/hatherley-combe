@@ -34,15 +34,22 @@ function plateHTML(q, src, cap){ return `<figure class="plate">${sceneSVG(q)}${p
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
-  if (!S) { LEAF = -1; stage.classList.remove('turn'); stage.innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>' + introHTML();
-    $('verso').innerHTML = `<div class="bookplate">${plateHTML(1, 'frontispiece', 'Hatherley Hall from the park')}<span>The Estate Book of</span><b>Hatherley Combe</b><i>in the County of Berks, kept by Mr Crabbe, steward</i></div>`;
-    $('tabs').innerHTML = ''; syncTraits(); return; }
+  if (!S) { LEAF = -1; stage.classList.remove('turn');
+    stage.innerHTML = `<figure class="plate band">${sceneSVG(1)}${pic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
+    const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
+    $('verso').innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>'; $('verso').appendChild(told);
+    $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
+  document.querySelector('.desk').style.zoom = '';
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
   const first = stage.querySelector('button'); if (first && S.phase !== 'ledger') first.focus({preventScroll:true});
 }
+/* the opening is sized to the window, so the will and the choosing are read without scrolling */
+function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; if (S || innerWidth <= 1080) return;
+  for (let i = 0; i < 2; i++){ const z = (innerHeight - 30) / (d.offsetHeight * (parseFloat(d.style.zoom) || 1)) * (parseFloat(d.style.zoom) || 1); if (z < 1) d.style.zoom = Math.max(.7, z).toFixed(3); } }
+addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
   $('tabs').innerHTML = TABS.map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
 function showTab(t){ TAB = t; drawBook(); }
@@ -51,10 +58,13 @@ function introHTML(){ const has = !!load();
   return `<article class="card opening">
     <p class="kicker">Berkshire, Lady Day 1795</p>
     <h2>An Inheritance</h2>
-    <p>Your uncle Barnaby is dead at seventy-one, face down in a syllabub at his own Michaelmas dinner, which the county agreed was how he would have wished to go, though perhaps not in front of the Bishop.</p>
-    <p>He has left you Hatherley Combe: two thousand one hundred acres of chalk and clay, eleven tenant farms, a mill, a common that nobody owns and everybody uses, a house with a smoking chimney in every room but the one you want, a mortgage of four thousand pounds, and a steward named Crabbe who smiles as a ledger would, if it could.</p>
-    <p>England has been two years at war with the French Republic. Bread is dear and growing dearer. You have a wife, Henrietta, who had hoped for a baronet; a daughter, Kitty, seventeen, who has read every novel in the Newbury circulating library and believed most of them; and a son, Edmund, nineteen, who wants very badly to be shot at.</p>
-    <p>You have twenty-one years, a season at a time. Nobody will tell you what a good squire is. Several people will tell you what a bad one is, afterwards.</p>
+    <p>Your uncle Barnaby died at his own table on Michaelmas Day. He was seventy-one. The Bishop was on his right. The syllabub had just come in.</p>
+    <p>Mr Spurling the attorney read the will in the library a week later. It took four minutes. Everything comes to you.</p>
+    <p>Hatherley Combe. Two thousand one hundred acres of chalk and clay. Eleven farms let to tenants. A water mill. A common where forty cottagers keep a cow apiece. A house with fifty-four windows and eleven chimneys. Nine of the chimneys smoke. A mortgage of four thousand pounds at five per cent.</p>
+    <p>The steward met your carriage at the lodge this morning. His name is Crabbe. He had the keys in one hand and the rent book in the other. He gave you the keys.</p>
+    <p>Henrietta is upstairs counting bedrooms. She had hoped you would be a baronet by now. Kitty is seventeen and has found the library. Edmund is nineteen. He has found your uncle’s sword over the hall chimney-piece and is trying to get it out of the scabbard.</p>
+    <p>England has been at war with France for two years. The quartern loaf was sevenpence when it began. It is elevenpence today.</p>
+    <p>You have twenty-one years. They come one season at a time.</p>
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
@@ -88,7 +98,7 @@ function accountHTML(){ let rows = '', tot = 0;
   return `<div class="tablewrap"><table class="acct"><thead><tr><th>Particulars</th><th class="n l">£</th><th class="n">s.</th><th class="n">d.</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
 
 function ledgerHTML(){
-  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern have met at the George and resolved, unanimously, to give no further credit. The mortgagees have sent a man to look at the roof.</p>` : '';
+  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
     ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
     <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
@@ -119,7 +129,7 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner. Works on the estate are another matter, and may be put in hand at any time.</p></div>
+    <div class="prose"><p>You may undertake one thing this season. Works on the estate may be put in hand at any time.</p></div>
     <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function endHTML(){ const r = reckoning();
