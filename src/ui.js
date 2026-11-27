@@ -80,7 +80,7 @@ function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c =
       <p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>
       <div class="prose">${paras(e.text())}</div>
     </article>
-    <h3>Endorsed, in your own hand</h3>
+    <h3>Your answer</h3>
     <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function outcomeHTML(){ const o = S.outcome;
