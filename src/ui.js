@@ -6,7 +6,7 @@ const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 
 
 function render(){
   const stage = $('stage');
-  if (!S) { document.body.classList.add('intro'); stage.innerHTML = introHTML(); $('side').innerHTML = ''; $('journal').innerHTML = ''; $('plate').innerHTML = 'Lady Day, 1795'; drawTimeline(0); return; }
+  if (!S) { document.body.classList.add('intro'); stage.innerHTML = introHTML(); $('side').innerHTML = ''; $('journal').innerHTML = ''; $('plate').innerHTML = 'Lady Day, 1795'; drawTimeline(0); syncTraits(); return; }
   document.body.classList.remove('intro');
   $('plate').innerHTML = S.phase === 'end' ? 'The Reckoning' : esc(QUARTER[S.season]) + ' <span>' + esc(stamp()) + '</span>';
   drawTimeline(S.t);
@@ -33,25 +33,22 @@ function introHTML(){ const has = !!load();
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
       <fieldset class="traits">
         <legend>What manner of man inherits</legend>
-        <p class="fine">You have <b id="pts">${pointsLeft(PICKS)}</b> <span id="ptsw">${pointsLeft(PICKS) === 1 ? 'point' : 'points'}</span> to lay out. Advantages cost them. Encumbrances pay them back. Take none, if you prefer to start as plain as your uncle left you.</p>
-        <h3>Advantages</h3><div class="tgrid">${TRAITS.filter(t => t.cost > 0).map(traitHTML).join('')}</div>
-        <h3>Encumbrances</h3><div class="tgrid">${TRAITS.filter(t => t.cost < 0).map(traitHTML).join('')}</div>
+        <p class="fine">You have <b id="pts">${pointsLeft(pickList())}</b> <span id="ptsw">points</span> in hand. An advantage costs them; a burden pays them back. Leave all five alone to start as plain as your uncle left you.</p>
+        ${TRAIT_GROUPS.map(([g, label, plain]) => `<div class="pickrow"><label for="pick-${g}">${label}</label>
+          <select id="pick-${g}" onchange="setPick('${g}', this.value)"><option value="">${plain}</option>${TRAITS.filter(t => t.group === g).map(t => `<option value="${t.id}"${PICKS[g] === t.id ? ' selected' : ''}>${esc(t.name)} (${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)})</option>`).join('')}</select>
+          <p class="pickblurb" id="blurb-${g}"></p></div>`).join('')}
       </fieldset>
       <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
-let PICKS = [];
-function traitHTML(t){ const on = PICKS.includes(t.id);
-  return `<button type="button" class="trait${on ? ' on' : ''}" id="trait-${t.id}" aria-pressed="${on}" onclick="toggleTrait('${t.id}')">
-    <span class="tn">${esc(t.name)}<i>${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)}</i></span><span class="tb">${esc(t.blurb)}</span><span class="te">${esc(t.effect)}</span></button>`; }
-function toggleTrait(id){ const t = traitById(id);
-  if (PICKS.includes(id)) PICKS = PICKS.filter(x => x !== id); else { PICKS = PICKS.filter(x => x !== t.excl); PICKS.push(id); }
-  syncTraits(); }
-function syncTraits(){ const left = pointsLeft(PICKS);
-  for (const t of TRAITS){ const b = $('trait-' + t.id); if (!b) continue; const on = PICKS.includes(t.id); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }
+let PICKS = {};
+const pickList = () => Object.values(PICKS).filter(Boolean);
+function setPick(g, id){ PICKS[g] = id || null; syncTraits(); }
+function syncTraits(){ if (!$('pts')) return; const left = pointsLeft(pickList());
+  for (const [g] of TRAIT_GROUPS){ const t = PICKS[g] && traitById(PICKS[g]); $('blurb-' + g).innerHTML = t ? esc(t.blurb) + ' <span>' + esc(t.effect) + '</span>' : ''; }
   $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
-  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn: shed an advantage or take on a burden' : 'Take possession'; }
-function start(){ if (pointsLeft(PICKS) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, PICKS.slice()); render(); window.scrollTo({top:0}); }
+  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn. Give something up, or take on a burden' : 'Take possession'; }
+function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 
 function ledgerHTML(){ let rows = '', tot = 0;
@@ -72,7 +69,7 @@ function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c =
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>
     <div class="prose">${paras(e.text())}</div>
-    <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
+    <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${c.note ? `<em>${esc(typeof c.note === 'function' ? c.note() : c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 
 function outcomeHTML(){ const o = S.outcome;

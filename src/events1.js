@@ -131,7 +131,7 @@ Crabbe wishes to know whether you would care to be a person to destroy. He has p
   choices:[
     {t:'Make honest returns, to the last spade.', go:() => { add({standing:2, goodwill:-2});
       return `The return goes to Reading: two hundred and six oxen, forty-one wagons, nine hundred and twelve sheep and eighty-three able men, eleven of whom the overseer has annotated “able only in a manner of speaking”. The village takes it hard. A man who has been listed is a man who can be moved, and nobody in Hatherley has been moved further than Newbury since the Civil War.`; }},
-    {t:'Raise and equip the Hatherley Volunteers.', note:'£300', go:() => { fl('volunteers'); add({money:-300, standing:7, goodwill:2}); reg('cullerne',1);
+    {t:'Raise and equip the Hatherley Volunteers.', note:() => T('soldier') ? '£150' : '£300', go:() => { fl('volunteers'); add({money: T('soldier') ? -150 : -300, standing:7, goodwill:2}); reg('cullerne',1);
       return `Forty men in green coats, with pikes, there not being muskets enough in England, and a drum the drummer has already put his foot through. They drill on the common on Sunday afternoons. Their manoeuvres resemble a flock of sheep receiving bad news. They are immensely proud all the same, and so, rather to your surprise, are you.`; }},
     {t:'Leave it all to Crabbe.', if:() => !F('crabbeGone'), go:() => { reg('crabbe',1); later('crabbeList', 3);
       return `Crabbe bears the papers away with a look of deep patriotic satisfaction. The return he sends to Reading is beautifully written and very full. You do not read it.`; }}
@@ -222,7 +222,7 @@ Four hundred thousand Englishmen have enrolled as Volunteers. Most of them have 
   choices:[
     {t:'Drill the Hatherley Volunteers yourself, twice a week.', if:() => F('volunteers'), go:() => { add({standing:5, goodwill:2, family:-2});
       return `You drill them on the common through the autumn, out of a book. By November they can form line, form square, and fix pikes without injury to more than one or two. The blacksmith has been made serjeant, on the principle that no Frenchman has ever seen anything like him.`; }},
-    {t:'Raise a corps of Volunteers now.', note:'£320', if:() => !F('volunteers'), go:() => { fl('volunteers'); add({money:-320, standing:6, goodwill:2});
+    {t:'Raise a corps of Volunteers now.', note:() => T('soldier') ? '£160' : '£320', if:() => !F('volunteers'), go:() => { fl('volunteers'); add({money: T('soldier') ? -160 : -320, standing:6, goodwill:2});
       return `Forty men, green coats, a flag worked by the ladies of the parish showing either a lion or a hearth-rug, opinion is divided. They have pikes. They would have preferred muskets, but they are assured by the serjeant, who is the blacksmith, that a pike is a musket “with the nonsense left out”.`; }},
     {t:'Send a hundred pounds to the Patriotic Fund at Lloyd’s.', note:'£100', go:() => { add({money:-100, standing:3}); reg('cullerne',1);
       return `Your name appears in the published list between a duke who gave less and a soap-boiler who gave more. Lord Cullerne remarks on it, approvingly, in front of people. It is the cheapest glory available this year.`; }},

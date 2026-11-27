@@ -135,7 +135,7 @@ ev({ id:'duel', follow:true, cond:() => S.chars.vane.met, title:'Pistols on Hath
 
 Duelling is against the law, which is to say that it takes place at dawn instead of noon. The lieutenant suggests the old chalk pit on Hatherley Down, on Thursday, at twelve paces.`,
   choices:[
-    {t:'Accept.', go:() => { const r = T('deadshot') ? 0.1 + Math.random() * 0.4 : Math.random();
+    {t:'Accept.', go:() => { const r = T('soldier') ? 0.1 + Math.random() * 0.4 : Math.random();
       if (r < 0.1) { S.dead = 'duel'; return `A grey morning, with larks. The handkerchief falls. You have just time to think that the Captain is a better shot than his debts would suggest.`; }
       if (r < 0.45) { add({standing:6, family:-3}); reg('vane',-2); reg('henrietta',-1,'You fought a duel and told her afterwards');
         return `You fire, and to the astonishment of everyone, yourself first among them, you hit him: in the right calf, the better of the two. He is carried to the George, where he lies up for a month on credit. You are the hero of the county for a season. Men who have never met you describe your coolness. In truth your hand shook so that you were aiming at the chalk pit generally.`; }

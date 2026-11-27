@@ -102,14 +102,12 @@ dl.money dd{margin:0;font-family:var(--display);font-size:1.7rem;line-height:1.1
 .traits h3{font-family:var(--caps);font-weight:400;letter-spacing:.14em;font-size:.9rem;color:var(--muted);margin:16px 0 8px}
 .traits .fine{font-size:.95rem;max-width:60ch} #pts{font-family:var(--display);font-size:1.5rem;font-style:normal;color:var(--madder);padding:0 .1em} #pts.neg{color:var(--bad);text-decoration:underline wavy}
 .names{max-width:none} .names > label{max-width:10rem} .names > input{max-width:18rem}
-.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:9px}
-.trait{display:flex;flex-direction:column;gap:4px;text-align:left;background:transparent;border:1px solid var(--rule);padding:10px 12px;min-width:0;transition:background .15s}
-.trait:not(.on):hover{background:var(--wash)}
-.trait.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
-.trait .tn{font-family:var(--display);font-size:1.08rem;line-height:1.2;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-.trait .tn i{font-family:var(--caps);font-style:normal;font-size:.76rem;letter-spacing:.06em;color:var(--gold);white-space:nowrap}
-.trait .tb{font-size:.88rem;line-height:1.4;font-style:italic;opacity:.85}
-.trait .te{font-family:var(--caps);font-size:.78rem;letter-spacing:.05em;color:var(--muted)}
-.trait.on .tn i, .trait.on .te{color:inherit;opacity:.8}
+.pickrow{display:grid;grid-template-columns:9rem minmax(0,26rem);gap:2px 14px;align-items:baseline;margin-top:12px}
+.pickrow label{font-family:var(--caps);letter-spacing:.08em;font-size:.9rem;color:var(--muted)}
+.pickrow select{font:inherit;font-family:var(--display);font-size:1.12rem;color:var(--ink);background:var(--card);border:0;border-bottom:1px solid var(--ink);padding:4px 2px;min-width:0;width:100%;cursor:pointer}
+.pickblurb{grid-column:2;margin:4px 0 0;font-style:italic;font-size:.93rem;line-height:1.45;color:var(--muted);max-width:26rem}
+.pickblurb:empty{display:none}
+.pickblurb span{display:block;font-family:var(--caps);font-style:normal;font-size:.78rem;letter-spacing:.06em;color:var(--gold);margin-top:2px}
+@media (max-width:520px){ .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1} }
 .go:disabled{background:var(--muted);cursor:not-allowed}
 .born{line-height:1.45}
