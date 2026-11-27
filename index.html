@@ -373,6 +373,138 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
 .lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
 @media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
 .favours #pts i{font-style:normal;color:var(--muted);opacity:.7}
+
+/* the household: every dial a row of toggles with its figure beside the name */
+.hh{display:flex;flex-direction:column;gap:6px;min-width:0} .hh .hhsum{margin:0;display:flex;align-items:baseline;gap:10px;border-bottom:3px double var(--ink);padding-bottom:6px}
+.hh .hhsum b{font-family:var(--display);font-weight:400;font-size:1.9rem;line-height:1.05;font-variant-numeric:tabular-nums;white-space:nowrap} .hh .hhsum small{font-family:var(--caps);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hh .dial{display:flex;flex-direction:column;gap:3px;min-width:0} .hh .dial > b{font-family:var(--display);font-weight:400;font-size:1.02rem} .hh .dial.off{opacity:.55}
+.hh .seg{display:grid;gap:0;min-width:0} .hh .seg.n2{grid-template-columns:repeat(2,minmax(0,1fr))} .hh .seg.n3{grid-template-columns:repeat(3,minmax(0,1fr))} .hh .seg.n4{grid-template-columns:repeat(2,minmax(0,1fr))} .hh .seg.n4 .rung{border-radius:0;margin-top:-1px}
+.hh .seg .rung{border-radius:0;margin-left:-1px;padding:5px 7px;min-width:0;overflow-wrap:break-word} .hh .seg .rung:first-child{margin-left:0;border-radius:4px 0 0 4px} .hh .seg .rung:last-child{border-radius:0 4px 4px 0} .hh .seg .rung:only-child{border-radius:4px}
+.hh .seg .rung.now{position:relative;z-index:1;opacity:1} .hh .seg .rung:disabled.now{opacity:1;cursor:default}
+.hh .rung .yr{font-family:var(--display);font-size:1.05rem;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap} .hh .rung .fx{font-size:.82rem;line-height:1.2} .hh .rung small{font-size:.78rem}
+.hh .terms{margin:0;font-size:.88rem}
+@media (max-width:520px){ .hh .rung .fx{font-size:.76rem} .hh .rung b{font-size:.74rem;letter-spacing:.04em} }
+
+/* notice to quit: shut until asked for, its cost set out before the button */
+details.evict{margin-top:10px;border-top:1px solid rgba(43,29,16,.3);padding-top:6px} details.evict > summary{list-style:none;cursor:pointer;font-family:var(--caps);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad)} details.evict > summary::-webkit-details-marker{display:none} details.evict .fx{margin:6px 0 8px}
+/* The plan: the survey sheet lies on the baize with the quarter's slips beside it. A place's paper is laid over one side. Plates are held up over everything. */
+body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{overflow:hidden}
+#plan[hidden], #plate[hidden], #sheet[hidden]{display:none}
+#plan{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:22px;align-items:center;padding:16px max(18px, env(safe-area-inset-right, 0px)) 16px max(18px, env(safe-area-inset-left, 0px))}
+#landwrap{min-width:0;height:100%;display:grid;place-items:center}
+#landwrap{filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
+/* the scan has a white margin beyond the torn edge of the paper, which is trimmed off here */
+#land{position:relative;width:min(100%, calc((100dvh - 32px) * 1.5));aspect-ratio:3/2;container-type:inline-size;clip-path:inset(1.9% 1.35% 1.9% 1.35% round 2px);user-select:none}
+#land .base{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+#land .base, #land .piece, #land .mot{clip-path:none;pointer-events:none}
+#land .mot{position:absolute;mix-blend-mode:multiply;object-fit:fill}
+#land .piece{position:absolute}
+#land .arms{position:absolute;left:3.6%;top:4.8%;width:7.4%;height:auto;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(60,40,20,.25))} #land .arms.baronet{width:12.5%}
+.lbl{position:absolute;transform:translate(-50%, -50%);z-index:2;background:none;border:0;padding:.35em .5em;font-family:var(--display);font-style:italic;font-size:max(12px, 1.36cqw);line-height:1;color:#2b1d10;white-space:nowrap;
+  text-shadow:0 0 2px #f6edd4, 0 0 3px #f6edd4, 0 0 5px #f6edd4, 0 0 8px #f6edd4, 0 0 12px #f6edd4}
+.lbl:hover span, .lbl:focus-visible span{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px} .lbl.on span{color:var(--madder);text-decoration:underline;text-underline-offset:3px}
+.lbl .stir{display:inline-block;width:1.9em;height:1.9em;margin-right:.3em;vertical-align:middle;border-radius:50%;overflow:hidden;background:#efe6cb;box-shadow:0 0 0 1px rgba(60,40,20,.55), 1px 2px 4px rgba(0,0,0,.35)} .lbl .stir img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
+.lbl .call{position:absolute;left:50%;bottom:92%;width:3.2em;height:4em;margin-left:-1.6em;border-radius:50%;overflow:hidden;background:#efe6cb;box-shadow:0 0 0 2px #efe6cb, 0 0 0 3px var(--madder), 2px 5px 9px rgba(0,0,0,.5);animation:knock 1.6s ease-in-out infinite}
+.lbl .call .medal{width:100%;height:100%;display:block;border-radius:0} .lbl .call .medal span{font-size:1.6em} .lbl .call > img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
+.lbl.called{z-index:3} .lbl.called span{color:var(--madder)}
+@keyframes knock{0%, 100%{transform:translateY(0)} 50%{transform:translateY(-.5em)}}
+
+/* the table of the quarter: one leaf beside the sheet, set out like the reference on a survey */
+#cart{align-self:center;display:flex;flex-direction:column;gap:14px;min-width:0;padding:20px 18px 14px;background:#efe6cb var(--leaf) 12% 50%/150% 150%;color:var(--ink);box-shadow:1px 2px 2px rgba(0,0,0,.3), 4px 12px 22px rgba(0,0,0,.5);text-align:center}
+#cart img{mix-blend-mode:multiply}
+#cart .day{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:12px;border-bottom:3px double rgba(43,29,16,.55)} #cart .day img{width:64px;height:64px;object-fit:cover;border-radius:50%} #cart .day b{font-family:var(--hand);font-weight:400;font-size:2.3rem;line-height:1.05}
+#cart .day span, #cart .purse span, #cart .vig span{font-family:var(--caps);font-size:.72rem;letter-spacing:.1em;color:var(--muted)}
+#cart .purse{display:flex;flex-direction:column;align-items:center} #cart .purse b{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1.1;font-variant-numeric:tabular-nums} #cart .purse i{font-style:normal;color:var(--bad)} #cart .neg{color:var(--bad)}
+#cart .vigs{display:flex;flex-direction:column;gap:9px;padding-block:12px;border-block:1px solid rgba(43,29,16,.4);text-align:left}
+#cart .vig{display:grid;grid-template-columns:34px minmax(0,1fr) auto;column-gap:9px;row-gap:3px;align-items:baseline} #cart .vig img{grid-row:1/3;align-self:center;width:34px;height:34px;object-fit:cover;border-radius:50%}
+#cart .vig b{font-family:var(--hand);font-weight:400;font-size:1.3rem;line-height:1;white-space:nowrap}
+#cart .vig > i{grid-column:2/4;display:block;height:9px;position:relative;background:repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 10%) left bottom/100% 4px no-repeat;border-bottom:1px solid var(--ink);border-right:1px solid var(--ink)} #cart .vig u{position:absolute;left:0;bottom:1px;height:5px;background:var(--ink);transition:width .6s}
+#cart .vig.low b{color:var(--bad)} #cart .vig.low u{background:var(--bad)}
+#cart .next{display:flex;flex-direction:column;gap:9px} #cart .next p{margin:0;font-family:var(--display);font-style:italic;font-size:1.08rem;line-height:1.25}
+#cart .act{position:relative;display:block;width:100%;padding:13px 38px 12px 10px;background:none;border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:2px;color:var(--ink);font-family:var(--caps);font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+#cart .act::after{content:"";position:absolute;right:-8px;top:50%;width:44px;height:44px;margin-top:-22px;background:url(art/ui/seal.png) center/contain no-repeat;filter:drop-shadow(1px 2px 2px rgba(40,10,5,.45));transition:transform .15s} #cart .act:hover{background:rgba(43,29,16,.07)} #cart .act:hover::after{transform:rotate(-8deg)}
+#cart .foot{display:flex;justify-content:space-between;gap:8px;margin-top:2px} #cart .foot button{background:none;border:0;padding:6px 2px;color:var(--ink);font-family:var(--display);font-style:italic;font-size:1rem;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer} #cart .foot button:disabled{opacity:.45;text-decoration:none;cursor:default} #cart .foot small{font-style:normal;color:var(--madder)}
+
+/* the paper of a place */
+#sheet{position:absolute;top:16px;bottom:16px;z-index:5;width:min(410px, calc(100vw - 36px));padding:18px 20px 22px;overflow-y:auto;overscroll-behavior:contain;background:#efe6cb var(--leaf) 12% 50%/150% 150%;box-shadow:2px 4px 4px rgba(0,0,0,.3), 6px 16px 34px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:11px;animation:laidon .22s ease-out}
+#sheet.right{right:18px} #sheet.left{left:18px}
+@keyframes laidon{from{opacity:0;transform:translateY(10px)}}
+#sheet > h2{font-family:var(--hand);font-size:2.3rem;line-height:1;padding-right:34px}
+#sheet .shut{position:absolute;top:8px;right:10px;width:38px;height:38px;background:none;border:0;font-family:var(--display);font-size:1.8rem;line-height:1;color:var(--muted)} #sheet .shut:hover{color:var(--madder)}
+#sheet > .plate{aspect-ratio:16/9;flex:none;margin:3px} #sheet > .plate img{object-position:50% 72%} #sheet .plate.round{background:#d8d2bd} #sheet model-viewer{position:absolute;inset:0;width:100%;height:100%;--poster-color:transparent}
+#sheet .turn{position:absolute;right:6px;bottom:6px;background:#efe6cb;border:1px solid var(--ink);padding:3px 9px;font-family:var(--caps);font-size:.72rem;letter-spacing:.08em;line-height:1.5}
+#sheet .sec{border-top:1px solid var(--ink)} #sheet .sec:last-child{border-bottom:1px solid var(--ink)}
+#sheet .sec > summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;padding:7px 0 6px;font-family:var(--caps);font-size:.9rem;letter-spacing:.12em} #sheet .sec > summary::-webkit-details-marker{display:none}
+#sheet .sec > summary::after{content:"\25BE";color:var(--muted)} #sheet .sec[open] > summary::after{content:"\25B4"} #sheet .sec[open] > summary{color:var(--madder)}
+#sheet .sec > div{padding:2px 0 12px;display:flex;flex-direction:column;gap:9px}
+#sheet .people{grid-template-columns:minmax(0,1fr)} #sheet .who{grid-template-columns:minmax(0,38%) minmax(0,1fr)} #sheet .bal dd{font-size:1.7rem} #sheet .bal .creditbox{margin-left:0}
+#sheet .choice{padding-left:40px} #sheet .choice span{font-size:1.1rem} #sheet .memo{display:flex;flex-direction:column;gap:10px} #sheet .wheat{margin:0}
+#sheet ::-webkit-scrollbar, #plate ::-webkit-scrollbar{width:9px} #sheet::-webkit-scrollbar{width:9px} #sheet::-webkit-scrollbar-thumb, #plate ::-webkit-scrollbar-thumb{background:#5a3a22;border-radius:5px;border:2px solid transparent;background-clip:padding-box}
+
+/* a plate held up */
+#plate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.8);overflow:auto;animation:heldup .25s ease-out}
+@keyframes heldup{from{opacity:0}}
+.pcard, .progress{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(16px,2.4vw,34px);align-items:center;width:min(1260px, 100%)}
+.pcard:has(.progress){display:block}
+.print{margin:0;padding:clamp(12px,1.8vw,26px);background:#f1e8cf var(--leaf) 12% 50%/150% 150%;box-shadow:2px 4px 4px rgba(0,0,0,.35), 8px 20px 40px rgba(0,0,0,.6);transform:rotate(-.4deg)}
+.print .mark{position:relative;padding:26px clamp(10px,1.4vw,18px) 12px;border:1px solid rgba(70,50,25,.3);box-shadow:inset 1px 1px 2px rgba(70,50,25,.25), inset -1px -1px 1px rgba(255,255,255,.5)}
+.print .pn{position:absolute;top:6px;right:clamp(10px,1.4vw,18px);font-family:var(--display);font-style:italic;font-size:.86rem;color:var(--muted)}
+.print img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;mix-blend-mode:multiply;outline:1px solid rgba(42,35,32,.7)}
+.print figcaption{display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:10px;text-align:center}
+.print figcaption b{font-family:var(--hand);font-weight:400;font-size:clamp(1.7rem,3.2vw,2.7rem);line-height:1.05;text-wrap:balance} .print figcaption small{font-family:var(--display);font-style:italic;font-size:.82rem;color:var(--muted)}
+.pside{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;max-height:calc(100dvh - 36px)}
+.pside .sheet{flex:0 1 auto;min-height:7rem;overflow-y:auto;overscroll-behavior:contain;transform:none;padding:26px clamp(16px,2vw,26px) 18px;background:#f3ead0 var(--leaf) 12% 50%/150% 150%} .pside .sheet.bill{transform:none}
+.pside .sheet .from{justify-content:center} .pside .sheet .from .medal{width:40px;height:50px} .pside .sheet .from .medal span{font-size:1.5rem}
+.pside .sheet.came::before{display:none} .pside .sheet.came{padding-top:18px}
+.pside .answer{flex:none;background:#efe6cb var(--leaf) 12% 50%/150% 150%;padding:10px 14px 12px;box-shadow:1px 2px 2px rgba(0,0,0,.3), 4px 10px 20px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:8px}
+.pside .inhand{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;margin:0;font-family:var(--caps);font-size:.78rem;letter-spacing:.1em;color:var(--muted)} .pside .inhand b{font-family:var(--display);font-weight:400;font-size:1.25rem;letter-spacing:0;color:var(--ink);margin-left:4px} .pside .inhand b.neg{color:var(--bad)} .pside .inhand .quiet{margin-left:auto;font-family:var(--body);letter-spacing:0;min-height:26px}
+.pside .choice{min-height:44px;padding-top:8px;padding-bottom:7px} .pside .choice span{font-size:1.1rem} .pside .row{margin:0}
+.progress .pside{background:#efe6cb var(--leaf) 12% 50%/150% 150%;padding:18px 20px;box-shadow:2px 4px 4px rgba(0,0,0,.3), 6px 16px 34px rgba(0,0,0,.6);align-items:flex-start}
+.progress h2{font-family:var(--hand);font-size:2.2rem;line-height:1} .progress .did{margin:0;font-family:var(--display);font-style:italic;font-size:1.05rem;line-height:1.35;min-height:2.7em}
+.progress .thumbs{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:8px;align-self:stretch}
+.progress .thumbs button{position:relative;padding:3px;background:#f6efd9;border:1px solid rgba(42,35,32,.5);line-height:0} .progress .thumbs img{width:100%;aspect-ratio:3/2;object-fit:cover;mix-blend-mode:multiply} .progress .thumbs span{position:absolute;right:4px;bottom:3px;padding:0 4px;background:#f6efd9;font-family:var(--display);font-size:.78rem;line-height:1.3}
+.progress .thumbs button[aria-pressed="true"]{outline:2px solid var(--madder);outline-offset:1px}
+.progress .leafs{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0;align-self:stretch;font-family:var(--caps);font-size:.76rem;letter-spacing:.1em;color:var(--muted)} .progress .quiet:disabled{opacity:.35;cursor:default}
+
+/* a narrow or upright screen: the slips along the top, the sheet under them to be pushed about, a place's paper below */
+@media (max-width:1080px), (orientation:portrait){
+  #plan{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;padding:0;align-items:stretch}
+  #plan.sheeton{grid-template-rows:auto minmax(0,1fr) min(60dvh, 34rem)}
+  #cart{order:-1;align-self:stretch;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 12px;padding:8px max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px));box-shadow:0 3px 10px rgba(0,0,0,.5);position:relative;z-index:4}
+  #cart .day{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;gap:0 8px;padding:0;border:0;text-align:left} #cart .day img{display:none} #cart .day b{font-size:1.7rem} #cart .day span{font-size:.62rem}
+  #cart .purse{align-items:flex-end} #cart .purse b{font-size:1.45rem} #cart .purse span{font-size:.62rem} #cart .purse span:first-child{display:none}
+  #cart .vigs{grid-column:1/-1;flex-direction:row;gap:10px;padding-block:6px}
+  #cart .vig{flex:1 1 0;min-width:0;grid-template-columns:minmax(0,1fr);row-gap:1px} #cart .vig img{display:none} #cart .vig span{font-size:.58rem} #cart .vig b{font-size:1.1rem} #cart .vig > i{grid-column:1}
+  #cart .next{grid-column:1/-1;flex-direction:row;align-items:center;gap:10px} #cart .next p{flex:1 1 0;min-width:0;font-size:.95rem;text-align:left} #cart .act{width:auto;flex:none;max-width:56%;padding:9px 30px 8px 10px;font-size:.78rem} #cart .act::after{width:34px;height:34px;margin-top:-17px;right:-9px}
+  #cart .foot{grid-column:1/-1;margin:0} #cart .foot button{padding:2px;font-size:.9rem}
+  #landwrap{display:block;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
+  #land{height:100%;width:auto} #landwrap{filter:none}
+  #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton #land{margin:0 auto}
+  #sheet, #sheet.left, #sheet.right{position:relative;inset:auto;width:auto;padding:14px 16px 20px;box-shadow:0 -6px 18px rgba(0,0,0,.5);animation:none}
+  #sheet > h2{font-size:2rem} #sheet > .plate{aspect-ratio:5/2}
+  #plate{place-items:start center;padding:10px}
+  .pcard, .progress{grid-template-columns:minmax(0,1fr);gap:12px}
+  .print{padding:10px;transform:none} .print .mark{padding:22px 8px 8px} .print figcaption b{font-size:1.7rem}
+  .pside{max-height:none} .pside .sheet{overflow:visible}
+}
+@media (max-width:1080px) and (orientation:landscape) and (max-height:520px){ #plan{grid-template-columns:minmax(0,1fr) 200px;grid-template-rows:minmax(0,1fr)} #cart{order:0;display:flex;overflow-y:auto;max-height:100dvh} #plan.sheeton{grid-template-rows:minmax(0,1fr)} #sheet, #sheet.left, #sheet.right{position:absolute;top:0;bottom:0;left:0;width:min(60vw, 400px)} }
+body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
+
+/* a place with a paper is a ticket pinned to the sheet; a place without is only lettered */
+.lbl.tag{background:#f1e8cf;border:1px solid rgba(43,29,16,.75);border-radius:1px;box-shadow:1px 2px 0 rgba(43,29,16,.28), 2px 4px 7px rgba(0,0,0,.3);text-shadow:none;padding:.32em .6em .3em;cursor:pointer;transition:transform .12s, box-shadow .12s}
+.lbl.tag:hover, .lbl.tag:focus-visible{transform:translate(-50%, -50%) translateY(-2px);box-shadow:1px 3px 0 rgba(43,29,16,.28), 3px 8px 12px rgba(0,0,0,.38)} .lbl.tag.on{border-color:var(--madder);box-shadow:0 0 0 1px var(--madder), 2px 4px 7px rgba(0,0,0,.3)}
+.lbl.tag em{display:block;margin-bottom:.25em;font-family:var(--caps);font-style:normal;font-size:.68em;letter-spacing:.14em;text-transform:uppercase;color:#f6edd4;background:var(--madder);padding:.2em .4em .12em}
+.lbl.mute{pointer-events:none;font-size:max(11px, 1.2cqw);color:rgba(43,29,16,.78)}
+#land .wheel{position:absolute;left:59.44%;top:78.99%;width:1.6%;height:2.58%;pointer-events:none;transform:rotate(-6deg)} #land .wheel img{display:block;width:100%;height:100%;animation:millwheel 9s linear infinite} #land .wheel.calm img{animation:none}
+@keyframes millwheel{to{transform:rotate(360deg)}}
+/* what is said, in a balloon over the cut */
+.cutwrap{position:relative} .balloon{position:absolute;left:2%;top:2%;width:min(47%, 19rem);aspect-ratio:1271/702;background:url(art/ui/balloon.png) center/100% 100% no-repeat;display:grid;place-items:center;padding:6% 9% 15% 11%;quotes:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
+.balloon span{font-family:var(--display);font-style:italic;font-size:clamp(.62rem, 6.6cqw, 1.05rem);line-height:1.15;text-align:center;color:#2b1d10;text-wrap:balance}
+/* The last plate, held up over the book when the life ends. It borrows the card, print and side sheet of the other plates (plan.css). */
+#lastplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.86);overflow:auto;animation:heldup .25s ease-out}
+#lastplate[hidden]{display:none}
+.lastlink{margin:0 0 4px;text-align:center}
+@media (max-width:1080px){ #lastplate{place-items:start center;padding:10px} }
 </style>
 <div class="desk">
   <div class="book">
@@ -382,6 +514,12 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
     <nav id="tabs" aria-label="Sections of the book"></nav>
   </div>
 </div>
+<div id="plan" hidden>
+  <div id="landwrap"><div id="land"></div></div>
+  <aside id="cart" aria-label="The quarter"></aside>
+  <section id="sheet" aria-live="polite" hidden></section>
+</div>
+<div id="plate" hidden></div>
 <script>
 /* Hatherley Combe: the almanack. Prices, weather, people, news. */
 const SEASONS = ['Spring', 'Summer', 'Autumn', 'Winter'];
@@ -795,7 +933,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
    They run alongside the seasons and do not use up the season's undertaking. */
 const MAX_WORKS = 2;
 const PROJECTS = {
-  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
+  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797,
     blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
@@ -1506,11 +1644,11 @@ function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.d
   const o = pick(bag); S.did[o.id] = S.t; LAST_CUT = o.id; return o.x(); }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? 2 : 4}); return outcome('ride'); }},
-  { id:'dine', t:'Dine the county', note:'£70', hint:'Standing', go:() => { duty('county'); add({money:-70, standing:4}); return outcome('dine'); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-2, 0, 2, 3]); add({standing: T('silver') ? 5 : 3, goodwill:g}); return outcome('sessions'); }},
-  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:5}); return outcome('home'); }},
-  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:6, family:4}); reg('henrietta',1); return outcome('town'); }},
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([0, 1]) : 1}); return outcome('ride'); }},
+  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:1}); return outcome('dine'); }},
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 2 : 1, goodwill:g}); return outcome('sessions'); }},
+  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:2}); return outcome('home'); }},
+  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:2, family:2}); reg('henrietta',1); return outcome('town'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -1523,35 +1661,43 @@ The pine-apples die within the week. Mrs Bunce puts a black ribbon in her cap.`,
 The rooks come over to the Hall roof. They are there each morning when you go out.`]); }}
 ];
 
-function undertakingOptions(){
-  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+/* Three undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
+const RIDES = 3;
+function ridesLeft(){ return !S || S.phase === 'end' ? 0 : Math.max(0, RIDES - (S.rides || 0)); }
+function undertakingOptions(){ const rode = S.rode || [];
+  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && !rode.includes(u.id) && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+  o.push({id:'rest', t:(S.rides || 0) ? 'Let the rest of the season go' : 'Let the season go', run:() => ''});
   return o;
 }
-function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); LAST_CUT = null; const text = u.run();
+function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
+  if (u.id === 'rest') { S.rides = RIDES; S.phase = 'undone'; return next(); }
+  const b = snapshot(); LAST_CUT = null; const text = u.run();
+  S.rides = (S.rides || 0) + 1; S.rode = (S.rode || []).concat(u.id);
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
   S.outcome = {title:u.t, text, d:deltas(b), cut:LAST_CUT}; S.phase = 'undone'; save(); render(); }
 
 function next(){
   if (S.phase === 'ledger') { if (S.dead) return finish(); S.phase = S.pending ? 'event' : 'undertake'; }
   else if (S.phase === 'outcome') { if (S.dead) return finish(); S.phase = 'undertake'; }
-  else if (S.phase === 'undone') { S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
+  else if (S.phase === 'undone' && ridesLeft() > 0 && !S.dead) S.phase = 'undertake';
+  else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
   save(); render(); window.scrollTo({top:0, behavior:'smooth'});
 }
-function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
+function finish(){ S.phase = 'end'; if (typeof strikeEnding === 'function') strikeEnding(); save(); render(); window.scrollTo({top:0}); }
 
 function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
 function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
-  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
+  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = []; const end = ending();
   if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
-    return {title:'Shot at Dawn', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
-    P.push(`${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`);
+    P.push(end.news);
     P.push(`The Earl of Cullerne is expected to bid.`);
-    return {title:'Sold Up', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
   if (T('captain')) P.push(F('crewGone') ? `He was a sea officer. He still goes down a staircase backwards. His old Dryads are afloat again. He follows their ships in the Navy List.` : `Dinner at the Hall is announced by a boatswain’s pipe. A guest who comes late is entered in the log.`);
@@ -1603,15 +1749,9 @@ function reckoning(){
 
   let score = Math.round(S.standing * 0.25 + S.goodwill * 0.4 + S.family * 0.35 + clamp(net / 400, -12, 12));
   score = clamp(score, 0, 100);
-  let title = 'A Tolerable Squire';
-  if (S.goodwill >= 68 && S.family >= 55) title = 'The Good Squire of Hatherley';
-  else if (net > 8000 && S.goodwill < 36) title = 'The Rack-Renter';
-  else if (S.standing >= 72 && S.goodwill < 50) title = 'A Coming Man';
-  else if (S.goodwill < 30) title = 'The Man in the Song';
-  else if (S.family < 30) title = 'Master of an Empty House';
-  else if (S.goodwill >= 60) title = 'A Fair Man';
+  const title = end.title;
   P.push(`He is ${S.year - 1795 + 46}, and in tolerable health. He has been heard to say that the next twenty years cannot be as troublesome as the last.`);
-  return {title, P, score};
+  return {title, P, score, end};
 }
 
 /* ---------- saving ---------- */
@@ -7965,7 +8105,7 @@ function estateSync(){
     if (F('nephewFarm')) { S.rentAdj /= 0.96; lb.rent = five(lb.rent * 0.96); lb.tenant = F('crabbeGone') ? 'Mr Pyke' : 'young Mr Crabbe'; lb.she = false; lb.K = 0.2 * lb.rent; lb.cond = Math.max(0, lb.cond - 1); }
     else { lb.tenant = 'Mrs Thorne'; lb.she = true; } }
   if (kb && S.projectsDone.drain === 'done' && !kb.drained) { kb.drained = true; kb.cond = Math.max(kb.cond, 2); }
-  if (kb && F('edmund') === 'farmer' && kb.tenant !== 'Edmund') { kb.tenant = 'Edmund'; kb.she = false; kb.arrears = 0; delete kb.void; kb.since = S.year;
+  if (kb && F('edmund') === 'farmer' && kb.tenant !== 'Edmund' && !kb.edmundOut) { kb.tenant = 'Edmund'; kb.she = false; kb.arrears = 0; delete kb.void; kb.since = S.year;
     kb.rent = five(0.88 * lettingValue(kb, S.year)); kb.lease = {type:'term', ends:S.year + 14, years:14}; kb.K = kb.rent; }
   bubbleClock();
   if (!S.offered && S.t >= 6) { S.offered = true; later('farmOffered', 0); }
@@ -8028,7 +8168,27 @@ const LAND = {longbarrow:'Down and sheepwalk', kennet:'Wet clay, with the mill',
 function farmsList(){ return rentRoll().map(f => { const bits = [f.tenure === 'In hand' ? 'In hand, no tenant' : f.tenure, f.order];
     if (f.abated) bits.push('A fifth abated'); if (f.arrears) bits.push('In arrear ' + fmt(f.arrears)); if (f.waiting) bits.push('Terms to be settled this quarter');
     const s = sellState(f.id);
-    return Object.assign(f, s, {land:(f.id === 'church' && F('enclosed') ? 'Inclosed arable' : LAND[f.id]), tenant:f.tenant || 'No tenant', held:bits.join('. ')}); }); }
+    return Object.assign(f, s, {evict:evictCost(f.id), land:(f.id === 'church' && F('enclosed') ? 'Inclosed arable' : LAND[f.id]), tenant:f.tenant || 'No tenant', held:bits.join('. ')}); }); }
+/* Turning a tenant out. It may be done to any let farm at any time, and it is dear: the parish takes it hard and remembers it, the county thinks the less of a landlord who does it,
+   a lease must be bought out at half a year's rent, arrears are lost, and the farm lies in hand a year before it lets again in worse order.
+   evictCost(id) is what the page prints on the button. evictTenant(id, quiet) does it and returns what happened, or false. With quiet set it keeps no journal and draws nothing, for use from an event. */
+const TENANT_IS = f => /Thorne/.test(f.tenant) ? 'thorne' : f.tenant === 'Edmund' ? 'edmund' : /Crabbe/.test(f.tenant) ? 'crabbe' : '';
+function evictCost(id){ const f = farm(id), open = S.phase !== 'end' && !S.dead; if (!f) return {can:false, fx:[]};
+  const can = open && !f.void && !!f.tenant && !S.letQueue.some(x => x.id === id), buy = f.lease.type === 'will' ? 0 : five(rentDue(f) / 2), who = TENANT_IS(f);
+  const fx = [MINUS + (f.she ? '15' : '12') + ' Goodwill', MINUS + '4 Standing', MINUS + ' The parish remembers it', MINUS + ' In hand a year, then let in worse order'];
+  if (buy) fx.push(MINUS + fmt(buy) + ' to buy out the lease'); if (f.arrears >= 1) fx.push(MINUS + fmt(f.arrears) + ' of arrears lost');
+  if (who === 'thorne') fx.push(MINUS + ' Abigail Thorne'); if (who === 'edmund') fx.push(MINUS + ' Edmund', MINUS + ' Henrietta', MINUS + '8 Household'); if (who === 'crabbe') fx.push(MINUS + ' Mr Crabbe');
+  return {can, fx, buy, why:can ? '' : !open ? 'The books are closed.' : f.void || !f.tenant ? 'There is no tenant to turn out.' : 'Terms are being settled this quarter.'}; }
+function evictTenant(id, quiet){ const c = evictCost(id); if (!c.can) return false; const f = farm(id), p = pro(f), who = TENANT_IS(f), was = f.tenant, st = steward();
+  S.money -= c.buy; add({goodwill: f.she ? -15 : -12, standing:-4}); S.evicted = (S.evicted || 0) + 1;
+  if (who === 'thorne') reg('thorne', -4, 'Turned out of Long Barrow'); if (who === 'crabbe' && !F('crabbeGone')) reg('crabbe', -3, 'His nephew turned out of Long Barrow');
+  if (who === 'edmund') { reg('edmund', -4, 'Turned out of Kennet Bottom by his father'); reg('henrietta', -2, 'You turned Edmund out of his farm'); add({family:-8}); f.edmundOut = true; }
+  f.void = 2; f.arrears = 0; f.lease = {type:'will'}; f.level = 'fair'; delete f.rebate; S.payQueue = S.payQueue.filter(x => x !== id);
+  const said = `${st} serves the notice at ${f.name} on Tuesday. ${cap1(was)} reads it in the yard and puts it in ${p.his} pocket.
+
+The sale of stock is on the Friday week. By the month’s end the house is shut and the key hangs in the estate office. The farm is in hand.`;
+  if (!quiet) { S.journal.unshift({when:stamp(), title:'The Rent Roll', did:'Turned out ' + was + ' of ' + f.name}); save(); render(); }
+  return said; }
 const rentalNow = () => rentRoll().reduce((a, f) => a + f.rent, 0);
 /* The old three-way rent policy still answers: it sets every farm held from year to year. */
 function setRentAll(v){ const lvl = v < 1 ? 'easy' : v > 1 ? 'rack' : 'fair'; for (const f of S.farms) if (!f.void && f.lease.type === 'will') f.level = lvl; }
@@ -8403,6 +8563,28 @@ ventureTick = function(line){ ventureTickOne(line); if (!S.vent) return; const y
     if (y >= 1814 && live('privateer')) { stopVenture('privateer', 'Paid off at the peace'); S.money += 150; S.notes.push('The Hetty is paid off and sold out of the service. Your sixteenth of the hull comes to £150.'); } }
 };
 
+/* Three things to be done beyond the park pale: a gate on the London road, a race meeting and a telegraph station on the Down. Each moves a mark while it stands (see marks()). */
+const telegraphWanted = y => y >= 1796 && y <= 1813 && y !== 1802;
+Object.assign(VENTURES, {
+  turnpike:{ fx:["+£35 a year in tolls", "+2 Standing", "−2 Goodwill", "+£400 if sold"], risk:0, odds:{"well": 0.9, "dull": 0.1, "ill": 0}, effects:`About £35 a year in tolls. Standing rises a little. Goodwill falls a little while the gate stands. The share sells for £400.`, name:'A turnpike gate on the London road', where:'The London road', cost:500,
+    well:'About £35 a year out of the tolls, and a trustee’s seat at the George.', ill:'Every cart from Hatherley to Wyvern market pays at the gate.', state:v => 'Taking toll since ' + v.year,
+    endLabel:'Sell the share', end:() => { S.money += 400; return `Your share in the Wyvern Turnpike Trust is sold to Mr Tidmarsh for £400. The gate-keeper is told on Monday.`; }},
+  racecourse:{ fx:["+3 Standing", "+1 Goodwill", "−£60 a year for the Plate"], risk:0, odds:{"well": 0.8, "dull": 0.2, "ill": 0}, effects:`Two days’ racing on the Down every August. Standing rises, and goodwill a little, while the meeting is kept up. The Hatherley Plate and the ordinary cost £60 a year.`, name:'A race meeting on the Down', where:'The Down', cost:300,
+    well:'A two-mile course on the old turf. The county comes for two days in August.', ill:'A Plate of fifty pounds must be found every year.', state:v => 'Run every August since ' + v.year,
+    endLabel:'Give up the meeting', end:() => `The meeting is given up. The posts and rails are sold to Mr Hartopp for hurdles. The stand goes for firewood.` },
+  telegraph:{ fx:["+£25 a year while the war lasts", "+1 Standing"], risk:0, odds:{"well": 0.9, "dull": 0.1, "ill": 0}, effects:`The Admiralty pays £25 a year for an acre on the Down while the war lasts. Standing rises a little.`, name:'An Admiralty telegraph on the Down', where:'The Down', cost:15, if:() => telegraphWanted(S.year),
+    well:'£25 a year from the Navy Board for one acre of turf.', ill:'A lieutenant and two seamen live in a hut on your hill. They have a telescope.', state:v => 'Six shutters on the hill since ' + v.year }
+});
+const ventureTickTwo = ventureTick;
+ventureTick = function(line){ ventureTickTwo(line); if (!S.vent) return; const y = S.year, q = S.season, earn = (label, a) => { line(label, a); if (a > 0) S.yearIncome += Math.round(a); };
+  if (live('turnpike') && q === 1 && y > vent('turnpike').year) earn('Tolls at the London road gate', 35);
+  if (live('racecourse') && q === 2 && y > vent('racecourse').year) line('The Hatherley Plate, and the ordinary', -60);
+  if (live('telegraph') && q === 3 && y > vent('telegraph').year) {
+    if (y >= 1814) { stopVenture('telegraph', 'Shut at the peace'); S.notes.push('The Admiralty has shut the telegraph. The lieutenant has gone on half-pay. The frame and the hut on the Down are left to you for the carting.'); }
+    else if (y === 1802) S.notes.push('The shutters on the Down are lashed down for the peace. The Navy Board pays no rent this year.');
+    else earn('The Navy Board, for the telegraph ground', 25); }
+};
+
 /* ---------- society: what money buys in the county and in town, and what can be sold out of the house ---------- */
 /* mark: how far the thing raises (or, sold, lowers) the level the county's opinion settles at. keep: its cost a year in 1795 money. */
 const SOCIETY = {
@@ -8698,12 +8880,14 @@ for (const [id, of] of [['plough', 'longbarrow'], ['peat', 'kennet'], ['brickkil
 function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]}; const put = (k, n, t) => { if (n) why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); return n; };
   let st = EST[i].standing; why.standing.push(EST[i].standing + ' ' + cap1(EST[i].name));
   st += put('standing', societyMark(), 'Society'); st += put('standing', -6 * (S.settledSold || 0), 'Settled land sold');
+  st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down');
   st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 6) ? -4 : 0, 'Not seen in the county this year and more'); st += put('standing', S.money < 0 ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
   let g = 44; why.goodwill.push('44 The parish as you found it');
   const rack = S.farms.filter(f => f.level === 'rack').length, easy = S.farms.filter(f => f.level === 'easy').length;
   g += put('goodwill', -4 * Math.min(4, rack), 'Rack rents'); g += put('goodwill', 2 * Math.min(4, easy), 'Easy rents'); g += put('goodwill', idle('ride', 6) ? -5 : 0, 'The tenants have not seen you this year and more');
   g += put('goodwill', F('cottages') ? 4 : 0, 'The cottages'); g += put('goodwill', F('school') ? 3 : 0, 'The school'); g += put('goodwill', F('wages') ? 5 : 0, 'Wages by the loaf'); g += put('goodwill', F('soup') ? 2 : 0, 'The soup kitchen');
   g += put('goodwill', F('enclosed') ? (F('allotments') ? -3 : -9) : 0, 'The common inclosed'); g += put('goodwill', vent('thresher') && !vent('thresher').ended ? -5 : 0, 'The threshing machine');
+  g += put('goodwill', live('turnpike') ? -2 : 0, 'The gate on the London road'); g += put('goodwill', live('racecourse') ? 1 : 0, 'Hatherley races'); g += put('goodwill', -4 * Math.min(2, S.evicted || 0), 'Tenants turned out');
   g += put('goodwill', held('harriers') ? -2 : 0, 'Harriers over the wheat'); g += put('goodwill', i === 3 ? -4 : i === 0 ? 2 : 0, i === 3 ? 'A splendid house in a hungry parish' : 'A plain table');
   g += put('goodwill', PRICES[S.year] >= 95 && !F('soup') && !F('wages') && house('labour') !== 'high' ? -8 : 0, 'Bread at famine price');
   let fm = 45; why.family.push('45 The house as you found it'); fm += put('family', idle('home', 4) ? -6 : 0, 'You have not kept at home this twelvemonth');
@@ -8795,14 +8979,477 @@ function householdList(){ const open = S.phase !== 'end' && !S.dead, i = estIdx(
   const lots = societyList().filter(r => SOCIETY[r.id].house);
   return {establishment, wages, lots, cost:estCost(i, y) + houseCost('servants') + houseCost('stables') + houseCost('schoolroom')}; }
 for (const id of ['plate', 'cellar', 'hunters', 'library']) SOCIETY[id].house = true;
-const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/badajoz.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath-1.jpg','events/bath-2.jpg','events/bath-3.jpg','events/bath-go.jpg','events/bath-letter.jpg','events/bath-selina.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bubbleCall.jpg','events/bubbleRise.jpg','events/bubbleTip.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/clergy-arms.jpg','events/clergy-bishop.jpg','events/clergy-brothers.jpg','events/clergy-burial.jpg','events/clergy-hunting.jpg','events/clergy-informer.jpg','events/clergy-school.jpg','events/clergy-southcott.jpg','events/clergy-tithe.jpg','events/clergy-tooke.jpg','events/clergy-trusler.jpg','events/cobbett.jpg','events/cold-bench.jpg','events/cold-card.jpg','events/cold-cullerne.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/county-balloon.jpg','events/county-band.jpg','events/county-barclay.jpg','events/county-bounds.jpg','events/county-coat.jpg','events/county-crapper.jpg','events/county-elephant.jpg','events/county-fight.jpg','events/county-flood.jpg','events/county-forbury.jpg','events/county-goldcup.jpg','events/county-hen.jpg','events/county-hocktide.jpg','events/county-hot.jpg','events/county-lottery.jpg','events/county-quack.jpg','events/county-scouring.jpg','events/county-wife.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmund-aboukir.jpg','events/edmund-agent.jpg','events/edmund-badajoz.jpg','events/edmund-beacon.jpg','events/edmund-berth.jpg','events/edmund-burials.jpg','events/edmund-busaco.jpg','events/edmund-cantonments.jpg','events/edmund-chancel.jpg','events/edmund-chelmsford.jpg','events/edmund-christening.jpg','events/edmund-cold-letter.jpg','events/edmund-cold-room.jpg','events/edmund-colour.jpg','events/edmund-copenhagen.jpg','events/edmund-corunna.jpg','events/edmund-curacy.jpg','events/edmund-disembodied.jpg','events/edmund-dover.jpg','events/edmund-drains.jpg','events/edmund-ferrol.jpg','events/edmund-flushing.jpg','events/edmund-gazette.jpg','events/edmund-guardroom.jpg','events/edmund-gun.jpg','events/edmund-hounds.jpg','events/edmund-huddersfield.jpg','events/edmund-hunter.jpg','events/edmund-hythe.jpg','events/edmund-ipswich.jpg','events/edmund-java.jpg','events/edmund-kit.jpg','events/edmund-machine.jpg','events/edmund-mess.jpg','events/edmund-middlewatch.jpg','events/edmund-miss-army.jpg','events/edmund-miss-church.jpg','events/edmund-miss-home.jpg','events/edmund-miss-militia.jpg','events/edmund-miss-navy.jpg','events/edmund-normancross.jpg','events/edmund-ordained.jpg','events/edmund-oriel.jpg','events/edmund-outfit.jpg','events/edmund-paidoff.jpg','events/edmund-plate.jpg','events/edmund-pony.jpg','events/edmund-pressed.jpg','events/edmund-prize.jpg','events/edmund-pyrenees.jpg','events/edmund-ram.jpg','events/edmund-reduced.jpg','events/edmund-rent.jpg','events/edmund-rentbook.jpg','events/edmund-rodrigo.jpg','events/edmund-sandyhook.jpg','events/edmund-sermon.jpg','events/edmund-settle-letter.jpg','events/edmund-settle-room.jpg','events/edmund-settle-stiff.jpg','events/edmund-shannon.jpg','events/edmund-shorncliffe.jpg','events/edmund-skaw.jpg','events/edmund-swedes.jpg','events/edmund-tetuan.jpg','events/edmund-thirty.jpg','events/edmund-tithe.jpg','events/edmund-tithepig.jpg','events/edmund-toulon.jpg','events/edmund-toulouse.jpg','events/edmund-ushant.jpg','events/edmund-vestry.jpg','events/edmund-vimeiro.jpg','events/edmund-vitoria.jpg','events/edmund-volunteering.jpg','events/edmund-waiting.jpg','events/edmund-zealand.jpg','events/edmundDuel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election-1802-member.jpg','events/election-1802.jpg','events/election-1806-member.jpg','events/election-1806.jpg','events/election-1807-member.jpg','events/election-1807.jpg','events/election-1812-member.jpg','events/election-1812.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/farmOffered.jpg','events/fate-badajoz-alive.jpg','events/fate-badajoz-dead.jpg','events/fate-duel-alive.jpg','events/fate-duel-dead.jpg','events/fate-duel-kept.jpg','events/fate-fever-alive.jpg','events/fate-fever-dead.jpg','events/fate-fever-kept.jpg','events/fate-walcheren-alive.jpg','events/fate-walcheren-dead.jpg','events/fate-walcheren-kept.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/georgeMeeting.jpg','events/hammer.jpg','events/hartoppShearing.jpg','events/heir.jpg','events/henPorch.jpg','events/henRichmond.jpg','events/henSongs.jpg','events/henrietta-bunce.jpg','events/henrietta-carpet.jpg','events/henrietta-chariot.jpg','events/henrietta-gowns.jpg','events/henrietta-housemaid.jpg','events/henrietta-margravine.jpg','events/henrietta-mother.jpg','events/henrietta-mourning.jpg','events/henrietta-pianoforte.jpg','events/henrietta-portrait.jpg','events/henrietta-preacher.jpg','events/henrietta-tea.jpg','events/henrietta.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jamaica.jpg','events/jubilee.jpg','events/kitty-assembly.jpg','events/kitty-clifton-black.jpg','events/kitty-clifton.jpg','events/kitty-danes.jpg','events/kitty-latin.jpg','events/kitty-library.jpg','events/kitty-manumit.jpg','events/kitty-northampton.jpg','events/kitty-oakes-mangle.jpg','events/kitty-oakes-pew.jpg','events/kitty-reading-parole.jpg','events/kitty-stmalo.jpg','events/kitty-telescope.jpg','events/kitty-vane-bailiff.jpg','events/kitty-vane-child.jpg','events/kitty-vane-march.jpg','events/kitty-walks.jpg','events/kitty-widow.jpg','events/kitty-wyvern.jpg','events/kittyBotany.jpg','events/kittyDoor.jpg','events/ludd.jpg','events/manTraps.jpg','events/member-bellamy.jpg','events/member-bellingham.jpg','events/member-bull.jpg','events/member-burdett.jpg','events/member-committee.jpg','events/member-curwen.jpg','events/member-flogging.jpg','events/member-franks.jpg','events/member-gas.jpg','events/member-maiden.jpg','events/member-melville.jpg','events/member-petition.jpg','events/member-place.jpg','events/member-register.jpg','events/member-schools.jpg','events/member-whip.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/parish-audit.jpg','events/parish-harvest.jpg','events/parish-letter.jpg','events/parish-pryor.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/royalBond.jpg','events/royalPrincess.jpg','events/royalRegency.jpg','events/royalStag.jpg','events/royalTerrace.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/walcheren.jpg','events/war-abbe.jpg','events/war-contribution.jpg','events/war-corunna.jpg','events/war-deserter.jpg','events/war-guineas.jpg','events/war-prisoner.jpg','events/war-remount.jpg','events/war-smart.jpg','events/war-wives.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/farms.jpg','icons/household.jpg','icons/persons.jpg','icons/society.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-guilford.jpg','undertakings/dine-haunch.jpg','undertakings/dine-ice.jpg','undertakings/dine-lamb.jpg','undertakings/dine-lobscouse.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-onefootman.jpg','undertakings/dine-partridge.jpg','undertakings/dine-pitt.jpg','undertakings/dine-regrets.jpg','undertakings/dine-snow.jpg','undertakings/dine-swans.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/dine-whist.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-barleybread.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-coverley.jpg','undertakings/home-drip.jpg','undertakings/home-fish.jpg','undertakings/home-flannel.jpg','undertakings/home-flea.jpg','undertakings/home-indians.jpg','undertakings/home-linen.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/home-sextant.jpg','undertakings/home-stocking.jpg','undertakings/home-swing.jpg','undertakings/ride-arrears.jpg','undertakings/ride-barley.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-cottages.jpg','undertakings/ride-coxswain.jpg','undertakings/ride-dear.jpg','undertakings/ride-edmund.jpg','undertakings/ride-ewes.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-gout.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-house.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-pond.jpg','undertakings/ride-quickset.jpg','undertakings/ride-rooks.jpg','undertakings/ride-school.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-drum.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-hassock.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rate.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-admiralty.jpg','undertakings/town-brooks.jpg','undertakings/town-burdett.jpg','undertakings/town-candles.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-levee.jpg','undertakings/town-partners.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
+/* How the life ends. One ending is chosen from where the squire stands when the book is shut: by ruin, by a pistol ball, or at the
+   close of 1815. Each has its own plate at art/endings/<id>, struck as the last of The Progress.
+   The table is read from the top and the first ending whose test holds is taken, so the order is the order of precedence.
+   The book reads ending(); the page shows endPlateHTML() above the cutting from the Mercury. */
+const endNet = () => S.money - S.mortgage + (typeof ownLandValue === 'function' ? ownLandValue() : 0);
+const endHas = id => typeof held === 'function' && typeof SOCIETY !== 'undefined' && SOCIETY[id] && !SOCIETY[id].heir && held(id);
+const endTitled = () => endHas('baronet') || endHas('knight');
+const endFront = () => !!(F('newFront') || (S.projectsDone && S.projectsDone.front === 'done'));
+const endWorks = () => Object.keys(S.projectsDone || {}).filter(id => S.projectsDone[id] === 'done').length;
+const endGrand = () => endTitled() || S.standing >= 68 || (S.est === 'splendid');
+const endFirst = () => S.name.split(' ')[0];
+const endSir = () => 'Sir ' + endFirst();
+const endVicar = () => F('edmundVicar') ? 'Edmund' : F('oakesVicar') ? 'Mr Oakes' : F('gallDead') ? 'The vicar' : 'Dr Gall';
+const endCount = n => ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][n] || String(n);
+const endAway = () => !!F('henriettaAway');
+
+const ENDINGS = [
+  /* ---------- by a pistol ball ---------- */
+  { id:'duel', title:'Shot at Dawn', did:'Met Captain Vane on Hatherley Down.', if:() => S.dead === 'duel',
+    text:() => `The surgeon, having set down his green baize bag in the wet grass, does not open it.
+
+The lieutenant with the clean gloves picks up both pistols, and having wiped them, lays them in their case; but Captain Vane is already in the chaise.
+
+A shepherd coming over the Down with forty ewes takes off his hat; and the ewes go round you upon both sides.` },
+
+  /* ---------- sold up: four ways out of the Hall ---------- */
+  { id:'tenant', title:'A Tenant on His Own Land', did:'Sold up, and stayed in the parish.', if:() => S.dead === 'ruin' && S.goodwill >= 58,
+    news:() => `${S.name}, Esquire, late of that place, has taken the bailiff’s house at Church Farm, at a rent of twenty pounds.`,
+    text:() => `Upon the morning of the sale there are three wagons at the door, that nobody sent for; and into these the tenants load what Mr Skinner has left, and carry it to the bailiff’s house at Church Farm.
+
+The rent of the house is twenty pounds a year, and the purchaser’s agent, taking it at Lady Day, writes you a receipt.
+
+On Sunday you walk to church, where the Hall pew is found to have a new lock upon the door; and the blacksmith moves along his bench.
+
+“There’s room here, sir.”` },
+  { id:'bath', title:'The Second Floor in Gay Street', did:'Sold up, and went to Bath on Henrietta’s money.', if:() => S.dead === 'ruin' && S.family >= 52 && !endAway(),
+    news:() => `${S.name}, Esquire, late of that place, has removed with his lady to Bath.`,
+    text:() => `Mrs Tamworth has the first floor in Gay Street, and you the second, to which there are forty-one stairs; and she has counted them for you.
+
+Henrietta’s settlement brings two hundred a year, and being beyond the reach of the creditors, has been mentioned by her as such to the landlady, and to the butcher.
+
+You drink the waters at eight in the morning, when the Pump Room is empty; and in the evening Henrietta does the accounts upon the tea table, out of which she allows you sixpence a week for the newspaper room.
+
+“We shall do,” she says.` },
+  { id:'bench', title:'A Room in the King’s Bench', did:'Sold up, and taken for debt.', if:() => S.dead === 'ruin' && S.standing < 42 && S.goodwill < 45,
+    news:() => `${S.name}, Esquire, late of that place, is lodged in the King’s Bench Prison, at the suit of nine tradesmen of Wyvern and a coachmaker of Long Acre.`,
+    text:() => `The turnkey at the King’s Bench wants half a crown for the room, and a shilling for the key of it.
+
+There are two beds, the other being that of a hop factor from the Borough, who has been here since the Peace of Amiens; and who shows you the racket court, the pump, and the window where the beer is passed in.
+
+“You’ll want a chair,” he says. “I can let you have a chair at fourpence a week.”
+
+Mr Spurling writes on Tuesday that the sale is made up, and that the creditors are to have fourteen shillings in the pound.` },
+  { id:'soldup', title:'Sold Up', did:'Sold up, and crossed to the Isle of Man.', if:() => S.dead === 'ruin',
+    news:() => `${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`,
+    text:() => `The Liverpool packet lands you at Douglas with nine trunks, one of them holding the rent books.
+
+There are forty English gentlemen in the town, who meet upon the pier at ten; and each of them having asked what you owed, and been told, two of them bow lower the next morning.
+
+The lodging is fourteen shillings a week with fish, and has a window from which England may be seen upon a clear day. There have been three clear days since Michaelmas.` },
+
+  /* ---------- the close of 1815 ---------- */
+  { id:'hollow', title:'Splendour on Credit', did:'Kept a great figure on borrowed money.', if:() => endGrand() && endNet() < -2500,
+    text:() => `Forty sit down at the Hall upon Twelfth Night to two courses and a dessert, the pineapple in the midst of it being hired from a fruiterer in Reading at half a guinea, and to go back on Thursday.
+
+Lord Cullerne has the chair upon your right, and the footmen are in new liveries; but the tailor who made them is in the servants’ hall with his bill, and the wine merchant beside him, and Mrs Bunce has given them both cold beef.
+
+Mr Tidmarsh, being among the company, counts the candles.` },
+  { id:'baronet', title:'The Bloody Hand over the Door', did:'A baronet, behind six columns.', if:() => endHas('baronet') && endFront(),
+    text:() => `A mason is upon a ladder over the great door with a mallet, having the red hand of Ulster to cut into the shield upon the pediment; and finding he has chalked it in backwards, he rubs it out with his sleeve.
+
+The six columns are of Bath stone, the colour of a new loaf. The rooks left the elms the week the scaffolding came, and have not been back.
+
+Mrs Bunce has the servants out upon the steps in a row.
+
+“Good morning, ${endSir()}.”
+
+“Good morning, ${endSir()}.”
+
+The boot boy, saying it wrong, is sent to the end of the row.` },
+  { id:'rackrent', title:'The Rack-Renter', did:'Grew rich, and was not thanked for it.', if:() => endNet() > 8000 && S.goodwill < 40,
+    text:() => `Rent day. ${steward()} has the table set across the door of the estate office, and the tenants come up to it one at a time.
+
+Every farm upon the roll pays to the day, and the sum is entered and ruled off before noon; and there being no audit dinner this year, each man has a glass of beer in the yard, and drinks it standing.
+
+In the afternoon you ride down the lane, where a woman at the pump turns her back, and her three children turn theirs.
+
+The purse stands at ${fmt(S.money)}.` },
+  { id:'good', title:'The Good Squire of Hatherley', did:'Held Hatherley one-and-twenty years, and was liked.', if:() => S.goodwill >= 68 && S.family >= 55,
+    text:() => `Snow having fallen in the night, the lane is by nine o’clock dug out from the village to the Hall door, though nobody was sent for.
+
+Eleven men stand at the back door with spades, to whom Mrs Bunce gives beer; but they will not take the shilling.
+
+The ringers have had the bells up since seven, and ring one-and-twenty rounds, being a round for every year you have had the place. The treble is cracked, and you paid for the rope.
+
+${endAway() ? 'You stand at the window and count them.' : 'Henrietta counts on her fingers and makes it twenty-two.'}` },
+  { id:'knight', title:'The Loyal Address', did:'Rose a Sir.', if:() => endTitled(),
+    text:() => `The Wyvern carrier brings a letter directed to ${endSir()} ${S.sur}, ${endHas('baronet') ? 'Baronet' : 'Knight'}, for which he asks ninepence, having always asked eightpence.
+
+The engraver has sent two hundred cards with Lady ${S.sur} upon them in the copperplate hand. ${endAway() ? 'They lie upon the hall table, Henrietta being in Gay Street.' : 'Henrietta leaves them at thirteen houses in one morning, at four of which there was nobody at home to her last year.'}
+
+In church ${endVicar() === 'The vicar' ? 'the vicar' : endVicar()} prays for the King, the Prince Regent, and all the nobility, and looks at the Hall pew when he comes to it.` },
+  { id:'member', title:'The Member for Wyvern', did:'Sat for the borough.', if:() => !!F('mp'),
+    text:() => `Fourteen people are in the hall before breakfast, each with a letter in his hand; and a Member being allowed to frank ten in a day, you write your name across ten corners, and the other four are told to come tomorrow.
+
+At noon a clerk rides over with a paper, setting out how the Member for Wyvern will vote upon the Property Tax. You had not been asked.
+
+The London coach leaves the George at six, and your place is taken inside, the borough having paid for it.` },
+  { id:'acres', title:'From the Down to the River', did:'Added farm to farm.', if:() => S.farms.length >= 6,
+    text:() => `The surveyor from Reading unrolls the new plan upon the dining table; and finding that it hangs over both ends, asks for two chairs.
+
+There are ${endCount(S.farms.length)} farms upon it, each in its own colour, where your uncle’s plan showed three; and that is still upon the office wall, under the almanack.
+
+You set out at eight to ride the boundary, and at four, when the light goes, are at the far hedge, with the Hall six miles off. The tenant’s wife gives you a bed, having had it aired since Tuesday.` },
+  { id:'empty', title:'Master of an Empty House', did:'Kept the house and lost the household.', if:() => S.family < 30 || endAway(),
+    text:() => `Dinner is laid for one at the end of the long table, the other eleven chairs standing against the wall in holland covers.
+
+${endAway() ? 'Henrietta is in Gay Street, and writes upon the first of the month; and the letter is about the linen.' : 'Henrietta dines upstairs upon a tray, and sends down to ask whether the fire in the blue room may be lit.'}
+
+The butler, having brought the port, stays by the door; and you ask him the news of the servants’ hall.
+
+“The kitchen cat has kittened, sir.”
+
+The clock in the hall strikes nine, and you count it.` },
+  { id:'song', title:'The Man in the Song', did:'Was sung about at the Bell.', if:() => S.goodwill < 30,
+    text:() => `You come through Hatherley at dusk upon the cob, and they are singing in the Bell, with the window open an inch.
+
+The tune you know, for it is “The Vicar of Bray”; but the words are new, and of the nine verses your name ends every one.
+
+When the cob’s shoes strike the bridge the singing stops, except that a boy upon the churchyard wall goes on alone for two lines, until somebody takes him down by the leg.
+
+At the lodge gate you find you are humming it.` },
+  { id:'cut', title:'Not at Home', did:'Was dropped by the county.', if:() => S.standing < 33,
+    text:() => `The chaise is out four mornings in the first week of the year, and you leave a card at nine houses; at each of which the footman looks at the card, and then at the horses, and his lady is not at home. At Cullerne Castle there is a face at the morning-room window.
+
+No card comes back; and the silver tray in the hall has one letter upon it, from a hatter at Reading.
+
+The Wyvern assembly is held upon the nineteenth, and you read of it in the Mercury upon the twenty-second.` },
+  { id:'debts', title:'Mr Tidmarsh’s Tin Box', did:'Kept the land, and owed for all of it.', if:() => endNet() < -1500,
+    text:() => `Mr Tidmarsh comes out from Wyvern upon the first Monday of the quarter, not sending his clerk; and having walked through the house with his hands behind him, he stops at the damp in the east passage.
+
+The interest is ${fmt(Math.round(S.mortgage / 20))} a year, and leaves upon quarter day before the butcher is paid.
+
+“A fine property,” says Mr Tidmarsh upon the steps; but he says it to the roof.
+
+You have kept the land. The deeds are at the Bank, in a tin box with your name upon the lid.` },
+  { id:'warm', title:'A Warm Man', did:'Left the estate richer than he found it.', if:() => endNet() > 9000,
+    text:() => `Three gentlemen call in one week, of whom each admires the dogs, each stays to dinner, and each, over the port, asks for the loan of five hundred pounds until harvest.
+
+At the Bank Mr Tidmarsh gives you the chair by the fire, and shuts the door himself, and asks your opinion of Exchequer bills.
+
+${steward()} casts the year, and finds that, clear of every charge, there is ${fmt(Math.round(endNet() / 100) * 100)} to the good; and having written the sum, and blotted it, he writes it again larger.` },
+  { id:'improver', title:'The Improver', did:'Drained, built and mended.', if:() => endWorks() >= 5,
+    text:() => `Mr Hartopp brings nine gentlemen of the Bath and West Society in two chaises, who walk the estate from ten until three, Mr Hartopp going before them backwards, and talking.
+
+One gentleman measures a turnip with a tape, and another puts a stone from the mended road in his pocket.
+
+At dinner they vote you the Society’s silver medal, that may be had of the secretary upon payment of the engraver.
+
+The old carter watches the chaises go down the drive.
+
+“They never asked what un cost,” he says.` },
+  { id:'dynasty', title:'Three Generations at Table', did:'Saw his grandchildren at the Hall.', if:() => !F('edmundDead') && (S.flags.edmund === 'farmer' || F('edmundMarried')) && S.family >= 55,
+    text:() => `Fourteen sit down upon Twelfth Night, of whom five are under ten years old.
+
+Edmund carves, where last year you carved; and nobody has remarked upon it.
+
+The smallest grandchild, being put in your uncle’s chair upon two volumes of the county history, bites the footman who brings the pudding.
+
+After dinner ${endAway() ? 'Kitty' : 'Henrietta'} has the family Bible down; and there being half a page left under your name, she rules a line across it for the next.` },
+  { id:'funds', title:'A Gentleman in the Funds', did:'Sold the farms and lived on the dividends.', if:() => S.farms.length <= 1,
+    text:() => `The dividends are paid at the Bank of England upon the fifth of January, and the trustees send a draft by Tuesday’s mail. ${steward()} has nothing else to enter this quarter, and enters it slowly.
+
+After breakfast you walk to the park pale, a matter of eleven minutes. The wheat upon the far side is a Reading brewer’s, whose man touches his hat, and goes on hedging.
+
+Three per cent. Consols are at sixty; and in the Mercury you look for the price of them before you look for the deaths.` },
+  { id:'button', title:'The Button-Maker’s Expectations', did:'Kept it all for a cousin in Birmingham.', if:() => S.flags.heir === 'cousin',
+    text:() => `Your cousin comes from Birmingham by the coach, outside, with a two-foot rule in his coat.
+
+Having measured the dining room, he counts the chimneys from the lawn, and writes the number upon his cuff, and asks Mrs Bunce what the coals come to.
+
+At dinner he asks after your health, and at breakfast he asks again.
+
+“You look uncommon well, cousin.”
+
+He takes the outside place home, it being four shillings cheaper.` },
+  { id:'tolerable', title:'A Tolerable Squire', did:'Held Hatherley one-and-twenty years.', if:() => true,
+    text:() => `Rain upon quarter day; but the rents are in by four, though two of them are a pound short.
+
+You dine at three upon a boiled fowl, and afterwards sleep in the chair with the Mercury over your face, the news in it being nine days old.
+
+${steward()} casts the one-and-twenty years upon a single sheet: received, so much; laid out, so much; and the difference would buy a good horse.
+
+At six the dogs are let in.` }
+];
+
+/* The ending as things stand: {id, title, did, text, news, plate}. */
+function ending(){ const e = ENDINGS.find(x => x.if()) || ENDINGS[ENDINGS.length - 1];
+  return {id:e.id, title:e.title, did:e.did, text:e.text(), news:e.news ? e.news() : '', plate:'endings/' + e.id}; }
+
+/* Struck once, when the book is shut for good, so that the ending is the last plate of The Progress. It is then held up over the book. */
+function strikeEnding(){ if (!S) return; if (!S.plates) S.plates = [];
+  if (!S.plates.some(p => p.key === 'end')) { const e = ending(), src = typeof artURL === 'function' && !artURL(e.plate) ? 'frontispiece' : e.plate;
+    S.plates.push({key:'end', title:e.title, src, did:e.did, pub:S.dead ? SEASONS[S.season] + ' ' + S.year : 'January 1816', say:''}); }
+  showLastPlate(); }
+
+/* The last plate is held up in its own frame, laid out as the other plates are: the print, and beside it what is seen that day. */
+function showLastPlate(){ if (typeof document === 'undefined' || !S || S.phase !== 'end') return;
+  let el = document.getElementById('lastplate'); if (!el) { el = document.createElement('div'); el.id = 'lastplate'; document.body.appendChild(el); }
+  const e = ending(), u = artURL(e.plate) || artURL('frontispiece'), n = (S.plates || []).length, when = S.dead ? stamp() : 'January 1816';
+  el.innerHTML = `<div class="pcard"><figure class="print"><div class="mark"><span class="pn">${n ? 'Plate ' + n + ', and the last' : 'The last plate'}</span><div class="cutwrap">${u ? `<img src="${u}" alt="${esc(e.title)}">` : ''}</div><figcaption><b>${esc(e.title)}</b><small>Publish’d as the Act directs, ${esc(when)}</small></figcaption></div></figure>
+    <div class="pside"><article class="sheet came"><p class="kicker">${esc(when)}</p><div class="prose lead">${paras(e.text)}</div></article>
+    <div class="answer"><div class="row"><button class="go" onclick="shutLastPlate()"><span>Read the Mercury</span></button></div></div></div></div>`;
+  el.hidden = false; document.body.classList.add('plateup'); el.scrollTop = 0; const b = el.querySelector('.go'); if (b) b.focus({preventScroll:true}); }
+function shutLastPlate(){ const el = document.getElementById('lastplate'); if (el) { el.hidden = true; el.innerHTML = ''; } document.body.classList.remove('plateup'); }
+
+/* On the last leaf of the book, the way back to the plate. */
+function endPlateHTML(){ return `<p class="lastlink"><button class="quiet" onclick="showLastPlate()">${esc(ending().title)}: the last plate</button></p>`; }
+/* Where each drawn piece sits on the plan: left, top, width, height, in hundredths of the sheet. The pieces are art/plan/f/<id>-<season>.webp.
+   The order here is the order they are laid down, so the Hall covers the park and the carriage stands before the Hall. */
+const PLAN_BOX = {
+  'common':[0.5, 16.5, 23.0, 25.0],
+  'drain':[60.333, 49.5, 27.042, 27.562],
+  'meadows':[63.792, 69.562, 31.917, 27.0],
+  'fourcourse':[51.542, 57.125, 20.708, 13.312],
+  'sheepwalk':[52.5, 8.375, 28.417, 10.562],
+  'plough':[40.0, 8.375, 27.625, 24.812],
+  'racecourse':[13.292, 11.0, 23.667, 9.812],
+  'chalk':[29.5, 11.312, 11.458, 14.625],
+  'oaks':[63.875, 14.688, 20.167, 14.625],
+  'peat':[89.625, 66.438, 7.458, 21.562],
+  'merino':[62.792, 38.375, 9.0, 9.875],
+  'road':[2.417, 46.312, 29.208, 5.812],
+  'cottages':[2.583, 43.312, 15.5, 6.562],
+  'school':[21.542, 41.875, 7.417, 8.312],
+  'pinery':[53.083, 40.875, 6.125, 5.0],
+  'thresher':[58.958, 46.25, 11.667, 11.125],
+  'barns':[25.625, 63.625, 14.333, 13.688],
+  'spa':[43.875, 60.875, 5.792, 8.875],
+  'mill':[47.792, 71.0, 10.333, 15.0],
+  'malthouse':[56.417, 70.812, 8.208, 12.5],
+  'brickkiln':[76.875, 62.75, 8.792, 10.75],
+  'butts':[10.417, 32.312, 10.708, 5.812],
+  'kennels':[27.0, 40.938, 10.417, 9.062],
+  'paddock':[50.625, 26.812, 12.625, 11.688],
+  'telegraph':[37.792, 3.75, 5.333, 7.0],
+  'turnpike':[88.708, 28.75, 8.958, 9.562],
+  'camp':[79.458, 39.875, 15.75, 14.438],
+  'icehouse':[37.833, 44.062, 8.208, 8.562],
+  'parterre':[42.208, 53.25, 10.292, 9.812],
+  'hall-old':[45.362, 43.262, 11.875, 10.677],
+  'hall-front':[45.367, 43.25, 11.871, 10.635],
+  'carriage':[44.083, 49.938, 7.083, 5.875],
+  'rooks':[37.346, 39.352, 11.111, 10.185],
+  'smoke':[47.531, 35.648, 9.63, 11.111]
+};
+const ART = new Set(['arms/baronet.webp','arms/esquire.webp','arms/knight.webp','endings/acres.jpg','endings/baronet.jpg','endings/bath.jpg','endings/bench.jpg','endings/button.jpg','endings/cut.jpg','endings/debts.jpg','endings/duel.jpg','endings/dynasty.jpg','endings/empty.jpg','endings/funds.jpg','endings/good.jpg','endings/hollow.jpg','endings/improver.jpg','endings/knight.jpg','endings/member.jpg','endings/rackrent.jpg','endings/soldup.jpg','endings/song.jpg','endings/tenant.jpg','endings/tolerable.jpg','endings/warm.jpg','events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/badajoz.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath-1.jpg','events/bath-2.jpg','events/bath-3.jpg','events/bath-go.jpg','events/bath-letter.jpg','events/bath-selina.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bubbleCall.jpg','events/bubbleRise.jpg','events/bubbleTip.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/clergy-arms.jpg','events/clergy-bishop.jpg','events/clergy-brothers.jpg','events/clergy-burial.jpg','events/clergy-hunting.jpg','events/clergy-informer.jpg','events/clergy-school.jpg','events/clergy-southcott.jpg','events/clergy-tithe.jpg','events/clergy-tooke.jpg','events/clergy-trusler.jpg','events/cobbett.jpg','events/cold-bench.jpg','events/cold-card.jpg','events/cold-cullerne.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/county-balloon.jpg','events/county-band.jpg','events/county-barclay.jpg','events/county-bounds.jpg','events/county-coat.jpg','events/county-crapper.jpg','events/county-elephant.jpg','events/county-fight.jpg','events/county-flood.jpg','events/county-forbury.jpg','events/county-goldcup.jpg','events/county-hen.jpg','events/county-hocktide.jpg','events/county-hot.jpg','events/county-lottery.jpg','events/county-quack.jpg','events/county-scouring.jpg','events/county-wife.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmund-aboukir.jpg','events/edmund-agent.jpg','events/edmund-badajoz.jpg','events/edmund-beacon.jpg','events/edmund-berth.jpg','events/edmund-burials.jpg','events/edmund-busaco.jpg','events/edmund-cantonments.jpg','events/edmund-chancel.jpg','events/edmund-chelmsford.jpg','events/edmund-christening.jpg','events/edmund-cold-letter.jpg','events/edmund-cold-room.jpg','events/edmund-colour.jpg','events/edmund-copenhagen.jpg','events/edmund-corunna.jpg','events/edmund-curacy.jpg','events/edmund-disembodied.jpg','events/edmund-dover.jpg','events/edmund-drains.jpg','events/edmund-ferrol.jpg','events/edmund-flushing.jpg','events/edmund-gazette.jpg','events/edmund-guardroom.jpg','events/edmund-gun.jpg','events/edmund-hounds.jpg','events/edmund-huddersfield.jpg','events/edmund-hunter.jpg','events/edmund-hythe.jpg','events/edmund-ipswich.jpg','events/edmund-java.jpg','events/edmund-kit.jpg','events/edmund-machine.jpg','events/edmund-mess.jpg','events/edmund-middlewatch.jpg','events/edmund-miss-army.jpg','events/edmund-miss-church.jpg','events/edmund-miss-home.jpg','events/edmund-miss-militia.jpg','events/edmund-miss-navy.jpg','events/edmund-normancross.jpg','events/edmund-ordained.jpg','events/edmund-oriel.jpg','events/edmund-outfit.jpg','events/edmund-paidoff.jpg','events/edmund-plate.jpg','events/edmund-pony.jpg','events/edmund-pressed.jpg','events/edmund-prize.jpg','events/edmund-pyrenees.jpg','events/edmund-ram.jpg','events/edmund-reduced.jpg','events/edmund-rent.jpg','events/edmund-rentbook.jpg','events/edmund-rodrigo.jpg','events/edmund-sandyhook.jpg','events/edmund-sermon.jpg','events/edmund-settle-letter.jpg','events/edmund-settle-room.jpg','events/edmund-settle-stiff.jpg','events/edmund-shannon.jpg','events/edmund-shorncliffe.jpg','events/edmund-skaw.jpg','events/edmund-swedes.jpg','events/edmund-tetuan.jpg','events/edmund-thirty.jpg','events/edmund-tithe.jpg','events/edmund-tithepig.jpg','events/edmund-toulon.jpg','events/edmund-toulouse.jpg','events/edmund-ushant.jpg','events/edmund-vestry.jpg','events/edmund-vimeiro.jpg','events/edmund-vitoria.jpg','events/edmund-volunteering.jpg','events/edmund-waiting.jpg','events/edmund-zealand.jpg','events/edmundDuel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election-1802-member.jpg','events/election-1802.jpg','events/election-1806-member.jpg','events/election-1806.jpg','events/election-1807-member.jpg','events/election-1807.jpg','events/election-1812-member.jpg','events/election-1812.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/farmOffered.jpg','events/fate-badajoz-alive.jpg','events/fate-badajoz-dead.jpg','events/fate-duel-alive.jpg','events/fate-duel-dead.jpg','events/fate-duel-kept.jpg','events/fate-fever-alive.jpg','events/fate-fever-dead.jpg','events/fate-fever-kept.jpg','events/fate-walcheren-alive.jpg','events/fate-walcheren-dead.jpg','events/fate-walcheren-kept.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/georgeMeeting.jpg','events/hammer.jpg','events/hartoppShearing.jpg','events/heir.jpg','events/henPorch.jpg','events/henRichmond.jpg','events/henSongs.jpg','events/henrietta-bunce.jpg','events/henrietta-carpet.jpg','events/henrietta-chariot.jpg','events/henrietta-gowns.jpg','events/henrietta-housemaid.jpg','events/henrietta-margravine.jpg','events/henrietta-mother.jpg','events/henrietta-mourning.jpg','events/henrietta-pianoforte.jpg','events/henrietta-portrait.jpg','events/henrietta-preacher.jpg','events/henrietta-tea.jpg','events/henrietta.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jamaica.jpg','events/jubilee.jpg','events/kitty-assembly.jpg','events/kitty-clifton-black.jpg','events/kitty-clifton.jpg','events/kitty-danes.jpg','events/kitty-latin.jpg','events/kitty-library.jpg','events/kitty-manumit.jpg','events/kitty-northampton.jpg','events/kitty-oakes-mangle.jpg','events/kitty-oakes-pew.jpg','events/kitty-reading-parole.jpg','events/kitty-stmalo.jpg','events/kitty-telescope.jpg','events/kitty-vane-bailiff.jpg','events/kitty-vane-child.jpg','events/kitty-vane-march.jpg','events/kitty-walks.jpg','events/kitty-widow.jpg','events/kitty-wyvern.jpg','events/kittyBotany.jpg','events/kittyDoor.jpg','events/ludd.jpg','events/manTraps.jpg','events/member-bellamy.jpg','events/member-bellingham.jpg','events/member-bull.jpg','events/member-burdett.jpg','events/member-committee.jpg','events/member-curwen.jpg','events/member-flogging.jpg','events/member-franks.jpg','events/member-gas.jpg','events/member-maiden.jpg','events/member-melville.jpg','events/member-petition.jpg','events/member-place.jpg','events/member-register.jpg','events/member-schools.jpg','events/member-whip.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/parish-audit.jpg','events/parish-harvest.jpg','events/parish-letter.jpg','events/parish-pryor.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/royalBond.jpg','events/royalPrincess.jpg','events/royalRegency.jpg','events/royalStag.jpg','events/royalTerrace.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/walcheren.jpg','events/war-abbe.jpg','events/war-contribution.jpg','events/war-corunna.jpg','events/war-deserter.jpg','events/war-guineas.jpg','events/war-prisoner.jpg','events/war-remount.jpg','events/war-smart.jpg','events/war-wives.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','hall/hall-front.glb','hall/hall-old.glb','icons/accounts.jpg','icons/christmas.jpg','icons/daybook.jpg','icons/farms.jpg','icons/goodwill.jpg','icons/hand.jpg','icons/household.jpg','icons/lady-day.jpg','icons/michaelmas.jpg','icons/midsummer.jpg','icons/parchments.jpg','icons/persons.jpg','icons/purse.jpg','icons/regard-1.jpg','icons/regard-2.jpg','icons/regard-3.jpg','icons/regard-4.jpg','icons/regard-5.jpg','icons/rentroll.jpg','icons/ride.jpg','icons/society.jpg','icons/standing.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','places/assembly-rooms.jpg','places/bank-parlour.jpg','places/bath.jpg','places/canal-locks.jpg','places/church-and-vestry.jpg','places/clifton.jpg','places/coldharbour-farm.jpg','places/common-enclosed.jpg','places/common-piece.jpg','places/common.jpg','places/cuckoo-copse.jpg','places/cullerne-castle.jpg','places/dining-room.jpg','places/down-beacon.jpg','places/down-duel.jpg','places/drawing-room.jpg','places/east-wing.jpg','places/estate-office.jpg','places/frigate-nore.jpg','places/gallows-piece.jpg','places/hall-new-front.jpg','places/ice-house.jpg','places/kennet-bottom-drained.jpg','places/kennet-bottom-flood.jpg','places/kintbury-lane-mended.jpg','places/kintbury-lane.jpg','places/kitchen.jpg','places/ladder-window.jpg','places/library.jpg','places/london-season.jpg','places/london-westminster.jpg','places/long-barrow-farm.jpg','places/maddle-farm.jpg','places/mail-coach-laurel.jpg','places/market-place.jpg','places/milestone.jpg','places/mill-new.jpg','places/mill-old.jpg','places/newbury.jpg','places/paris-1802.jpg','places/pelican-speen.jpg','places/pinery.jpg','places/rooksnest-farm.jpg','places/shire-hall-reading.jpg','places/stackyard-fire.jpg','places/starveall.jpg','places/the-bell.jpg','places/the-george.jpg','places/tithe-barn.jpg','places/town-hall-hustings.jpg','places/twelve-acres.jpg','places/vicarage-gate.jpg','places/withy-mead.jpg','plan/0.jpg','plan/1.jpg','plan/2.jpg','plan/3.jpg','plan/common-0.webp','plan/common-1.webp','plan/common-2.webp','plan/common-3.webp','plan/f/barns-0.webp','plan/f/barns-1.webp','plan/f/barns-2.webp','plan/f/barns-3.webp','plan/f/brickkiln-0.webp','plan/f/brickkiln-1.webp','plan/f/brickkiln-2.webp','plan/f/brickkiln-3.webp','plan/f/butts-0.webp','plan/f/butts-1.webp','plan/f/butts-2.webp','plan/f/butts-3.webp','plan/f/camp-0.webp','plan/f/camp-1.webp','plan/f/camp-2.webp','plan/f/camp-3.webp','plan/f/carriage-0.webp','plan/f/carriage-1.webp','plan/f/carriage-2.webp','plan/f/carriage-3.webp','plan/f/chalk-0.webp','plan/f/chalk-1.webp','plan/f/chalk-2.webp','plan/f/chalk-3.webp','plan/f/cottages-0.webp','plan/f/cottages-1.webp','plan/f/cottages-2.webp','plan/f/cottages-3.webp','plan/f/drain-0.webp','plan/f/drain-1.webp','plan/f/drain-2.webp','plan/f/drain-3.webp','plan/f/fourcourse-0.webp','plan/f/fourcourse-1.webp','plan/f/fourcourse-2.webp','plan/f/fourcourse-3.webp','plan/f/hall-front-0.webp','plan/f/hall-front-1.webp','plan/f/hall-front-2.webp','plan/f/hall-front-3.webp','plan/f/hall-old-0.webp','plan/f/hall-old-1.webp','plan/f/hall-old-2.webp','plan/f/hall-old-3.webp','plan/f/icehouse-0.webp','plan/f/icehouse-1.webp','plan/f/icehouse-2.webp','plan/f/icehouse-3.webp','plan/f/kennels-0.webp','plan/f/kennels-1.webp','plan/f/kennels-2.webp','plan/f/kennels-3.webp','plan/f/malthouse-0.webp','plan/f/malthouse-1.webp','plan/f/malthouse-2.webp','plan/f/malthouse-3.webp','plan/f/meadows-0.webp','plan/f/meadows-1.webp','plan/f/meadows-2.webp','plan/f/meadows-3.webp','plan/f/merino-0.webp','plan/f/merino-1.webp','plan/f/merino-2.webp','plan/f/merino-3.webp','plan/f/mill-0.webp','plan/f/mill-1.webp','plan/f/mill-2.webp','plan/f/mill-3.webp','plan/f/oaks-0.webp','plan/f/oaks-1.webp','plan/f/oaks-2.webp','plan/f/oaks-3.webp','plan/f/paddock-0.webp','plan/f/paddock-1.webp','plan/f/paddock-2.webp','plan/f/paddock-3.webp','plan/f/parterre-0.webp','plan/f/parterre-1.webp','plan/f/parterre-2.webp','plan/f/parterre-3.webp','plan/f/peat-0.webp','plan/f/peat-1.webp','plan/f/peat-2.webp','plan/f/peat-3.webp','plan/f/pinery-0.webp','plan/f/pinery-1.webp','plan/f/pinery-2.webp','plan/f/pinery-3.webp','plan/f/plough-0.webp','plan/f/plough-1.webp','plan/f/plough-2.webp','plan/f/plough-3.webp','plan/f/racecourse-0.webp','plan/f/racecourse-1.webp','plan/f/racecourse-2.webp','plan/f/racecourse-3.webp','plan/f/road-0.webp','plan/f/road-1.webp','plan/f/road-2.webp','plan/f/road-3.webp','plan/f/school-0.webp','plan/f/school-1.webp','plan/f/school-2.webp','plan/f/school-3.webp','plan/f/sheepwalk-0.webp','plan/f/sheepwalk-1.webp','plan/f/sheepwalk-2.webp','plan/f/sheepwalk-3.webp','plan/f/spa-0.webp','plan/f/spa-1.webp','plan/f/spa-2.webp','plan/f/spa-3.webp','plan/f/telegraph-0.webp','plan/f/telegraph-1.webp','plan/f/telegraph-2.webp','plan/f/telegraph-3.webp','plan/f/thresher-0.webp','plan/f/thresher-1.webp','plan/f/thresher-2.webp','plan/f/thresher-3.webp','plan/f/turnpike-0.webp','plan/f/turnpike-1.webp','plan/f/turnpike-2.webp','plan/f/turnpike-3.webp','plan/rooks.mp4','plan/smoke.mp4','plan/wheel.webp','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/balloon.png','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-guilford.jpg','undertakings/dine-haunch.jpg','undertakings/dine-ice.jpg','undertakings/dine-lamb.jpg','undertakings/dine-lobscouse.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-onefootman.jpg','undertakings/dine-partridge.jpg','undertakings/dine-pitt.jpg','undertakings/dine-regrets.jpg','undertakings/dine-snow.jpg','undertakings/dine-swans.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/dine-whist.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-barleybread.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-coverley.jpg','undertakings/home-drip.jpg','undertakings/home-fish.jpg','undertakings/home-flannel.jpg','undertakings/home-flea.jpg','undertakings/home-indians.jpg','undertakings/home-linen.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/home-sextant.jpg','undertakings/home-stocking.jpg','undertakings/home-swing.jpg','undertakings/ride-arrears.jpg','undertakings/ride-barley.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-cottages.jpg','undertakings/ride-coxswain.jpg','undertakings/ride-dear.jpg','undertakings/ride-edmund.jpg','undertakings/ride-ewes.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-gout.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-house.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-pond.jpg','undertakings/ride-quickset.jpg','undertakings/ride-rooks.jpg','undertakings/ride-school.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-drum.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-hassock.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rate.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-admiralty.jpg','undertakings/town-brooks.jpg','undertakings/town-burdett.jpg','undertakings/town-candles.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-levee.jpg','undertakings/town-partners.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
+/* The plan of the estate. Between quarter days the squire is out of the book and on his land: the places on the plan are the menu,
+   and whatever happens to him is struck off as a numbered plate. The book (ui.js) is opened on quarter day and at the end. */
+let VIEW = 'book', SHEET = '', PLATEUP = false, PROGRESS = -1, PSTEP = '', SEC = '', ROUND = false, CALLKEY = '', CALLAT = '';
+const isBuilt = id => typeof worksList === 'function' && worksList().some(w => w.id === id && w.state === 'done');
+const isLive = id => typeof venturesList === 'function' && venturesList().some(v => v.id === id && v.state === 'inHand');
+const isKept = id => typeof societyList === 'function' && societyList().some(v => v.id === id && v.state === 'inHand');
+const footing = () => typeof establishment === 'function' ? establishment().id : 'plain';
+const farmAt = id => (typeof farmsList === 'function' && farmsList().some(f => f.id === id)) || (typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id));
+
+/* n: the name lettered on the plan. at: where the lettering sits, in hundredths of the sheet. pic: the aquatint shown on the place's paper. */
+const PLACES = {
+  hall:{n:'Hatherley Hall', at:[50.5, 58.6], pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
+  home:{n:'The Home Farm', at:[67, 45], pic:() => 'places/estate-office'},
+  longbarrow:{n:'Long Barrow', at:[42.5, 27.2], farm:'longbarrow', pic:() => 'places/long-barrow-farm'},
+  kennet:{n:'Kennet Bottom', at:[75.5, 68.4], farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
+  church:{n:'Church Farm', at:[33.5, 68.6], farm:'church', pic:() => 'places/twelve-acres'},
+  vestry:{n:'The Church', at:[21.5, 40.6], pic:() => 'places/church-and-vestry'},
+  common:{n:'The Common', at:[15, 33.5], farm:'commonpiece', pic:() => farmAt('commonpiece') ? 'places/common-piece' : F('enclosed') ? 'places/common-enclosed' : 'places/common'},
+  mill:{n:'The Mill', at:[65, 80.5], pic:() => isBuilt('mill') ? 'places/mill-new' : 'places/mill-old'},
+  lane:{n:'Kintbury Lane', at:[8.6, 51.2], pic:() => isBuilt('road') ? 'places/kintbury-lane-mended' : 'places/kintbury-lane'},
+  copse:{n:'Cuckoo Copse', at:[75.5, 46.4], pic:() => 'places/cuckoo-copse'},
+  hanger:{n:'Hanger Wood', at:[61, 21.6], pic:() => 'places/gallows-piece'},
+  down:{n:'The Down', at:[48.6, 11.4], pic:() => 'places/down-beacon'},
+  castle:{n:'Cullerne Castle', at:[88.6, 14.4], pic:() => 'places/cullerne-castle'},
+  wyvern:{n:'Wyvern', at:[93.2, 41.2], pic:() => 'places/market-place'},
+  turnpike:{n:'The London Road', at:[92.6, 27], pic:() => 'places/milestone'},
+  rooksnest:{n:'Rooksnest', at:[66, 26.2], farm:'rooksnest', if:() => farmAt('rooksnest'), pic:() => 'places/rooksnest-farm'},
+  coldharbour:{n:'Coldharbour', at:[82.5, 22.6], farm:'coldharbour', if:() => farmAt('coldharbour'), pic:() => 'places/coldharbour-farm'},
+  withymead:{n:'Withy Mead', at:[29, 79], farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
+  maddle:{n:'Maddle Farm', at:[11.5, 22.8], farm:'maddle', if:() => farmAt('maddle'), pic:() => 'places/maddle-farm'},
+  starveall:{n:'Starveall', at:[88, 58.6], farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
+};
+/* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
+const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'down', enclosure:'common'};
+const VENT_AT = {plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down'};
+const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'turnpike'};
+const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
+const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
+const forSale = id => typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id);
+/* Whether a place has any paper to show. A place with none is only lettering on the sheet. */
+function placeHas(id){ const p = PLACES[id]; if (id === 'hall' || id === 'wyvern') return true; if (p.farm && farmAt(p.farm)) return true;
+  if (S.phase === 'undertake' && undertakingOptions().some(u => underAt(u.id) === id)) return true;
+  if (typeof worksList === 'function' && worksList().some(w => workAt(w.id) === id)) return true;
+  if (id === 'hanger' && typeof creditList === 'function' && creditList().some(c => c.id === 'timber')) return true;
+  if (typeof venturesList === 'function' && venturesList().some(v => ventAt(v.id) === id)) return true;
+  return Object.keys(S.chars).some(k => S.chars[k].met && PEOPLE[k] && livesAt(k) === id); }
+const placeOn = id => { const p = PLACES[id]; return p && (!p.if || p.if()); };
+const pane = () => innerWidth <= 1080 || innerWidth < innerHeight;
+
+/* Where the business of the quarter is to be found. A printed notice is posted in the town. A name in the title settles it; then where the caller lives; then the first place named. */
+const SIGNS = [[/Kennet/, 'kennet'], [/Long Barrow/, 'longbarrow'], [/Church Farm/, 'church'], [/Starveall/, 'starveall'], [/\bmill(er)?\b/i, 'mill'], [/\bcommon\b|inclosure/i, 'common'], [/copse|poach|\bhares?\b|pheasant|keeper|snare/i, 'copse'],
+  [/beacon|\bdowns?\b/i, 'down'], [/Cullerne Castle|the Castle/, 'castle'], [/vestry|church|vicar|tithe|sermon/i, 'vestry'], [/Wyvern|market|the George|\bbank\b|Sessions|the bench|hustings/i, 'wyvern'],
+  [/London|turnpike|\bcoach\b|Bath\b|Reading|the mail/i, 'turnpike'], [/cottage|Kintbury|\blane\b/i, 'lane'], [/\bwoods?\b|timber|\boaks?\b/i, 'hanger'], [/home farm|stackyard|\bricks?\b|thresh/i, 'home']];
+function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CALLAT; CALLKEY = k;
+  const hit = t => { for (const [re, at] of SIGNS) if (re.test(t) && placeOn(at)) return at; return ''; };
+  if (BILLS.has(e.id)) return CALLAT = 'wyvern';
+  const text = e.text(), who = whoOf(e.title + ' ' + text);
+  return CALLAT = hit(e.title) || (who && livesAt(who) !== 'hall' ? livesAt(who) : '') || hit(text.slice(0, 320)) || 'hall'; }
+
+/* ---------- which view is up ---------- */
+function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; return; }
+  if (!S.plates) S.plates = [];
+  const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; PSTEP = k;
+  VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
+  if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
+  if (PLATEUP) strike(); }
+function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
+function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
+function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; ROUND = false; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
+function shutSheet(){ SHEET = ''; WHO = ''; drawPlan(); }
+function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
+function plateDown(){ PLATEUP = false; drawPlan(); }
+function showProgress(i){ PROGRESS = i === undefined ? Math.max(0, S.plates.length - 1) : i; drawPlate(); }
+function shutProgress(){ PROGRESS = -1; drawPlate(); }
+function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, behavior:'smooth'})); }
+
+/* ---------- the plates ---------- */
+const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
+const placeCut = at => { const p = PLACES[at]; return (p && p.pic && artURL(p.pic()) && p.pic()) || 'seasons/' + S.season; };
+/* An outcome is struck off once, with its number, and kept for the Progress. */
+function strike(){ const key = S.t + ':' + S.phase; if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
+  const o = S.outcome, j = S.journal[0] || {}, under = S.phase === 'undone';
+  const src = under ? (o.cut && artURL('undertakings/' + o.cut) ? 'undertakings/' + o.cut : placeCut('hall')) : (S.plateCut || placeCut('hall'));
+  S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay(), say:sayOf(o.text)}); delete S.plateCut; save(); }
+const imprint = pub => `Publish’d as the Act directs, ${esc(pub)}`;
+/* The words in the balloon are the first thing said aloud in the text, cut to its first sentence if it runs long. Nothing is written for it. */
+function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').replace(/<[^>]+>/g, '')); if (!m) return ''; let q = m[1].trim();
+  if (q.length > 96) { const cut = /^(.{12,96}?[.!?])(\s|$)/.exec(q); if (!cut) return ''; q = cut[1]; }
+  return q.replace(/,$/, '.'); }
+function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${say && ART.has('ui/balloon.png') ? `<q class="balloon"><span>${esc(say)}</span></q>` : ''}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
+function plateViewHTML(){
+  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
+    const src = eventCut(e) || placeCut(eventPlace(e)); S.plateCut = src;
+    return `${printHTML(S.plates.length + 1, src, e.title, quarterDay(), sayOf(text))}
+      <div class="pside"><article class="sheet${bill ? ' bill' : ''}">${who ? `<div class="from">${medal(who)}<p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p></div>` : `<p class="kicker">${esc(stamp())}</p>`}<div class="prose">${paras(text)}</div></article>
+      <div class="answer"><p class="inhand"><span>Your purse <b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b></span><span>Outstanding mortgage <b class="neg">${fmt(S.mortgage)}</b></span><button class="quiet" onclick="plateDown()">Look over the plan</button></p>
+      <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div></div></div>`; }
+  const o = S.outcome, p = S.plates[S.plates.length - 1] || {src:placeCut('hall'), pub:quarterDay()};
+  return `${printHTML(S.plates.length, p.src, o.title, p.pub, p.say)}
+    <div class="pside"><article class="sheet came"><p class="kicker">${esc(stamp())}</p><div class="prose lead">${paras(o.text)}</div>
+      ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}</article>
+    <div class="answer"><div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div></div></div>`; }
+/* The Progress: every plate struck so far, a dozen to the leaf, and any one of them taken up to look at. */
+function progressHTML(){ const P = S.plates, i = Math.max(0, Math.min(P.length - 1, PROGRESS)), per = 8, leaf = Math.floor(i / per), from = leaf * per, leaves = Math.ceil(P.length / per), p = P[i];
+  if (!p) return `<div class="progress"><h2>The Progress</h2><p class="fine">No plate is struck yet.</p><button class="inkbtn" onclick="shutProgress()">Put them away</button></div>`;
+  return `<div class="progress">${printHTML(i + 1, p.src, p.title, p.pub, p.say)}
+    <div class="pside"><h2>${esc(S.name)}, His Progress</h2><p class="did">${esc(p.did)}</p>
+      <div class="thumbs">${P.slice(from, from + per).map((q, k) => `<button aria-pressed="${from + k === i}" onclick="showProgress(${from + k})">${pic(q.src, q.title)}<span>${from + k + 1}</span></button>`).join('')}</div>
+      <p class="leafs">${leaves > 1 ? `<button class="quiet" onclick="showProgress(${Math.max(0, from - per)})" ${leaf ? '' : 'disabled'}>Earlier</button><span>${from + 1} to ${Math.min(P.length, from + per)} of ${P.length}</span><button class="quiet" onclick="showProgress(${Math.min(P.length - 1, from + per)})" ${leaf < leaves - 1 ? '' : 'disabled'}>Later</button>` : `<span>${P.length} of 84</span>`}</p>
+      <button class="inkbtn" onclick="shutProgress()">Put them away</button></div></div>`; }
+function drawPlate(){ const el = $('plate'), up = S && (PROGRESS >= 0 || (VIEW === 'plan' && PLATEUP && S.phase !== 'undertake'));
+  el.hidden = !up; document.body.classList.toggle('plateup', !!up); if (!up) { el.innerHTML = ''; return; }
+  const key = PROGRESS >= 0 ? 'p' : PSTEP;
+  el.className = PROGRESS >= 0 ? 'gallery' : S.phase === 'event' ? 'asks' : 'tells';
+  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`;
+  if (el.dataset.key !== key) { el.dataset.key = key; el.scrollTop = 0; const s = el.querySelector('.pside'); if (s) s.scrollTop = 0; const b = el.querySelector('.choice, .go'); if (b) b.focus({preventScroll:true}); } }
+
+/* ---------- the sheet of the plan ---------- */
+/* The pieces drawn on over the base sheet: what has been built, what is ventured, how the house is kept, and the soldiers in war time. */
+function piecesOn(){ const on = [], y = S.year, est = footing();
+  if (F('enclosed')) on.push('common');
+  for (const id of ['drain', 'fourcourse', 'mill', 'cottages', 'school', 'road', 'pinery', 'oaks', 'icehouse', 'meadows', 'barns', 'chalk']) if (isBuilt(id)) on.push(id);
+  for (const id of ['plough', 'merino', 'peat', 'thresher', 'brickkiln', 'malthouse', 'spa', 'turnpike', 'racecourse', 'telegraph']) if (isLive(id)) on.push(id);
+  if (isLive('merino')) on.push('sheepwalk');
+  if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
+  if (est === 'splendid') on.push('parterre'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push('carriage');
+  if (y < 1802 || (y >= 1803 && y <= 1813) || (y === 1815 && S.season < 2)) on.push('camp');
+  if (F('volunteers') && !F('enclosed')) on.push('butts');
+  on.push(isBuilt('front') ? 'hall-front' : 'hall-old'); const lay = Object.keys(PLAN_BOX); return on.sort((a, b) => lay.indexOf(a) - lay.indexOf(b)); }
+const pieceURL = id => { const q = S.season; for (const p of ['plan/f/' + id + '-' + q, 'plan/f/' + id, 'plan/' + id + '-' + q, 'plan/' + id.replace('hall-', '') + '-' + q]) { const u = artURL(p); if (u) return u; } return ''; };
+const armsOf = () => isKept('baronet') ? 'baronet' : isKept('knight') ? 'knight' : 'esquire';
+function landHTML(){ const q = S.season, calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* Two small loops laid on in multiply: the rooks over the park, who leave when the new front goes up, and the smoke of the Hall chimneys. */
+  const moving = calm ? '' : ['smoke'].concat(isBuilt('front') ? [] : ['rooks']).map(id => { const b = PLAN_BOX[id]; return b && ART.has('plan/' + id + '.mp4') ? `<video class="mot" src="art/plan/${id}.mp4" autoplay muted loop playsinline disablepictureinpicture style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"></video>` : ''; }).join('');
+  /* The mill wheel is a drawing turned by the page, laid over the wheel on the sheet. The new mill has its own wheel in another place, so it stops. */
+  const wheel = ART.has('plan/wheel.webp') && !isBuilt('mill') ? `<i class="wheel${calm ? ' calm' : ''}"><img src="art/plan/wheel.webp" alt=""></i>` : '';
+  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
+  const arms = artURL('arms/' + armsOf());
+  const caller = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : '', who = caller && !BILLS.has(S.pending) ? whoOf(byId(S.pending).title + ' ' + byId(S.pending).text()) : null;
+  const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
+  const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
+    if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
+    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="call">${who ? medal(who) : pic('icons/hand', '')}</i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+  return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${wheel}${pieces}${moving}${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
+
+const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
+function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${line}</p><button class="act" onclick="${act}"><span>${label}</span></button></div>`;
+  if (S.phase === 'ledger') { let net = 0; for (const [, a] of S.ledger) net += a;
+    return cue(`${esc(QUARTER[S.season])} account: ${net ? amt(net, net) : fmt(0)}`, 'Begin the quarter', 'next()'); }
+  if (S.phase === 'event') { const e = byId(S.pending), id = eventPlace(e), at = PLACES[id].n.replace(/^The /, 'the '), bill = BILLS.has(e.id);
+    return cue(bill ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`, bill ? 'Read the notice' : id === 'hall' ? 'Go in' : `Go to ${esc(at)}`, 'callOn()'); }
+  if (S.phase === 'undertake') return cue('The season is yours.', 'Choose its business', "goPlace('season')");
+  return ''; }
+function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
+  return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span></div>
+    <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
+    ${cueHTML()}
+    <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
+
+/* ---------- the paper of a place ---------- */
+function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undertakingOptions();
+  const rows = o.map((c, i) => at && underAt(c.id) !== at ? '' : `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('');
+  return rows ? `<div class="choices">${rows}</div>` : ''; }
+function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="shutSheet()" aria-label="Put the paper away">×</button>`;
+  if (id === 'season') return `${shut}<h2>The Season Is Yours</h2><div class="prose"><p>${['Nothing more', 'One thing more', 'Two things more', 'Three things'][typeof ridesLeft === 'function' ? Math.max(0, Math.min(3, ridesLeft())) : 1]} may be undertaken this quarter. Works on the estate may be put in hand at any time.</p></div>${underHTML('')}`;
+  if (id === 'memo') return `${shut}<h2>${esc('Mr ' + steward())}’s Memoranda</h2><div class="memo">
+      ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
+      ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}
+      ${meter('Peace of the household', S.family, FAMILY_W, 'family', 'henriettaAway', 'Henrietta is away')}
+      ${S.traits && S.traits.length ? `<p class="fine born">The squire: ${S.traits.map(t => esc(traitById(t).name)).join('. ')}.</p>` : ''}</div>`;
+  const p = PLACES[id]; if (!p) return '';
+  if (WHO && S.chars[WHO] && S.chars[WHO].met) return `${shut}<h2>${esc(p.n)}</h2>${peopleHTML().replace('All persons', esc(p.n))}`;
+  const secs = [], sec = (key, title, html) => { if (html) secs.push([key, title, html]); };
+  const works = typeof worksList === 'function' && (worksList().some(w => workAt(w.id) === id) || (id === 'hanger' && typeof creditList === 'function' && creditList().some(c => c.id === 'timber')));
+  const vents = typeof venturesList === 'function' ? venturesList().filter(v => ventAt(v.id) === id) : [];
+  const folk = Object.keys(S.chars).filter(k => S.chars[k].met && PEOPLE[k] && livesAt(k) === id);
+  sec('under', 'The season’s undertaking', underHTML(id));
+  if (p.farm && farmAt(p.farm)) sec('farm', 'The Rent Roll', farmsHTML(p.farm));
+  if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
+  if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
+  if (vents.length) sec('vents', 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
+  if (id === 'hall' && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house), true, 'beginSociety', 'endSociety', 'Pay for it'));
+  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>${raiseHTML(['annuity', 'redeem'])}`); }
+  if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
+  const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
+  const glb = id === 'hall' ? (isBuilt('front') && ART.has('hall/hall-front.glb') ? 'hall-front' : ART.has('hall/hall-old.glb') ? 'hall-old' : '') : '';
+  const view = glb && ROUND ? `<figure class="plate round"><model-viewer src="art/hall/${glb}.glb" alt="Hatherley Hall" camera-controls auto-rotate rotation-per-second="14deg" camera-orbit="30deg 68deg auto" shadow-intensity=".6" exposure="1.05" interaction-prompt="none" disable-zoom></model-viewer></figure>`
+    : `<figure class="plate has">${platePic(p.pic && artURL(p.pic()) ? p.pic() : 'seasons/' + S.season, p.n)}${glb ? `<button class="turn" onclick="turnHall()">In the round</button>` : ''}</figure>`;
+  return `${shut}<h2>${esc(p.n)}</h2>${view}
+    ${secs.map(([k, t, h]) => `<details class="sec" name="sec" ${k === open ? 'open' : ''} ontoggle="if(this.open)SEC='${k}'"><summary>${t}</summary><div>${h}</div></details>`).join('')}`; }
+/* The model of the Hall is fetched only when asked for. */
+function turnHall(){ ROUND = true; if (!window.customElements || !customElements.get('model-viewer')) { const s = document.createElement('script'); s.type = 'module'; s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'; s.onerror = () => { ROUND = false; drawPlan(); }; document.head.appendChild(s); } drawPlan(); }
+
+let LANDKEY = '';
+function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.toggle('planview', on); $('plan').hidden = !on; drawPlate(); if (!on) { LANDKEY = ''; return; }
+  const land = $('land'), sheet = $('sheet'), p = PLACES[SHEET];
+  /* the sheet itself is redrawn only when what is on it changes, so the moving picture does not start again at every touch */
+  const key = JSON.stringify([S.season, piecesOn(), armsOf(), S.phase, S.pending, PLATEUP, SHEET, Object.keys(PLACES).filter(placeOn)]);
+  if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key; land.innerHTML = landHTML();
+    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
+  $('cart').innerHTML = cartHTML();
+  const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
+  sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
+  sheet.innerHTML = SHEET ? sheetHTML() : ''; sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
+addEventListener('keydown', e => { if (e.key !== 'Escape' || !S) return; if (PROGRESS >= 0) shutProgress(); else if (SHEET && VIEW === 'plan' && !PLATEUP) shutSheet(); });
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
-const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['household', 'Household'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
+/* The book is opened on quarter day. Works, ventures, the household and society are found at their places on the plan (plan.js). */
+const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
@@ -8835,6 +9482,7 @@ let STEP = '', LEAFUP = true;
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
+  if (typeof planSync === 'function') planSync();
   if (!S) { LEAF = -1; stage.classList.remove('turn');
     stage.innerHTML = `<figure class="plate band${artURL('frontispiece') ? ' has' : ''}">${sceneSVG(1)}${platePic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
     const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
@@ -8842,12 +9490,11 @@ function render(){
     $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
-  if (S.phase === 'event') { if (PAPER !== S.t + ':' + S.pending) { PAPER = S.t + ':' + S.pending; TAB = 'paper'; } } else { PAPER = ''; if (TAB === 'paper') TAB = 'accounts'; }
   { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }
-  stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
+  stage.innerHTML = S.phase === 'end' ? endHTML() : ledgerHTML();
   drawBook();
+  if (typeof drawPlan === 'function') drawPlan();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
-  const first = stage.querySelector('button'); if (first && S.phase !== 'ledger') first.focus({preventScroll:true});
 }
 /* the opening is sized to the window, so the will and the choosing are read without scrolling */
 function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; if (S || innerWidth <= 1080) return;
@@ -8856,11 +9503,11 @@ function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
   document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
-  const leaf = S.phase === 'event' ? ['paper', 'The Paper'] : ['leaf', S.phase === 'ledger' ? 'The Quarter' : S.phase === 'end' ? 'Finis' : 'The Season'];
+  const leaf = ['leaf', S.phase === 'end' ? 'Finis' : 'The Quarter'];
   $('tabs').innerHTML = [leaf].concat(TABS).map(([id, n]) => `<button class="${id === 'leaf' || id === 'paper' ? 'leaf' : ''}${id === 'leaf' ? ' phone' : ''}" aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
 /* On a phone one page shows at a time: LEAFUP is the paper in hand, otherwise the tab chosen. */
 function showTab(t){ LEAFUP = t === 'leaf' || t === 'paper'; if (t !== 'leaf') TAB = t; WHO = ''; drawBook(); if (innerWidth <= 1080) window.scrollTo({top:0}); }
-function showWho(id){ WHO = id; drawBook(); }
+function showWho(id){ WHO = id; if (typeof VIEW !== 'undefined' && VIEW === 'plan') drawPlan(); else drawBook(); }
 
 function introHTML(){ const has = !!load();
   return `<article class="card opening">
@@ -8928,7 +9575,7 @@ function ledgerHTML(){
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
     ${digestHTML()}
-    <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</span></button></div>`; }
+    <div class="row">${S.dead ? `<button class="go" onclick="next()"><span>Face the creditors</span></button>` : `<button class="go" onclick="shutBook()"><span>Shut the book</span></button>`}</div>`; }
 
 function paperHTML(){ const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text);
   return `${runhead(bill ? 'Posted this quarter' : 'Papers received this quarter', `fo. ${Math.min(S.t + 1, 84)}`)}
@@ -8951,18 +9598,19 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>You may undertake one thing this season. Works on the estate may be put in hand at any time.</p></div>
+    <div class="prose"><p>${['Nothing more', 'One thing more', 'Two things more', 'Three things'][typeof ridesLeft === 'function' ? Math.max(0, Math.min(3, ridesLeft())) : 1]} may be undertaken this quarter. Works on the estate may be put in hand at any time.</p></div>
     <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function endHTML(){ const r = reckoning();
   return `${runhead('Pasted inside the back board', 'Finis')}
+    ${typeof endPlateHTML === 'function' ? endPlateHTML() : ''}
     <article class="sheet bill ending">
       <p class="kicker">From the Reading Mercury and Oxford Gazette, ${S.dead ? esc(stamp()) : 'January 1816'}</p>
       <h2>${esc(r.title)}</h2>
       <div class="prose">${r.P.map(p => '<p>' + esc(p) + '</p>').join('')}</div>
       ${r.score !== null ? `<p class="score">Esteem of the county <b>${r.score}</b><span> in the hundred</span></p>` : ''}
     </article>
-    <div class="row"><button class="go" onclick="wipe()"><span>Inherit again</span></button></div>`; }
+    <div class="row"><button class="go" onclick="wipe()"><span>Inherit again</span></button>${S.plates && S.plates.length ? `<button class="quiet" onclick="showProgress()">The Progress, in ${S.plates.length} plates</button>` : ''}</div>`; }
 
 function meter(label, v, words, key, flag, trouble){ const m = typeof marks === 'function' && key ? marks() : null, at = m ? Math.max(0, Math.min(100, m[key])) : null;
   const bar = `<i><u style="width:${v}%"></u>${at === null ? '' : `<s style="left:${at}%" title="Settles at ${at}"></s>`}</i>`, bad = flag && F(flag) ? `<em>${trouble}</em>` : '';
@@ -9007,12 +9655,12 @@ function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id =
 /* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
 function raiseHTML(ids){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
   return `<h3 class="orn">Raising money</h3><div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
-function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
+function worksHTML(at){ const list = worksList().filter(w => !at || at(w.id)), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
     ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
     ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${fxHTML(w) || `<p>${esc(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
-    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${raiseHTML(['timber'])}`; }
+    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${at && !at('timber') ? '' : raiseHTML(['timber'])}`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
 const DRAFT_FARMS = [
@@ -9027,12 +9675,14 @@ const DRAFT_VENTURES = [
   {name: 'A threshing machine', where: 'The home farm', cost: 120, well: 'Saves about £50 a year in wages.'},
   {name: 'A partner’s share in the Wyvern Bank', where: 'The estate', cost: 1000, well: 'Fifteen per cent, and a seat in the bank parlour.'},
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
-function farmsHTML(){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sale = live && typeof farmsForSale === 'function' ? farmsForSale() : [];
+function farmsHTML(only){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sale = live && typeof farmsForSale === 'function' ? farmsForSale() : [];
   const lv = f => !f.canLevel ? '' : `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}</span>`;
   const raised = f => f.sellToYou === undefined ? f.sellPrice : f.sellToYou + (f.sellToMortgage || 0), sum = f => raised(f) ? amt(raised(f), 1) : fmt(0), tf = typeof trustFund === 'function' ? trustFund() : null;
   const held = f => `<details name="lot"><summary><b>${esc(f.name)} <small>${amt(f.rent, 1)} a year</small></b><span>${f.sellPrice ? `<i class="tag">Sell</i>${sum(f)}` : fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p><p class="terms">${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${f.sellPrice ? `<ul class="fx">${f.sellToYou === undefined ? `<li class="pos">+${fmt(f.sellPrice)} if sold</li>` : `${f.sellToYou ? `<li class="pos">+${fmt(f.sellToYou)} in hand if sold</li>` : ''}${f.sellToMortgage ? `<li class="pos">+${fmt(f.sellToMortgage)} off the mortgage if sold</li>` : ''}${raised(f) ? '' : '<li>Settled land. The price goes to the trustees</li>'}`}<li class="neg">−${fmt(f.rent)} a year in rent</li></ul>` : ''}${lv(f)}
-    <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${sum(f)}</button>` : ''}</span></div></details>`;
+    <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${sum(f)}</button>` : ''}</span>
+    ${f.evict && f.evict.can ? `<details class="evict"><summary>Notice to quit</summary>${fxList(f.evict.fx)}<button class="inkbtn" onclick="evictTenant('${f.id}')">Serve it</button></details>` : ''}</div></details>`;
   const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span><i class="tag">Buy</i>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}</p>${f.value ? `<ul class="fx"><li class="neg">−${fmt(f.price)} to buy</li><li class="pos">+${fmt(f.value)} a year in rent</li></ul>` : ''}<p class="terms">${f.down !== undefined ? amt(f.down, -1) + ' down' + (f.loan ? ', ' + amt(f.loan, -1) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
+  if (only) { const f = list.find(x => x.id === only), s = sale.find(x => x.id === only); return `<div class="lots flat">${f ? held(f) : s ? lot(s) : ''}</div>`.replace('<details name="lot">', '<details name="lot" open>'); }
   return `<dl class="bal slim"><div><dt>The rental</dt><dd>${amt(list.reduce((a, f) => a + f.rent, 0), 1)}</dd></div><div><dt>Acres let</dt><dd>${list.reduce((a, f) => a + f.acres, 0).toLocaleString('en-GB')}</dd></div><div><dt>Farms</dt><dd>${list.length} of 8</dd></div></dl>
     <div class="lots flat">${list.map(held).join('')}</div>${sale.length ? `<h3 class="orn">To be had</h3><div class="lots">${sale.map(lot).join('')}</div>` : ''}`; }
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
@@ -9053,16 +9703,22 @@ function societyHTML(){ const live = typeof societyList === 'function'; return l
 
 /* The Household: the footing the house is kept on, what its people are paid, and what is kept in it. */
 const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
-function householdHTML(){ const h = householdList();
-  const est = h.establishment.map(e => `<details name="lot"><summary><b>${esc(e.name)}</b><span>${e.now ? '<i class="tag">As now</i>' : ''}${amt(e.cost, -1)}</span></summary><div>${fxList(e.fx)}
-    ${e.now ? '' : `<p class="terms">${e.why ? `<em>${esc(e.why)}</em>` : ''}</p><button class="inkbtn" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}>${esc(e.verb)}</button>`}</div></details>`).join('');
-  const wages = h.wages.map(w => { const cur = w.levels.find(l => l.now);
-    return `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span><i class="tag">${esc(cur ? cur.label : '')}</i></span></summary><div><p class="terms">${esc(w.what)}.</p>
-      <div class="rungs">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>
-      ${(() => { const y = w.levels.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; })()}</div></details>`; }).join('');
-  return `<dl class="bal slim"><div><dt>The house, a year</dt><dd>${amt(h.cost, -1)}</dd></div></dl>
-    <div class="lots flat"><h3 class="orn">The footing of the house</h3>${est}<h3 class="orn">Wages and keep</h3>${wages}</div>
-    ${h.lots.length ? `<h3 class="orn">Kept in the house</h3>` + lotsHTML(h.lots, true, 'beginSociety', 'endSociety', 'Pay for it') : ''}`; }
+function householdHTML(){ const h = householdList(), yearly = t => /a year/.test(t), pounds = t => { const m = /^([+−-])£([\d,]+)/.exec(t); return m ? (m[1] === '+' ? 1 : -1) * +m[2].replace(/,/g, '') : 0; };
+  const rest = fx => fxList((fx || []).filter(t => !yearly(t) && t !== 'No change')), fig = n => n > 0 ? amt(n, 1) : n < 0 ? amt(n, -1) : fmt(0);
+  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; };
+  let total = -h.cost;
+  const est = `<div class="seg n${h.establishment.length}">${h.establishment.map(e => `<button type="button" class="rung${e.now ? ' now' : ''}" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}${e.why ? ` title="${esc(e.why)}"` : ''}><b>${esc(e.name)}</b><span class="yr">${fig(-e.cost)}</span>${e.now ? '' : rest(e.fx)}</button>`).join('')}</div>${whyOf(h.establishment)}`;
+  const wages = h.wages.map(w => { const cur = w.levels.find(l => l.now), money = l => pounds((l.fx || []).find(yearly) || '');
+    if (cur && w.id === 'labour' && !w.off) total += money(cur);
+    return `<div class="dial${w.off ? ' off' : ''}"><b>${esc(w.name)}</b><div class="seg n3">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'} title="${esc(l.why || l.name)}"><b>${esc(l.label)}</b><span class="yr">${fig(money(l))}</span>${rest(l.fx)}</button>`).join('')}</div>${whyOf(w.levels)}</div>`; }).join('');
+  const lots = h.lots.map(v => { const fx = rest(v.fx), keep = v.keep ? `<small>${fmt(v.keep)} a year to keep</small>` : '';
+    const seg = v.state === 'ended' ? `<button type="button" class="rung now" disabled><b>${esc(v.note || 'Sold')}</b></button>`
+      : v.state === 'inHand' ? `<button type="button" class="rung now" disabled><b>Kept</b>${keep}</button><button type="button" class="rung" onclick="endSociety('${v.id}')" ${v.canEnd ? '' : 'disabled'}><b>${v.sell ? 'Sell' : 'Give up'}</b>${v.sell ? `<span class="yr">${amt(v.sell, 1)}</span>` : ''}</button>`
+      : `<button type="button" class="rung" onclick="beginSociety('${v.id}')" ${v.can ? '' : 'disabled'}${v.why ? ` title="${esc(v.why)}"` : ''}><b>Buy</b><span class="yr">${v.cost ? amt(v.cost, -1) : fmt(0)}</span>${keep}${fx}</button><button type="button" class="rung now" disabled><b>Not kept</b></button>`;
+    return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && v.why ? `<p class="terms"><em>${esc(v.why)}</em></p>` : ''}</div>`; }).join('');
+  return `<div class="hh lots flat"><p class="hhsum"><b>${fig(total)}</b><small>A year</small></p>
+    <h3 class="orn">The footing of the house</h3>${est}<h3 class="orn">Wages and keep</h3>${wages}
+    ${h.lots.length ? `<h3 class="orn">Kept in the house</h3>${lots}` : ''}</div>`; }
 
 const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){

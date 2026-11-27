@@ -29,7 +29,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
    They run alongside the seasons and do not use up the season's undertaking. */
 const MAX_WORKS = 2;
 const PROJECTS = {
-  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
+  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797,
     blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
@@ -740,11 +740,11 @@ function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.d
   const o = pick(bag); S.did[o.id] = S.t; LAST_CUT = o.id; return o.x(); }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? 2 : 4}); return outcome('ride'); }},
-  { id:'dine', t:'Dine the county', note:'£70', hint:'Standing', go:() => { duty('county'); add({money:-70, standing:4}); return outcome('dine'); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-2, 0, 2, 3]); add({standing: T('silver') ? 5 : 3, goodwill:g}); return outcome('sessions'); }},
-  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:5}); return outcome('home'); }},
-  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:6, family:4}); reg('henrietta',1); return outcome('town'); }},
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([0, 1]) : 1}); return outcome('ride'); }},
+  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:1}); return outcome('dine'); }},
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 2 : 1, goodwill:g}); return outcome('sessions'); }},
+  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:2}); return outcome('home'); }},
+  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:2, family:2}); reg('henrietta',1); return outcome('town'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -757,35 +757,43 @@ The pine-apples die within the week. Mrs Bunce puts a black ribbon in her cap.`,
 The rooks come over to the Hall roof. They are there each morning when you go out.`]); }}
 ];
 
-function undertakingOptions(){
-  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+/* Three undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
+const RIDES = 3;
+function ridesLeft(){ return !S || S.phase === 'end' ? 0 : Math.max(0, RIDES - (S.rides || 0)); }
+function undertakingOptions(){ const rode = S.rode || [];
+  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && !rode.includes(u.id) && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+  o.push({id:'rest', t:(S.rides || 0) ? 'Let the rest of the season go' : 'Let the season go', run:() => ''});
   return o;
 }
-function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); LAST_CUT = null; const text = u.run();
+function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
+  if (u.id === 'rest') { S.rides = RIDES; S.phase = 'undone'; return next(); }
+  const b = snapshot(); LAST_CUT = null; const text = u.run();
+  S.rides = (S.rides || 0) + 1; S.rode = (S.rode || []).concat(u.id);
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
   S.outcome = {title:u.t, text, d:deltas(b), cut:LAST_CUT}; S.phase = 'undone'; save(); render(); }
 
 function next(){
   if (S.phase === 'ledger') { if (S.dead) return finish(); S.phase = S.pending ? 'event' : 'undertake'; }
   else if (S.phase === 'outcome') { if (S.dead) return finish(); S.phase = 'undertake'; }
-  else if (S.phase === 'undone') { S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
+  else if (S.phase === 'undone' && ridesLeft() > 0 && !S.dead) S.phase = 'undertake';
+  else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
   save(); render(); window.scrollTo({top:0, behavior:'smooth'});
 }
-function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
+function finish(){ S.phase = 'end'; if (typeof strikeEnding === 'function') strikeEnding(); save(); render(); window.scrollTo({top:0}); }
 
 function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
 function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
-  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
+  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = []; const end = ending();
   if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
-    return {title:'Shot at Dawn', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
-    P.push(`${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`);
+    P.push(end.news);
     P.push(`The Earl of Cullerne is expected to bid.`);
-    return {title:'Sold Up', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
   if (T('captain')) P.push(F('crewGone') ? `He was a sea officer. He still goes down a staircase backwards. His old Dryads are afloat again. He follows their ships in the Navy List.` : `Dinner at the Hall is announced by a boatswain’s pipe. A guest who comes late is entered in the log.`);
@@ -837,15 +845,9 @@ function reckoning(){
 
   let score = Math.round(S.standing * 0.25 + S.goodwill * 0.4 + S.family * 0.35 + clamp(net / 400, -12, 12));
   score = clamp(score, 0, 100);
-  let title = 'A Tolerable Squire';
-  if (S.goodwill >= 68 && S.family >= 55) title = 'The Good Squire of Hatherley';
-  else if (net > 8000 && S.goodwill < 36) title = 'The Rack-Renter';
-  else if (S.standing >= 72 && S.goodwill < 50) title = 'A Coming Man';
-  else if (S.goodwill < 30) title = 'The Man in the Song';
-  else if (S.family < 30) title = 'Master of an Empty House';
-  else if (S.goodwill >= 60) title = 'A Fair Man';
+  const title = end.title;
   P.push(`He is ${S.year - 1795 + 46}, and in tolerable health. He has been heard to say that the next twenty years cannot be as troublesome as the last.`);
-  return {title, P, score};
+  return {title, P, score, end};
 }
 
 /* ---------- saving ---------- */

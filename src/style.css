@@ -369,3 +369,17 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
 .lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
 @media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
 .favours #pts i{font-style:normal;color:var(--muted);opacity:.7}
+
+/* the household: every dial a row of toggles with its figure beside the name */
+.hh{display:flex;flex-direction:column;gap:6px;min-width:0} .hh .hhsum{margin:0;display:flex;align-items:baseline;gap:10px;border-bottom:3px double var(--ink);padding-bottom:6px}
+.hh .hhsum b{font-family:var(--display);font-weight:400;font-size:1.9rem;line-height:1.05;font-variant-numeric:tabular-nums;white-space:nowrap} .hh .hhsum small{font-family:var(--caps);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hh .dial{display:flex;flex-direction:column;gap:3px;min-width:0} .hh .dial > b{font-family:var(--display);font-weight:400;font-size:1.02rem} .hh .dial.off{opacity:.55}
+.hh .seg{display:grid;gap:0;min-width:0} .hh .seg.n2{grid-template-columns:repeat(2,minmax(0,1fr))} .hh .seg.n3{grid-template-columns:repeat(3,minmax(0,1fr))} .hh .seg.n4{grid-template-columns:repeat(2,minmax(0,1fr))} .hh .seg.n4 .rung{border-radius:0;margin-top:-1px}
+.hh .seg .rung{border-radius:0;margin-left:-1px;padding:5px 7px;min-width:0;overflow-wrap:break-word} .hh .seg .rung:first-child{margin-left:0;border-radius:4px 0 0 4px} .hh .seg .rung:last-child{border-radius:0 4px 4px 0} .hh .seg .rung:only-child{border-radius:4px}
+.hh .seg .rung.now{position:relative;z-index:1;opacity:1} .hh .seg .rung:disabled.now{opacity:1;cursor:default}
+.hh .rung .yr{font-family:var(--display);font-size:1.05rem;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap} .hh .rung .fx{font-size:.82rem;line-height:1.2} .hh .rung small{font-size:.78rem}
+.hh .terms{margin:0;font-size:.88rem}
+@media (max-width:520px){ .hh .rung .fx{font-size:.76rem} .hh .rung b{font-size:.74rem;letter-spacing:.04em} }
+
+/* notice to quit: shut until asked for, its cost set out before the button */
+details.evict{margin-top:10px;border-top:1px solid rgba(43,29,16,.3);padding-top:6px} details.evict > summary{list-style:none;cursor:pointer;font-family:var(--caps);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad)} details.evict > summary::-webkit-details-marker{display:none} details.evict .fx{margin:6px 0 8px}

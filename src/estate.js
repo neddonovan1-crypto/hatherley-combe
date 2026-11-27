@@ -69,7 +69,7 @@ function estateSync(){
     if (F('nephewFarm')) { S.rentAdj /= 0.96; lb.rent = five(lb.rent * 0.96); lb.tenant = F('crabbeGone') ? 'Mr Pyke' : 'young Mr Crabbe'; lb.she = false; lb.K = 0.2 * lb.rent; lb.cond = Math.max(0, lb.cond - 1); }
     else { lb.tenant = 'Mrs Thorne'; lb.she = true; } }
   if (kb && S.projectsDone.drain === 'done' && !kb.drained) { kb.drained = true; kb.cond = Math.max(kb.cond, 2); }
-  if (kb && F('edmund') === 'farmer' && kb.tenant !== 'Edmund') { kb.tenant = 'Edmund'; kb.she = false; kb.arrears = 0; delete kb.void; kb.since = S.year;
+  if (kb && F('edmund') === 'farmer' && kb.tenant !== 'Edmund' && !kb.edmundOut) { kb.tenant = 'Edmund'; kb.she = false; kb.arrears = 0; delete kb.void; kb.since = S.year;
     kb.rent = five(0.88 * lettingValue(kb, S.year)); kb.lease = {type:'term', ends:S.year + 14, years:14}; kb.K = kb.rent; }
   bubbleClock();
   if (!S.offered && S.t >= 6) { S.offered = true; later('farmOffered', 0); }
@@ -132,7 +132,27 @@ const LAND = {longbarrow:'Down and sheepwalk', kennet:'Wet clay, with the mill',
 function farmsList(){ return rentRoll().map(f => { const bits = [f.tenure === 'In hand' ? 'In hand, no tenant' : f.tenure, f.order];
     if (f.abated) bits.push('A fifth abated'); if (f.arrears) bits.push('In arrear ' + fmt(f.arrears)); if (f.waiting) bits.push('Terms to be settled this quarter');
     const s = sellState(f.id);
-    return Object.assign(f, s, {land:(f.id === 'church' && F('enclosed') ? 'Inclosed arable' : LAND[f.id]), tenant:f.tenant || 'No tenant', held:bits.join('. ')}); }); }
+    return Object.assign(f, s, {evict:evictCost(f.id), land:(f.id === 'church' && F('enclosed') ? 'Inclosed arable' : LAND[f.id]), tenant:f.tenant || 'No tenant', held:bits.join('. ')}); }); }
+/* Turning a tenant out. It may be done to any let farm at any time, and it is dear: the parish takes it hard and remembers it, the county thinks the less of a landlord who does it,
+   a lease must be bought out at half a year's rent, arrears are lost, and the farm lies in hand a year before it lets again in worse order.
+   evictCost(id) is what the page prints on the button. evictTenant(id, quiet) does it and returns what happened, or false. With quiet set it keeps no journal and draws nothing, for use from an event. */
+const TENANT_IS = f => /Thorne/.test(f.tenant) ? 'thorne' : f.tenant === 'Edmund' ? 'edmund' : /Crabbe/.test(f.tenant) ? 'crabbe' : '';
+function evictCost(id){ const f = farm(id), open = S.phase !== 'end' && !S.dead; if (!f) return {can:false, fx:[]};
+  const can = open && !f.void && !!f.tenant && !S.letQueue.some(x => x.id === id), buy = f.lease.type === 'will' ? 0 : five(rentDue(f) / 2), who = TENANT_IS(f);
+  const fx = [MINUS + (f.she ? '15' : '12') + ' Goodwill', MINUS + '4 Standing', MINUS + ' The parish remembers it', MINUS + ' In hand a year, then let in worse order'];
+  if (buy) fx.push(MINUS + fmt(buy) + ' to buy out the lease'); if (f.arrears >= 1) fx.push(MINUS + fmt(f.arrears) + ' of arrears lost');
+  if (who === 'thorne') fx.push(MINUS + ' Abigail Thorne'); if (who === 'edmund') fx.push(MINUS + ' Edmund', MINUS + ' Henrietta', MINUS + '8 Household'); if (who === 'crabbe') fx.push(MINUS + ' Mr Crabbe');
+  return {can, fx, buy, why:can ? '' : !open ? 'The books are closed.' : f.void || !f.tenant ? 'There is no tenant to turn out.' : 'Terms are being settled this quarter.'}; }
+function evictTenant(id, quiet){ const c = evictCost(id); if (!c.can) return false; const f = farm(id), p = pro(f), who = TENANT_IS(f), was = f.tenant, st = steward();
+  S.money -= c.buy; add({goodwill: f.she ? -15 : -12, standing:-4}); S.evicted = (S.evicted || 0) + 1;
+  if (who === 'thorne') reg('thorne', -4, 'Turned out of Long Barrow'); if (who === 'crabbe' && !F('crabbeGone')) reg('crabbe', -3, 'His nephew turned out of Long Barrow');
+  if (who === 'edmund') { reg('edmund', -4, 'Turned out of Kennet Bottom by his father'); reg('henrietta', -2, 'You turned Edmund out of his farm'); add({family:-8}); f.edmundOut = true; }
+  f.void = 2; f.arrears = 0; f.lease = {type:'will'}; f.level = 'fair'; delete f.rebate; S.payQueue = S.payQueue.filter(x => x !== id);
+  const said = `${st} serves the notice at ${f.name} on Tuesday. ${cap1(was)} reads it in the yard and puts it in ${p.his} pocket.
+
+The sale of stock is on the Friday week. By the month’s end the house is shut and the key hangs in the estate office. The farm is in hand.`;
+  if (!quiet) { S.journal.unshift({when:stamp(), title:'The Rent Roll', did:'Turned out ' + was + ' of ' + f.name}); save(); render(); }
+  return said; }
 const rentalNow = () => rentRoll().reduce((a, f) => a + f.rent, 0);
 /* The old three-way rent policy still answers: it sets every farm held from year to year. */
 function setRentAll(v){ const lvl = v < 1 ? 'easy' : v > 1 ? 'rack' : 'fair'; for (const f of S.farms) if (!f.void && f.lease.type === 'will') f.level = lvl; }
@@ -507,6 +527,28 @@ ventureTick = function(line){ ventureTickOne(line); if (!S.vent) return; const y
     if (y >= 1814 && live('privateer')) { stopVenture('privateer', 'Paid off at the peace'); S.money += 150; S.notes.push('The Hetty is paid off and sold out of the service. Your sixteenth of the hull comes to £150.'); } }
 };
 
+/* Three things to be done beyond the park pale: a gate on the London road, a race meeting and a telegraph station on the Down. Each moves a mark while it stands (see marks()). */
+const telegraphWanted = y => y >= 1796 && y <= 1813 && y !== 1802;
+Object.assign(VENTURES, {
+  turnpike:{ fx:["+£35 a year in tolls", "+2 Standing", "−2 Goodwill", "+£400 if sold"], risk:0, odds:{"well": 0.9, "dull": 0.1, "ill": 0}, effects:`About £35 a year in tolls. Standing rises a little. Goodwill falls a little while the gate stands. The share sells for £400.`, name:'A turnpike gate on the London road', where:'The London road', cost:500,
+    well:'About £35 a year out of the tolls, and a trustee’s seat at the George.', ill:'Every cart from Hatherley to Wyvern market pays at the gate.', state:v => 'Taking toll since ' + v.year,
+    endLabel:'Sell the share', end:() => { S.money += 400; return `Your share in the Wyvern Turnpike Trust is sold to Mr Tidmarsh for £400. The gate-keeper is told on Monday.`; }},
+  racecourse:{ fx:["+3 Standing", "+1 Goodwill", "−£60 a year for the Plate"], risk:0, odds:{"well": 0.8, "dull": 0.2, "ill": 0}, effects:`Two days’ racing on the Down every August. Standing rises, and goodwill a little, while the meeting is kept up. The Hatherley Plate and the ordinary cost £60 a year.`, name:'A race meeting on the Down', where:'The Down', cost:300,
+    well:'A two-mile course on the old turf. The county comes for two days in August.', ill:'A Plate of fifty pounds must be found every year.', state:v => 'Run every August since ' + v.year,
+    endLabel:'Give up the meeting', end:() => `The meeting is given up. The posts and rails are sold to Mr Hartopp for hurdles. The stand goes for firewood.` },
+  telegraph:{ fx:["+£25 a year while the war lasts", "+1 Standing"], risk:0, odds:{"well": 0.9, "dull": 0.1, "ill": 0}, effects:`The Admiralty pays £25 a year for an acre on the Down while the war lasts. Standing rises a little.`, name:'An Admiralty telegraph on the Down', where:'The Down', cost:15, if:() => telegraphWanted(S.year),
+    well:'£25 a year from the Navy Board for one acre of turf.', ill:'A lieutenant and two seamen live in a hut on your hill. They have a telescope.', state:v => 'Six shutters on the hill since ' + v.year }
+});
+const ventureTickTwo = ventureTick;
+ventureTick = function(line){ ventureTickTwo(line); if (!S.vent) return; const y = S.year, q = S.season, earn = (label, a) => { line(label, a); if (a > 0) S.yearIncome += Math.round(a); };
+  if (live('turnpike') && q === 1 && y > vent('turnpike').year) earn('Tolls at the London road gate', 35);
+  if (live('racecourse') && q === 2 && y > vent('racecourse').year) line('The Hatherley Plate, and the ordinary', -60);
+  if (live('telegraph') && q === 3 && y > vent('telegraph').year) {
+    if (y >= 1814) { stopVenture('telegraph', 'Shut at the peace'); S.notes.push('The Admiralty has shut the telegraph. The lieutenant has gone on half-pay. The frame and the hut on the Down are left to you for the carting.'); }
+    else if (y === 1802) S.notes.push('The shutters on the Down are lashed down for the peace. The Navy Board pays no rent this year.');
+    else earn('The Navy Board, for the telegraph ground', 25); }
+};
+
 /* ---------- society: what money buys in the county and in town, and what can be sold out of the house ---------- */
 /* mark: how far the thing raises (or, sold, lowers) the level the county's opinion settles at. keep: its cost a year in 1795 money. */
 const SOCIETY = {
@@ -802,12 +844,14 @@ for (const [id, of] of [['plough', 'longbarrow'], ['peat', 'kennet'], ['brickkil
 function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]}; const put = (k, n, t) => { if (n) why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); return n; };
   let st = EST[i].standing; why.standing.push(EST[i].standing + ' ' + cap1(EST[i].name));
   st += put('standing', societyMark(), 'Society'); st += put('standing', -6 * (S.settledSold || 0), 'Settled land sold');
+  st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down');
   st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 6) ? -4 : 0, 'Not seen in the county this year and more'); st += put('standing', S.money < 0 ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
   let g = 44; why.goodwill.push('44 The parish as you found it');
   const rack = S.farms.filter(f => f.level === 'rack').length, easy = S.farms.filter(f => f.level === 'easy').length;
   g += put('goodwill', -4 * Math.min(4, rack), 'Rack rents'); g += put('goodwill', 2 * Math.min(4, easy), 'Easy rents'); g += put('goodwill', idle('ride', 6) ? -5 : 0, 'The tenants have not seen you this year and more');
   g += put('goodwill', F('cottages') ? 4 : 0, 'The cottages'); g += put('goodwill', F('school') ? 3 : 0, 'The school'); g += put('goodwill', F('wages') ? 5 : 0, 'Wages by the loaf'); g += put('goodwill', F('soup') ? 2 : 0, 'The soup kitchen');
   g += put('goodwill', F('enclosed') ? (F('allotments') ? -3 : -9) : 0, 'The common inclosed'); g += put('goodwill', vent('thresher') && !vent('thresher').ended ? -5 : 0, 'The threshing machine');
+  g += put('goodwill', live('turnpike') ? -2 : 0, 'The gate on the London road'); g += put('goodwill', live('racecourse') ? 1 : 0, 'Hatherley races'); g += put('goodwill', -4 * Math.min(2, S.evicted || 0), 'Tenants turned out');
   g += put('goodwill', held('harriers') ? -2 : 0, 'Harriers over the wheat'); g += put('goodwill', i === 3 ? -4 : i === 0 ? 2 : 0, i === 3 ? 'A splendid house in a hungry parish' : 'A plain table');
   g += put('goodwill', PRICES[S.year] >= 95 && !F('soup') && !F('wages') && house('labour') !== 'high' ? -8 : 0, 'Bread at famine price');
   let fm = 45; why.family.push('45 The house as you found it'); fm += put('family', idle('home', 4) ? -6 : 0, 'You have not kept at home this twelvemonth');
