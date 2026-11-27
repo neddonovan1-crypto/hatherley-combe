@@ -1093,311 +1093,303 @@ const armyRank = () => F('major') ? 'Major' : S.year < 1800 ? 'Ensign' : S.year 
 
 const EDMUND = [
   /* ---------- the Army: 52nd Foot ---------- */
-  {id:'edmund-chelmsford', kind:'news', w:() => at('army') && yr(1796, 1800), x:() => `“Chelmsford Barracks. My dear Father, It has rained here nineteen days. We have been reviewed four times since we came. Each General told us we were a fine body of men and rode away to his dinner. I can shave in cold water now. Tamworth of ours keeps a jackdaw. It says Damn the French very distinctly. It says one thing more. Pray do not let my mother ask what.”`},
-  {id:'edmund-colour', kind:'news', w:() => at('army') && yr(1796, 1799), x:() => `“Chelmsford. My dear Father, I carried the King’s colour on Thursday for the first time. It weighs more than I had been told and there was a wind. An Ensign has four shillings and eightpence a day. The mess takes three shillings. My servant takes sixpence. The washerwoman takes what she can find. I have dined twice this week with the Major to save candles.”`},
-  {id:'edmund-ferrol', kind:'news', w:() => at('army') && yr(1800, 1801), x:() => `“At sea, off Ferrol. My dear Father, We were landed on the 25th in boats. We marched up a hill. The Generals looked at the town through their glasses for a day. Then we marched down the hill and were put on board again. Nobody has told us why. I lost a shoe in the surf going in and found another coming out. It is not a pair.”`},
-  {id:'edmund-aboukir', kind:'news', w:() => at('army') && yr(1801, 1802), x:() => `“Camp before Alexandria. My dear Father, We came ashore at Aboukir in the flat boats. The French had guns on the sandhills and gave us grape all the way in. The man on the next thwart was killed. We beat them again here on the 21st. Sir Ralph had a ball in the thigh and is dead of it. I have seen the Pyramids from nine miles off. Then I took the ophthalmia with half the regiment and saw nothing at all for three weeks. I am mended. I can tell a camel from a field officer at forty yards.”`},
-  {id:'edmund-reduced', kind:'news', w:() => at('army') && yr(1802, 1803), x:() => `“Chatham. My dear Father, It is Peace and the Army is to be reduced. Nine of our subalterns go upon half-pay at Michaelmas. I am eleventh on the list. The talk in the mess is all of curacies and coal merchants. Tamworth has sold his jackdaw to a Major of Marines. If I am the tenth, is there work for me at Hatherley? I can keep a company’s books.”`},
-  {id:'edmund-beacon', kind:'news', w:() => at('army') && yr(1803, 1805), x:() => `“Shorncliffe. My dear Father, We sleep in our boots. On Tuesday night the beacon on the hill was seen alight and the whole brigade stood to arms. We were three hours on the beach in the dark with sixty rounds a man. At four a dragoon rode in. It was a lime kiln at Folkestone. Sir John said we had turned out very well and might do it again on Thursday.”`},
-  {id:'edmund-shorncliffe', kind:'news', w:() => at('army') && yr(1803, 1807), x:() => `“Shorncliffe Camp. My dear Father, Sir John Moore has us out at five. We are to fight in pairs, one man loading while the other fires. The men are to be told the reason of an order. Nobody is to be flogged without cause. Major Pott says the service is ruined. I was never so tired in my life and I would not be anywhere else. On a clear day we see the French camp at Boulogne from the cliff. On Monday they had their washing out.”`},
-  {id:'edmund-zealand', kind:'news', w:() => at('army') && yr(1807, 1808), x:() => `“Before Copenhagen. My dear Father, We have burnt a good part of this town and taken the Danish fleet out of the harbour. The Danes were not at war with us in July. Our picquet is in a gentleman’s garden among his currant bushes. His wife sells us cream at the gate every morning. She will not look at us while she does it. I am very well fed.”`},
-  {id:'edmund-vimeiro', kind:'news', w:() => at('army') && yr(1808, 1808), x:() => `“Vimeiro, Portugal. My dear Father, I have now seen the French come on. They come in a column forty men across with the drums beating. We stood on the hill in a line two deep and fired into the head of it. In a quarter of an hour they were going down the hill again. Sir Arthur called for the dragoons. Then Sir Harry Burrard came ashore, being the senior, and said we had done enough for one day.”`},
-  {id:'edmund-corunna', kind:'news', w:() => at('army') && yr(1809, 1809), x:() => `“Plymouth. My dear Father, I am alive and have both my feet. We marched to Corunna in the snow, two hundred and fifty miles, with Marshal Soult a day behind. At Bembibre men sold their shoes for rum and lay down in the road. We left them. Sir John was struck by a round shot on the 16th. They buried him on the rampart in his cloak before it was light. I have no stockings. I have eaten part of a mule. My mother need not hear of the mule.”`},
-  {id:'edmund-busaco', kind:'news', w:() => at('army') && yr(1810, 1810), x:() => `“Busaco. My dear Father, We lay down behind the crest in the fog and heard them climbing. General Craufurd stood alone on a rock in front. When their drums were forty yards off he took off his hat and called us up. Eighteen hundred men stood up out of the heather at once. I saw the faces of their front rank. We did not fire above three rounds. I have a French serjeant’s pipe.”`},
-  {id:'edmund-hounds', kind:'news', w:() => at('army') && yr(1810, 1811), x:() => `“Behind the Lines, near Arruda. My dear Father, Lord Wellington keeps a pack of hounds and hunts three days a week. On Saturday the fox ran straight for the French outposts. Their picquet turned out and cheered him through. Then they cheered us. The Field Marshal was not pleased with the huntsman. Pray ask Mudge what is given for mange. Two couple have it.”`},
-  {id:'edmund-rodrigo', kind:'news', w:() => at('army') && yr(1812, 1812), x:() => `“Ciudad Rodrigo. My dear Father, We went up the lesser breach at seven on the night of the 19th. It was over in half an hour. General Craufurd was hit at the foot of it and died on the 24th. The Division carried him to the breach and buried him in it. Marching back we came to a pool across the road. Nobody went round. He never let us go round.”`},
-  {id:'edmund-badajoz', kind:'news', w:() => at('army') && yr(1811, 1812), x:() => `“Camp before Badajoz. My dear Father, We are in the trenches and the trenches are full of water. Lord Wellington rode by on Tuesday in a grey frock and a plain hat. He looked at our parallel for one minute and said it would do. The men speak of it still. My servant Pedro has stolen a pig from the Spaniards. I reprimanded him before the company. We dine on it Thursday.”`},
-  {id:'edmund-vitoria', kind:'news', w:() => at('army') && yr(1813, 1813), x:() => `“Vitoria. My dear Father, We have taken King Joseph’s whole baggage on the road east of the town. Two thousand carriages. I saw a private of ours in a lady’s ball dress, carrying a ham. I saw another boiling his kettle on a fire of muskets. Dollars are sold tonight at eight for a guinea, being too heavy to carry. I have a silver dish and a French dictionary. Pedro has a monkey.”`},
-  {id:'edmund-pyrenees', kind:'news', w:() => at('army') && yr(1813, 1814), x:() => `“St Jean de Luz. My dear Father, We are in France. The country people bring us eggs and fowls and take dollars for them. His Lordship hanged two men last week for plundering a farm. A woman here told my serjeant she would sooner quarter us than her own army. I am as brown as a saddle. On Sunday I slept in a bed and did not like it. Tell my mother I wear the flannel.”`},
-  {id:'edmund-toulouse', kind:'news', w:() => at('army') && yr(1814, 1814), x:() => `“Toulouse. My dear Father, It is Peace. We fought here on Easter Sunday and lost four thousand men. On the Tuesday a Colonel rode in from Paris. Bonaparte had abdicated four days before the battle. Nobody had told Marshal Soult. Nobody had told us. The theatre is open and the people throw white cockades into the boxes. I sat through an opera. I have not sat in a chair since Lisbon.”`},
-  {id:'edmund-cantonments', kind:'news', w:() => at('army'), x:() => `“My dear Father, There is nothing to tell. We drill, we are inspected and we are moved nine miles to drill again. My company is sixty-one men, of whom eleven can read. I write their letters on Sundays. Most begin ‘Dear Mother, this comes hoping’. One began ‘Dear Mary’ and wanted a deal of altering when he remembered his wife’s name was Ann.”`},
+  {id:'edmund-chelmsford', kind:'news', w:() => at('army') && yr(1796, 1800), x:() => `“Chelmsford Barracks. My dear Father, It has rained here nineteen days, and we have been reviewed four times since we came, each General telling us that we were a fine body of men, and riding away to his dinner. I can shave in cold water now. Tamworth of ours keeps a jackdaw, which says Damn the French very distinctly; and as it says one thing more, pray do not let my mother ask what.”`},
+  {id:'edmund-colour', kind:'news', w:() => at('army') && yr(1796, 1799), x:() => `“Chelmsford. My dear Father, I carried the King’s colour on Thursday for the first time, and found it weigh more than I had been told, there being a wind. An Ensign has four shillings and eightpence a day, of which the mess takes three shillings, and my servant sixpence, and the washerwoman what she can find; so that I have dined twice this week with the Major, to save candles.”`},
+  {id:'edmund-ferrol', kind:'news', w:() => at('army') && yr(1800, 1801), x:() => `“At sea, off Ferrol. My dear Father, We were landed on the 25th in boats, and marched up a hill, from which the Generals looked at the town through their glasses for a day; and then we marched down the hill, and were put on board again, and nobody has told us why. I lost a shoe in the surf going in, and found another coming out. It is not a pair.”`},
+  {id:'edmund-aboukir', kind:'news', w:() => at('army') && yr(1801, 1802), x:() => `“Camp before Alexandria. My dear Father, We came ashore at Aboukir in the flat boats, the French having guns upon the sandhills, and giving us grape all the way in; and the man upon the next thwart was killed. We beat them again here on the 21st, where Sir Ralph had a ball in the thigh, and is dead of it. I have seen the Pyramids from nine miles off; after which I took the ophthalmia with half the regiment, and saw nothing at all for three weeks. I am mended, and can tell a camel from a field officer at forty yards.”`},
+  {id:'edmund-reduced', kind:'news', w:() => at('army') && yr(1802, 1803), x:() => `“Chatham. My dear Father, It is Peace, and the Army is to be reduced. Nine of our subalterns go upon half-pay at Michaelmas, and I am eleventh on the list; and the talk in the mess is all of curacies and coal merchants. Tamworth has sold his jackdaw to a Major of Marines. If I should be the tenth, is there work for me at Hatherley? I can keep a company’s books.”`},
+  {id:'edmund-beacon', kind:'news', w:() => at('army') && yr(1803, 1805), x:() => `“Shorncliffe. My dear Father, We sleep in our boots. On Tuesday night the beacon upon the hill was seen alight, and the whole brigade stood to arms, and was three hours on the beach in the dark with sixty rounds a man; until at four a dragoon rode in, to say that it was a lime kiln at Folkestone. Sir John said that we had turned out very well, and might do it again on Thursday.”`},
+  {id:'edmund-shorncliffe', kind:'news', w:() => at('army') && yr(1803, 1807), x:() => `“Shorncliffe Camp. My dear Father, Sir John Moore has us out at five. We are to fight in pairs, one man loading while the other fires; and the men are to be told the reason of an order, and nobody flogged without cause; so that Major Pott says the service is ruined. I was never so tired in my life, and I would not be anywhere else. On a clear day we see the French camp at Boulogne from the cliff; and on Monday they had their washing out.”`},
+  {id:'edmund-zealand', kind:'news', w:() => at('army') && yr(1807, 1808), x:() => `“Before Copenhagen. My dear Father, We have burnt a good part of this town, and taken the Danish fleet out of the harbour, though the Danes were not at war with us in July. Our picquet is in a gentleman’s garden, among his currant bushes; and his wife sells us cream at the gate every morning, and will not look at us while she does it. I am very well fed.”`},
+  {id:'edmund-vimeiro', kind:'news', w:() => at('army') && yr(1808, 1808), x:() => `“Vimeiro, Portugal. My dear Father, I have now seen the French come on, which they do in a column forty men across, with the drums beating. We stood upon the hill in a line two deep, and fired into the head of it; and in a quarter of an hour they were going down the hill again. Sir Arthur called for the dragoons. But then Sir Harry Burrard came ashore, who is the senior, and said that we had done enough for one day.”`},
+  {id:'edmund-corunna', kind:'news', w:() => at('army') && yr(1809, 1809), x:() => `“Plymouth. My dear Father, I am alive, and have both my feet. We marched to Corunna in the snow, two hundred and fifty miles, with Marshal Soult a day behind; and at Bembibre men sold their shoes for rum, and lay down in the road, and we left them. Sir John was struck by a round shot on the 16th, and they buried him upon the rampart, in his cloak, before it was light. I have no stockings; and I have eaten part of a mule, of which my mother need not hear.”`},
+  {id:'edmund-busaco', kind:'news', w:() => at('army') && yr(1810, 1810), x:() => `“Busaco. My dear Father, We lay down behind the crest in the fog, and heard them climbing, General Craufurd standing alone upon a rock in front; and when their drums were forty yards off he took off his hat, and called us up, and eighteen hundred men stood up out of the heather at once. I saw the faces of their front rank. We did not fire above three rounds. I have a French serjeant’s pipe.”`},
+  {id:'edmund-hounds', kind:'news', w:() => at('army') && yr(1810, 1811), x:() => `“Behind the Lines, near Arruda. My dear Father, Lord Wellington keeps a pack of hounds, and hunts three days a week. On Saturday the fox ran straight for the French outposts, whose picquet turned out, and cheered him through, and then cheered us; and the Field Marshal was not pleased with the huntsman. Pray ask Mudge what is given for mange, as two couple have it.”`},
+  {id:'edmund-rodrigo', kind:'news', w:() => at('army') && yr(1812, 1812), x:() => `“Ciudad Rodrigo. My dear Father, We went up the lesser breach at seven on the night of the 19th, and in half an hour it was over. General Craufurd was hit at the foot of it, and died on the 24th; and the Division carried him to the breach, and buried him in it. Marching back we came to a pool across the road, and nobody went round. He never let us go round.”`},
+  {id:'edmund-badajoz', kind:'news', w:() => at('army') && yr(1811, 1812), x:() => `“Camp before Badajoz. My dear Father, We are in the trenches, and the trenches are full of water. Lord Wellington rode by on Tuesday, in a grey frock and a plain hat, and having looked at our parallel for one minute, said that it would do; and the men speak of it still. My servant Pedro has stolen a pig from the Spaniards, for which I reprimanded him before the company. We dine on it Thursday.”`},
+  {id:'edmund-vitoria', kind:'news', w:() => at('army') && yr(1813, 1813), x:() => `“Vitoria. My dear Father, We have taken King Joseph’s whole baggage upon the road east of the town, to the number of two thousand carriages. I saw a private of ours in a lady’s ball dress, carrying a ham, and another boiling his kettle on a fire of muskets; and dollars, being too heavy to carry, are sold tonight at eight for a guinea. I have a silver dish and a French dictionary. Pedro has a monkey.”`},
+  {id:'edmund-pyrenees', kind:'news', w:() => at('army') && yr(1813, 1814), x:() => `“St Jean de Luz. My dear Father, We are in France. The country people bring us eggs and fowls, and take dollars for them, his Lordship having last week hanged two men for plundering a farm; and a woman here told my serjeant that she would sooner quarter us than her own army. I am as brown as a saddle. On Sunday I slept in a bed, and did not like it. Tell my mother I wear the flannel.”`},
+  {id:'edmund-toulouse', kind:'news', w:() => at('army') && yr(1814, 1814), x:() => `“Toulouse. My dear Father, It is Peace. We fought here on Easter Sunday, and lost four thousand men; and on the Tuesday a Colonel rode in from Paris, with the news that Bonaparte had abdicated four days before the battle, which nobody had told Marshal Soult, or us. The theatre is open, and the people throw white cockades into the boxes. I sat through an opera, not having sat in a chair since Lisbon.”`},
+  {id:'edmund-cantonments', kind:'news', w:() => at('army'), x:() => `“My dear Father, There is nothing to tell. We drill, and are inspected, and are moved nine miles to drill again. My company is sixty-one men, of whom eleven can read, and I write the letters of the rest on Sundays. Most begin ‘Dear Mother, this comes hoping’; but one began ‘Dear Mary’, and wanted a deal of altering when the man remembered that his wife’s name was Ann.”`},
 
   /* ---------- the Navy ---------- */
-  {id:'edmund-ushant', kind:'news', w:() => at('navy') && yr(1796, 1799), x:() => `“Off Ushant. My dear Father, We have been eleven weeks on this station. Each morning we stand in and count the French in Brest Water. They count us. Then we stand out again. The purser’s goat has eaten the Captain’s signal book, private signals and all. The Captain wished her shot. The surgeon reminded him that she gives milk. I am rated master’s mate. I took the noon sight yesterday and put the ship within four miles of where she was.”`},
-  {id:'edmund-berth', kind:'news', w:() => at('navy') && yr(1796, 1800), x:() => `“At sea. My dear Father, There are eleven of us in the midshipmen’s berth and one candle. The biscuit is alive. We tap it on the table before we bite and the weevils walk out. The rats are fed on it in a cask by a boy named Lott. He sells them at threepence, skinned. I have not bought one. I have tasted one. Do not tell my mother.”`},
-  {id:'edmund-copenhagen', kind:'news', w:() => at('navy') && yr(1801, 1802), x:() => `“Yarmouth Roads. My dear Father, We were at Copenhagen on the 2nd under Lord Nelson. Sir Hyde made the signal to leave off. They say his Lordship put the glass to his blind eye and declared he could not see it. I had three guns on the main deck. I heard nothing for two days after and there is a singing in my head still. I have passed for Lieutenant. Captain Holloway said, ‘I suppose you will do.’ The gunroom tells me he never said so much to any man before.”`},
-  {id:'edmund-paidoff', kind:'news', w:() => at('navy') && yr(1802, 1803), x:() => `“Portsmouth. My dear Father, The ship is paid off. There are four hundred Lieutenants in this town on half-pay and one coffee-room. I share a lodging over a sail-maker’s with two of them. We have one good coat among the three and take it in turn to call upon the Port Admiral. Tuesday is my day. He has not yet been at home on a Tuesday.”`},
-  {id:'edmund-toulon', kind:'news', w:() => at('navy') && yr(1803, 1805), x:() => `“Off Toulon. My dear Father, We are two years on this station this month. I have not been ashore in fourteen. The beef cask we opened on Monday was branded 1789. We have lemons from Sardinia. I dined in the Victory last week. I could think of nothing to say and spoke of your turnips. On Thursday Lord Nelson hailed our boat. He asked how the turnips did.”`},
-  {id:'edmund-tetuan', kind:'news', w:() => at('navy') && yr(1805, 1806), x:() => `“Gibraltar. My dear Father, We were not in the battle. We were sent to Tetuan with Admiral Louis for water and bullocks on the 3rd of October. We came back with the bullocks on the 30th. The Victory was towed in here under jury masts with the flag at half mast. Our people stood along the side and said nothing. I am now the only Lieutenant of my standing who has missed the Nile and Trafalgar both.”`},
-  {id:'edmund-skaw', kind:'news', w:() => at('navy') && yr(1806, 1810), x:() => `“Off the Skaw. My dear Father, There are no French at sea. We bring two hundred merchantmen down from the Baltic at four knots and fire a gun at any that straggle. The event of the quarter was the wardroom cheese. It went overboard in a gale on the 9th. Captain Holloway has the gout and keeps his cabin. I am First Lieutenant and I work the ship. I find that I can.”`},
-  {id:'edmund-prize', kind:'news', w:() => at('navy') && yr(1806, 1810), x:() => `“The Nore. My dear Father, We have taken a Danish brig off Anholt. She was laden with tar, deals and nine hundred cheeses. The Prize Court gives her to us. My share is sixty-one pounds four shillings, less the agent. The agent’s share is not stated. We kept forty of the cheeses for the gunroom. They are a hard red cheese. The carpenter says he could plank a boat with them.”`},
-  {id:'edmund-flushing', kind:'news', w:() => at('navy') && yr(1809, 1810), x:() => `“Off Flushing. My dear Father, We carried six hundred soldiers to the island of Walcheren in August. They went ashore singing. We are now carrying them home. They lie on the gun deck in rows and shake. It is a fever out of the ditches. We have buried forty-one over the side between this and the Downs. Not a man of ours has it. The surgeon puts it down to rum.”`},
-  {id:'edmund-sandyhook', kind:'news', w:() => at('navy') && yr(1811, 1812), x:() => `“Halifax. My dear Father, We are sent to the American station. Their frigates carry twenty-four pounders and are built like seventy-fours. We met one off Sandy Hook. She looked at us and we looked at her. Our orders are to give no offence. Captain Holloway has gone home with his gout. I am made Commander into the Sparrow sloop, 18 guns. She makes fourteen inches of water in a watch. I would not change her for a three-decker.”`},
-  {id:'edmund-java', kind:'news', w:() => at('navy') && yr(1813, 1814), x:() => `“Halifax. My dear Father, The American frigates carry twenty-four pounders and sail two feet to our one. They have taken the Guerriere and the Java. The London papers reach us six weeks old and very angry. We have had nobody to fight these seven years and our gunnery shows it. The Sparrow makes fourteen inches of water in a watch. I exercise the great guns every day but Sunday.”`},
-  {id:'edmund-shannon', kind:'news', w:() => at('navy') && yr(1813, 1814), x:() => `“Halifax. My dear Father, The Shannon has taken the Chesapeake off Boston. It was done in fifteen minutes. She brought her in here on Sunday during morning service. Somebody opened the church door and called it out. The whole congregation got up and went down to the wharves. The clergyman went with them. Captain Broke was carried ashore with his head laid open. He drilled his gunners every day for seven years.”`},
-  {id:'edmund-middlewatch', kind:'news', w:() => at('navy'), x:() => `“At sea. My dear Father, I write in the middle watch. There is no news. Yesterday we sighted a sail. It was a Portuguese with salt. The day before, we scrubbed hammocks. I have read the Hatherley letters until they come apart at the folds. Tell me how the wheat looks in Twelve Acres. Tell me who has the mill. Tell me anything that grows.”`},
+  {id:'edmund-ushant', kind:'news', w:() => at('navy') && yr(1796, 1799), x:() => `“Off Ushant. My dear Father, We have been eleven weeks upon this station, where every morning we stand in, and count the French in Brest Water, and they count us, and we stand out again. The purser’s goat has eaten the Captain’s signal book, private signals and all, and the Captain wished her shot, until the surgeon reminded him that she gives milk. I am rated master’s mate; and taking the noon sight yesterday, I put the ship within four miles of where she was.”`},
+  {id:'edmund-berth', kind:'news', w:() => at('navy') && yr(1796, 1800), x:() => `“At sea. My dear Father, There are eleven of us in the midshipmen’s berth, and one candle. The biscuit is alive, and we tap it upon the table before we bite, when the weevils walk out. The rats are fed upon it in a cask by a boy named Lott, who sells them at threepence, skinned. I have not bought one; but as I have tasted one, do not tell my mother.”`},
+  {id:'edmund-copenhagen', kind:'news', w:() => at('navy') && yr(1801, 1802), x:() => `“Yarmouth Roads. My dear Father, We were at Copenhagen on the 2nd, under Lord Nelson. Sir Hyde made the signal to leave off; and they say that his Lordship put the glass to his blind eye, and declared he could not see it. I had three guns on the main deck, and heard nothing for two days after, and there is a singing in my head still. I have passed for Lieutenant. Captain Holloway said, ‘I suppose you will do’; and the gunroom tells me that he never said so much to any man before.”`},
+  {id:'edmund-paidoff', kind:'news', w:() => at('navy') && yr(1802, 1803), x:() => `“Portsmouth. My dear Father, The ship is paid off; and there are in this town four hundred Lieutenants upon half-pay, and one coffee-room. I share a lodging over a sail-maker’s with two of them; and having one good coat among the three, we take it in turn to call upon the Port Admiral. Tuesday is my day, and he has not yet been at home on a Tuesday.”`},
+  {id:'edmund-toulon', kind:'news', w:() => at('navy') && yr(1803, 1805), x:() => `“Off Toulon. My dear Father, We are two years upon this station this month, and I have not been ashore in fourteen. The beef cask that we opened on Monday was branded 1789; but we have lemons from Sardinia. I dined in the Victory last week, where I could think of nothing to say, and spoke of your turnips; and on Thursday Lord Nelson hailed our boat, and asked how the turnips did.”`},
+  {id:'edmund-tetuan', kind:'news', w:() => at('navy') && yr(1805, 1806), x:() => `“Gibraltar. My dear Father, We were not in the battle, having been sent to Tetuan with Admiral Louis on the 3rd of October, for water and bullocks; and we came back with the bullocks on the 30th. The Victory was towed in here under jury masts, with the flag at half mast, and our people stood along the side, and said nothing. I am now the only Lieutenant of my standing who has missed the Nile and Trafalgar both.”`},
+  {id:'edmund-skaw', kind:'news', w:() => at('navy') && yr(1806, 1810), x:() => `“Off the Skaw. My dear Father, There are no French at sea. We bring two hundred merchantmen down from the Baltic at four knots, and fire a gun at any that straggle; and the event of the quarter was the wardroom cheese, which went overboard in a gale on the 9th. Captain Holloway has the gout, and keeps his cabin; so that I am First Lieutenant, and work the ship, and find that I can.”`},
+  {id:'edmund-prize', kind:'news', w:() => at('navy') && yr(1806, 1810), x:() => `“The Nore. My dear Father, We have taken a Danish brig off Anholt, laden with tar, deals, and nine hundred cheeses, and the Prize Court gives her to us. My share is sixty-one pounds four shillings, less the agent, whose own share is not stated. We kept forty of the cheeses for the gunroom. They are a hard red cheese; and the carpenter says that he could plank a boat with them.”`},
+  {id:'edmund-flushing', kind:'news', w:() => at('navy') && yr(1809, 1810), x:() => `“Off Flushing. My dear Father, We carried six hundred soldiers to the island of Walcheren in August, who went ashore singing; and we are now carrying them home, laid in rows upon the gun deck, and shaking. It is a fever out of the ditches. We have buried forty-one over the side between this and the Downs; and as not a man of ours has it, the surgeon puts it down to rum.”`},
+  {id:'edmund-sandyhook', kind:'news', w:() => at('navy') && yr(1811, 1812), x:() => `“Halifax. My dear Father, We are sent to the American station. Their frigates carry twenty-four pounders, and are built like seventy-fours; and meeting one off Sandy Hook, she looked at us, and we at her, our orders being to give no offence. Captain Holloway has gone home with his gout, and I am made Commander into the Sparrow sloop, of 18 guns. She makes fourteen inches of water in a watch, and I would not change her for a three-decker.”`},
+  {id:'edmund-java', kind:'news', w:() => at('navy') && yr(1813, 1814), x:() => `“Halifax. My dear Father, The American frigates carry twenty-four pounders, and sail two feet to our one, and they have taken the Guerriere and the Java; and the London papers reach us six weeks old, and very angry. We have had nobody to fight these seven years, and our gunnery shows it. The Sparrow makes fourteen inches of water in a watch; and I exercise the great guns every day but Sunday.”`},
+  {id:'edmund-shannon', kind:'news', w:() => at('navy') && yr(1813, 1814), x:() => `“Halifax. My dear Father, The Shannon has taken the Chesapeake off Boston, in fifteen minutes, and brought her in here on Sunday during morning service; when somebody opening the church door, and calling it out, the whole congregation got up, and went down to the wharves, and the clergyman with them. Captain Broke was carried ashore with his head laid open. He had drilled his gunners every day for seven years.”`},
+  {id:'edmund-middlewatch', kind:'news', w:() => at('navy'), x:() => `“At sea. My dear Father, I write in the middle watch, and there is no news. Yesterday we sighted a sail, which proved a Portuguese, with salt; and the day before, we scrubbed hammocks. I have read the Hatherley letters until they come apart at the folds. Tell me how the wheat looks in Twelve Acres. Tell me who has the mill. Tell me anything that grows.”`},
 
   /* ---------- the Militia ---------- */
-  {id:'edmund-ipswich', kind:'news', w:() => at('militia') && yr(1803, 1808), x:() => `“Ipswich Barracks. My dear Father, I have ninety Berkshire ploughmen in red coats. Forty are substitutes at ten guineas a head. One has been a substitute in three counties. They drill well enough. They will not keep step past a field of wheat without looking over the hedge. Yesterday the whole company gave its opinion of a Suffolk ploughing as it marched by. The opinion was low.”`},
-  {id:'edmund-dover', kind:'news', w:() => at('militia') && yr(1804, 1810), x:() => `“Dover Castle. My dear Father, We mount guard on the Western Heights and look at France. On a clear morning I can count the windows in Calais. They are building round towers along this shore, one to every half mile, with a gun on top. The men call them Mr Pitt’s pepper-pots. A tower costs seven thousand pounds. My company has not had new shoes since Reading.”`},
-  {id:'edmund-hythe', kind:'news', w:() => at('militia') && yr(1805, 1809), x:() => `“Hythe. My dear Father, We are lent to the Engineers to dig. There is to be a canal from here to Rye to keep out the French, thirty feet wide. A Frenchman who has crossed the Channel is to be stopped by a ditch. My ploughmen dig it better than the navigators and for less. The Colonel is very proud of this. The men would sooner have the navigators’ wages.”`},
-  {id:'edmund-volunteering', kind:'news', w:() => at('militia') && yr(1807, 1812), x:() => `“My dear Father, A serjeant of the Line has been through the barracks with a drum. Any Militia man who goes into the regulars has ten guineas. I have lost thirty-four from my company in a week. They go to Portugal. I asked the Colonel for leave to go with them as a volunteer. He said that I was a married man or ought to be, and that somebody must teach the next thirty-four their left feet.”`},
-  {id:'edmund-normancross', kind:'news', w:() => at('militia') && yr(1808, 1813), x:() => `“Norman Cross. My dear Father, We are guarding six thousand French prisoners in wooden barracks on a heath. They have a market at the gate every forenoon. They sell ships made of mutton bones, with all their rigging. They sell straw hats. One sells lessons in fencing. I have bought my mother a work-box. The man who made it was a dragoon at Marengo. He asked me whether we had any news of peace.”`},
-  {id:'edmund-huddersfield', kind:'news', w:() => at('militia') && yr(1812, 1813), x:() => `“Huddersfield. My dear Father, We are marched into Yorkshire to guard shearing frames against Englishmen. The croppers come at night with their faces blacked and break the frames with a great hammer. They call the hammer Enoch. My men are quartered on the town at five to a house. Nobody here will sell us an egg. I joined to keep the French out of Kent.”`},
-  {id:'edmund-disembodied', kind:'news', w:() => at('militia') && yr(1814, 1815), x:() => `“Reading. My dear Father, It is Peace and the Regiment is to be disembodied. The men give in their arms on Monday and have fourteen days’ pay to carry them home. Most have been eleven years from their parishes. My serjeant asked me what a man does who has been a serjeant. I could not tell him. I shall be at Hatherley on Thursday week with one trunk and a dog.”`},
-  {id:'edmund-guardroom', kind:'news', w:() => at('militia'), x:() => `“My dear Father, I am Captain of the day and write from the guard-room. Nothing has happened here since we came. The men mount guard over a magazine, a pump and a hay-stack. On Sunday a private of mine was found asleep against the hay-stack. He said in his defence that nobody had ever tried to take it. The Colonel gave him seven days.”`},
+  {id:'edmund-ipswich', kind:'news', w:() => at('militia') && yr(1803, 1808), x:() => `“Ipswich Barracks. My dear Father, I have ninety Berkshire ploughmen in red coats, of whom forty are substitutes at ten guineas a head, and one has been a substitute in three counties. They drill well enough; but they will not keep step past a field of wheat without looking over the hedge, and yesterday the whole company, as it marched by, gave its opinion of a Suffolk ploughing. The opinion was low.”`},
+  {id:'edmund-dover', kind:'news', w:() => at('militia') && yr(1804, 1810), x:() => `“Dover Castle. My dear Father, We mount guard upon the Western Heights, and look at France; and on a clear morning I can count the windows in Calais. They are building round towers along this shore, one to every half mile, with a gun on top, which the men call Mr Pitt’s pepper-pots. A tower costs seven thousand pounds; and my company has not had new shoes since Reading.”`},
+  {id:'edmund-hythe', kind:'news', w:() => at('militia') && yr(1805, 1809), x:() => `“Hythe. My dear Father, We are lent to the Engineers, to dig. There is to be a canal from here to Rye, thirty feet wide, to keep out the French; it being supposed that a Frenchman who has crossed the Channel will be stopped by a ditch. My ploughmen dig it better than the navigators, and for less, of which the Colonel is very proud; but the men would sooner have the navigators’ wages.”`},
+  {id:'edmund-volunteering', kind:'news', w:() => at('militia') && yr(1807, 1812), x:() => `“My dear Father, A serjeant of the Line has been through the barracks with a drum, offering ten guineas to any Militia man who will go into the regulars; and I have lost thirty-four from my company in a week, who go to Portugal. I asked the Colonel for leave to go with them as a volunteer. He said that I was a married man, or ought to be, and that somebody must teach the next thirty-four their left feet.”`},
+  {id:'edmund-normancross', kind:'news', w:() => at('militia') && yr(1808, 1813), x:() => `“Norman Cross. My dear Father, We are guarding six thousand French prisoners, in wooden barracks, upon a heath. They hold a market at the gate every forenoon, where they sell ships made of mutton bones, with all their rigging, and straw hats, and one of them lessons in fencing. I have bought my mother a work-box, of a man who was a dragoon at Marengo; and he asked me whether we had any news of peace.”`},
+  {id:'edmund-huddersfield', kind:'news', w:() => at('militia') && yr(1812, 1813), x:() => `“Huddersfield. My dear Father, We are marched into Yorkshire, to guard shearing frames against Englishmen. The croppers come at night, with their faces blacked, and break the frames with a great hammer, which they call Enoch. My men are quartered upon the town, at five to a house, and nobody here will sell us an egg. I joined to keep the French out of Kent.”`},
+  {id:'edmund-disembodied', kind:'news', w:() => at('militia') && yr(1814, 1815), x:() => `“Reading. My dear Father, It is Peace, and the Regiment is to be disembodied. The men give in their arms on Monday, and have fourteen days’ pay to carry them home, though most have been eleven years from their parishes; and my serjeant asked me what a man does who has been a serjeant, which I could not tell him. I shall be at Hatherley on Thursday week, with one trunk and a dog.”`},
+  {id:'edmund-guardroom', kind:'news', w:() => at('militia'), x:() => `“My dear Father, I am Captain of the day, and write from the guard-room. Nothing has happened here since we came. The men mount guard over a magazine, a pump, and a hay-stack; and a private of mine being found asleep on Sunday against the hay-stack, he said in his defence that nobody had ever tried to take it. The Colonel gave him seven days.”`},
 
   /* ---------- the Church, before he has a living ---------- */
-  {id:'edmund-oriel', kind:'news', w:() => at('church') && yr(1796, 1799), x:() => `“Oriel College. My dear Father, Chapel is at seven. I read Greek Testament with Mr Copleston at ten and Paley at twelve. Dinner is at three and the port goes round until six. There are men here who have not been seen sober since they matriculated and will be Deans. I have learnt one thing thoroughly. It is how to cross the quadrangle so that the Provost does not see my boots.”`},
-  {id:'edmund-ordained', kind:'news', w:() => at('church') && yr(1799, 1801), x:() => `“Oxford. My dear Father, I was ordained Deacon on Sunday. The Bishop’s chaplain examined me on the Saturday. He was shaving. He asked me to construe a verse of St John and said ‘Very well’ before I had done. Then he asked whose son I was. That took longer. There were eleven of us in the Cathedral. Two had been in the Army and one had failed as an attorney.”`},
-  {id:'edmund-curacy', kind:'news', w:() => at('church') && yr(1800, 1815), x:() => `“My dear Father, I have a curacy in Hampshire at fifty pounds a year. There are two churches seven miles apart. I serve one in the morning and ride to the other after a cold dinner. The Rector lives at Bath for his health. He has nine hundred a year from the tithe. I have seen him once. He told me that the people here were very attached to short sermons.”`},
-  {id:'edmund-burials', kind:'news', w:() => at('church') && yr(1800, 1815) && (PRICES[S.year] || 0) >= 100, x:() => `“My dear Father, I have buried nineteen since Christmas in a parish of three hundred. Eleven were children. It is not a fever. Wheat is too dear for a man on eight shillings to buy any. They live on tea and potatoes. I wrote to the Rector at Bath to ask for coals and flour for the poor. He sent two guineas and a tract on frugal cookery.”`},
-  {id:'edmund-tithepig', kind:'news', w:() => at('church') && yr(1801, 1815), x:() => `“My dear Father, I am sent by the Rector’s agent to take the tithe. Every tenth cock of hay. Every tenth lamb. On Tuesday it was a tenth pig, from a litter of nine. The farmer said that there was no tenth and the Church might have the next. His wife said I looked hungry and gave me bacon and eggs. I think I am not the man for this part of the work.”`},
-  {id:'edmund-pressed', kind:'news', w:() => at('church') && yr(1803, 1813), x:() => `“My dear Father, We are eleven miles from Portsmouth. On Saturday night the press gang came through and took four men out of the Anchor. I had married one of them on the Thursday. On Sunday his wife sat in the front pew by herself. I had a sermon ready upon contentment. I read them the hundred and seventh Psalm, about those that go down to the sea, and sent them home.”`},
-  {id:'edmund-waiting', kind:'news', w:() => at('church') && yr(1804, 1815), x:() => `“My dear Father, I have now been a curate eleven years counting from my Deacon’s orders. The Rector is seventy-four and takes the waters. I asked his agent who has the next presentation. It is sold already to a gentleman in the City for his nephew. The nephew is nine. I keep a pig, a pony and a school for six farmers’ sons. How does ${F('gallDead') ? 'the new man do at Hatherley' : 'Dr Gall do'}?”`},
+  {id:'edmund-oriel', kind:'news', w:() => at('church') && yr(1796, 1799), x:() => `“Oriel College. My dear Father, Chapel is at seven. I read Greek Testament with Mr Copleston at ten, and Paley at twelve; and dinner is at three, and the port goes round until six. There are men here who have not been seen sober since they matriculated, and who will be Deans. I have learnt one thing thoroughly, and that is how to cross the quadrangle so that the Provost does not see my boots.”`},
+  {id:'edmund-ordained', kind:'news', w:() => at('church') && yr(1799, 1801), x:() => `“Oxford. My dear Father, I was ordained Deacon on Sunday, having been examined on the Saturday by the Bishop’s chaplain, who was shaving. He asked me to construe a verse of St John, and said ‘Very well’ before I had done; and then he asked whose son I was, which took longer. There were eleven of us in the Cathedral, of whom two had been in the Army, and one had failed as an attorney.”`},
+  {id:'edmund-curacy', kind:'news', w:() => at('church') && yr(1800, 1815), x:() => `“My dear Father, I have a curacy in Hampshire, at fifty pounds a year. There are two churches, seven miles apart, of which I serve one in the morning, and ride to the other after a cold dinner. The Rector lives at Bath for his health, and has nine hundred a year from the tithe. I have seen him once, when he told me that the people here were very attached to short sermons.”`},
+  {id:'edmund-burials', kind:'news', w:() => at('church') && yr(1800, 1815) && (PRICES[S.year] || 0) >= 100, x:() => `“My dear Father, I have buried nineteen since Christmas, in a parish of three hundred, and eleven of them children. It is not a fever. Wheat is too dear for a man upon eight shillings to buy any, and they live on tea and potatoes. I wrote to the Rector at Bath, to ask for coals and flour for the poor; and he sent two guineas, and a tract upon frugal cookery.”`},
+  {id:'edmund-tithepig', kind:'news', w:() => at('church') && yr(1801, 1815), x:() => `“My dear Father, I am sent by the Rector’s agent to take the tithe, which is every tenth cock of hay, and every tenth lamb; and on Tuesday it was a tenth pig, from a litter of nine. The farmer said that there was no tenth, and the Church might have the next. His wife said that I looked hungry, and gave me bacon and eggs. I think I am not the man for this part of the work.”`},
+  {id:'edmund-pressed', kind:'news', w:() => at('church') && yr(1803, 1813), x:() => `“My dear Father, We are eleven miles from Portsmouth; and on Saturday night the press gang came through, and took four men out of the Anchor, one of whom I had married on the Thursday. On Sunday his wife sat in the front pew by herself. I had a sermon ready upon contentment; but I read them the hundred and seventh Psalm, about those that go down to the sea, and sent them home.”`},
+  {id:'edmund-waiting', kind:'news', w:() => at('church') && yr(1804, 1815), x:() => `“My dear Father, I have now been a curate eleven years, counting from my Deacon’s orders. The Rector is seventy-four, and takes the waters; and upon my asking his agent who has the next presentation, I learnt that it is sold already to a gentleman in the City, for his nephew, who is nine. I keep a pig, a pony, and a school for six farmers’ sons. How does ${F('gallDead') ? 'the new man do at Hatherley' : 'Dr Gall do'}?”`},
 
   /* ---------- at home, the heir ---------- */
   {id:'edmund-rentbook', kind:'talk', w:() => at('home') && !!tenantOf('church'), x:() => `Edmund comes to the book-room with the rent book under his arm.
 
 “Church Farm has paid the same rent since 1784, sir. Wheat was forty shillings then.”
 
-He has it worked out on a sheet of paper. He would raise it by a tenth at Lady Day.`,
+He has it all worked out upon a sheet of paper, by which he would raise the rent a tenth at Lady Day.`,
     a:() => `“Do it.”
 
-He writes the notice himself in a fair hand. He carries it to Church Farm himself. He is back in an hour.
+He writes the notice himself, in a fair hand, and himself carries it to Church Farm; and within the hour he is back.
 
 “He gave me a glass of ale, sir. He said he had expected it these five years.”`,
-    b:() => `You sit down with him and the book until the candles are changed. He knows what every field bore last year. You find two mistakes in his sums and he finds one in yours.
+    b:() => `You sit down with him and the book until the candles are changed. He knows what every field bore last year; and you find two mistakes in his sums, and he finds one in yours.
 
 At eleven Henrietta sends to ask whether either of you means to go to bed.`,
     c:() => `“I will think about it.”
 
 “Yes, sir.”
 
-He shuts the book. He puts the sheet of paper inside it. It is there when you open the book at Michaelmas.`},
+He shuts the book, with the sheet of paper inside it; and there you find it, when you open the book at Michaelmas.`},
   {id:'edmund-gun', kind:'talk', w:() => at('home') && (S.season === 2 || S.season === 3), x:() => `Edmund is cleaning both guns at the hall table.
 
 “Mudge has too many hen pheasants and no ground for them, sir. I would turn the rough end of Cuckoo Copse into cover. Forty rods of furze. One man, three weeks.”
 
-He does not look up from the lock.`,
-    a:() => `You give him the man and the three weeks. He is in the copse every morning in his shirt with a bill-hook.
+He says this without looking up from the lock.`,
+    a:() => `You give him the man, and the three weeks; and he is in the copse every morning in his shirt, with a bill-hook.
 
-In October you and he walk it up together. Eleven brace. He lets you take the right-hand birds.`,
-    b:() => `You walk down to the copse with him. He shows you where the furze is to go. He has it pegged out already.
+In October you walk it up together, and kill eleven brace; and he lets you take the right-hand birds.`,
+    b:() => `You walk down to the copse with him, and he shows you where the furze is to go, having it pegged out already.
 
-A cock pheasant gets up between your feet. Neither of you has a gun. You both laugh.`,
+A cock pheasant gets up between your feet; and neither of you having a gun, you both laugh.`,
     c:() => `“We shall see.”
 
-He finishes the lock. He hangs up the guns. Next week you see the pegs in Cuckoo Copse. Nobody has pulled them up.`},
-  {id:'edmund-gazette', kind:'talk', w:() => at('home') && yr(1798, 1814), x:() => `The Gazette has come. Edmund reads it standing at the window.
+He finishes the lock, and hangs up the guns. The week following you see the pegs in Cuckoo Copse, and that nobody has pulled them up.`},
+  {id:'edmund-gazette', kind:'talk', w:() => at('home') && yr(1798, 1814), x:() => `The Gazette has come, and Edmund reads it standing at the window.
 
 “Tamworth has his company,” he says. “He was below me at school.”
 
-He folds the paper. He asks whether you want him for anything this morning.`,
+He folds the paper, and asks whether you want him for anything this morning.`,
     a:() => `“Take the grey and ride to Newbury market. Sell the barley as you think fit.”
 
-He sells it at two shillings over what ${steward()} had asked. He tells you the price at dinner. He does not mention the Gazette.`,
-    b:() => `You take him round the home farm. You ask his opinion of every field and you take it in two.
+He sells it at two shillings over what ${steward()} had asked, and tells you the price at dinner; and he does not mention the Gazette.`,
+    b:() => `You take him round the home farm, and ask his opinion of every field, and in two of them you take it.
 
 At the last gate he says, “I know what you are doing, sir.”
 
 He holds the gate for you.`,
     c:() => `“Nothing this morning.”
 
-He goes out. You hear him in the yard, speaking to the groom. He rides towards the Down. He is not back for dinner.`},
-  {id:'edmund-drains', kind:'talk', w:() => at('home') && !S.projectsDone.drain, x:() => `Edmund has been at Hartopp’s. He comes back with clay to the knee.
+He goes out. You hear him in the yard, speaking to the groom; and he rides towards the Down, and is not back for dinner.`},
+  {id:'edmund-drains', kind:'talk', w:() => at('home') && !S.projectsDone.drain, x:() => `Edmund has been at Hartopp’s, and comes back with clay to the knee.
 
 “He has put stone drains under twenty acres, sir. He was sowing on it in February. Kennet Bottom is the same clay.”
 
-He has brought a piece of the clay in his handkerchief. He puts it on your desk.`,
-    a:() => `You let him try five acres at the wet end. He is out with the men at six.
+He has brought a piece of the clay in his handkerchief, and puts it upon your desk.`,
+    a:() => `You let him try five acres at the wet end, and he is out with the men at six.
 
-By spring the five acres are dry enough to walk. He walks you over them twice.`,
-    b:() => `You ride to Hartopp’s with him the next morning. Hartopp talks for two hours. Edmund asks him the cost by the rod. He asks it three times before Hartopp answers.
+By spring the five acres are dry enough to walk; and he walks you over them twice.`,
+    b:() => `You ride to Hartopp’s with him the next morning, where Hartopp talks for two hours, and Edmund asks him the cost by the rod, and has to ask it three times before he is answered.
 
 “That boy of yours,” says Hartopp, “will be a nuisance to somebody.”`,
     c:() => `“Not this year.”
 
-He takes the clay off your desk. There is a mark on the leather. It is there still.`},
+He takes the clay off your desk. It has left a mark upon the leather, which is there still.`},
   {id:'edmund-thirty', kind:'talk', w:() => at('home') && yr(1806, 1815), x:() => `It is Edmund’s birthday. He is ${19 + S.year - 1795}.
 
-He comes in after dinner and stands with his back to the fire.
+He comes in after dinner, and stands with his back to the fire.
 
 “I should like something that is mine to do, sir. I do not mean an allowance.”`,
-    a:() => `You give him the woods. Every copse on the estate, the felling, the sales and the planting.
+    a:() => `You give him the woods: every copse upon the estate, with the felling, the sales, and the planting.
 
-He has a book ruled for them by Friday. On Monday he marks forty oaks in Cuckoo Copse with a scribing-iron. He marks them himself.`,
-    b:() => `You talk until one. You tell him what your uncle left and what he owed. He has guessed most of it.
+By Friday he has a book ruled for them; and on Monday, with a scribing-iron, and with his own hand, he marks forty oaks in Cuckoo Copse.`,
+    b:() => `You talk until one, and tell him what your uncle left, and what he owed; most of which he has guessed.
 
-“I had rather know, sir,” he says on the stairs.`,
+“I had rather know, sir,” he says upon the stairs.`,
     c:() => `“You have the whole estate to learn.”
 
 “I have learnt it, sir.”
 
-He bows. He goes up. You hear his door.`},
+He bows, and goes up; and you hear his door.`},
 
   /* ---------- farming on his own account ---------- */
-  {id:'edmund-swedes', kind:'talk', w:() => at('farmer'), x:() => `Edmund rides up from his farm before breakfast. He has a Swede turnip in each coat pocket.
+  {id:'edmund-swedes', kind:'talk', w:() => at('farmer'), x:() => `Edmund rides up from his farm before breakfast, with a Swede turnip in each coat pocket.
 
 “Eleven pounds, that one, sir. Off the wet end. Your home farm has nothing over seven.”
 
-He puts them both on the breakfast table. Henrietta moves the butter.`,
-    a:() => `You buy his seed for the home farm at his price. He counts the money on the table.
+He puts them both upon the breakfast table, and Henrietta moves the butter.`,
+    a:() => `You buy his seed for the home farm, at his price; and he counts the money upon the table.
 
 “I should have asked more,” he says.
 
 He stays to breakfast.`,
-    b:() => `You ride back with him. Sophia shows you the dairy. Edmund shows you the Swedes, the drains and a bull.
+    b:() => `You ride back with him. Sophia shows you the dairy, and Edmund the Swedes, the drains, and a bull; and you are there until four.
 
-You are there until four. The bull is the only thing on the farm you would not have yourself.`,
+The bull is the only thing upon the farm that you would not have yourself.`,
     c:() => `“Very fine.”
 
-He looks at you. He puts the turnips back in his pockets.
+He looks at you, and puts the turnips back into his pockets.
 
 “Sophia sends her duty, sir.” He does not stay to breakfast.`},
-  {id:'edmund-rent', kind:'talk', w:() => at('farmer') && S.season === 2, x:() => `Michaelmas. Edmund comes to the audit with the other tenants. He waits his turn behind Mr Froome.
-
-He lays his rent on the table in notes and silver.
+  {id:'edmund-rent', kind:'talk', w:() => at('farmer') && S.season === 2, x:() => `It is Michaelmas; and Edmund comes to the audit with the other tenants, and waits his turn behind Mr Froome, and lays his rent upon the table in notes and silver.
 
 “I would have the same abatement as any other tenant, sir. Or none, as they have.”`,
-    a:() => `You give him a receipt as you gave Froome. You take off nothing.
+    a:() => `You give him a receipt as you gave Froome, and take off nothing.
 
-He reads it and puts it in his hat. At the audit dinner he sits among the farmers. He carves.`,
-    b:() => `You keep him after the others have gone. You go through his year with him. He has cleared forty pounds.
+He reads it, and puts it in his hat; and at the audit dinner he sits among the farmers, and carves.`,
+    b:() => `You keep him after the others have gone, and go through his year with him, by which it appears that he has cleared forty pounds.
 
 “It is forty more than I had from the Army,” he says. “And I was not shot at.”`,
     c:() => `You push ten pounds back across the table.
 
 “For my grandchildren.”
 
-He leaves it lying there. Sophia sends for it on Tuesday, with her thanks.`},
-  {id:'edmund-christening', kind:'talk', w:() => at('farmer') && yr(1805, 1815), x:() => `Edmund and Sophia have another child. He comes to ask whether you will stand godfather.
+He leaves it lying there; and on Tuesday Sophia sends for it, with her thanks.`},
+  {id:'edmund-christening', kind:'talk', w:() => at('farmer') && yr(1805, 1815), x:() => `Edmund and Sophia have another child, and he comes to ask whether you will stand godfather.
 
 “Sophia would like him called Barnaby, sir. For the estate.”
 
 He turns his hat round in his hands.`,
-    a:() => `The child is christened Barnaby. You give him a silver mug with the name cut on it.
+    a:() => `The child is christened Barnaby, and you give him a silver mug with the name cut upon it.
 
-At the font he roars. The clergyman says it is the Devil going out. Henrietta says it is your uncle coming in.`,
-    b:() => `You walk down to see the child. He is asleep. You are allowed to hold him for as long as he stays so.
+At the font he roars; which the clergyman says is the Devil going out, and Henrietta says is your uncle coming in.`,
+    b:() => `You walk down to see the child, who is asleep; and you are allowed to hold him for as long as he remains so.
 
-It is four minutes. You stand very still for all of it.`,
+It is four minutes, and for the whole of it you stand very still.`,
     c:() => `“Call him what you like. Not Barnaby.”
 
-He is christened Thomas. Sophia calls him Barnaby in the house.`},
-  {id:'edmund-machine', kind:'talk', w:() => at('farmer') && yr(1806, 1815), x:() => `Edmund has been to see a threshing machine at work. He comes up to the Hall with chaff in his hair.
+He is christened Thomas; and in the house Sophia calls him Barnaby.`},
+  {id:'edmund-machine', kind:'talk', w:() => at('farmer') && yr(1806, 1815), x:() => `Edmund has been to see a threshing machine at work, and comes up to the Hall with chaff in his hair.
 
 “It did in a day what my four men do in a fortnight, sir. Then I looked at my four men.”
 
 He asks what you would do.`,
     a:() => `“Keep your men.”
 
-He keeps them. His wheat is at market in March with everybody else’s. He does not complain of the price.`,
-    b:() => `You and he reckon it together. The machine saves him thirty pounds a winter. The four families cost the parish thirty-five if they come on the rate.
+He keeps them; and his wheat is at market in March with everybody else’s, and he does not complain of the price.`,
+    b:() => `You and he reckon it together; by which it appears that the machine would save him thirty pounds a winter, and that the four families, if they came upon the rate, would cost the parish thirty-five.
 
-“And I pay the rate,” says Edmund. He tears up the paper.`,
+“And I pay the rate,” says Edmund; and he tears up the paper.`,
     c:() => `“It is your farm.”
 
 “Yes, sir. That is why I asked.”
 
-He goes home. You do not hear which he chose.`},
+He goes home, and you do not hear which he chose.`},
 
   /* ---------- vicar of the parish ---------- */
-  {id:'edmund-sermon', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the sermon for Sunday in his pocket. He reads it to you in the book-room.
+  {id:'edmund-sermon', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the sermon for Sunday in his pocket, and reads it to you in the book-room.
 
-It is upon the labourer and his hire. It is nine minutes long. You are in it, though not by name.
+It is upon the labourer and his hire, and is nine minutes long; and you are in it, though not by name.
 
 “I had rather you heard it here first, sir.”`,
     a:() => `“Preach it.”
 
-He preaches it. You sit in the Hall pew with your face to the pulpit. Hartopp turns round twice to look at you.
+He preaches it; and you sit in the Hall pew with your face to the pulpit, while Hartopp turns round twice to look at you.
 
-In the churchyard four labourers take off their hats to the Vicar. They have never done that before.`,
-    b:() => `You argue it with him until midnight. He gives up one sentence. You give up two.
+In the churchyard four labourers take off their hats to the Vicar, as they have never done before.`,
+    b:() => `You argue it with him until midnight, when he gives up one sentence, and you give up two.
 
-On Sunday he looks at you when he reaches the place. You nod.`,
+On Sunday, coming to the place, he looks at you; and you nod.`,
     c:() => `“I should leave out the part about the hire.”
 
-He preaches on the Prodigal Son. He reads it flat and fast. Henrietta asks in the carriage what you said to him.`},
-  {id:'edmund-tithe', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the tithe book that Dr Gall kept. He lays it open on your desk.
+He preaches upon the Prodigal Son, and reads it flat and fast; and Henrietta asks in the carriage what you said to him.`},
+  {id:'edmund-tithe', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the tithe book that Dr Gall kept, and lays it open upon your desk.
 
 “He took a tenth of the cottagers’ potatoes, sir. And their eggs. I should like to stop at the corn and the hay.”
 
-It would cost the living thirty pounds a year. The living is in your gift.`,
+It would cost the living thirty pounds a year; and the living is in your gift.`,
     a:() => `“They are your tithes.”
 
-He lets the potatoes go. On the next Sunday there are eleven more in church. One brings him a basket of eggs.
+He lets the potatoes go; and on the next Sunday there are eleven more in church, one of whom brings him a basket of eggs.
 
-He sends it back with a shilling.`,
-    b:() => `You go through Gall’s book together. The Doctor had tithed a widow’s bees.
+He sends it back, with a shilling.`,
+    b:() => `You go through Gall’s book together, and find that the Doctor had tithed a widow’s bees.
 
 “Honey, two pounds,” reads Edmund. “Wax, a quarter.” He shuts the book.`,
     c:() => `“The next vicar will not thank you.”
 
-He takes the tithe as Gall took it. He pays the potatoes back at Christmas out of his own pocket. He thinks you do not know.`},
-  {id:'edmund-vestry', kind:'talk', w:() => at('vicar') && yr(1800, 1815), x:() => `Edmund has been in the chair at the vestry. He comes up to the Hall afterwards without his hat.
+He takes the tithe as Gall took it; and at Christmas he pays the potatoes back out of his own pocket, and thinks that you do not know.`},
+  {id:'edmund-vestry', kind:'talk', w:() => at('vicar') && yr(1800, 1815), x:() => `Edmund has been in the chair at the vestry, and comes up to the Hall afterwards without his hat.
 
 “They voted to cut the allowance to the old people, sir. Froome moved it. I had no vote, only the chair.”
 
 He walks up and down your carpet.`,
-    a:() => `You call a second vestry and attend it. You have six votes for your rating. The allowance is put back.
+    a:() => `You call a second vestry, and attend it; and having six votes for your rating, you put the allowance back.
 
-Froome says the Hall and the Vicarage are become one house. Edmund says he hopes so.`,
-    b:() => `He stays to dinner. He is still angry at the cheese.
+Froome says that the Hall and the Vicarage are become one house; and Edmund says that he hopes so.`,
+    b:() => `He stays to dinner, and is still angry at the cheese.
 
 “I had it easier at ${E() === 'church' ? 'the curacy' : 'school'},” he says. “Nobody there was a relation.”
 
-Henrietta laughs. Then he does.`,
+Henrietta laughs; and then he does.`,
     c:() => `“The vestry is the ratepayers’ business.”
 
 “And the old people are mine, sir.”
 
-He bows. He goes down the drive bareheaded in the rain.`},
+He bows, and goes down the drive bareheaded, in the rain.`},
 
   /* ---------- he asks for money ---------- */
-  {id:'edmund-kit', kind:'ask', sum:80, w:() => at('army') && yr(1809, 1809), x:() => `“Plymouth. My dear Father, Everything I had is in a ditch in Galicia. Two coats, my bed, my saddle and the horse under it. The Regiment is to go out again in the summer. A Captain cannot go in a borrowed coat. I must ask you for eighty pounds. I had rather ask for it than owe it to the paymaster.”`},
-  {id:'edmund-mess', kind:'ask', sum:60, w:() => at('army'), x:() => `“My dear Father, I am obliged to trouble you. The Colonel has ordered a new pattern of jacket for the officers, with silver lace. It is the third pattern since I joined. There is also the mess plate, to which every officer subscribes, and a horse I backed at Canterbury. Sixty pounds would clear me. The horse is the smallest part of it. I mention the horse because you will hear of it from Tamworth’s father.”`},
-  {id:'edmund-outfit', kind:'ask', sum:70, w:() => at('navy') && yr(1801, 1804), x:() => `“Portsmouth. My dear Father, I have my commission as Lieutenant. I have no coat to wear it in. A Lieutenant must have a full dress and an undress coat, a sword, a sextant of his own and a share in the gunroom wine. The tailor on the Hard will not trust a midshipman. Seventy pounds would rig me. I will pay it out of the first prize.”`},
-  {id:'edmund-agent', kind:'ask', sum:60, w:() => at('navy') && yr(1805, 1814), x:() => `“My dear Father, My prize agent has broke. He held two hundred and ten pounds of mine and is gone to Boulogne with it. I owe the gunroom steward and the tailor and I have nothing coming in until the quarter. Sixty pounds would keep me from asking the Captain. I had sooner ask you.”`},
-  {id:'edmund-plate', kind:'ask', sum:80, w:() => at('militia'), x:() => `“My dear Father, The mess has voted itself a silver tureen. The Colonel proposed it, so nobody spoke against. My share is eleven guineas. There is also the band, which the officers pay for, and the regimental ball, and my serjeant’s wife, who has been brought to bed of twins. Eighty pounds would cover all. The twins are the cheapest item.”`},
-  {id:'edmund-pony', kind:'ask', sum:45, w:() => at('church') && yr(1800, 1815), x:() => `“My dear Father, My pony is dead. She fell in the lane on Sunday between the two churches and I read evening prayer an hour late in a wet surplice. I cannot serve both parishes on foot. A sound cob is thirty pounds here. I also owe the bookseller at Winchester. Forty-five pounds in all. A curate’s year is fifty.”`},
+  {id:'edmund-kit', kind:'ask', sum:80, w:() => at('army') && yr(1809, 1809), x:() => `“Plymouth. My dear Father, Everything I had is in a ditch in Galicia: two coats, my bed, my saddle, and the horse under it. The Regiment is to go out again in the summer; and as a Captain cannot go in a borrowed coat, I must ask you for eighty pounds, which I had rather ask for than owe to the paymaster.”`},
+  {id:'edmund-mess', kind:'ask', sum:60, w:() => at('army'), x:() => `“My dear Father, I am obliged to trouble you. The Colonel has ordered a new pattern of jacket for the officers, with silver lace, being the third pattern since I joined; and there is also the mess plate, to which every officer subscribes, and a horse that I backed at Canterbury. Sixty pounds would clear me. The horse is the smallest part of it, and I mention the horse because you will hear of it from Tamworth’s father.”`},
+  {id:'edmund-outfit', kind:'ask', sum:70, w:() => at('navy') && yr(1801, 1804), x:() => `“Portsmouth. My dear Father, I have my commission as Lieutenant, and no coat to wear it in. A Lieutenant must have a full dress and an undress coat, a sword, a sextant of his own, and a share in the gunroom wine; and the tailor on the Hard will not trust a midshipman. Seventy pounds would rig me, and I will pay it out of the first prize.”`},
+  {id:'edmund-agent', kind:'ask', sum:60, w:() => at('navy') && yr(1805, 1814), x:() => `“My dear Father, My prize agent has broke, and is gone to Boulogne with two hundred and ten pounds of mine. I owe the gunroom steward, and the tailor, and have nothing coming in until the quarter. Sixty pounds would keep me from asking the Captain; and I had sooner ask you.”`},
+  {id:'edmund-plate', kind:'ask', sum:80, w:() => at('militia'), x:() => `“My dear Father, The mess has voted itself a silver tureen; and the Colonel having proposed it, nobody spoke against. My share is eleven guineas. There is also the band, which the officers pay for, and the regimental ball, and my serjeant’s wife, who has been brought to bed of twins. Eighty pounds would cover all; and the twins are the cheapest item.”`},
+  {id:'edmund-pony', kind:'ask', sum:45, w:() => at('church') && yr(1800, 1815), x:() => `“My dear Father, My pony is dead. She fell in the lane on Sunday, between the two churches, and I read evening prayer an hour late, in a wet surplice. I cannot serve both parishes on foot, and a sound cob is thirty pounds here; and I owe besides the bookseller at Winchester. It is forty-five pounds in all. A curate’s year is fifty.”`},
   {id:'edmund-hunter', kind:'ask', sum:70, w:() => at('home'), x:() => `Edmund finds you in the stable yard.
 
 “Loveday has a brown gelding to sell, sir. Six years old. He asks seventy guineas and would take pounds.”
 
-He has ridden the same cob since he was sixteen. He does not say so.`},
+He has ridden the same cob since he was sixteen, and does not say so.`},
   {id:'edmund-ram', kind:'ask', sum:60, w:() => at('farmer'), x:() => `Edmund is back from Hartopp’s shearing.
 
 “There is a New Leicester shearling ram to be let for the season, sir. Sixty pounds. I have forty. He would put four pounds of wool on every lamb I breed.”
 
-He names the twenty he wants. He names the day he will repay it.`},
-  {id:'edmund-chancel', kind:'ask', sum:90, w:() => at('vicar'), x:() => `Edmund takes you into the chancel after service. He points up.
-
-There is daylight through the roof over the altar. A starling goes in by it.
+He names the twenty that he wants, and the day upon which he will repay it.`},
+  {id:'edmund-chancel', kind:'ask', sum:90, w:() => at('vicar'), x:() => `Edmund takes you into the chancel after service, and points up; where there is daylight through the roof over the altar, and a starling going in by it.
 
 “The chancel is the Rector’s to mend, sir. I am the Rector. The plumber says ninety pounds. The living is worth a hundred and eighty.”`},
 
   /* ---------- he wishes to marry ---------- */
-  {id:'edmund-miss-army', kind:'girl', lady:'Miss Charlotte Pott', father:'Major Pott', w:() => at('army') && yr(1803, 1814) && !F('edmundMarried'), x:() => `“My dear Father, I write upon a subject I have not opened before. Major Pott of ours has a daughter. Miss Charlotte Pott is twenty-two. She has followed the Regiment since she was nine and can tell a good biscuit from a bad one in the dark. She has no fortune. I have asked her and she has said yes if you do. I await your answer with more fear than I ever felt of the French.”`},
-  {id:'edmund-miss-navy', kind:'girl', lady:'Miss Anne Hallett', father:'Mr Hallett', w:() => at('navy') && yr(1802, 1814) && !F('edmundMarried'), x:() => `“My dear Father, Our purser, Mr Hallett, has a sister at Gosport who keeps house for him. Miss Anne Hallett is twenty-four. She has waited on the Hard for the same ship to come in these six years, to see her brother. Lately I find that I am looked for too. She has five hundred pounds in the Navy Five per Cents. I have asked her. She says a sailor’s wife sees her husband one month in twelve and she has had practice.”`},
-  {id:'edmund-miss-militia', kind:'girl', lady:'Miss Mary Finnis', father:'Mr Finnis', w:() => at('militia') && !F('edmundMarried'), x:() => `“My dear Father, I am to tell you of Miss Mary Finnis, of Dover. Her father is a brewer and supplies the garrison. I was sent to complain of the beer and stayed to tea. I have since complained of the beer on eleven occasions. Mr Finnis says he will give four thousand pounds with her. He would like to hear it from you that a brewer’s daughter will be received at Hatherley.”`},
-  {id:'edmund-miss-church', kind:'girl', lady:'Miss Jane Lyford', father:'Mr Lyford', w:() => at('church') && yr(1801, 1815) && !F('edmundMarried'), x:() => `“My dear Father, The surgeon of this place, Mr Lyford, has five daughters. The second is Miss Jane. She teaches in my Sunday school and has mended my surplice twice without being asked. We could not marry on fifty pounds. We could on a hundred and fifty. I do not ask for the hundred. I ask whether you would object to the lady if I had it.”`},
-  {id:'edmund-miss-home', kind:'girl', lady:'Miss Sophia Loveday', father:'Mr Loveday', w:() => at('home', 'vicar') && yr(1807, 1815) && !F('edmundMarried'), x:() => `Edmund has dined at the Lovedays’ every Thursday since Michaelmas.
-
-He comes to the book-room in his best coat.
+  {id:'edmund-miss-army', kind:'girl', lady:'Miss Charlotte Pott', father:'Major Pott', w:() => at('army') && yr(1803, 1814) && !F('edmundMarried'), x:() => `“My dear Father, I write upon a subject I have not opened before. Major Pott of ours has a daughter, Miss Charlotte Pott, who is twenty-two, and has followed the Regiment since she was nine, and can tell a good biscuit from a bad one in the dark. She has no fortune. I have asked her, and she has said yes if you do; and I await your answer with more fear than I ever felt of the French.”`},
+  {id:'edmund-miss-navy', kind:'girl', lady:'Miss Anne Hallett', father:'Mr Hallett', w:() => at('navy') && yr(1802, 1814) && !F('edmundMarried'), x:() => `“My dear Father, Our purser, Mr Hallett, has a sister at Gosport, who keeps house for him. Miss Anne Hallett is twenty-four, and has these six years waited upon the Hard for the same ship to come in, to see her brother; and lately I find that I am looked for too. She has five hundred pounds in the Navy Five per Cents. I have asked her; and she says that a sailor’s wife sees her husband one month in twelve, and that she has had practice.”`},
+  {id:'edmund-miss-militia', kind:'girl', lady:'Miss Mary Finnis', father:'Mr Finnis', w:() => at('militia') && !F('edmundMarried'), x:() => `“My dear Father, I am to tell you of Miss Mary Finnis, of Dover, whose father is a brewer, and supplies the garrison. I was sent to complain of the beer, and stayed to tea; and I have since complained of the beer upon eleven occasions. Mr Finnis says that he will give four thousand pounds with her; but he would like to hear it from you that a brewer’s daughter will be received at Hatherley.”`},
+  {id:'edmund-miss-church', kind:'girl', lady:'Miss Jane Lyford', father:'Mr Lyford', w:() => at('church') && yr(1801, 1815) && !F('edmundMarried'), x:() => `“My dear Father, The surgeon of this place, Mr Lyford, has five daughters, of whom the second is Miss Jane. She teaches in my Sunday school, and has twice mended my surplice without being asked. We could not marry upon fifty pounds, and we could upon a hundred and fifty. I do not ask for the hundred. I ask whether you would object to the lady, if I had it.”`},
+  {id:'edmund-miss-home', kind:'girl', lady:'Miss Sophia Loveday', father:'Mr Loveday', w:() => at('home', 'vicar') && yr(1807, 1815) && !F('edmundMarried'), x:() => `Edmund has dined at the Lovedays’ every Thursday since Michaelmas; and he comes to the book-room in his best coat.
 
 “I have spoken to Miss Sophia Loveday, sir. I have not yet spoken to her father. I thought I should speak to mine.”`},
 
   /* ---------- Long Barrow and his signature ---------- */
-  {id:'edmund-settle-letter', kind:'settle', w:() => edmAway() && lbAtStake() && edmR() >= 0, x:() => `“My dear Father, I have had a letter from Mr Spurling. He writes that Long Barrow may have to be sold to clear the mortgage, and that being settled land it wants my hand to the deed. I do not write to refuse. I write to ask what is owed. I have never been told. If my name is to go on a parchment I should like to read the figures first.”`},
-  {id:'edmund-settle-stiff', kind:'settle', w:() => edmAway() && lbAtStake() && edmR() < 0, x:() => `“Sir, Mr Spurling informs me that you may wish to sell Long Barrow, and that my signature is required. I am to have that farm by my great-uncle’s settlement and my son after me. I have had little else from Hatherley. I shall want better reasons than Mr Spurling’s before I sign. I remain, Sir, your obedient son.”`},
-  {id:'edmund-settle-room', kind:'settle', w:() => !edmAway() && lbAtStake(), x:() => `Edmund has met Mr Spurling in Wyvern market place.
-
-He shuts the book-room door behind him.
+  {id:'edmund-settle-letter', kind:'settle', w:() => edmAway() && lbAtStake() && edmR() >= 0, x:() => `“My dear Father, I have had a letter from Mr Spurling, who writes that Long Barrow may have to be sold to clear the mortgage, and that being settled land, it wants my hand to the deed. I do not write to refuse. I write to ask what is owed, never having been told; for if my name is to go upon a parchment, I should like to read the figures first.”`},
+  {id:'edmund-settle-stiff', kind:'settle', w:() => edmAway() && lbAtStake() && edmR() < 0, x:() => `“Sir, Mr Spurling informs me that you may wish to sell Long Barrow, and that my signature is required. I am to have that farm by my great-uncle’s settlement, and my son after me; and having had little else from Hatherley, I shall want better reasons than Mr Spurling’s before I sign. I remain, Sir, your obedient son.”`},
+  {id:'edmund-settle-room', kind:'settle', w:() => !edmAway() && lbAtStake(), x:() => `Edmund has met Mr Spurling in Wyvern market place; and he shuts the book-room door behind him.
 
 “He tells me Long Barrow may be sold, sir. And that I must sign. ${edmR() >= 0 ? 'I should like to know what we owe.' : 'I think I had a right to hear it from you.'}”`},
 
   /* ---------- not on terms ---------- */
   {id:'edmund-cold-letter', kind:'cold', w:() => edmAway() && edmR() <= -2, x:() => `“Sir, I have received my mother’s letter of the 4th and beg you will thank her for the flannel. I am in good health. The weather has been wet. I have nothing further to communicate. I remain, Sir, your dutiful son, Edmund ${S.sur}.”
 
-It is the whole letter. It does not cover one side.`},
+It is the whole letter, and does not cover one side.`},
   {id:'edmund-cold-room', kind:'cold', w:() => !edmAway() && edmR() <= -2, x:() => `Edmund has not dined at your table since ${['Lady Day', 'Midsummer', 'Michaelmas', 'Christmas'][(S.season + 3) % 4]}.
 
-You meet him in the stable yard. He takes off his hat.
+You meet him in the stable yard, and he takes off his hat.
 
 “Good morning, sir.”
 
-He stands with it off until you have gone by.`}
+And he stands with it off until you have gone by.`}
 ];
 
 const edmNow = () => { S.did = S.did || {};
@@ -1410,10 +1402,10 @@ const edmNow = () => { S.did = S.did || {};
   S.edm = {t:S.t, id:p.id}; S.did[p.id] = S.t; return p; };
 const edmKind = k => edmNow().kind === k;
 const PREFACE = [
-  `The post-boy brings a letter from Edmund. There is one and a penny to pay on it. He has crossed it to save a second sheet.`,
-  `A letter from Edmund. The wafer is cracked. Henrietta has read the direction three times before you come down.`,
-  `Edmund’s hand, on the hall table. Eightpence to pay. Henrietta stands by while you break the wafer.`,
-  `The carrier leaves a letter at the lodge. It is from Edmund. The lodge-keeper’s wife brings it up herself and waits in the hall.`];
+  `The post-boy brings a letter from Edmund, with one and a penny to pay upon it; and he has crossed it, to save a second sheet.`,
+  `There is a letter from Edmund, with the wafer cracked; and Henrietta has read the direction three times before you come down.`,
+  `Edmund’s hand is upon the hall table, with eightpence to pay; and Henrietta stands by while you break the wafer.`,
+  `The carrier leaves a letter at the lodge, from Edmund; and the lodge-keeper’s wife, having brought it up herself, waits in the hall.`];
 const mates = () => at('army') ? 'the mess' : at('navy') ? 'the gunroom' : at('militia') ? 'the mess' : 'his landlady';
 
 ev({ id:'edmundLetter', from:1797, to:1815, weight:7, repeatGap:5, cond:() => !F('edmundDead') && !!E() && (!at('army', 'navy') || S.year >= 1798),
@@ -1826,239 +1818,203 @@ const HENRIETTA = [
 
 “A square piano-forte, in mahogany. Thirty-five pounds, and the carriage. Kitty plays upon a spinet that was your aunt’s. Three of the keys do not speak.”
 
-She has measured the wall between the windows. She has the measure in her hand.`,
-    a:() => `It comes from London on the wagon in a deal case. Four men carry it in.
+She has measured the wall between the windows, and has the measure in her hand.`,
+    a:() => `It comes from London upon the wagon, in a deal case, and four men carry it in.
 
-Kitty plays until eleven. She plays the same sonata nine times. On the tenth you know it.
+Kitty plays until eleven, and plays the same sonata nine times; and at the tenth you know it.
 
-Henrietta sits with her eyes shut. She is counting the Tamworths’ instruments. They have one.`,
-    b:() => `You send to Reading for a man to mend the spinet. He is a day at it. Seventeen pounds, with new quills.
+Henrietta sits with her eyes shut, counting the Tamworths’ instruments, of which they have one.`,
+    b:() => `You send to Reading for a man to mend the spinet, who is a day about it, and charges seventeen pounds, with new quills.
 
-All the keys speak. Two of them speak the same note.
+All the keys now speak, though two of them speak the same note.
 
-“It is very much better,” says Kitty. She plays with the lid down.`,
+“It is very much better,” says Kitty; and she plays with the lid down.`,
     c:() => `“The spinet did for my aunt.”
 
 “Your aunt was deaf,” says Henrietta.
 
-Kitty plays on the spinet after dinner. She plays loudest on the three dumb keys.`},
-  {id:'henrietta-carpet', kind:'want', sum:40, x:() => `Henrietta has you stand in the drawing-room doorway and look at the carpet.
-
-There is a path worn across it to the boards. It runs from the fire to the decanter and back.
+Kitty plays upon the spinet after dinner, and plays loudest upon the three dumb keys.`},
+  {id:'henrietta-carpet', kind:'want', sum:40, x:() => `Henrietta has you stand in the drawing-room doorway, and look at the carpet; across which there is a path worn to the boards, from the fire to the decanter, and back.
 
 “Your uncle,” she says. “Forty years. A Wilton would be forty pounds.”`,
-    a:() => `The Wilton is laid on a Tuesday. Crimson, with a border of oak leaves.
+    a:() => `The Wilton is laid upon a Tuesday, crimson, with a border of oak leaves; and for a week nobody is let walk upon it, a drugget being put down from the door to each chair.
 
-Nobody is let walk on it for a week. A drugget is put down from the door to each chair.
+The old carpet goes to the servants’ hall, where they turn it round; so that the path now runs from the fire to the beer.`,
+    b:() => `Henrietta has the old carpet taken up, and turned end for end; and a rug from the Wyvern sale goes over the worst of it, for twenty pounds.
 
-The old carpet goes to the servants’ hall. They turn it round. The path now runs from the fire to the beer.`,
-    b:() => `Henrietta has the old carpet taken up and turned end for end. A rug from the Wyvern sale goes over the worst of it. Twenty pounds.
+The rug does not lie flat, and at Christmas Mr Tamworth falls over it.
 
-The rug does not lie flat. Mr Tamworth falls over it at Christmas.
-
-“We are getting a Wilton,” Henrietta tells him as he is helped up.`,
+“We are getting a Wilton,” Henrietta tells him, as he is helped up.`,
     c:() => `“It will see us out.”
 
-She moves the sofa over the path. The sofa is now in the middle of the room, facing nothing.
+She moves the sofa over the path; by which the sofa is brought to the middle of the room, facing nothing.
 
-It stays there. Callers walk round it.`},
-  {id:'henrietta-chariot', kind:'want', sum:120, w:() => S.standing >= 35 && !(typeof held === 'function' && held('chariot')), x:() => `The Tamworths have a new landaulet. It is yellow, with the crest on both doors.
-
-Henrietta saw it at church. She saw it again in Wyvern on Thursday.
+There it stays, and callers walk round it.`},
+  {id:'henrietta-chariot', kind:'want', sum:120, w:() => S.standing >= 35 && !(typeof held === 'function' && held('chariot')), x:() => `The Tamworths have a new landaulet, yellow, with the crest upon both doors; and Henrietta, having seen it at church, saw it again in Wyvern on Thursday.
 
 “Our coach was built for your uncle in the year of the Gordon riots. The lining is his hair-powder. A chariot from Hatchett’s is a hundred and twenty.”`,
-    a:() => `It comes down from Long Acre behind your own horses. Dark green. Very small arms on the door.
+    a:() => `It comes down from Long Acre behind your own horses, dark green, with very small arms upon the door.
 
-Henrietta drives to church in it. She drives the long way, by the Tamworths’ lodge.
+Henrietta drives to church in it, and drives the long way, by the Tamworths’ lodge.
 
-Mrs Tamworth is at an upper window. Henrietta does not look up. She has seen her.`,
-    b:() => `The old coach goes to the coach-maker at Newbury. New lining, new leather, the body painted. Sixty pounds.
+Mrs Tamworth is at an upper window. Henrietta does not look up, having seen her.`,
+    b:() => `The old coach goes to the coach-maker at Newbury, for a new lining, and new leather, and the body to be painted; and it comes to sixty pounds.
 
-It comes home dark green and shining. It still rolls as a ship does.
+It comes home dark green, and shining, and rolling as a ship does still.
 
-Henrietta arrives at the Lovedays’ pale and smiling.`,
+Henrietta arrives at the Lovedays’ pale, and smiling.`,
     c:() => `“It has four wheels and a roof.”
 
-She says no more. At church she waits in the porch until the Tamworths have driven off.
+She says no more. But at church she waits in the porch until the Tamworths have driven off; and then you hand her up into your uncle’s hair-powder.`},
+  {id:'henrietta-mourning', kind:'want', sum:25, w:() => S.year === 1810 && S.season === 3 || S.year === 1811 && S.season === 0, x:() => `The Princess Amelia is dead at Windsor, at twenty-seven; and the Court goes into mourning, and the county with it.
 
-You hand her up into your uncle’s hair-powder.`},
-  {id:'henrietta-mourning', kind:'want', sum:25, w:() => S.year === 1810 && S.season === 3 || S.year === 1811 && S.season === 0, x:() => `The Princess Amelia is dead at Windsor. She was twenty-seven. The Court goes into mourning and the county with it.
-
-Black crape was two shillings a yard in Wyvern on Monday. It is four today.
+Black crape, which was two shillings a yard in Wyvern on Monday, is four today.
 
 “Twenty-five pounds would put the family and the upper servants in black,” says Henrietta. “The Castle has had its people in black since Sunday.”`,
-    a:() => `The whole household is in black by Saturday, to the knife-boy. The footmen have crape on their arms and their hats.
+    a:() => `By Saturday the whole household is in black, to the knife-boy, and the footmen have crape upon their arms and their hats; so that on Sunday the Hall pew is one black row.
 
-On Sunday the Hall pew is one black row. Lord Cullerne looks along it from his own.
+Lord Cullerne looks along it from his own, and inclines his head, for the first time since harvest.`,
+    b:() => `The family goes into black, and the servants have a black ribbon each.
 
-He inclines his head. It is the first time since harvest.`,
-    b:() => `The family goes into black. The servants have a black ribbon each.
-
-Mrs Bunce wears hers in her cap. She tells the kitchen it is for the Princess. She tells you it is for the pine-apples.`,
+Mrs Bunce wears hers in her cap; and she tells the kitchen that it is for the Princess, and tells you that it is for the pine-apples.`,
     c:() => `“We did not know the lady.”
 
-Henrietta wears her grey. In Wyvern on Thursday she is the only gentlewoman in a colour.
-
-Three ladies cross the market place to ask after her health.`},
-  {id:'henrietta-portrait', kind:'want', sum:30, w:() => !(typeof held === 'function' && held('portraits')), x:() => `A travelling limner has put up at the Bell. He has painted the Tamworths, the Lovedays and the Lovedays’ horse.
+Henrietta wears her grey; and in Wyvern on Thursday, being the only gentlewoman there in a colour, she has three ladies cross the market place to ask after her health.`},
+  {id:'henrietta-portrait', kind:'want', sum:30, w:() => !(typeof held === 'function' && held('portraits')), x:() => `A travelling limner has put up at the Bell, who has painted the Tamworths, the Lovedays, and the Lovedays’ horse.
 
 “Thirty pounds for the two of us in oils, three-quarter length,” says Henrietta. “Half that for a head.”
 
-She has seen the Lovedays. She says the horse is the best likeness.`,
-    a:() => `You both sit to him for nine mornings. He talks the whole time about Sir Joshua.
+She has seen the Lovedays, and says that the horse is the best likeness.`,
+    a:() => `You both sit to him for nine mornings, during the whole of which he talks about Sir Joshua.
 
-The picture is hung over the dining-room chimney. Henrietta has a column behind her and a spaniel you never owned. You have your uncle’s nose.
+The picture is hung over the dining-room chimney. Henrietta has a column behind her, and a spaniel that you never owned; and you have your uncle’s nose.
 
-Mrs Bunce is brought up to see it. She looks for some time.
+Mrs Bunce is brought up to see it, and looks for some time.
 
 “It’s the old master, sir. In your coat.”`,
-    b:() => `Henrietta sits alone, for a head. Fifteen pounds.
+    b:() => `Henrietta sits alone, for a head, at fifteen pounds; and he gives her pearls that she has not got, and takes away ten years.
 
-He gives her pearls she has not got and takes away ten years.
-
-She has it hung in her own dressing-room. She says it is not at all like.`,
+She has it hung in her own dressing-room, and says that it is not at all like.`,
     c:() => `“There is a looking-glass in the hall.”
 
-The limner goes on to Hungerford. He leaves his card at the lodge.
-
-Henrietta keeps the card in her work-box.`},
+The limner goes on to Hungerford, leaving his card at the lodge; and Henrietta keeps the card in her work-box.`},
   {id:'henrietta-tea', kind:'want', sum:18, w:() => S.year >= 1797, x:() => `Tea is ten shillings the pound at Wyvern, and the grocer sands it.
 
-Henrietta has a letter from Twining’s in the Strand. A chest of Hyson and a chest of Congou, eighteen pounds, by the Newbury wagon.
+Henrietta has a letter from Twining’s in the Strand, offering a chest of Hyson and a chest of Congou, for eighteen pounds, by the Newbury wagon.
 
 “Or there is a man at the back door on Thursdays,” she says. “He is cheaper. I have not asked him why.”`,
-    a:() => `Two chests come by the wagon with Twining’s mark burnt into the lid. Henrietta has a lock put on the tea closet.
+    a:() => `Two chests come by the wagon, with Twining’s mark burnt into the lid; and Henrietta has a lock put upon the tea closet, and keeps the key on her own ring.
 
-She keeps the key on her own ring. Mrs Bunce watches it go by.`,
-    b:() => `You have the one chest, of Congou. Nine pounds.
+Mrs Bunce watches it go by.`,
+    b:() => `You have the one chest, of Congou, for nine pounds.
 
-The servants’ hall has it. The parlour has what the Thursday man brings.
-
-His is the better tea.`,
+The servants’ hall has it, and the parlour has what the Thursday man brings; and his is the better tea.`,
     c:() => `“Sage tea was good enough for my uncle.”
 
-Henrietta drinks sage tea for a week. She has it served to you as well.
+Henrietta drinks sage tea for a week, and has it served to you as well.
 
 On Thursday there is Hyson again. You do not ask.`},
-  {id:'henrietta-gowns', kind:'want', sum:45, w:() => S.year <= 1801, x:() => `The fashion has changed. Waists are under the arms and there are no hoops.
-
-Henrietta lays nine gowns across the bed. Not one can be worn.
+  {id:'henrietta-gowns', kind:'want', sum:45, w:() => S.year <= 1801, x:() => `The fashion has changed, and waists are under the arms, and there are no hoops; and Henrietta, laying nine gowns across the bed, finds that not one of them can be worn.
 
 “Forty-five pounds at the mantua-maker’s in Reading. Or I must go to the Assembly as my own mother.”`,
-    a:() => `Six new gowns come home in a deal box. White muslin, mostly. They weigh nothing.
+    a:() => `Six new gowns come home in a deal box, white muslin for the most part, and weighing nothing.
 
-Henrietta comes down in the first. You can see the shape of both her knees.
+Henrietta comes down in the first of them, through which you can see the shape of both her knees.
 
-“It is what is worn,” she says. She takes a shawl.`,
-    b:() => `The Reading woman cuts down four of the old gowns. Twenty-two pounds.
+“It is what is worn,” she says; and she takes a shawl.`,
+    b:() => `The Reading woman cuts down four of the old gowns, for twenty-two pounds.
 
-The brocade will not hang. It was made to stand out upon a hoop. It stands out.
-
-At the Assembly Henrietta keeps her back to the wall.`,
+But the brocade, having been made to stand out upon a hoop, will not hang, and stands out; and at the Assembly Henrietta keeps her back to the wall.`,
     c:() => `“Hoops will come in again.”
 
-She wears the grey brocade to the Wyvern Assembly. It takes up two chairs.
+She wears the grey brocade to the Wyvern Assembly, where it takes up two chairs; and Mrs Tamworth tells her that it is delightful to see the old fashions kept up.`},
 
-Mrs Tamworth tells her that it is delightful to see the old fashions kept up.`},
-
-  {id:'henrietta-margravine', kind:'matter', w:() => S.year >= 1806 && S.year <= 1807, x:() => `The Margrave of Anspach is dead at Benham Park. He sold his country to the King of Prussia and came to live outside Newbury.
-
-His widow was Lady Craven. She married him sixteen days after Lord Craven died. The Queen will not receive her.
+  {id:'henrietta-margravine', kind:'matter', w:() => S.year >= 1806 && S.year <= 1807, x:() => `The Margrave of Anspach is dead at Benham Park; he having sold his country to the King of Prussia, and come to live outside Newbury. His widow was Lady Craven, who married him sixteen days after Lord Craven died, and whom the Queen will not receive.
 
 “She is nine miles off and in mourning,” says Henrietta. “Does one call?”`,
-    a:() => `Henrietta calls. She is an hour at Benham.
+    a:() => `Henrietta calls, and is an hour at Benham.
 
 “She received me on a sofa with a turban on. She has written a play. She read me the second act.”
 
-She says nothing against her. She asks Kitty for the atlas and looks for Anspach.`,
+She says nothing against her; but she asks Kitty for the atlas, and looks for Anspach.`,
     b:() => `“You know better than I.”
 
-Henrietta leaves her card at the lodge and does not go in. It is the usual course.
+Henrietta takes the usual course, and leaves her card at the lodge, without going in.
 
-A card comes back within the week. It has a coronet on it with nine points. Henrietta counts them.`,
+A card comes back within the week, with a coronet upon it of nine points; and Henrietta counts them.`,
     c:() => `“Not while the Queen will not.”
 
-Henrietta stays at home. Mrs Tamworth calls at Benham on Thursday.
-
-She has a great deal to tell. She tells it at your table.`},
-  {id:'henrietta-housemaid', kind:'matter', x:() => `The second housemaid has been found in the linen closet with the under-footman. It was three in the afternoon.
+Henrietta stays at home; and Mrs Tamworth, who calls at Benham on Thursday, has a great deal to tell, and tells it at your table.`},
+  {id:'henrietta-housemaid', kind:'matter', x:() => `The second housemaid has been found in the linen closet with the under-footman, at three in the afternoon.
 
 “Sarah is nineteen and can get up fine linen,” says Henrietta. “Thomas is the only footman tall enough for the back of the coach. Mrs Bunce wishes both turned off before supper.”
 
 She waits.`,
     a:() => `“Marry them.”
 
-The banns are read. They have the room over the laundry.
+The banns are read, and they have the room over the laundry.
 
-Sarah gets up your shirts as before. In May she lets out her apron. Mrs Bunce counts on her fingers.`,
+Sarah gets up your shirts as before; and when in May she lets out her apron, Mrs Bunce counts upon her fingers.`,
     b:() => `“It is your household.”
 
-Henrietta sends Sarah home to her mother at Kintbury for a month. Thomas is spoken to.
+Henrietta sends Sarah home to her mother at Kintbury for a month, and Thomas is spoken to.
 
-The linen closet has a new lock. Mrs Bunce keeps the key.`,
-    c:() => `Both are turned off without a character.
+The linen closet has a new lock, of which Mrs Bunce keeps the key.`,
+    c:() => `Both are turned off, without a character.
 
-The new footman is five foot four. Behind the coach he cannot reach the strap.
-
-Henrietta irons her own lace for a fortnight.`},
-  {id:'henrietta-bunce', kind:'matter', x:() => `Mrs Bunce has given a month’s notice. She has been cook at the Hall twenty-six years.
+The new footman is five foot four, and cannot, behind the coach, reach the strap; and for a fortnight Henrietta irons her own lace.`},
+  {id:'henrietta-bunce', kind:'matter', x:() => `Mrs Bunce, who has been cook at the Hall twenty-six years, has given a month’s notice.
 
 “It is the new kitchen-maid,” says Henrietta. “She told Mrs Bunce that at Lord Cullerne’s they do not boil a pudding in the same cloth twice.”
 
-Mrs Bunce can be heard in the passage. She is not crying. She is moving saucepans.`,
-    a:() => `You go down to the kitchen yourself. You have not been in it since Christmas.
+Mrs Bunce can be heard in the passage. She is not crying; she is moving saucepans.`,
+    a:() => `You go down to the kitchen yourself, where you have not been since Christmas.
 
 “Mrs Bunce, I had a pudding at the Castle. It was not so good as yours.”
 
-She looks at you a long time. “No, sir. It wouldn’t be.” The notice is not mentioned again.`,
+She looks at you a long time. “No, sir. It wouldn’t be.”
+
+The notice is not mentioned again.`,
     b:() => `“You will manage it.”
 
-Henrietta manages it. The kitchen-maid goes to the dairy. Mrs Bunce has two pounds a year more.
-
-There is a pudding on Sunday the size of a hassock.`,
+Henrietta manages it. The kitchen-maid goes to the dairy, and Mrs Bunce has two pounds a year more; and on Sunday there is a pudding of the size of a hassock.`,
     c:() => `“Let her go if she wishes.”
 
-Mrs Bunce does not go. She tells the household what you said.
-
-The mutton is underdone for a fortnight.`},
-  {id:'henrietta-preacher', kind:'matter', w:() => S.year >= 1798, x:() => `There is a Methodist preaching in Dewey’s barn on Sunday evenings. He is a shoemaker from Hungerford.
+Mrs Bunce does not go. But she tells the household what you said; and for a fortnight the mutton is underdone.`},
+  {id:'henrietta-preacher', kind:'matter', w:() => S.year >= 1798, x:() => `There is a Methodist, a shoemaker from Hungerford, who preaches in Dewey’s barn on Sunday evenings.
 
 “Forty of the people were there last Sunday,” says Henrietta. “Eleven were in church. ${F('gallDead') ? 'The Vicar' : 'Dr Gall'} wishes you to send the constable.”
 
-Two of your own housemaids went. They asked leave first.`,
-    a:() => `You let him preach. You go once, and stand at the back.
+Two of your own housemaids went, having first asked leave.`,
+    a:() => `You let him preach; and you go once, and stand at the back.
 
-He speaks for an hour without a paper. Nobody sleeps. A carter cries.
+He speaks for an hour without a paper, during which nobody sleeps, and a carter cries.
 
 “Well?” says Henrietta. You say that the singing was very loud.`,
     b:() => `“Ask the housemaids what he said.”
 
-Henrietta asks. He said that the rich man shall hardly enter the kingdom.
+Henrietta asks; and it appears that he said that the rich man shall hardly enter the kingdom.
 
 “He said it very civil, ma’am,” the girl tells her. “He said we was to pray for you.”`,
-    c:() => `The constable is sent to the barn. The shoemaker shows him a licence under the Toleration Act.
-
-The constable cannot read it. He comes away.
+    c:() => `The constable is sent to the barn, where the shoemaker shows him a licence under the Toleration Act; and the constable, who cannot read it, comes away.
 
 Next Sunday there are sixty in the barn.`},
-  {id:'henrietta-mother', kind:'matter', x:() => `Henrietta’s mother proposes herself for six weeks. She is seventy-three.
-
-She travels with a maid, a parrot and her own sheets. She will not sleep in a room that faces east.
+  {id:'henrietta-mother', kind:'matter', x:() => `Henrietta’s mother, who is seventy-three, proposes herself for six weeks. She travels with a maid, a parrot, and her own sheets, and will not sleep in a room that faces east.
 
 “${T('portion') ? 'It was her money that mended the roof' : T('lovematch') ? 'She has never said you were a mistake. Not in words' : 'She asks after you in every letter'},” says Henrietta.`,
-    a:() => `She comes for six weeks. She has the blue room, which faces west.
+    a:() => `She comes for six weeks, and has the blue room, which faces west.
 
-The parrot says “Henrietta, sit up” in her voice. It says it at breakfast.
+The parrot says “Henrietta, sit up” in her voice, and says it at breakfast.
 
-She stays nine weeks. On the last morning she tells you that you have improved.`,
+She stays nine weeks; and on the last morning she tells you that you have improved.`,
     b:() => `“For as long as you like, my dear.”
 
-Henrietta writes for a month, not six weeks. Her mother comes for a month.
+Henrietta writes for a month, and not six weeks; and for a month her mother comes.
 
-The parrot bites Mudge. Mudge has a shilling for it.`,
+The parrot bites Mudge, and Mudge has a shilling for it.`,
     c:() => `“The chimneys are being swept.”
 
-Henrietta writes that the chimneys are being swept. Her mother replies that they were being swept last year.
+Henrietta writes that the chimneys are being swept; to which her mother replies that they were being swept last year.
 
 The next letter is to Kitty.`}
 ];
