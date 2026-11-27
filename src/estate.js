@@ -151,37 +151,37 @@ ev({ id:'leaseFalls', follow:true, cond:() => !!letting(),
   get title(){ const x = letting(); return x ? 'The Letting of ' + x.f.name : 'A Letting'; },
   text:() => { const {f, why} = letting(), p = pro(f), st = steward(), val = lettingValue(f, S.year);
     if (f.tenant === 'Mrs Thorne') meet('thorne');
-    if (why === 'offer') return `You have sent word to ${f.tenant} that ${p.he} may have a lease of ${f.name}. ${p.He} holds it from year to year at ${fmt(f.rent)}.
+    if (why === 'offer') return `You have sent word to ${f.tenant}, who holds ${f.name} from year to year at ${fmt(f.rent)}, that ${p.he} may have a lease of it.
 
-${p.He} comes up to the Hall on Saturday in ${p.his} market coat. ${st} has the valuation ready on a half sheet. He puts the farm at ${fmt(val)} on a lease. A stranger, he says, would give ${fmt(five(val * 1.13))}.
+${p.He} comes up to the Hall on Saturday in ${p.his} market coat, by which time ${st} has the valuation ready upon a half sheet; and this puts the farm at ${fmt(val)} upon a lease, though a stranger, he says, would give ${fmt(five(val * 1.13))}.
 
 “What term, sir?” says ${f.tenant}.`;
-    return `The lease of ${f.name} ${S.season === 0 ? 'is out this Lady Day' : 'ran out at Lady Day'}. ${f.tenant} has had the ${f.acres} acres at ${fmt(f.rent)} a year.
+    return `The lease of ${f.name} ${S.season === 0 ? 'is out this Lady Day' : 'ran out at Lady Day'}, ${f.tenant} having had the ${f.acres} acres at ${fmt(f.rent)} a year.
 
-${st} has walked the farm and brings his valuation on a half sheet. He puts it at ${fmt(val)} to a good tenant on a lease. He has two letters in his pocket from men who would give ${fmt(five(val * 1.13))}.
+${st} has walked the farm, and brings his valuation upon a half sheet, by which he puts it at ${fmt(val)} to a good tenant upon a lease; and he has two letters in his pocket from men who would give ${fmt(five(val * 1.13))}.
 
-${f.tenant} is in the hall. ${p.He} has brought the old lease with ${p.him}.`; },
+${f.tenant} is in the hall, and has brought the old lease with ${p.him}.`; },
   choices:[
     {t:() => letting().why === 'offer' ? 'Leave things as they are.' : `Let ${pro(letting().f).him} hold on from year to year.`, note:'The rent moves each Lady Day', go:() => { const {f} = letting(), p = pro(f); sign(f, 'will', 0, 'fair');
-      return `Nothing is signed. ${f.tenant} pays the half-year and asks whether the barn roof is ${p.his} to mend or yours. ${steward()} enters ${f.name} in the book as held from year to year.`; }},
+      return `Nothing is signed. ${f.tenant} pays the half-year, and asks whether the barn roof is ${p.his} to mend or yours; and ${steward()} enters ${f.name} in the book as held from year to year.`; }},
     {t:'A lease of seven years.', note:() => '+' + fmt(lettingValue(letting().f, S.year)) + ' a year', go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 7, 'fair', r);
-      return `The lease is engrossed on one skin at Wyvern and read over in the steward’s room. ${f.tenant} signs. The rent is ${fmt(r)} until Lady Day ${S.year + 7}.`; }},
+      return `The lease, being engrossed upon one skin at Wyvern, is read over in the steward’s room, and ${f.tenant} signs. The rent is ${fmt(r)} until Lady Day ${S.year + 7}.`; }},
     {t:'A lease of fourteen years.', note:() => '+' + fmt(lettingValue(letting().f, S.year)) + ' a year', go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 14, 'fair', r); add({goodwill:1});
-      return `Fourteen years. ${steward()} reads the covenants aloud: ${covenants}. ${f.tenant} signs below your name. The rent is ${fmt(r)} until Lady Day ${S.year + 14}.`; }},
+      return `Fourteen years being agreed upon, ${steward()} reads the covenants aloud: ${covenants}. ${f.tenant} signs below your name, and the rent is ${fmt(r)} until Lady Day ${S.year + 14}.`; }},
     {t:'Fourteen years at an easy rent, the tenant to drain and fence.', note:() => fmt(five(0.88 * lettingValue(letting().f, S.year))) + ' a year', go:() => { const {f} = letting(), p = pro(f), r = five(0.88 * lettingValue(f, S.year)); sign(f, 'term', 14, 'easy', r); add({goodwill:3});
       if (f.tenant === 'Mrs Thorne') reg('thorne', 1, 'You gave her fourteen years at a rent she could mend the farm on');
-      return `The rent is set at ${fmt(r)} for fourteen years. ${f.tenant} covenants to lay stone drains in the wet grounds and to plant quick along the lane. ${p.He} asks to take the lease home and read it.
+      return `The rent is set at ${fmt(r)} for fourteen years, ${f.tenant} covenanting to lay stone drains in the wet grounds, and to plant quick along the lane; and ${p.he} asks to take the lease home and read it.
 
 On Monday there are two loads of stone at ${p.his} gate.`; }},
     {t:'Advertise the farm and take the best bidder.', note:() => '+' + fmt(five(1.13 * lettingValue(letting().f, S.year))) + ' a year, seven years, a new tenant', go:() => { const {f} = letting(), r = five(1.13 * lettingValue(f, S.year)), old = f.tenant, n = incomer();
       if (old === 'Mrs Thorne') reg('thorne', -4, 'You advertised Long Barrow over her head'); if (old === 'Edmund') { reg('edmund', -3, 'You let Kennet Bottom over his head'); add({family:-6}); }
       f.tenant = n[0]; f.she = false; f.K = 0.3 * r; f.arrears = 0; f.since = S.year; sign(f, 'term', 7, 'rack', r); add({goodwill:-5});
-      return `The notice is in the Mercury two Saturdays running. Nine letters come. The best is from a ${n[0]} of ${n[1]}, who offers ${fmt(r)} and has not seen the farm.
+      return `The notice being in the Mercury two Saturdays running, nine letters come; of which the best is from a ${n[0]} of ${n[1]}, who offers ${fmt(r)}, and has not seen the farm.
 
-${old} leaves with two wagons and a crate of fowls. ${n[0]} signs for seven years.`; }},
+${old} leaves with two wagons and a crate of fowls, and ${n[0]} signs for seven years.`; }},
     {t:'Fourteen years at a corn rent.', note:'The rent rises and falls with wheat at Wyvern', go:() => { const {f} = letting(); sign(f, 'corn', 14, 'fair');
       f.rent = five(0.86 * f.base * farmF(f) * (0.5 * means(S.year - 1) + 0.5 * market(S.year))); add({goodwill:2});
-      return `The rent of ${f.name} is fixed in wheat and not in money. Each rent day ${steward()} is to take the Wyvern price and work the sum. He works it now, twice. This year it comes to ${fmt(f.rent)}.
+      return `The rent of ${f.name} is fixed in wheat, and not in money; so that each rent day ${steward()} is to take the Wyvern price, and work the sum. He works it now, twice, and this year it comes to ${fmt(f.rent)}.
 
 ${f.tenant} asks to see the working, and signs.`; }}
   ]});
@@ -190,28 +190,26 @@ ev({ id:'cannotPay', follow:true, cond:() => !!owing(),
   get title(){ const f = owing(); return f ? 'Arrears at ' + f.name : 'Arrears'; },
   text:() => { const f = owing(), p = pro(f), st = steward(), a = fmt(f.arrears);
     if (f.tenant === 'Mrs Thorne') meet('thorne');
-    return (S.t + f.acres) % 2 ? `${f.tenant} is ${a} behind with the rent of ${f.name}. ${p.He} comes up on rent day and counts what ${p.he} has on to the table in notes and silver.
+    return (S.t + f.acres) % 2 ? `${f.tenant}, being ${a} behind with the rent of ${f.name}, comes up on rent day, and counts what ${p.he} has on to the table in notes and silver.
 
 “That is what the corn made, sir,” ${p.he} says. “There is no more till the lambs are sold.”
 
-${st} has the arrears book open. There is a pencil cross against the name.` : `${st} brings the arrears book. ${f.tenant} of ${f.name} owes ${a} and has sent a boy with a note in place of the money.
-
-The note says the wheat was sold at ${PRICES[S.year]}s. the quarter and the poor rate was paid out of it first. It asks for time.
+${st} has the arrears book open, with a pencil cross against the name.` : `${st} brings the arrears book. ${f.tenant} of ${f.name} owes ${a}, and has sent a boy with a note in place of the money; and the note, having said that the wheat was sold at ${PRICES[S.year]}s. the quarter, and that the poor rate was paid out of it first, asks for time.
 
 “There are eleven beasts and two ricks down there, sir,” says ${st}. “They would cover it.”`; },
   choices:[
     {t:'Forgive the arrears.', note:() => 'Strike off ' + fmt(owing().arrears), go:() => { const f = owing(), p = pro(f), a = fmt(f.arrears); f.arrears = 0; S.payQueue.shift(); add({goodwill:3});
       if (f.tenant === 'Mrs Thorne') reg('thorne', 1, 'You struck off her arrears');
-      return `${steward()} draws his pen through ${a}. ${f.tenant} watches him do it. ${p.He} says the gate on the lane will be hung by Sunday.`; }},
+      return `${steward()} draws his pen through ${a}, and ${f.tenant}, having watched him do it, says the gate on the lane will be hung by Sunday.`; }},
     {t:'Forgive them, and take a fifth off the rent for two years.', note:() => '+' + fmt(Math.round(owing().rent * S.rentAdj * 0.8)) + ' a year until ' + (S.year + 2), if:() => !owing().rebate, go:() => { const f = owing(); f.arrears = 0; f.rebate = S.year + 2; f.K += 0.1 * f.rent; S.payQueue.shift(); add({goodwill:5});
       if (f.tenant === 'Mrs Thorne') reg('thorne', 2, 'You abated her rent when wheat fell');
-      return `The arrears are struck off. The rent is to be ${fmt(Math.round(rentDue(f)))} until Lady Day ${f.rebate}. ${steward()} writes the figure on a slip. ${f.tenant} folds the slip twice and puts it in an inside pocket.`; }},
+      return `The arrears are struck off, and the rent is to be ${fmt(Math.round(rentDue(f)))} until Lady Day ${f.rebate}. ${steward()} writes the figure upon a slip, and ${f.tenant}, having folded the slip twice, puts it in an inside pocket.`; }},
     {t:'Let the arrears stand over.', note:'Owed still', go:() => { const f = owing(), a = fmt(f.arrears); S.payQueue.shift();
-      return `The ${a} is carried forward. ${steward()} writes “stands over” in the margin. ${f.tenant} thanks you and goes out by the yard door.`; }},
+      return `The ${a} is carried forward, ${steward()} writing “stands over” in the margin; and ${f.tenant} thanks you, and goes out by the yard door.`; }},
     {t:'Distrain. Send the bailiff for the stock.', note:'The farm falls in hand', go:() => { const f = owing(), p = pro(f), got = Math.round(Math.min(f.arrears, 0.45 * f.rent) / 5) * 5, who = f.tenant; S.payQueue.shift();
       if (who === 'Mrs Thorne') reg('thorne', -4, 'You sold her up for the rent'); if (who === 'Edmund') { reg('edmund', -4, 'You distrained on your own son'); add({family:-10}); }
       add({money:got, goodwill:-7}); quit(f);
-      return `The bailiff goes down on Monday with two men and a cart. The sale is held in the yard on Thursday. The beasts, the ricks and the implements make ${fmt(got)}.
+      return `The bailiff goes down on Monday with two men and a cart, and the sale being held in the yard on Thursday, the beasts, the ricks, and the implements make ${fmt(got)}.
 
 ${who} goes to a brother at Speen. ${f.name} is in hand, and ${steward()} has put a man in to feed what is left.`; }}
   ]});
@@ -256,39 +254,37 @@ function creditCheck(){
 }
 
 ev({ id:'georgeMeeting', follow:true, cond:() => S.money < -800, title:'The Meeting at the George',
-  text:() => `${steward()} brings a paper up from Wyvern. It is signed by the butcher, the chandler, the coal merchant, the saddler and nine others.
-
-They met at the George on Tuesday. They are owed ${fmt(-S.money)} between them. They have resolved to send nothing more to the Hall until it is paid.
+  text:() => `${steward()} brings a paper up from Wyvern, signed by the butcher, the chandler, the coal merchant, the saddler, and nine others; who, having met at the George on Tuesday, and being owed ${fmt(-S.money)} between them, have resolved to send nothing more to the Hall until it is paid.
 
 Mrs Bunce has asked what she is to do about Sunday’s joint.`,
   choices:[
     {t:'Borrow it from Mr Tidmarsh on the land.', note:() => '+' + fmt(Math.ceil(-S.money / 500) * 500) + ' on mortgage', if:() => !moneyTight(S.year) && S.mortgage + Math.ceil(-S.money / 500) * 500 <= mortCap(), go:() => { const a = Math.ceil(-S.money / 500) * 500; S.mortgage += a; S.money += a;
-      return `Mr Tidmarsh finds ${fmt(a)} in a week at five per cent. ${steward()} drives into Wyvern with the notes and pays every name on the paper at his own door. The butcher’s boy is at the kitchen door before the gig is back.`; }},
+      return `Mr Tidmarsh finds ${fmt(a)} in a week at five per cent.; and ${steward()}, driving into Wyvern with the notes, pays every name upon the paper at his own door. The butcher’s boy is at the kitchen door before the gig is back.`; }},
     {t:'Fell the oaks in Hanger Wood.', note:() => '+' + fmt(Math.round(75 * (1 + 0.035 * (S.year - 1795))) * 10), if:() => (S.timber === undefined ? 3 : S.timber) > 0, go:() => { const t = Math.round(75 * (1 + 0.035 * (S.year - 1795))) * 10; S.timber = (S.timber === undefined ? 3 : S.timber) - 1; add({money:t, standing:-3});
-      return `The timber merchant from Reading goes through Hanger Wood with a scribing iron and marks two hundred oaks. He pays ${fmt(t)} down. The sawyers dig their pit that week. The fall can be heard from the terrace.`; }},
+      return `The timber merchant from Reading goes through Hanger Wood with a scribing iron, and having marked two hundred oaks, pays ${fmt(t)} down. The sawyers dig their pit that week; and the fall can be heard from the terrace.`; }},
     {t:'Put down the carriage and shut up half the house.', note:() => '+£200, and ' + fmt(estCost(estIdx(), S.year) - estCost(estIdx() - 1, S.year)) + ' a year saved', if:() => estIdx() > 0, go:() => { stepEst(-1); add({money:200, standing:-2});
-      return `The carriage horses go to Reading fair. Two footmen and the under-gardener are paid off at the month. The dining-room shutters are closed and the family dines in the breakfast parlour.
+      return `The carriage horses go to Reading fair; two footmen and the under-gardener are paid off at the month; and the dining-room shutters being closed, the family dines in the breakfast parlour.
 
 The chandler is paid in part.`; }},
     {t:'Ask them to wait.', go:() => { add({standing:-5});
-      return `${steward()} carries the answer down. The paper is read aloud at the George. On Saturday the butcher sends the joint, with a bill pinned to the cloth. The bill is marked “ready money”.`; }}
+      return `${steward()} carries the answer down, and the paper is read aloud at the George. On Saturday the butcher sends the joint, with a bill pinned to the cloth, and the bill marked “ready money”.`; }}
   ]});
 
 ev({ id:'hammer', follow:true, cond:() => S.money < -2000 && (boughtFarm() || edmundSigns()), title:'A Sale by Order',
-  text:() => `You owe ${fmt(-S.money)} in Wyvern and Reading on bills and notes of hand. Two of the holders have taken out writs.
+  text:() => `You owe ${fmt(-S.money)} in Wyvern and Reading upon bills and notes of hand, and two of the holders have taken out writs.
 
-Mr Tidmarsh comes out from the bank and asks for the estate map. He unrolls it on the library table and stands the inkwell on one corner.
+Mr Tidmarsh, coming out from the bank, asks for the estate map; and having unrolled it upon the library table, stands the inkwell upon one corner.
 
 “Something must go, sir,” he says. “The question is what.”`,
   choices:[
     {t:() => 'Sell ' + boughtFarm().name + '.', note:() => 'About ' + fmt(salePrice(boughtFarm())) + '. It is your own to sell', if:() => !!boughtFarm(), go:() => { const f = boughtFarm(), p = conveyFarm(f); add({standing:-5});
-      return `${f.name} is put up at the George by Mr Skinner in one lot. It is knocked down at ${fmt(p)} to a brewer from Reading. Mr Tidmarsh pays off the writs the same afternoon and brings you a draft for the balance.`; }},
+      return `${f.name} is put up at the George by Mr Skinner in one lot, and knocked down at ${fmt(p)} to a brewer from Reading; and Mr Tidmarsh, having paid off the writs the same afternoon, brings you a draft for the balance.`; }},
     {t:() => 'Sell ' + settledFarm().name + ' out of the settlement.', note:() => 'About ' + fmt(salePrice(settledFarm())) + (F('edmundDead') ? '. The trustees must sign' : '. Edmund must sign'), if:() => !!edmundSigns(), go:() => { const f = settledFarm(), p = conveyFarm(f), r = settleProceeds(p, 200), off = r.off; if (f.id === 'longbarrow') fl('soldLongBarrow'); add({standing:-8, family:-12}); if (!F('edmundDead')) reg('edmund', -2, 'You sold ' + f.name + ' out of his inheritance'); reg('cullerne', 1);
-      return `${F('edmundDead') ? 'The trustees meet in Lincoln’s Inn and sign the deed. Their clerk sends it down by the mail.' : 'The deed of consent goes to Edmund by the post. It comes back signed in three weeks. There is no letter with it.'}
+      return `${F('edmundDead') ? 'The trustees meet in Lincoln’s Inn and sign the deed, and their clerk sends it down by the mail.' : 'The deed of consent goes to Edmund by the post, and comes back signed in three weeks, with no letter in it.'}
 
 ${f.name} is sold by private treaty to Lord Cullerne’s agent for ${fmt(p)}. ${off ? `The mortgagees take ${fmt(off)} of it. ` : ''}${r.trust ? `The trustees of the settlement put ${fmt(r.trust)} into the Three per Cents${F('edmundDead') ? '' : ' in Edmund’s name'}. ` : ''}The estate map is sent to Wyvern to be drawn again.`; }},
     {t:'Sell nothing.', go:() => { S.dead = 'ruin';
-      return `Mr Tidmarsh rolls up the map. He says he is sorry for it. The writs are served on Thursday.`; }}
+      return `Mr Tidmarsh rolls up the map, and says he is sorry for it. The writs are served on Thursday.`; }}
   ]});
 
 /* ---------- ventures: each can make him, and each can break him ---------- */
@@ -451,22 +447,22 @@ function sellFarm(id){ const f = farm(id); if (!f || !sellState(id).canSell) ret
 const offerId = () => ['coldharbour', 'rooksnest'].find(id => !farm(id));
 ev({ id:'farmOffered', follow:true, cond:() => !!offerId() && S.farms.length < MAX_FARMS, title:'The Executors’ Offer',
   text:() => { const f = landFor(offerId()), p = askPrice(f, 13);
-    return `Mr Ayliffe of ${f.name} died at Bath in February. He has left the farm to three nieces in equal shares, and the nieces want money.
+    return `Mr Ayliffe of ${f.name} died at Bath in February, having left the farm to three nieces in equal shares; and the nieces want money.
 
-Their attorney rides over from Newbury. He will take ${fmt(p)} for the ${f.acres} acres if the conveyance is signed this term. Put up at the George it would fetch ${fmt(askPrice(f))}, he says, and take till Christmas.
+Their attorney rides over from Newbury, and will take ${fmt(p)} for the ${f.acres} acres, if the conveyance is signed this term; for put up at the George, he says, it would fetch ${fmt(askPrice(f))}, and take till Christmas.
 
-${f.tenant} has the farm from year to year at ${fmt(five(0.95 * lettingValue(f, S.year)))}. Mr Tidmarsh has sent a note by the attorney. He will lend the whole sum on the farm itself at five per cent.`; },
+${f.tenant} has the farm from year to year at ${fmt(five(0.95 * lettingValue(f, S.year)))}. Mr Tidmarsh has sent a note by the attorney, to say that he will lend the whole sum upon the farm itself at five per cent.`; },
   choices:[
     {t:'Buy it on Mr Tidmarsh’s money.', note:() => fmt(askPrice(landFor(offerId()), 13)) + ', all of it on mortgage', go:() => { const p = askPrice(landFor(offerId()), 13), f = takeFarm(offerId(), p, p); add({standing:2});
-      return `The conveyance is signed in the attorney’s office at Newbury. Mr Tidmarsh’s clerk counts ${fmt(p)} in notes on to the table and the attorney counts them again.
+      return `The conveyance is signed in the attorney’s office at Newbury, where Mr Tidmarsh’s clerk counts ${fmt(p)} in notes on to the table, and the attorney counts them again.
 
-${steward()} rules a new page in the book and writes “${f.name}” at the head of it.`; }},
+${steward()} rules a new page in the book, and writes “${f.name}” at the head of it.`; }},
     {t:'Buy it with your own money.', note:() => fmt(askPrice(landFor(offerId()), 13)), if:() => S.money >= askPrice(landFor(offerId()), 13), go:() => { const p = askPrice(landFor(offerId()), 13); S.money -= p; const f = takeFarm(offerId(), 0, p); add({standing:2});
-      return `You give the attorney a draft on Tidmarsh’s for ${fmt(p)}. He reads it twice and puts it in his pocket-book.
+      return `You give the attorney a draft upon Tidmarsh’s for ${fmt(p)}, and he, having read it twice, puts it in his pocket-book.
 
-${f.name} is yours from quarter day. ${f.tenant} sends up a goose.`; }},
+${f.name} is yours from quarter day, and ${f.tenant} sends up a goose.`; }},
     {t:'Let it go to the hammer.', go:() => { const f = landFor(offerId());
-      return `The attorney bows and rides back to Newbury. On Saturday ${f.name} is in the Mercury, to be sold by private contract. The price asked is ${fmt(askPrice(f))}.`; }}
+      return `The attorney bows, and rides back to Newbury; and on Saturday ${f.name} is in the Mercury, to be sold by private contract, the price asked being ${fmt(askPrice(f))}.`; }}
   ]});
 
 /* ---------- more works ---------- */
@@ -609,39 +605,39 @@ function bubbleClock(){ if (!S.bub && S.t >= 52 && S.t <= 54) { const r = Math.r
   if (b.kept && S.t >= 72) { const p = 35 * b.kept; S.money += p; b.kept = 0; S.notes.push(`The Brazil Association is wound up. The proprietors are paid thirty-five pounds a share. ${cap1(pounds(p))} is passed to your account at Tidmarsh’s.`); } }
 
 ev({ id:'bubbleTip', follow:true, cond:() => !!S.bub && !S.bub.tipped, title:'The Brazil Association',
-  text:() => `A printed paper comes by the London mail under a frank. It is four pages, with a map of South America on the fourth.
+  text:() => `A printed paper comes by the London mail under a frank, being four pages, with a map of South America upon the fourth.
 
 “THE BRAZIL ASSOCIATION, for supplying the Dominions of His Royal Highness the PRINCE REGENT of PORTUGAL with British Manufactures. Capital £200,000, in Shares of £50 each. The Court of Lisbon being now happily removed to RIO DE JANEIRO, and the Ports of that vast Continent opened to our Flag, the Directors have chartered three Ships. A Dividend of Twenty per Cent. is confidently expected upon the first Returns. Early Application is recommended to Mr Quill, Secretary, at the Jerusalem Coffee-house, Cornhill.”
 
-Hartopp has had one too. He brings it over folded in his hat.
+Hartopp, having had one too, brings it over folded in his hat.
 
 “I have been to Marlborough, sir. I know a cold collation when I read one.”
 
-Henrietta has read the list of Directors. There is a baronet in it, and two Members.`,
+Henrietta has read the list of Directors, in which there is a baronet, and two Members.`,
   choices:[
     {t:'Take ten shares.', note:'£500', go:() => { const b = S.bub; b.tipped = true; b.shares = 10; b.paid = 500; S.money -= 500; later('bubbleRise', 3);
-      return `You write to Mr Quill for ten shares and enclose a draft on Tidmarsh’s for five hundred pounds.
+      return `You write to Mr Quill for ten shares, and enclose a draft upon Tidmarsh’s for five hundred pounds.
 
-The scrip comes back in a week. It is engraved with a ship under full sail and a native holding a cornucopia. Mr Quill begs to add that the list closed on Friday, three times over.`; }},
+The scrip comes back in a week, engraved with a ship under full sail, and a native holding a cornucopia; and Mr Quill begs to add that the list closed on Friday, three times over.`; }},
     {t:'Take thirty.', note:'£1,500', if:() => S.money >= 1500, go:() => { const b = S.bub; b.tipped = true; b.shares = 30; b.paid = 1500; S.money -= 1500; later('bubbleRise', 3); reg('henrietta', 1);
-      return `You write to Mr Quill for thirty shares and enclose a draft on Tidmarsh’s for fifteen hundred pounds. Mr Tidmarsh pays it. He sends a note with the pass-book asking whether the figure is right.
+      return `You write to Mr Quill for thirty shares, and enclose a draft upon Tidmarsh’s for fifteen hundred pounds; and Mr Tidmarsh pays it, but sends a note with the pass-book, asking whether the figure is right.
 
-The scrip comes in a week, thirty sheets. Each has a ship under full sail and a native holding a cornucopia.`; }},
+The scrip comes in a week, in thirty sheets, each having a ship under full sail, and a native holding a cornucopia.`; }},
     {t:'Put it behind the clock.', go:() => { S.bub.tipped = true; later('bubbleRise', 3);
-      return `You put it behind the clock on the chimney-piece.
+      return `You put it behind the clock upon the chimney-piece.
 
-On market day Mr Tidmarsh says that nine of his customers have drawn on him for Cornhill in a week. One of them is the rector of Kintbury.`; }}
+On market day Mr Tidmarsh says that nine of his customers have drawn upon him for Cornhill in a week, and that one of them is the rector of Kintbury.`; }}
   ]});
 
 ev({ id:'bubbleRise', follow:true, cond:() => !!S.bub && !S.bub.rose && !S.bub.done, title:'Brazils at Ninety',
   text:() => { const n = bub().shares;
-    return `The Mercury prints the price of shares below the price of corn. This Saturday it reads: “Brazil Association, £50 paid, 90.”
+    return `The Mercury prints the price of shares below the price of corn, and this Saturday it reads: “Brazil Association, £50 paid, 90.”
 
-${n ? `Your ${numWords(n)} shares cost ${pounds(S.bub.paid)} in the spring. They would fetch ${pounds(90 * n)} to-day.` : `The ten shares you did not take would fetch nine hundred pounds to-day.`}
+${n ? `Your ${numWords(n)} shares, having cost ${pounds(S.bub.paid)} in the spring, would fetch ${pounds(90 * n)} to-day.` : `The ten shares you did not take would fetch nine hundred pounds to-day.`}
 
-Mr Quill has written to the proprietors. The Three Brothers has cleared from Bristol for Rio with hardware, Manchester cottons and four hundred pair of skates. A second issue is to be made at the market price.
+Mr Quill has written to the proprietors, that the Three Brothers has cleared from Bristol for Rio with hardware, Manchester cottons, and four hundred pair of skates; and that a second issue is to be made at the market price.
 
-Hartopp bought twenty at seventy. He told nobody until they were at eighty.`; },
+Hartopp bought twenty at seventy, and told nobody until they were at eighty.`; },
   choices:[
     {t:'Sell them all.', note:() => '+' + fmt(90 * bub().shares), if:() => bub().shares > 0, go:() => { const b = S.bub, n = b.shares, p = 90 * n; b.rose = true; b.shares = 0; S.money += p; fl('bubbleOut');
       return `Tidmarsh’s London agent sells the ${numWords(n)} at ninety. ${cap1(pounds(p))} is passed to your account, less his eighth per cent.
@@ -650,31 +646,31 @@ Hartopp asks you at the Bench whether you are unwell.`; }},
     {t:'Sell half.', note:() => '+' + fmt(45 * bub().shares), if:() => bub().shares > 0, go:() => { const b = S.bub, n = b.shares / 2, p = 90 * n; b.rose = true; b.shares = n; S.money += p; later('bubbleCall', 3);
       return `${cap1(numWords(n))} are sold at ninety. ${cap1(pounds(p))} goes to your account. The rest of the scrip stays in the deed box.`; }},
     {t:'Hold.', if:() => bub().shares > 0, go:() => { S.bub.rose = true; later('bubbleCall', 3);
-      return `The scrip stays in the deed box. On Saturdays you turn to the share list before the corn.`; }},
+      return `The scrip stays in the deed box; and on Saturdays you turn to the share list before the corn.`; }},
     {t:() => bub().shares ? 'Take as many again at ninety.' : 'Buy ten at ninety.', note:() => fmt(90 * (bub().shares || 10)), if:() => S.money >= 90 * (bub().shares || 10), go:() => { const b = S.bub, n = b.shares || 10, had = b.shares; b.rose = true; b.shares += n; b.paid = (b.paid || 0) + 90 * n; S.money -= 90 * n; later('bubbleCall', 3);
-      return `Mr Quill allots you ${numWords(n)} of the second issue at ninety. You send ${pounds(90 * n)}.
+      return `Mr Quill allots you ${numWords(n)} of the second issue at ninety, and you send ${pounds(90 * n)}.
 
-The new scrip has the same ship. The native has been given a second cornucopia.${had ? '' : ' Hartopp says he is glad to see you come to your senses.'}`; }},
+The new scrip has the same ship; but the native has been given a second cornucopia.${had ? '' : ' Hartopp says he is glad to see you come to your senses.'}`; }},
     {t:'Leave it alone.', if:() => !bub().shares, go:() => { S.bub.rose = true;
-      return `You leave it alone. Henrietta reads the share list aloud at breakfast on Saturdays, down to Brazils, and stops there.`; }}
+      return `You leave it alone; and Henrietta, reading the share list aloud at breakfast on Saturdays, goes down to Brazils, and stops there.`; }}
   ]});
 
 ev({ id:'bubbleCall', follow:true, cond:() => !!S.bub && S.bub.shares > 0 && !S.bub.called && !S.bub.done, title:'A Call of Ten Pounds',
   text:() => { const b = S.bub, bad = b.fate === 'gone', price = bad ? 75 : 95;
-    return `A letter from Cornhill. ${bad ? 'It is not franked. The postboy wants eightpence for it.' : 'It is franked by one of the Members.'}
+    return `A letter from Cornhill. ${bad ? 'It is not franked, and the postboy wants eightpence for it.' : 'It is franked by one of the Members.'}
 
 “Sir, I am directed to acquaint you that the Court of Directors have this Day made a Call of Ten Pounds per Share, payable on or before the 1st proximo, the Three Brothers being detained at Rio for want of a Return Cargo. ${bad ? 'The Dividend declared at Midsummer will be satisfied in new Shares.' : 'A Dividend Warrant for Three Pounds per Share is enclosed.'} I have the Honour to be, &c., J. QUILL, Sec.”
 
-Brazils are at ${numWords(price)} in Saturday’s paper. They were at a hundred and ten in July.
+Brazils are at ${numWords(price)} in Saturday’s paper, that were at a hundred and ten in July.
 
-${steward()} has worked the call on your ${numWords(b.shares)} shares. It comes to ${pounds(10 * b.shares)}.`; },
+${steward()} has worked the call upon your ${numWords(b.shares)} shares, and it comes to ${pounds(10 * b.shares)}.`; },
   choices:[
     {t:'Pay the call.', note:() => fmt(10 * bub().shares), go:() => { const b = S.bub; b.called = true; S.money -= 10 * b.shares; b.paid += 10 * b.shares; if (b.fate !== 'gone') S.money += 3 * b.shares;
-      return `You send the draft. A receipt comes back by return, signed by a clerk. Mr Quill is at Bristol on the Association’s business.`; }},
+      return `You send the draft, and a receipt comes back by return, signed by a clerk, Mr Quill being at Bristol upon the Association’s business.`; }},
     {t:'Sell at the price in the paper.', note:() => 'About ' + fmt((bub().fate === 'gone' ? 73 : 94) * bub().shares), go:() => { const b = S.bub, n = b.shares, at = b.fate === 'gone' ? 73 : 94, p = at * n; b.called = true; b.shares = 0; S.money += p + (b.fate !== 'gone' ? 3 * n : 0); fl('bubbleOut');
-      return `The agent sells at ${numWords(at)}. He writes that buyers were shy of so many together, and that the call goes with the shares. ${cap1(pounds(p))} is passed to your account.`; }},
+      return `The agent sells at ${numWords(at)}, and writes that buyers were shy of so many together, and that the call goes with the shares. ${cap1(pounds(p))} is passed to your account.`; }},
     {t:'Send nothing, and let the shares be forfeit.', go:() => { const b = S.bub; b.called = true; b.shares = 0; add({standing:-2});
-      return `You do not answer. In November the Courier prints a list of proprietors in default. Your name is in it, between a hop factor and a clergyman of Devizes.
+      return `You do not answer; and in November the Courier prints a list of proprietors in default, in which your name stands between a hop factor and a clergyman of Devizes.
 
 The shares are declared forfeit to the Association.`; }}
   ]});
@@ -684,50 +680,48 @@ ev({ id:'bubbleEnd', follow:true, cond:() => !!S.bub && S.bub.shares > 0 && !S.b
   text:() => { const b = S.bub, n = b.shares;
     if (b.fate === 'made') return `Hartopp rides into the yard without his hat.
 
-The Three Brothers is in King Road, below Bristol. She has hides, tallow, eleven hundred bags of cotton, and Spanish dollars in kegs under the captain’s cot. She sold her whole outward cargo at Rio in a fortnight, to the Court.
+The Three Brothers is in King Road, below Bristol, with hides, tallow, eleven hundred bags of cotton, and Spanish dollars in kegs under the captain’s cot; having sold her whole outward cargo at Rio in a fortnight, to the Court.
 
-The Directors have declared a return of two hundred and fifty pounds a share. They mean to wind up while the price holds.
+The Directors have declared a return of two hundred and fifty pounds a share, and mean to wind up while the price holds.
 
-You have ${numWords(n)} shares. ${steward()} works the sum twice. It is ${pounds(250 * n)}.`;
-    if (b.fate === 'glut') return `Brickwood’s bank has stopped in London. Five Manchester houses in the South American trade have stopped after it. Every share on the list has fallen.
+You have ${numWords(n)} shares. ${steward()} works the sum twice, and it is ${pounds(250 * n)}.`;
+    if (b.fate === 'glut') return `Brickwood’s bank has stopped in London, and five Manchester houses in the South American trade have stopped after it, so that every share upon the list has fallen.
 
-The Three Brothers came home in May with half a cargo of hides. The captain says the warehouses at Rio are full of English goods to the rafters, and there is nobody left there to buy them.
+The Three Brothers came home in May with half a cargo of hides; and her captain says that the warehouses at Rio are full of English goods to the rafters, and that there is nobody left there to buy them.
 
-Brazils are at twenty. You have ${numWords(n)} shares. They have cost you ${pounds(b.paid)}.
+Brazils are at twenty. You have ${numWords(n)} shares, and they have cost you ${pounds(b.paid)}.
 
 Mr Quill writes that the Association will trade on in a smaller way.`;
-    return `The office at the Jerusalem Coffee-house is shut. Mr Quill went down to Dover on the 9th. He has not written.
+    return `The office at the Jerusalem Coffee-house is shut, Mr Quill having gone down to Dover upon the 9th, since when he has not written.
 
-The Three Brothers sold her cargo at Rio for less than the freight. The Association’s bills have come back unpaid from three houses. An attorney in Bucklersbury writes on behalf of the holders.
+The Three Brothers sold her cargo at Rio for less than the freight, and the Association’s bills having come back unpaid from three houses, an attorney in Bucklersbury writes on behalf of the holders.
 
 “The Association was never incorporated by Charter or Act. Every Proprietor upon the Register is therefore answerable for its Engagements as a Partner, to the whole Extent of his Property.”
 
-He names the sum. It is seventy pounds a share. You are on the register for ${numWords(n)}.`; },
+He names the sum, and it is seventy pounds a share. You are upon the register for ${numWords(n)}.`; },
   choices:[
     {t:'Take the money.', note:() => '+' + fmt(250 * bub().shares), if:() => bub().fate === 'made', go:() => { const b = S.bub, p = 250 * b.shares; b.ended = true; b.shares = 0; fl('bubbleMade'); add({money:p, standing:3, family:4}); reg('henrietta', 1); reg('hartopp', 1);
-      return `The draft is on Smith, Payne and Smiths. Mr Tidmarsh holds it up to the window before he enters it.
+      return `The draft is upon Smith, Payne and Smiths, and Mr Tidmarsh holds it up to the window before he enters it.
 
-Henrietta asks what a house in town costs. Hartopp has a new prospectus in his hat. It is for lighting Reading with the smoke of coal.`; }},
+Henrietta asks what a house in town costs; and Hartopp has a new prospectus in his hat, for lighting Reading with the smoke of coal.`; }},
     {t:'Take it, and pay down the mortgage.', note:() => '+' + fmt(250 * bub().shares) + ', off the debt', if:() => bub().fate === 'made' && S.mortgage > 0, go:() => { const b = S.bub, p = 250 * b.shares, off = Math.min(S.mortgage, Math.floor(p / 100) * 100); b.ended = true; b.shares = 0; fl('bubbleMade'); S.mortgage -= off; add({money:p - off, standing:3, family:2}); reg('hartopp', 1);
-      return `The draft is on Smith, Payne and Smiths. Mr Tidmarsh writes off ${pounds(off)} of the mortgage with his own pen and blots it.
+      return `The draft is upon Smith, Payne and Smiths, and Mr Tidmarsh, writing off ${pounds(off)} of the mortgage with his own pen, blots it.
 
 “I had not thought to see that money again, sir,” he says. “From Brazil least of all.”`; }},
     {t:'Sell at twenty.', note:() => '+' + fmt(20 * bub().shares), if:() => bub().fate === 'glut', go:() => { const b = S.bub, p = 20 * b.shares; b.ended = true; b.shares = 0; S.money += p;
       return `The agent sells at twenty. ${cap1(pounds(p))} is passed to your account.
 
-The scrip goes to the buyer. Kitty had asked for one sheet, for the ship.`; }},
+The scrip goes to the buyer, though Kitty had asked for one sheet, for the ship.`; }},
     {t:'Keep them.', if:() => bub().fate === 'glut', go:() => { const b = S.bub; b.ended = true; b.kept = b.shares; b.shares = 0;
-      return `The scrip stays in the deed box, under the canal share.
-
-The Mercury drops Brazils from its list in the autumn, to make room for the price of oats.`; }},
+      return `The scrip stays in the deed box, under the canal share; and in the autumn the Mercury drops Brazils from its list, to make room for the price of oats.`; }},
     {t:'Pay it.', note:() => fmt(70 * bub().shares), if:() => bub().fate === 'gone', go:() => { const b = S.bub, p = 70 * b.shares; b.ended = true; b.shares = 0; fl('bubbleBurnt'); add({money:-p, standing:-1});
-      return `You pay ${pounds(p)} to the attorney in Bucklersbury. He sends a release on stamped paper.
+      return `You pay ${pounds(p)} to the attorney in Bucklersbury, who sends a release upon stamped paper.
 
-Hartopp has paid too. He does not bring anything over in his hat that winter.`; }},
+Hartopp has paid too, and does not bring anything over in his hat that winter.`; }},
     {t:'Offer ten shillings in the pound, for a quick end.', note:() => fmt(35 * bub().shares) + ', if they take it', if:() => bub().fate === 'gone', go:() => { const b = S.bub, n = b.shares, ok = chance(0.5); b.ended = true; b.shares = 0; fl('bubbleBurnt'); add({money:-(ok ? 35 : 70) * n - 60, standing:-3});
-      return ok ? `Your attorney at Newbury offers ten shillings in the pound, money down. The holders meet at the London Tavern and take it. It costs you ${pounds(35 * n)}, and sixty for the attorney.
+      return ok ? `Your attorney at Newbury offers ten shillings in the pound, money down; and the holders, meeting at the London Tavern, take it. It costs you ${pounds(35 * n)}, and sixty for the attorney.
 
-The Courier prints the composition, with the names.` : `Your attorney at Newbury offers ten shillings in the pound. The holders meet at the London Tavern and refuse it. They have seen a map of Hatherley.
+The Courier prints the composition, with the names.` : `Your attorney at Newbury offers ten shillings in the pound; but the holders, meeting at the London Tavern, and having seen a map of Hatherley, refuse it.
 
 You pay ${pounds(70 * n)}, and sixty for the attorney.`; }}
   ]});
