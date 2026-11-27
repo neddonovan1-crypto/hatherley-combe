@@ -77,7 +77,7 @@ function beginSeason(){
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('wages')) line('Home farm wages above the common rate', -30);
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
@@ -207,6 +207,7 @@ function reckoning(){
     return {title:'Sold Up', P, score:null}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years, and the county, which was not consulted at the time, has had leisure to form a view.`);
+  if (T('captain')) P.push(F('crewGone') ? `He was a sea officer once, and still comes downstairs sideways. The Dryads who followed him ashore are long since back afloat; he reads the Navy List for their ships.` : `His house is the only one in Berkshire where dinner is announced by a boatswain’s pipe, and where a guest who is late for it is logged.`);
   if (T('play')) P.push(`He is known at every card table between Reading and Bath, and welcome at all of them, as a man is welcome who loses.`);
   if (T('enemy')) P.push(S.chars.cullerne.r >= 1 ? `It is counted a wonder that he and Lord Cullerne now speak, the matter of the pointer having lain between them for near fifty years.` : `Lord Cullerne has not forgiven the pointer, and it is now thought that he will be buried unreconciled, beside the dog.`);
   P.push(net > 4000 ? `He is richer than his uncle was, which nobody had thought possible and several think indecent. The estate stands clear by some ${fmt(net)}.`
