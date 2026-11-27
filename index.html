@@ -376,7 +376,7 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
 /* The plan: the survey sheet lies on the baize with the quarter's slips beside it. A place's paper is laid over one side. Plates are held up over everything. */
 body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{overflow:hidden}
 #plan[hidden], #plate[hidden], #sheet[hidden]{display:none}
-#plan{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:18px;align-items:center;padding:16px max(18px, env(safe-area-inset-right, 0px)) 16px max(18px, env(safe-area-inset-left, 0px))}
+#plan{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:22px;align-items:center;padding:16px max(18px, env(safe-area-inset-right, 0px)) 16px max(18px, env(safe-area-inset-left, 0px))}
 #landwrap{min-width:0;height:100%;display:grid;place-items:center}
 #landwrap{filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
 /* the scan has a white margin beyond the torn edge of the paper, which is trimmed off here */
@@ -395,21 +395,21 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
 .lbl.called{z-index:3} .lbl.called span{color:var(--madder)}
 @keyframes knock{0%, 100%{transform:translateY(0)} 50%{transform:translateY(-.5em)}}
 
-/* the slips beside the sheet */
-#cart{display:flex;flex-direction:column;gap:12px;min-width:0}
-#cart .slip, #cart .cue, #cart .chips button{background:#efe6cb var(--leaf) 12% 50%/150% 150%;color:var(--ink);border:0;box-shadow:1px 2px 2px rgba(0,0,0,.3), 3px 8px 14px rgba(0,0,0,.4);text-align:left}
-#cart img{mix-blend-mode:multiply;flex:none}
-#cart .slip{display:flex;align-items:center;gap:10px;padding:10px 12px;transform:rotate(-.5deg)} #cart .slip p{margin:0;display:flex;flex-direction:column;min-width:0}
-#cart .day img{width:58px;height:58px;object-fit:cover;border-radius:50%} #cart .day b{font-family:var(--hand);font-weight:400;font-size:2.1rem;line-height:1} #cart .day span, #cart .purse span{font-family:var(--caps);font-size:.72rem;letter-spacing:.1em;color:var(--muted)}
-#cart .purse{transform:rotate(.6deg);width:100%} #cart .purse img{width:50px;height:50px;object-fit:cover;border-radius:50%} #cart .purse b{font-family:var(--display);font-weight:400;font-size:1.75rem;line-height:1.05;font-variant-numeric:tabular-nums} #cart .purse i{font-style:normal;color:var(--bad)} #cart .neg{color:var(--bad)}
-#cart .vigs{flex-direction:column;align-items:stretch;gap:4px;padding:8px 10px;transform:rotate(-.3deg)}
-#cart .vig{display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center;background:none;border:0;padding:2px 0;text-align:left}
-#cart .vig img{grid-row:1/3;width:44px;height:44px;object-fit:cover;border-radius:50%} #cart .vig span{font-family:var(--caps);font-size:.7rem;letter-spacing:.1em;color:var(--muted);align-self:end;line-height:1.1} #cart .vig b{font-family:var(--hand);font-weight:400;font-size:1.5rem;line-height:1;align-self:start;white-space:nowrap} #cart .vig.low b{color:var(--bad)}
-#cart .vig:hover b{text-decoration:underline;text-decoration-thickness:1px}
-#cart .cue{position:relative;padding:12px 12px 12px 62px;min-height:60px;font-family:var(--display);font-style:italic;font-size:1.12rem;line-height:1.2;color:var(--madder);transform:rotate(.8deg)}
-#cart .cue::before{content:"";position:absolute;left:8px;top:50%;width:46px;height:46px;margin-top:-23px;background:url(art/ui/seal.png) center/contain no-repeat;filter:drop-shadow(1px 2px 2px rgba(40,10,5,.45));transition:transform .15s} #cart .cue:hover::before{transform:rotate(-8deg) scale(.95)}
-#cart .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px} #cart .chips button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 7px;font-family:var(--caps);font-size:.76rem;letter-spacing:.06em;text-align:center;position:relative}
-#cart .chips img{width:40px;height:40px;object-fit:cover;border-radius:50%} #cart .chips button:disabled{opacity:.55;cursor:default} #cart .chips small{position:absolute;top:5px;right:8px;font-family:var(--display);font-size:.9rem;color:var(--madder)}
+/* the table of the quarter: one leaf beside the sheet, set out like the reference on a survey */
+#cart{align-self:center;display:flex;flex-direction:column;gap:14px;min-width:0;padding:20px 18px 14px;background:#efe6cb var(--leaf) 12% 50%/150% 150%;color:var(--ink);box-shadow:1px 2px 2px rgba(0,0,0,.3), 4px 12px 22px rgba(0,0,0,.5);text-align:center}
+#cart img{mix-blend-mode:multiply}
+#cart .day{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:12px;border-bottom:3px double rgba(43,29,16,.55)} #cart .day img{width:64px;height:64px;object-fit:cover;border-radius:50%} #cart .day b{font-family:var(--hand);font-weight:400;font-size:2.3rem;line-height:1.05}
+#cart .day span, #cart .purse span, #cart .vig span{font-family:var(--caps);font-size:.72rem;letter-spacing:.1em;color:var(--muted)}
+#cart .purse{display:flex;flex-direction:column;align-items:center} #cart .purse b{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1.1;font-variant-numeric:tabular-nums} #cart .purse i{font-style:normal;color:var(--bad)} #cart .neg{color:var(--bad)}
+#cart .vigs{display:flex;flex-direction:column;gap:9px;padding-block:12px;border-block:1px solid rgba(43,29,16,.4);text-align:left}
+#cart .vig{display:grid;grid-template-columns:34px minmax(0,1fr) auto;column-gap:9px;row-gap:3px;align-items:baseline} #cart .vig img{grid-row:1/3;align-self:center;width:34px;height:34px;object-fit:cover;border-radius:50%}
+#cart .vig b{font-family:var(--hand);font-weight:400;font-size:1.3rem;line-height:1;white-space:nowrap}
+#cart .vig > i{grid-column:2/4;display:block;height:9px;position:relative;background:repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 10%) left bottom/100% 4px no-repeat;border-bottom:1px solid var(--ink);border-right:1px solid var(--ink)} #cart .vig u{position:absolute;left:0;bottom:1px;height:5px;background:var(--ink);transition:width .6s}
+#cart .vig.low b{color:var(--bad)} #cart .vig.low u{background:var(--bad)}
+#cart .next{display:flex;flex-direction:column;gap:9px} #cart .next p{margin:0;font-family:var(--display);font-style:italic;font-size:1.08rem;line-height:1.25}
+#cart .act{position:relative;display:block;width:100%;padding:13px 38px 12px 10px;background:none;border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:2px;color:var(--ink);font-family:var(--caps);font-size:.84rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+#cart .act::after{content:"";position:absolute;right:-8px;top:50%;width:44px;height:44px;margin-top:-22px;background:url(art/ui/seal.png) center/contain no-repeat;filter:drop-shadow(1px 2px 2px rgba(40,10,5,.45));transition:transform .15s} #cart .act:hover{background:rgba(43,29,16,.07)} #cart .act:hover::after{transform:rotate(-8deg)}
+#cart .foot{display:flex;justify-content:space-between;gap:8px;margin-top:2px} #cart .foot button{background:none;border:0;padding:6px 2px;color:var(--ink);font-family:var(--display);font-style:italic;font-size:1rem;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer} #cart .foot button:disabled{opacity:.45;text-decoration:none;cursor:default} #cart .foot small{font-style:normal;color:var(--madder)}
 
 /* the paper of a place */
 #sheet{position:absolute;top:16px;bottom:16px;z-index:5;width:min(410px, calc(100vw - 36px));padding:18px 20px 22px;overflow-y:auto;overscroll-behavior:contain;background:#efe6cb var(--leaf) 12% 50%/150% 150%;box-shadow:2px 4px 4px rgba(0,0,0,.3), 6px 16px 34px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:11px;animation:laidon .22s ease-out}
@@ -456,13 +456,13 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
 @media (max-width:1080px), (orientation:portrait){
   #plan{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;padding:0;align-items:stretch}
   #plan.sheeton{grid-template-rows:auto minmax(0,1fr) min(60dvh, 34rem)}
-  #cart{order:-1;display:grid;grid-template-columns:repeat(6, minmax(0,1fr));gap:6px;padding:8px max(8px, env(safe-area-inset-right, 0px)) 8px max(8px, env(safe-area-inset-left, 0px))}
-  #cart .slip, #cart .cue, #cart .purse{transform:none} #cart .slip{padding:5px 8px;gap:7px}
-  #cart .day{grid-column:span 3} #cart .purse{grid-column:span 3} #cart .vigs{grid-column:1/-1;flex-direction:row;justify-content:space-between;gap:4px;padding:3px 8px}
-  #cart .day img, #cart .purse img{width:36px;height:36px} #cart .day b{font-size:1.6rem} #cart .purse b{font-size:1.3rem} #cart .day span, #cart .purse span{font-size:.62rem}
-  #cart .vig{grid-template-columns:30px minmax(0,1fr);column-gap:6px;flex:1 1 0;min-width:0} #cart .vig img{width:30px;height:30px} #cart .vig span{font-size:.58rem} #cart .vig b{font-size:1.15rem}
-  #cart .cue{grid-column:span 4;min-height:44px;padding:6px 8px 6px 46px;font-size:1rem} #cart .cue::before{width:34px;height:34px;margin-top:-17px;left:6px}
-  #cart .chips{grid-column:span 2;gap:6px} #cart .chips:first-child, #cart .vigs + .chips{grid-column:1/-1} #cart .chips button{padding:4px 2px;font-size:.62rem;justify-content:center} #cart .chips img{display:none} #cart .chips small{position:static;font-size:.8rem}
+  #cart{order:-1;align-self:stretch;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 12px;padding:8px max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px));box-shadow:0 3px 10px rgba(0,0,0,.5);position:relative;z-index:4}
+  #cart .day{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;gap:0 8px;padding:0;border:0;text-align:left} #cart .day img{display:none} #cart .day b{font-size:1.7rem} #cart .day span{font-size:.62rem}
+  #cart .purse{align-items:flex-end} #cart .purse b{font-size:1.45rem} #cart .purse span{font-size:.62rem} #cart .purse span:first-child{display:none}
+  #cart .vigs{grid-column:1/-1;flex-direction:row;gap:10px;padding-block:6px}
+  #cart .vig{flex:1 1 0;min-width:0;grid-template-columns:minmax(0,1fr);row-gap:1px} #cart .vig img{display:none} #cart .vig span{font-size:.58rem} #cart .vig b{font-size:1.1rem} #cart .vig > i{grid-column:1}
+  #cart .next{grid-column:1/-1;flex-direction:row;align-items:center;gap:10px} #cart .next p{flex:1 1 0;min-width:0;font-size:.95rem;text-align:left} #cart .act{width:auto;flex:none;max-width:56%;padding:9px 30px 8px 10px;font-size:.78rem} #cart .act::after{width:34px;height:34px;margin-top:-17px;right:-9px}
+  #cart .foot{grid-column:1/-1;margin:0} #cart .foot button{padding:2px;font-size:.9rem}
   #landwrap{display:block;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
   #land{height:100%;width:auto} #landwrap{filter:none}
   #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton #land{margin:0 auto}
@@ -9261,7 +9261,7 @@ function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGR
   VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
   if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
-function shutBook(){ VIEW = 'plan'; WHO = ''; if (S.phase === 'ledger') return next(); render(); }
+function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
 function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; ROUND = false; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
 function shutSheet(){ SHEET = ''; WHO = ''; drawPlan(); }
@@ -9333,17 +9333,19 @@ function landHTML(){ const q = S.season, calm = window.matchMedia && matchMedia(
   return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}${moving}${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
-function cueHTML(){
-  if (S.phase === 'event') { const e = byId(S.pending), at = PLACES[eventPlace(e)].n.replace(/^The /, 'the '); return `<button class="cue" onclick="callOn()">${BILLS.has(e.id) ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`}</button>`; }
-  if (S.phase === 'ledger') return `<button class="cue" onclick="openBook()">The ${esc(QUARTER[S.season])} account is made up.</button>`;
-  if (S.phase === 'undertake') return `<button class="cue" onclick="goPlace('season')">The season is yours.</button>`;
+function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${line}</p><button class="act" onclick="${act}"><span>${label}</span></button></div>`;
+  if (S.phase === 'ledger') { let net = 0; for (const [, a] of S.ledger) net += a;
+    return cue(`${esc(QUARTER[S.season])} account: ${net ? amt(net, net) : fmt(0)}`, 'Begin the quarter', 'next()'); }
+  if (S.phase === 'event') { const e = byId(S.pending), id = eventPlace(e), at = PLACES[id].n.replace(/^The /, 'the '), bill = BILLS.has(e.id);
+    return cue(bill ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`, bill ? 'Read the notice' : id === 'hall' ? 'Go in' : `Go to ${esc(at)}`, 'callOn()'); }
+  if (S.phase === 'undertake') return cue('The season is yours.', 'Choose its business', "goPlace('season')");
   return ''; }
-function cartHTML(){ const vig = (icon, label, v, words, low) => `<button class="vig${v < 40 ? ' low' : ''}" onclick="goPlace('memo')">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b></button>`;
-  return `<div class="slip day">${pic('icons/' + SEASON_ICON[S.season], '')}<p><b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></p></div>
-    <button class="slip purse" onclick="openBook()">${pic('icons/purse', '')}<p><span>In hand</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Owing <i>${fmt(S.mortgage)}</i></span></p></button>
-    <div class="slip vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
+function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
+  return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
+    <div class="purse"><span>In hand</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Owing <i>${fmt(S.mortgage)}</i></span></div>
+    <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${cueHTML()}
-    <div class="chips"><button onclick="openBook()">${pic('icons/accounts', '')}The Book</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>${pic('icons/parchments', '')}The Progress${S.plates.length ? `<small>${S.plates.length}</small>` : ''}</button></div>`; }
+    <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
 
 /* ---------- the paper of a place ---------- */
 function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undertakingOptions();

@@ -56,7 +56,7 @@ function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGR
   VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
   if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
-function shutBook(){ VIEW = 'plan'; WHO = ''; if (S.phase === 'ledger') return next(); render(); }
+function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
 function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; ROUND = false; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
 function shutSheet(){ SHEET = ''; WHO = ''; drawPlan(); }
@@ -128,17 +128,19 @@ function landHTML(){ const q = S.season, calm = window.matchMedia && matchMedia(
   return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}${moving}${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
-function cueHTML(){
-  if (S.phase === 'event') { const e = byId(S.pending), at = PLACES[eventPlace(e)].n.replace(/^The /, 'the '); return `<button class="cue" onclick="callOn()">${BILLS.has(e.id) ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`}</button>`; }
-  if (S.phase === 'ledger') return `<button class="cue" onclick="openBook()">The ${esc(QUARTER[S.season])} account is made up.</button>`;
-  if (S.phase === 'undertake') return `<button class="cue" onclick="goPlace('season')">The season is yours.</button>`;
+function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${line}</p><button class="act" onclick="${act}"><span>${label}</span></button></div>`;
+  if (S.phase === 'ledger') { let net = 0; for (const [, a] of S.ledger) net += a;
+    return cue(`${esc(QUARTER[S.season])} account: ${net ? amt(net, net) : fmt(0)}`, 'Begin the quarter', 'next()'); }
+  if (S.phase === 'event') { const e = byId(S.pending), id = eventPlace(e), at = PLACES[id].n.replace(/^The /, 'the '), bill = BILLS.has(e.id);
+    return cue(bill ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`, bill ? 'Read the notice' : id === 'hall' ? 'Go in' : `Go to ${esc(at)}`, 'callOn()'); }
+  if (S.phase === 'undertake') return cue('The season is yours.', 'Choose its business', "goPlace('season')");
   return ''; }
-function cartHTML(){ const vig = (icon, label, v, words, low) => `<button class="vig${v < 40 ? ' low' : ''}" onclick="goPlace('memo')">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b></button>`;
-  return `<div class="slip day">${pic('icons/' + SEASON_ICON[S.season], '')}<p><b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></p></div>
-    <button class="slip purse" onclick="openBook()">${pic('icons/purse', '')}<p><span>In hand</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Owing <i>${fmt(S.mortgage)}</i></span></p></button>
-    <div class="slip vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
+function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
+  return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
+    <div class="purse"><span>In hand</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Owing <i>${fmt(S.mortgage)}</i></span></div>
+    <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${cueHTML()}
-    <div class="chips"><button onclick="openBook()">${pic('icons/accounts', '')}The Book</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>${pic('icons/parchments', '')}The Progress${S.plates.length ? `<small>${S.plates.length}</small>` : ''}</button></div>`; }
+    <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
 
 /* ---------- the paper of a place ---------- */
 function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undertakingOptions();
