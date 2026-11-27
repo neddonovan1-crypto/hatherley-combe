@@ -121,13 +121,13 @@ table.acct tr.total .n{font-size:1.3rem}
 .sheet .from h2, .sheet .from .kicker{text-align:left}
 .sheet .from div{min-width:0;display:flex;flex-direction:column;gap:4px}
 .prose p{margin:0 0 .8em;font-size:.95rem;line-height:1.58;hanging-punctuation:first} .prose p:last-child{margin-bottom:0}
-.sheet .prose p:first-child::first-letter, .lead p:first-child::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
+.sheet .prose p:first-child:not(.nocap)::first-letter, .lead p:first-child:not(.nocap)::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
 .sheet.bill{background-color:#efe7d2;transform:rotate(.4deg);padding-top:30px}
 .sheet.bill .kicker{align-self:center;border-block:1px solid var(--ink);padding:4px 12px;color:var(--ink)}
 .sheet.bill h2{font-family:var(--fat);font-size:clamp(1.6rem,2.9vw,2.3rem);line-height:1;text-transform:uppercase;letter-spacing:.02em;padding-bottom:10px;border-bottom:4px solid var(--ink)}
 .sheet.bill .prose{padding-top:8px;border-top:1px solid var(--ink);margin-top:-7px}
 .sheet.bill .prose p{text-align:justify;hyphens:auto}
-.sheet.bill .prose p:first-child::first-letter{font-family:var(--fat);color:var(--ink)}
+.sheet.bill .prose p:first-child:not(.nocap)::first-letter{font-family:var(--fat);color:var(--ink)}
 .sheet.clip{background-color:var(--clip);transform:rotate(.5deg);padding:14px 18px 14px;gap:5px;align-self:flex-start;max-width:30rem}
 .sheet.clip::before{display:none}
 .sheet.clip span{font-family:'UnifrakturCook', var(--fat);font-size:1.25rem;line-height:1;text-align:center;border-bottom:3px double var(--ink);padding-bottom:5px}
@@ -334,6 +334,17 @@ details.meter{display:block} details.meter > summary{display:grid;grid-template-
 details.meter > summary:hover span{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 .meter s{position:absolute;bottom:-1px;width:0;height:11px;border-left:2px solid var(--madder);text-decoration:none} .meter span em{font-family:var(--caps);font-style:normal;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad);margin-left:9px}
 details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--display);font-size:.95rem;line-height:1.3;columns:2;column-gap:18px} details.meter .fx .pos{color:var(--good)} details.meter .fx .neg{color:var(--bad)} details.meter .fx li:first-child{color:var(--muted)}
+.digest{display:flex;flex-direction:column;gap:6px} .digest .bal dd .amt{font-size:inherit} .digest .daybook{margin:0}
+@media (max-width:1080px){ .digest{display:none} }
+.bal .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:flex-end;margin-left:auto}
+.bal .creditbox button{display:flex;justify-content:space-between;gap:12px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 10px;font-family:var(--display);font-size:1rem;line-height:1.3;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
+.bal .creditbox button:hover:not(:disabled), .bal .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)} .bal .creditbox button:active:not(:disabled){background:#e9dfbf;box-shadow:inset 0 1px 3px rgba(40,30,20,.35)}
+.bal .creditbox button:disabled{opacity:.4;cursor:not-allowed} .bal .creditbox button:disabled .amt{color:inherit}
+.wheatbox > div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px;align-items:end} .wheatbox .wheat{font-size:.95rem;max-width:9.5rem;line-height:1.25} .wheatbox .wheat b{display:block;font-size:2.6rem} .wheatbox .chart{max-height:96px}
+table.acct tbody tr:not(.neg) td.n{color:var(--good)}
+.bal.purse{gap:8px 20px;flex-wrap:nowrap} .bal.purse dd{font-size:clamp(1.7rem,2.6vw,2.4rem);white-space:nowrap} .bal .creditbox button{font-size:.94rem;white-space:nowrap;padding:3px 8px}
+@media (max-width:520px){ .bal.purse{flex-wrap:wrap} }
+.people small{white-space:normal;overflow:visible;text-overflow:clip}
 </style>
 <div class="desk">
   <div class="book">
@@ -1542,6 +1553,8 @@ function reckoning(){
     dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
     free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
   P.push(kl[k]);
+  if (F('privyChamber')) P.push(`He is a Gentleman of the Privy Chamber to the Prince Regent. There is no salary and no duty.`);
+  else if (F('princeLoan')) P.push(`The Prince Regent owes him a thousand pounds.`);
   if (F('crimcon')) P.push(`The case of ${S.sur} against the Earl of Cullerne is in the law reports. Mrs ${S.sur} lives at Hatherley. They dine together.`);
   if (S.flags.heir === 'kitty') P.push(`The land is settled on his daughter.`);
   if (S.flags.heir === 'cousin') P.push(`The heir is a button-maker of Birmingham. He has asked twice about the chimneys.`);
@@ -6628,6 +6641,468 @@ They strike noon one after another for four minutes.
 Mrs Bunce comes to the foot of the stairs to listen. She writes to Bath that night. She has the housemaid write it.`; }}]}
 ];
 pooled('gayStreet', GAYST, 'gay', {from:1796, to:1815, weight:9, repeatGap:2, cond:() => F('henriettaAway')});
+
+/* ---- The Royal Family ----
+   Windsor is in the county. royalStag wanders in early; the rest follow by the queue or by their year.
+   Flags: royalKnown (the King has your name), royalPlain (you told him the price of bread), princeLoan
+   (the Prince has a thousand of yours), privyChamber (what he gave for it). */
+ev({ id:'royalStag', from:1797, to:1803, weight:6, cond:() => !F('royalKnown'), title:'The King’s Hounds',
+  text:() => `The King’s stag-hounds met at Salt Hill at ten. The deer was uncarted and ran west for five hours.
+
+It is in your horse-pond, up to the neck. Forty couple of hounds are on the bank. Behind them come eleven gentlemen in blue coats with red collars, on beaten horses.
+
+The stout one in front gets down without help. He is sixty. He has a star on his coat.
+
+“Whose house? What? Whose house? ${S.sur}? Good. Good. Are those your turnips? Do you hoe ’em twice? What?”
+
+Mudge has taken off his hat and cannot find where to put it.`,
+  choices:[
+    {t:'Walk him round the farm.', go:() => { fl('royalKnown'); add({standing:6}); later('royalTerrace', 4);
+      return `You walk the King of England round the home farm in the rain.
+
+He looks into the pigsties. He lifts a turnip and smells it. He asks what you give for a ploughman and whether the wheat is dibbled or broadcast. He does not wait for the answers. He has the right ones himself.
+
+“I shall send you a ram. Spanish. Very fine wool. Don’t let ’em tell you they won’t stand the wet.”
+
+The stag is taken out of the pond with ropes and carted home to Windsor. The ram comes in March with a groom and a letter. It will not stand the wet.`; }},
+    {t:'Bring him into the Hall and send for the best Madeira.', note:'£30', go:() => { fl('royalKnown'); add({money:-30, standing:4, family:3}); reg('henrietta',2,'The King sat in her drawing-room'); later('royalTerrace', 4);
+      return `The King sits in the yellow drawing-room in his wet boots. Thirty pounds in Madeira, cold beef and oats for forty horses.
+
+He will take nothing but barley water. The eleven gentlemen take the rest. Henrietta is presented. She goes down so far that Mrs Bunce thinks she has fallen.
+
+“A good house. Old. Don’t pull it about. They all pull ’em about.”
+
+The chair he sat in is not sat in again. Henrietta ties a ribbon across the arms.`; }},
+    {t:'Tell him what bread costs in Hatherley.', go:() => { fl('royalKnown'); fl('royalPlain'); add({goodwill:4, standing:2}); later('royalTerrace', 4);
+      return `“The turnips are well enough, sir. It is the bread. The quartern loaf is ${wheatNow() >= 100 ? 'eighteen pence' : 'a shilling'} and a man has nine shillings a week.”
+
+The eleven gentlemen look at the sky. The King looks at you.
+
+“What? Nine? Not enough. Not enough. I give mine twelve at Windsor. Tell ’em the King gives twelve.”
+
+He takes out a purse and gives Mudge five guineas for the poor. Mudge carries it to the vestry in both hands.`; }}
+  ]});
+
+ev({ id:'royalTerrace', follow:true, cond:() => F('royalKnown') && S.year <= 1804, title:'The Terrace at Windsor',
+  text:() => `On Sunday evenings the Royal Family walks on the Terrace at Windsor. A militia band plays. Any person decently dressed may stand along the wall.
+
+A card has come from an equerry. Mr and Mrs ${S.sur} are desired to be upon the Terrace on Sunday.
+
+Henrietta has had the card nine times in her hand. A Court suit is a hundred and twenty pounds with the sword. The mantua-maker at Reading has never made a hoop that wide.`,
+  choices:[
+    {t:'Go in full dress.', note:'£120', go:() => { add({money:-120, standing:6, family:4}); reg('henrietta',2);
+      return `A hundred and twenty pounds. A plum-coloured coat with steel buttons, a bag-wig and a sword that will not hang straight.
+
+The King comes down the Terrace with the Queen on his arm and five Princesses behind. He stops.
+
+“${S.sur}! The turnips! How is my ram? Dead? What? They told me it would stand the wet.”
+
+It is heard by four hundred people. Lord Cullerne is one of them. He is standing further down the wall. The King has not stopped there.`; }},
+    {t:'Go in your Sunday coat.', go:() => { add({standing:2, goodwill:2, family:-2}); reg('henrietta',-1,'You went to Windsor in your brown coat');
+      return `You go in your brown coat and your own hair. Henrietta walks a yard from you.
+
+The King stops. He takes hold of your lapel and feels the cloth.
+
+“English wool. Good. Good. That’s a coat. Look at this man’s coat.” The equerries look at your coat.
+
+A lady in feathers asks Henrietta whether her husband is the King’s bailiff. Henrietta does not speak between Slough and Reading.`; }},
+    {t:'Send your duty and stay at home.', go:() => { add({standing:-2, family:-4}); reg('henrietta',-2,'You would not take her to Windsor');
+      return `You write to the equerry that the harvest forbids.
+
+The Tamworths go to Windsor on the Sunday and stand along the wall. The King does not stop. Mrs Tamworth says she saw the Princess Amelia’s shoe quite distinctly.
+
+Henrietta keeps the card in the frame of her glass. It is there every morning.`; }}
+  ]});
+
+ev({ id:'royalBond', from:1805, to:1809, weight:6, cond:() => F('royalKnown') && !F('bondAsked'), title:'A Gentleman from Carlton House',
+  text:() => `A Colonel McMahon has posted down from London. He is a small man with a red face. He is secretary to the Prince of Wales.
+
+“His Royal Highness knows his father’s friends in Berkshire, sir. He would wish to count them his own.”
+
+The Prince owes six hundred thousand pounds. He is building at Brighton. The Colonel has a paper in his hat. It is His Royal Highness’s bond for a thousand pounds at five per cent.${F('mp') ? `
+
+“And there is the vote on the Prince’s establishment in March. A Member who held the bond would know how to give it.”` : ''}
+
+He lays the bond on the table. It has a very large seal.`,
+  choices:[
+    {t:'Take the bond.', note:'£1,000', go:() => { fl('bondAsked'); fl('princeLoan'); add({money:-1000, standing:4});
+      return `A thousand pounds, by draft on Tidmarsh. The Colonel has it in his hat before the ink is dry.
+
+A card comes at Christmas. “The Prince of Wales to his friend Mr ${S.sur}.” The name has been written in by another hand.
+
+The interest is due at Lady Day. Lady Day passes. Mr Tidmarsh asks what security you hold. You show him the seal.`; }},
+    {t:'Fifty guineas, as a gift, and no bond.', note:'£52', go:() => { fl('bondAsked'); add({money:-52, standing:1});
+      return `“I do not lend, Colonel. I should be honoured if His Royal Highness would accept fifty guineas.”
+
+The Colonel looks at the purse for a moment. He accepts on His Royal Highness’s behalf.
+
+No card comes at Christmas. In the spring you hear that a horse named Fifty Guineas ran third at Brighton.`; }},
+    {t:'Say that you are the King’s man.', go:() => { fl('bondAsked'); fl('kingsMan'); add({standing:-1, goodwill:2});
+      return `“I have had the honour to show His Majesty my turnips, sir. I had rather keep to the one acquaintance.”
+
+The Colonel bows. He takes up the bond and blows the sand off it.
+
+“Kings do not live for ever, Mr ${S.sur}.” He goes on to the Tamworths. He is there two hours.`; }}
+  ]});
+
+ev({ id:'royalRegency', from:1811, to:1811, weight:40, cond:() => F('royalKnown') && !F('regencySeen') && S.season >= 1, title:'The Regent’s Fête',
+  text:() => `The King is shut up at Windsor. He is blind. He wears a purple dressing-gown and plays the harpsichord to people who are dead. The Prince of Wales is Regent.
+
+On the nineteenth of June the Regent gives a fête at Carlton House. Two thousand cards have gone out.
+
+${F('princeLoan') ? `One has come to Hatherley. It is addressed to “Mr ${S.sur}, of Wiltshire”. No interest has been paid on the thousand pounds.` : F('kingsMan') ? 'None has come to Hatherley. Mr Tamworth has one. He has shown it at the Bell, at church and to your gate-keeper.' : 'One has come to Hatherley. Nobody can say why. Henrietta says it is better not to ask.'}
+
+At Windsor the Terrace is shut. The band has been sent away.`,
+  choices:[
+    {t:'Go to Carlton House.', note:'£150', if:() => !F('kingsMan'), go:() => { fl('regencySeen'); add({money:-150, standing:7, family:3});
+      return `A hundred and fifty pounds in lace, feathers and a hired chariot. You are four hours in Pall Mall getting to the door.
+
+The supper table is two hundred feet long. A stream of real water runs down the middle of it between banks of moss. There are gold and silver fish in the stream. By two in the morning several are floating.
+
+The Regent sits at the head in a field-marshal’s coat. You see him through a glass at sixty yards. ${F('princeLoan') ? 'He does not see you. Colonel McMahon does. He goes behind a pillar.' : 'Henrietta has counted the diamonds on him. She gives it up at the sword.'}`; }},
+    {t:'Go, and ask McMahon for your thousand pounds.', if:() => F('princeLoan'), go:() => { fl('regencySeen'); fl('privyChamber'); add({standing:6}); reg('henrietta',1);
+      return `You find the Colonel behind a pillar and hold out the bond.
+
+“My dear sir. Not here. His Royal Highness never forgets a friend.”
+
+A letter comes in a fortnight. You are appointed a Gentleman of the Privy Chamber. There is no salary and no duty. The fees on the patent are thirty-one pounds.
+
+The bond is asked for, to be compared with the register. It does not come back.`; }},
+    {t:'Go to Windsor and pray for the King.', go:() => { fl('regencySeen'); add({goodwill:3, standing: F('kingsMan') ? 2 : -1});
+      return `You drive to Windsor on the Sunday. There is a prayer for His Majesty in St George’s. Forty people are in the chapel.
+
+Afterwards you walk under the north wall. A window is open high up. Somebody is playing Handel on a harpsichord, slowly, with the wrong notes put right.
+
+A page looks out and shuts the window. You stand a while with your hat off. So does a sentry.`; }},
+    {t:'Stay at home. It is hay time.', go:() => { fl('regencySeen'); add({family:-2});
+      return `The hay is carried on the nineteenth of June. It is a good crop.
+
+The Mercury gives the fête four columns. The fish have a paragraph to themselves.
+
+Henrietta reads all four columns aloud. She reads the names of the Berkshire company twice. There are nine.`; }}
+  ]});
+
+ev({ id:'royalPrincess', from:1813, to:1814, weight:8, cond:() => F('regencySeen') && !F('carolineSeen'), title:'An Address to the Princess',
+  text:() => `The Regent has forbidden the Princess of Wales to see her daughter more than once a fortnight. Her letter to him is in the Morning Chronicle. It is three columns. The whole kingdom has read it.
+
+The City of London has voted her an Address. Now there is one on the table at the Bell. “The dutiful and loyal Address of the Inhabitants of Wyvern to Her Royal Highness.” Two hundred have signed. Jem Pryor has made his mark.
+
+${F('mp') ? 'Mr Whitbread will move in the House on Friday. He has written to ask where the Member for Wyvern stands.' : 'The landlord has kept the top line clear. He says it wants a gentleman’s name to lead.'}${F('privyChamber') ? ' You are a Gentleman of the Regent’s Privy Chamber.' : ''}`,
+  choices:[
+    {t:() => F('mp') ? 'Vote with Mr Whitbread, and sign.' : 'Sign on the top line.', go:() => { fl('carolineSeen'); const pc = F('privyChamber'); if (pc) fl('privyChamber', false); add({goodwill:6, standing: pc ? -5 : -2}); reg('pryor',1); reg('cullerne',-1);
+      return `You write your name on the top line. The landlord sands it himself.
+
+The Address goes up to Kensington with four hundred and eleven names. The Princess receives it in a red wig. She thanks the people of Wyvern in a strong German voice.
+
+${pc ? 'A letter comes from the Lord Chamberlain. His Royal Highness has no further occasion for Mr ' + S.sur + ' in his Privy Chamber. The fees are not returned.' : 'Lord Cullerne dines with the Regent at Brighton that month. He is heard to say that Hatherley was always a Jacobin house.'}`; }},
+    {t:'Decline. It is between man and wife.', go:() => { fl('carolineSeen'); add({goodwill:-4, standing:3});
+      return `“It is between a man and his wife.”
+
+“Yes, sir,” says the landlord. “That is what she complains of.”
+
+The Address goes up without a gentleman’s name. The top line stays clear. Somebody has drawn a pair of whiskers on it.`; }},
+    {t:'Let Henrietta sign for the house.', go:() => { fl('carolineSeen'); add({goodwill:3, family:3}); reg('henrietta',2,'You let her sign for the Princess');
+      return `Henrietta walks into the Bell in her bonnet. No lady of the county has been inside it before. She signs on the top line. “Henrietta ${S.sur}, a Mother.”
+
+Forty women of Wyvern sign under her that afternoon.
+
+Mrs Tamworth says she never heard of such a thing. She signs on Thursday, with a veil down.`; }}
+  ]});
+
+/* ---- The clergy ----
+   Eleven papers, most of them taken from real cases of the years they are set in (see docs/SOURCES-clergy.md).
+   Dr Gall carries those marked gall; the Rector of Wyvern, Mr Twisleton, carries what would not sit on Mr Oakes. */
+const gallHere = () => !F('gallDead');
+const CLERGY = [
+  {id:'clergy-brothers', hot:true, once:true, title:'The Prince of the Hebrews', w:() => (S.year === 1795 && S.season >= 1) || S.year === 1796, x:() => `Mr Richard Brothers, late a lieutenant in the Navy, has announced that he is Prince of the Hebrews. London is to be swallowed by an earthquake on the King’s birthday. The King is then to hand him the crown. A Member of Parliament has moved that his prophecies be printed.
+
+The Privy Council has shut Mr Brothers up as a lunatic. His book is in its fourth edition.
+
+Mr Twisleton, the Rector of Wyvern, has read it. On Sunday he preached upon it for an hour and ten minutes. He named the day. Nine families in his parish have sold their pigs.`,
+    o:[{t:'Write to the Bishop.', go:() => { add({standing:1});
+      return `You write to the Bishop of Salisbury. His lordship’s chaplain answers. The Bishop is at Bath. A sermon upon prophecy is not in itself irregular.
+
+The King’s birthday is a fine day. The bells are rung. London stands.
+
+Mr Twisleton preaches the Sunday after. He has gone through the figures again. He had carried a one. It is to be 1798.`; }},
+    {t:'Go and hear him.', go:() => { add({goodwill:1});
+      return `You ride over and sit under him. He has the Book of Daniel open and a slate. He does the sum in the pulpit, aloud.
+
+It comes out to the fourth of June. He shows the congregation the slate.
+
+The clerk sits below with his own slate. He makes it the ninth of August. Nobody has asked him.`; }},
+    {t:'Buy the nine families’ pigs back for them.', note:'£14', go:() => { add({money:-14, goodwill:3});
+      return `Fourteen pounds to a dealer at Newbury. He had given nine. The pigs come home on the fifth of June. The city is still standing.
+
+Eight families take their pigs and thank you. The ninth will not.
+
+“We have sold up for Jerusalem, sir. It would not be right to go back on it for a pig.”`; }}]},
+
+  {id:'clergy-arms', hot:true, once:true, title:'The Church Militant', w:() => gallHere() && (S.year === 1798 || yr(1803, 1804)), x:() => `The French are expected. Hatherley has forty Volunteers, eleven muskets and a drum.
+
+Dr Gall has come to parade in a scarlet coat with black facings. He has a sword. It was his grandfather’s at Dettingen. He has given himself the rank of Captain-Chaplain.
+
+The Archbishop has written to every bishop. The clergy are not to take arms. It does not consist with their calling. Dr Gall has the letter in his hat.
+
+“It says arms. It does not say command.”
+
+He is near seventy. He has had the drum moved nearer to him.`,
+    o:[{t:'Let him command.', go:() => { add({goodwill:2}); reg('gall',2,'You let him drill the Volunteers');
+      return `Dr Gall drills the company on the Common every evening for a month.
+
+He gives the words of command out of the Prayer Book, to be sure of them. “Let us stand.” They stand. He cannot find one for the right wheel.
+
+The men like him. Nobody has ever let them out so early.`; }},
+    {t:'Show him the Archbishop’s letter again.', go:() => { add({standing:1}); reg('gall',-2,'You took his company from him');
+      return `You read him the Archbishop’s letter on the Common before the men.
+
+He takes off the sword. He gives it to the drummer to hold. He preaches on Sunday from the text “He that hath no sword, let him sell his garment and buy one.”
+
+The scarlet coat is seen again in November. It is on the Vicarage scarecrow.`; }},
+    {t:'Make him chaplain, and have him pray before drill.', go:() => { add({goodwill:-1}); reg('gall',1);
+      return `He is to be chaplain and to pray before drill.
+
+He prays for forty minutes. He prays against the French by name, from the Directory downward. It is dark when he says Amen.
+
+The company has not yet fixed bayonets this month. It has no bayonets.`; }}]},
+
+  {id:'clergy-tooke', hot:true, once:true, title:'A Doctor of Divinity for Wyvern', w:() => gallHere() && S.year === 1801, x:() => `Mr Horne Tooke has been returned to Parliament for Old Sarum. He is a clergyman. He has not worn the gown these thirty years. He was ordained, and nothing can undo it.
+
+The House is debating whether a priest may sit. Dr Gall has followed every word.
+
+“If a Jacobin in orders may sit for seven burgage plots, sir, I do not see why a sound divine should not sit for thirty-one.”
+
+He has had a card printed. “The Revd. Dr. GALL solicits the Favour of your Vote and Interest.” ${F('mp') ? 'It is your seat that he solicits.' : 'He asks whether your three plots are bespoke.'}`,
+    o:[{t:'Tell him to wait for the vote of the House.', go:() => { add({standing:1});
+      return `“Let us see what the House says, Doctor.”
+
+The House says that no person in holy orders shall sit in it. The Act passes in June.
+
+Dr Gall has two hundred cards. He writes the week’s texts on the backs. They last him four years.`; }},
+    {t:'Promise him your interest.', go:() => { add({standing:-2}); reg('gall',2,'You promised him your votes for Wyvern'); reg('cullerne',-1);
+      return `You promise him your interest. He canvasses Pig Lane in his bands. He tells each elector what his soul is worth and asks for his vote after.
+
+Lord Cullerne’s agent sends to know whether Mr ${S.sur} is quite well.
+
+The Act passes in June. No priest may sit. Dr Gall says he was within eleven votes. He has not counted them for anybody.`; }},
+    {t:'Ask who would take the duty at Hatherley.', go:() => { reg('gall',-1); meet('oakes'); reg('oakes',1);
+      return `“And who would take the duty here, Doctor, from November to July?”
+
+“Oakes takes it now.”
+
+It is the first time he has said so. Mr Oakes is at the other end of the room with a teacup. He looks into it.`; }}]},
+
+  {id:'clergy-informer', hot:true, once:true, title:'Ten Pounds a Month', w:() => gallHere() && yr(1800, 1803), x:() => `Dr Gall is also Rector of Fenny Sutterby, in Lincolnshire. He has held it since ’71. He has not seen it. A curate there has thirty pounds a year and sends the rest.
+
+An attorney’s clerk in Furnival’s Inn has found an Act of Henry the Eighth. A parson absent from his benefice forfeits ten pounds a month. Half goes to the King. Half goes to whoever informs.
+
+The clerk has informed against six hundred clergymen. Dr Gall’s writ is for eleven months. He has brought it up to the Hall in the gig.
+
+“A hundred and ten pounds, sir. To a clerk.”`,
+    o:[{t:'Lend him the hundred and ten.', note:'£110', go:() => { add({money:-110}); reg('gall',3,'You paid the informer for him');
+      return `A hundred and ten pounds. The clerk’s receipt is very civil.
+
+Parliament stops the suits the next session. A new Act lets a bishop license any parson to live away who can show cause. Dr Gall shows cause. The air of the Fens is bad for his chest.
+
+He repays you in tithe pigs, at his own valuation. There are a great many pigs.`; }},
+    {t:'Advise him to go and reside.', go:() => { reg('gall',-1); meet('oakes'); reg('oakes',1); add({goodwill:2});
+      return `He goes into Lincolnshire in November to reside. Mr Oakes has Hatherley. The sermons are twelve minutes. There is a fire in the vestry.
+
+Dr Gall is back at Candlemas with an ague. The parsonage at Fenny Sutterby has no roof on the east side. He read himself in to eleven people and a dog.
+
+“They did not know me,” he says. “They knew the dog.”`; }},
+    {t:'Fight it at the Assizes.', note:'£30', go:() => { add({money:-30, standing:1}); reg('gall',1);
+      return `Thirty pounds to counsel. The defence is that Dr Gall was all the while residing upon another cure of souls.
+
+The judge asks which of his two flocks the Doctor would say he had been feeding. Counsel says both, my lord, by deputy. The court laughs.
+
+Before judgment Parliament stops every such suit in the kingdom. The clerk in Furnival’s Inn is said to have cleared four thousand pounds first.`; }}]},
+
+  {id:'clergy-trusler', once:true, title:'The Same Sermon', w:() => gallHere(), x:() => `Dr Gall and the Rector of Wyvern have exchanged pulpits for the Sunday.
+
+Mr Twisleton preaches at Hatherley on the Unjust Steward. It is a good sermon. It is twenty-two minutes. He reads it from a manuscript in a clear round hand.
+
+At that hour Dr Gall is preaching at Wyvern. He preaches on the Unjust Steward. Mr Tamworth was at Wyvern in the morning and is at Hatherley for Evensong. He says it was the same sermon to the word.
+
+Dr Trusler of Bath sells sermons at a shilling. They are printed in a type cut to look like writing, so that the gallery may not know.`,
+    o:[{t:'Say nothing.', go:() => { reg('gall',1);
+      return `You say nothing. Mr Tamworth says it at eleven dinner-tables.
+
+The next Sunday Dr Gall preaches a sermon of his own. It is fifty minutes, upon the Hittites. He looks at the Hall pew at every heading.
+
+By the fourth heading Mr Tamworth is asleep.`; }},
+    {t:'Send to Bath for the whole set.', note:'£3', go:() => { add({money:-3, goodwill:1}); reg('gall',-2,'You followed his sermon in Trusler');
+      return `Three pounds for sixty sermons in a box. You take the box to church.
+
+Dr Gall gives out his text. You find the place. You follow him down the page with your finger. At the foot he looks up. He sees the finger.
+
+He turns two leaves at once. The Unjust Steward ends as the Prodigal Son.`; }},
+    {t:'Ask him which he thinks the best of them.', go:() => { reg('gall',2); add({standing:1});
+      return `You ask him over the port which of Dr Trusler’s he thinks the best.
+
+He is silent a minute.
+
+“Number nineteen. On Charity. I have preached it since ’84. I shall be sorry to lose it.”
+
+You tell him he need not. He preaches it at Christmas. Mr Tamworth is in the front pew with his lips moving.`; }}]},
+
+  {id:'clergy-tithe', title:'Tithe Turnips', w:() => gallHere(), x:() => `Dr Gall takes his tithe in kind. Every tenth sheaf, the tenth lamb, the tenth pail of milk.
+
+Mr Hartopp has sown forty acres of turnips. Dr Gall claims the tenth turnip. Hartopp has taken advice. The law says he must set the tithe out and give the parson notice of the hour.
+
+The notice is on your table for you to witness. “Mr Hartopp will draw turnips in the Forty Acres on Tuesday at two in the morning and on each morning following. He will draw twenty. The Revd. Dr Gall may attend for his two.”
+
+Both men are in your library. Neither has sat down.`,
+    o:[{t:'Witness the notice. It is the law.', go:() => { reg('hartopp',2,'You witnessed his turnip notice'); reg('gall',-2);
+      return `You sign.
+
+Dr Gall’s man is in the Forty Acres at two in the morning for nine nights with a lantern and a sack. He carries home eighteen turnips. On the tenth night he does not come.
+
+Hartopp draws four acres before breakfast. He is fined at the next visitation for brawling in the vestry. He says it was worth forty acres.`; }},
+    {t:'Have them compound for money.', go:() => { add({standing:2}); reg('gall',1); reg('hartopp',1);
+      return `You keep them in the library until five. Hartopp is to pay four shillings an acre and keep his turnips. Dr Gall is to stay out of the field.
+
+They shake hands on it. Each tells you privately that he has had the better of the other.
+
+The paper is in your hand. Both ask for the original. You have it copied twice and keep the original.`; }},
+    {t:'Tell Hartopp a parson must live.', go:() => { reg('gall',2,'You stood by his tithe'); reg('hartopp',-2); add({goodwill:-2});
+      return `“The tithe is his freehold, Hartopp. As the land is yours.”
+
+Hartopp sets out every tenth turnip in a row along the headland and sends for the tithe cart. The row is half a mile.
+
+They are the smallest turnips ever seen in Berkshire. He has been three days choosing them.`; }}]},
+
+  {id:'clergy-school', hot:true, once:true, title:'Methodism in the Schoolroom', w:() => gallHere() && yr(1800, 1803), x:() => { meet('oakes'); return `Mr Oakes keeps a Sunday school over the stable at the curate’s house. Forty children learn their letters out of the Catechism. In the evening their mothers come and he reads them a chapter.
+
+Dr Gall has a pamphlet from Somersetshire. A curate at Blagdon has charged Mrs Hannah More’s schools with Methodism. There have been twenty-three pamphlets since. Dr Gall has read nine.
+
+“Prayer without the book, sir. Women, after dark. It begins so. I shall have it shut.”
+
+Mr Oakes says he prays from the book. He says the women come after dark because they work until dark.`; },
+    o:[{t:'Stand by the school.', go:() => { add({goodwill:4}); reg('oakes',2,'You stood by his school'); reg('gall',-2,'You kept the curate’s school open against him');
+      return `“The room is over my stable, Doctor. I do not shut it.”
+
+Dr Gall writes a pamphlet. “A Letter to a Country Gentleman on the Danger of Unlicensed Instruction.” It sells eleven copies. He bought six.
+
+The school goes on. At Christmas forty children can read the pamphlet.`; }},
+    {t:'Go and sit at the back on Sunday evening.', go:() => { add({goodwill:2}); reg('oakes',1);
+      return `You sit at the back among the mothers. There are twenty-six. Mr Oakes reads the fifteenth of Luke. He reads it from the book and shuts the book.
+
+A carter’s wife asks why the elder son was not given a kid. Mr Oakes says he has often wondered. They talk of it for half an hour.
+
+You tell Dr Gall there was no praying without the book. You do not tell him about the kid.`; }},
+    {t:'Let the Vicar shut it. It is his parish.', go:() => { add({goodwill:-4}); reg('gall',2); reg('oakes',-2,'You let his school be shut');
+      return `The room over the stable is locked. Dr Gall keeps the key.
+
+On Sunday evening twenty-six women are in Dewey’s barn. A shoemaker from Hungerford is reading to them. He has no book at all.
+
+Mr Oakes walks past the barn with his hat pulled down. He does not go in. He walks past it again.`; }}]},
+
+  {id:'clergy-burial', hot:true, once:true, title:'A Child at the Lich-gate', w:() => yr(1809, 1810), x:() => `A child of two has died at Wyvern. Her father is a Baptist weaver. She was baptised in his meeting-house with water and the proper words.
+
+Mr Twisleton will not bury her. He says she was never baptised in the eye of the Church and is no Christian. He has locked the lich-gate.
+
+The coffin has been on two chairs in the road since ten o’clock. Forty people are standing by it. The father has his hat off. It has begun to rain.
+
+A rector in Rutland did the same last year. The Court of Arches has him before it now. You are the nearest magistrate.`,
+    o:[{t:'Tell Twisleton to open the gate.', go:() => { add({goodwill:4, standing:1});
+      return `“You will open that gate, sir. You will read the service. I shall stand here while you do it.”
+
+He opens the gate. He reads the service very fast, with his back to the father. He leaves out the word “sister”.
+
+In December the Court of Arches gives judgment against the Rutland rector. He is suspended three months. Mr Twisleton reads the report and has a cold for three Sundays.`; }},
+    {t:'Send for Mr Oakes to read it.', go:() => { meet('oakes'); add({goodwill:3}); reg('oakes',1,'He buried the Baptist’s child at Wyvern');
+      return `Mr Oakes comes over from Hatherley on foot, six miles, with his surplice in a bag.
+
+Mr Twisleton will not open the gate to another clergyman. Mr Oakes reads the whole service in the road, over the two chairs, in the rain. Then the sexton lifts the coffin over the wall. Nobody has told him not to.
+
+The Bishop writes to Mr Oakes. It is not a reprimand. It is not anything else.`; }},
+    {t:'It is a matter for the Church courts.', go:() => { add({goodwill:-4, standing:1});
+      return `“I have no power inside that gate.”
+
+The coffin is carried back up the street. She is buried on Thursday behind the meeting-house, between the wall and the dye-works.
+
+The weaver has the Rutland judgment printed at his own cost when it comes. He nails one to the lich-gate. It is taken down. He nails another.`; }}]},
+
+  {id:'clergy-bishop', once:true, title:'The Bishop at Wyvern', w:() => S.year >= 1798, x:() => `The Bishop of Salisbury confirms at Wyvern on Thursday. He has not been in this corner of the diocese for seven years.
+
+Four hundred and sixty candidates are come in from nineteen parishes. Some are twelve. One is a grandmother. The Bishop has to dine at Newbury at four.
+
+He will lay his hands on them at the rail in rows of twenty, and say the words once for each row.
+
+His lordship lies the night at Hatherley. His chaplain has sent the particulars. His lordship takes his port at blood heat. He does not eat veal.`,
+    o:[{t:'Give him a proper dinner.', note:'£25', go:() => { add({money:-25, standing:4}); reg('henrietta',1);
+      return `Twenty-five pounds. Turbot, a saddle of mutton, no veal. The port stands an hour before the kitchen fire.
+
+The Bishop confirms four hundred and sixty in fifty minutes. A boy from Kintbury goes up with two rows and is confirmed twice. He asks whether it counts double.
+
+His lordship tells Henrietta that he has not been so comfortable since Lambeth. He falls asleep at nine with his wig on the fire-screen.`; }},
+    {t:'Give him what the house has.', go:() => { add({standing:-1, goodwill:1});
+      return `Boiled mutton and a batter pudding. The port is as cold as the cellar.
+
+The Bishop eats very little. He asks the chaplain something in Latin. The chaplain looks at the port.
+
+At the church he does the four hundred and sixty in forty minutes. He is at Newbury by three.`; }},
+    {t:'Ask him for a living for Mr Oakes.', note:'£25', go:() => { meet('oakes'); add({money:-25, standing:2}); reg('oakes',2,'You spoke to the Bishop for him');
+      return `Twenty-five pounds in turbot and mutton. Over the port you name Mr Oakes. Forty pounds a year, the whole duty, twelve-minute sermons.
+
+“Twelve?” says the Bishop. He takes out a pocket-book. He writes “Oakes. 12 min.”
+
+Nothing comes of it that year. But the chaplain writes to Mr Oakes for a copy of a sermon.`; }}]},
+
+  {id:'clergy-hunting', title:'The Rector of Wyvern Takes a Funeral', x:() => `Mr Twisleton hunts three days a week with Lord Cullerne’s hounds. He keeps two horses on a living of four hundred.
+
+Old Mrs Gabb was to be buried at Wyvern on Tuesday at eleven. The hounds met at Hatherley Copse at half past ten. They found at once and ran straight through Wyvern churchyard.
+
+Mr Twisleton pulled up at the grave. He read the service from the saddle in eleven minutes. He was with the hounds again at the second check.
+
+The Gabbs are maltsters. They have come to you. They say there were spurs under the surplice the Sunday before.`,
+    o:[{t:'Write to the Bishop.', go:() => { add({goodwill:2}); reg('cullerne',-1);
+      return `You write to Salisbury. The answer is six weeks coming.
+
+His lordship has spoken to Mr Twisleton. Mr Twisleton has undertaken not to read the burial service on horseback.
+
+He keeps his word. At the next hunting funeral he gets down and gives a boy the reins.`; }},
+    {t:'Speak to him at the covert side.', go:() => { add({standing:1});
+      return `You ride up to him at the covert side on Thursday.
+
+“The Gabbs are hurt, Twisleton.”
+
+“I gave her every word, ${S.sur}. I left nothing out. Old Gabb hunted till he was seventy. He would have had me do it.” The hounds find. He is gone before you have answered.
+
+He sends the Gabbs a brace of pheasants. They are yours. He shot them on Tuesday week.`; }},
+    {t:'Tell the Gabbs she is buried either way.', go:() => { add({goodwill:-3});
+      return `“She is as well buried as any woman in Berkshire, Mr Gabb.”
+
+Mr Gabb puts on his hat in your hall.
+
+The Gabbs take a pew at the Independent chapel in Mill Lane. They take eleven maltsters’ families with them. Mr Twisleton says it leaves more room for the horses.`; }}]},
+
+  {id:'clergy-southcott', hot:true, once:true, title:'Shiloh', w:() => S.year === 1814, x:() => `Joanna Southcott of Devonshire is sixty-four. She has announced that she is with child by the Holy Ghost. The child is to be called Shiloh and will be born before Christmas. Nine physicians have examined her. Six say she is.
+
+Her followers are sealed. Each has a half-sheet of paper signed by Joanna and closed with red wax. A hundred thousand are said to be out. A crib of satinwood and gold has been made in Aldersgate Street for two hundred pounds.
+
+Mr Twisleton has been sealed. He has stopped hunting. He is collecting in Wyvern for a silver pap-spoon. Mrs Bunce has a seal in her tea-caddy. She had it of the pedlar for a shilling.`,
+    o:[{t:'Give a guinea to the pap-spoon.', note:'£1', go:() => { add({money:-1, goodwill:2});
+      return `A guinea. Mr Twisleton writes your name in the book between a duchess’s housekeeper and a tallow-chandler.
+
+Joanna dies on the twenty-seventh of December. The surgeons open her. There is no child.
+
+Mr Twisleton keeps the spoon. He says the birth was spiritual and the spoon may yet be wanted. He is hunting again by February. He says grace with his eyes open.`; }},
+    {t:'Take Mrs Bunce’s seal away.', go:() => { add({goodwill:-2, standing:1});
+      return `You have the seal out of the tea-caddy and put it on the kitchen fire.
+
+Mrs Bunce watches it burn. She says nothing. The dinner that day is cold mutton. So is the next.
+
+Joanna dies on the twenty-seventh of December. There is no child. Mrs Bunce says that she would have been saved the disappointment if she had been let keep the paper.`; }},
+    {t:'Ask Mrs Bunce what the seal says.', go:() => { add({goodwill:1, family:1});
+      return `She brings it up on a plate. “The Sealed of the Lord. The Elect, Precious. Man’s Redemption to inherit the Tree of Life.” Under it, “Joanna Southcott”, in a hand that slopes down the page.
+
+“I do not hold with it, sir. But it was only a shilling. One would look very foolish without.”
+
+Joanna dies on the twenty-seventh of December. There is no child. The seal stays in the caddy. Mrs Bunce says it keeps the tea dry.`; }}]}
+];
+pooled('clergy', CLERGY, 'clg', {from:1795, to:1815, weight:6, repeatGap:3});
 /* What a man brings with him. One event for each choice made at the inheritance.
    Written in the Hatherley hand (docs/voice/VOICE.md): plain narrator, inside the year, the wit left to the people and the sums. */
 const first = () => S.name.split(' ')[0];
@@ -8188,10 +8663,10 @@ const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allot
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
+const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
-const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
+const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
@@ -8300,6 +8775,11 @@ function accountHTML(){ let rows = '', tot = 0;
   rows += `<tr class="total${tot < 0 ? ' neg' : ''}"><td>Carried to the purse</td>${cells(tot)}</tr>`;
   return `<div class="tablewrap"><table class="acct"><thead><tr><th>Particulars</th><th class="n l">£</th><th class="n">s.</th><th class="n">d.</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
 
+/* The right-hand leaf, under the plate: what the quarter came to, and what was lately done. */
+function digestHTML(){ let inn = 0, out = 0; for (const [, a] of S.ledger) { if (a > 0) inn += a; else out -= a; }
+  const net = inn - out, last = S.journal.slice(0, 3);
+  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div></dl>
+    ${last.length ? `<h3 class="orn">Lately</h3><ol class="daybook">${last.map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : ''}</div>`; }
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
@@ -8310,6 +8790,7 @@ function ledgerHTML(){
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
+    ${digestHTML()}
     <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</span></button></div>`; }
 
 function paperHTML(){ const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text);
@@ -8365,8 +8846,9 @@ function versoHTML(){
   const over = S.phase === 'end';
   return head + `<h2 class="qtitle">${esc(QUARTER[S.season])} Quarter, ${S.year}</h2>
     ${accountHTML()}
-    <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}${typeof mortCap === 'function' ? `<small>of ${fmt(mortCap())}</small>` : ''}</dd></div>
-      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}</dl>${over || typeof creditList !== 'function' ? '' : creditHTML()}
+    <dl class="bal purse"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing${typeof mortCap === 'function' ? `, limit ${fmt(mortCap())}` : ' on the mortgage'}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
+      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}${over || typeof creditList !== 'function' ? '' : creditHTML()}</dl>
+    <div class="wheatbox"><h3 class="orn">Wheat at Wyvern Market</h3><div>${chartHTML()}</div></div>
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}
@@ -8381,15 +8863,18 @@ function hazardHTML(v){
   if (v.odds) { const o = v.odds, pc = x => Math.round((x || 0) * 100); return `<span class="hazard"><span>Hazard</span><span class="oddsbar" role="img" aria-label="${pc(o.well)} in 100 well, ${pc(o.dull)} middling, ${pc(o.ill)} ill"><i class="w" style="flex:${pc(o.well)}"></i><i class="d" style="flex:${pc(o.dull)}"></i><i class="l" style="flex:${pc(o.ill)}"></i></span></span>`; }
   if (!Number.isFinite(v.risk)) return '';
   return `<span class="hazard" role="img" aria-label="Hazard ${v.risk} of 4"><span>Hazard</span>${[1, 2, 3, 4].map(i => `<i class="pip${i <= v.risk ? ' on' : ''}"></i>`).join('')}</span>`; }
-function creditHTML(){ const all = creditList(), main = all.filter(c => c.id === 'mortgage' || c.id === 'repay'), rest = all.filter(c => !main.includes(c));
-  const row = c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`;
-  return `<h3 class="orn">Credit</h3><div class="lots credit">${main.map(row).join('')}${rest.length ? `<details class="more" ${MORE ? 'open' : ''} ontoggle="MORE = this.open"><summary><b>Other ways to raise money</b><span>${rest.length}</span></summary><div class="lots">${rest.map(row).join('')}</div></details>` : ''}</div>`; }
+function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id === id);
+  const b = (c, label) => c ? `<button type="button" onclick="takeCredit('${c.id}')" ${c.can ? '' : `disabled title="${esc(c.why || '')}"`}>${label} ${amt(c.gets, c.gets)}</button>` : '';
+  return `<div class="creditbox">${b(by('mortgage'), 'Borrow more')}${b(by('repay'), 'Pay off principal')}</div>`; }
+/* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
+function raiseHTML(ids){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
+  return `<h3 class="orn">Raising money</h3><div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
 function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
     ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
     ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${fxHTML(w) || `<p>${esc(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
-    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>`; }
+    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${raiseHTML(['timber'])}`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
 const DRAFT_FARMS = [
@@ -8406,11 +8891,11 @@ const DRAFT_VENTURES = [
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
 function farmsHTML(){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sale = live && typeof farmsForSale === 'function' ? farmsForSale() : [];
   const lv = f => !f.canLevel ? '' : `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}</span>`;
-  const mine = f => f.sellToYou === undefined || f.sellToYou === f.sellPrice, tf = typeof trustFund === 'function' ? trustFund() : null;
-  const held = f => `<details name="lot"><summary><b>${esc(f.name)} <small>${fmt(f.rent)} a year</small></b><span>${f.sellPrice ? `<i class="tag">Sell</i>${mine(f) ? amt(f.sellPrice, 1) : fmt(f.sellPrice)}` : fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p><p class="terms">${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${f.sellPrice ? `<ul class="fx">${f.sellToYou === undefined ? `<li class="pos">+${fmt(f.sellPrice)} if sold</li>` : `${f.sellToYou ? `<li class="pos">+${fmt(f.sellToYou)} in hand if sold</li>` : ''}${f.sellToMortgage ? `<li class="pos">+${fmt(f.sellToMortgage)} off the mortgage</li>` : ''}${f.sellToTrust ? `<li>${fmt(f.sellToTrust)} to the trustees, who pay you the dividend</li>` : ''}`}${f.sellPayout ? `<li class="neg">−${fmt(f.sellPayout)} of the price to buy out the tenant</li>` : ''}<li class="neg">−${fmt(f.rent)} a year in rent</li></ul>` : ''}${lv(f)}
-    <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${mine(f) ? amt(f.sellPrice, 1) : fmt(f.sellPrice)}</button>` : ''}</span></div></details>`;
-  const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span><i class="tag">Buy</i>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}</p>${f.value ? `<ul class="fx"><li class="neg">−${fmt(f.price)} to buy</li><li class="pos">+${fmt(f.value)} a year in rent</li></ul>` : ''}<p class="terms">${f.down !== undefined ? amt(f.down, -1) + ' down' + (f.loan ? ', ' + fmt(f.loan) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
-  return `<dl class="bal slim"><div><dt>The rental</dt><dd>${fmt(list.reduce((a, f) => a + f.rent, 0))}</dd></div><div><dt>Acres let</dt><dd>${list.reduce((a, f) => a + f.acres, 0).toLocaleString('en-GB')}</dd></div><div><dt>Farms</dt><dd>${list.length} of 8</dd></div>${tf && tf.sum ? `<div><dt>With the trustees</dt><dd>${fmt(tf.sum)}</dd></div>` : ''}</dl>
+  const raised = f => f.sellToYou === undefined ? f.sellPrice : f.sellToYou + (f.sellToMortgage || 0), sum = f => raised(f) ? amt(raised(f), 1) : fmt(0), tf = typeof trustFund === 'function' ? trustFund() : null;
+  const held = f => `<details name="lot"><summary><b>${esc(f.name)} <small>${amt(f.rent, 1)} a year</small></b><span>${f.sellPrice ? `<i class="tag">Sell</i>${sum(f)}` : fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p><p class="terms">${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${f.sellPrice ? `<ul class="fx">${f.sellToYou === undefined ? `<li class="pos">+${fmt(f.sellPrice)} if sold</li>` : `${f.sellToYou ? `<li class="pos">+${fmt(f.sellToYou)} in hand if sold</li>` : ''}${f.sellToMortgage ? `<li class="pos">+${fmt(f.sellToMortgage)} off the mortgage if sold</li>` : ''}${raised(f) ? '' : '<li>Settled land. The price goes to the trustees</li>'}`}<li class="neg">−${fmt(f.rent)} a year in rent</li></ul>` : ''}${lv(f)}
+    <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${sum(f)}</button>` : ''}</span></div></details>`;
+  const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span><i class="tag">Buy</i>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}</p>${f.value ? `<ul class="fx"><li class="neg">−${fmt(f.price)} to buy</li><li class="pos">+${fmt(f.value)} a year in rent</li></ul>` : ''}<p class="terms">${f.down !== undefined ? amt(f.down, -1) + ' down' + (f.loan ? ', ' + amt(f.loan, -1) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
+  return `<dl class="bal slim"><div><dt>The rental</dt><dd>${amt(list.reduce((a, f) => a + f.rent, 0), 1)}</dd></div><div><dt>Acres let</dt><dd>${list.reduce((a, f) => a + f.acres, 0).toLocaleString('en-GB')}</dd></div><div><dt>Farms</dt><dd>${list.length} of 8</dd></div></dl>
     <div class="lots flat">${list.map(held).join('')}</div>${sale.length ? `<h3 class="orn">To be had</h3><div class="lots">${sale.map(lot).join('')}</div>` : ''}`; }
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
 function lotsHTML(list, live, begin, end, verb){
@@ -8426,7 +8911,7 @@ const DRAFT_SOCIETY = [
   {name: 'A pack of harriers', cost: 260, well: 'Forty gentlemen to breakfast twice a week.'},
   {name: 'A commission for Edmund', cost: 450, well: 'An ensigncy in a marching regiment.'},
   {name: 'The family plate', cost: 600, state: 'inHand', held: 'In the strong room', well: 'It would fetch about six hundred pounds at Rundell’s.'}];
-function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it'); }
+function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
 
 const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){
@@ -8457,4 +8942,85 @@ function askWipe(b){ if (b.dataset.sure) return wipe(); b.dataset.sure = 1; b.te
 function boot(data){ indexEvents(); if (data && data.S) S = data.S; render(); }
 if (window.claude && window.claude.hot && window.claude.hot.snapshot) { try { window.claude.hot.snapshot(() => ({S})); } catch (err) {} }
 if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(boot); else boot((window.claude && window.claude.hot && window.claude.hot.data) || {});
+/* The sounds of the house. Files are in sound/, their makers in SOUNDS.md.
+   Loaded last: it wraps render, start, resume, choose, undertake, showTab and showWho, and alters nothing in them.
+   The house is silent until Sound is turned on in the corner of the desk. The choice is remembered. */
+const Sound = (() => {
+  const DIR = 'sound/', VOL = .3, AIR = .32, LAP = 2.5, KEY = 'hatherley-quiet';
+  let muted = true; try { muted = localStorage.getItem(KEY) !== '0'; } catch (err) {}
+  let ctx = null, master = null, live = false, airName = '', airWant = '', airTok = 0, airBus = null, airTag = null;
+  const bufs = {};
+  const fetchBuf = name => bufs[name] || (bufs[name] = fetch(DIR + name + '.mp3').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(a => ctx.decodeAudioData(a)).catch(() => null));
+  // Where the page cannot fetch (opened from a folder), plain audio elements stand in.
+  const tag = (name, vol, delay, loop) => { const a = new Audio(DIR + name + '.mp3'); a.volume = Math.min(1, VOL * vol); a.loop = !!loop; setTimeout(() => { if (!muted) a.play().catch(() => {}); }, delay * 1000); return a; };
+
+  function play(name, vol = 1, delay = 0){ if (muted || !live) return;
+    fetchBuf(name).then(b => { if (muted) return; if (!b) return void tag(name, vol, delay);
+      const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = b; g.gain.value = vol; s.connect(g).connect(master); s.start(ctx.currentTime + delay); }); }
+
+  // The air of the place: one long recording at a time, lapped over itself so that the join is not heard.
+  function air(name){ airWant = name; if (!live || muted) name = ''; if (name === airName) return; airName = name; const tok = ++airTok;
+    if (airBus) { const g = airBus; g.gain.setTargetAtTime(0, ctx.currentTime, .7); setTimeout(() => g.disconnect(), 5000); airBus = null; }
+    if (airTag) { airTag.pause(); airTag = null; }
+    if (!name) return;
+    fetchBuf(name).then(b => { if (tok !== airTok) return; if (!b) { airTag = tag(name, AIR, 0, true); return; }
+      const bus = ctx.createGain(); bus.gain.value = 0; bus.gain.setTargetAtTime(AIR, ctx.currentTime, 1.2); bus.connect(master); airBus = bus;
+      const lap = at => { if (tok !== airTok) return; const s = ctx.createBufferSource(), g = ctx.createGain(), end = at + b.duration; s.buffer = b;
+        g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(1, at + LAP); g.gain.setValueAtTime(1, end - LAP); g.gain.linearRampToValueAtTime(0, end);
+        s.connect(g).connect(bus); s.start(at); setTimeout(() => lap(end - LAP), Math.max(0, (end - LAP - ctx.currentTime - 1) * 1000)); };
+      lap(ctx.currentTime); }); }
+
+  function wake(){ if (live) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    ctx = new AC(); master = ctx.createGain(); master.gain.value = muted ? 0 : VOL; master.connect(ctx.destination); live = true;
+    if (ctx.state === 'suspended') ctx.resume(); air(airWant); }
+  function quiet(q){ muted = q; try { localStorage.setItem(KEY, q ? '1' : '0'); } catch (err) {}
+    if (master) master.gain.setTargetAtTime(q ? 0 : VOL, ctx.currentTime, .05); air(airWant); }
+  return {play, air, wake, quiet, get muted(){ return muted; }};
+})();
+
+(() => {
+  const page = v => Sound.play('page' + (1 + Math.floor(Math.random() * 3)), v || .8);
+  // What announces a paper. Handbills are a leaf turned; anybody else knocks unless named here.
+  const ARRIVES = {crowd:['election', 'election96', 'jubilee', 'trafalgar', 'waterloo', 'peace'], mob:['commonRiot', 'ludd', 'crew', 'press'], toll:['gallDies', 'pinchDies'],
+    carriage:['dubreuil', 'dubreuilReturns', 'vaneDines', 'vaneBall', 'bath', 'paris', 'elope', 'edmundHome'], shot:['battue']};
+  const cueFor = id => { for (const k in ARRIVES) if (ARRIVES[k].includes(id)) return k; return BILLS.has(id) ? 'page' : 'knocker'; };
+  const POWDER = new Set(['duel', 'edmundDuel', 'poacher', 'smugglers', 'manTraps']);
+  // Rooks in spring and summer, wind in autumn, the fire in winter. A ruined harvest rains from June to Michaelmas.
+  const airNow = () => !S ? 'rooks' : S.phase === 'end' || S.season === 3 ? 'fire' : S.season > 0 && WEATHER[S.year] <= .8 ? 'rain' : S.season === 2 ? 'wind' : 'rooks';
+  let leaf = -2, paper = '', phase = '', last = '';
+  function heard(){ Sound.air(airNow());
+    if (!S) { leaf = -2; paper = phase = last = ''; return; }
+    if (S.t !== leaf) { if (leaf > -2 && S.phase === 'ledger') { page(); Sound.play('bell', .45, .5); } leaf = S.t; }
+    if (S.phase === 'event') { const p = S.t + ':' + S.pending; if (p !== paper) { paper = p; last = S.pending; const c = cueFor(S.pending); if (c === 'page') page(); else Sound.play(c, c === 'crowd' || c === 'mob' ? .6 : .8, .15); } }
+    else paper = '';
+    if (S.phase !== phase) {
+      if (S.phase === 'outcome' && POWDER.has(last) && /\b(fired?|pistols?|shot|gun)\b/i.test(S.outcome.text)) Sound.play('shot', .8, .7);
+      if (S.phase === 'undone' && /^town-/.test(S.outcome.cut || '')) Sound.play('carriage', .6, .3);
+      if (S.phase === 'end') Sound.play(S.dead ? 'toll' : 'seal', .8, .3);
+      phase = S.phase; } }
+
+  const wrap = (name, fn) => { const f = window[name]; if (typeof f === 'function') window[name] = function(){ return fn(() => f.apply(this, arguments)); }; };
+  wrap('render', go => { const r = go(); try { heard(); } catch (err) {} return r; });
+  wrap('start', go => { const was = S; const r = go(); if (S && S !== was) Sound.play('seal'); return r; });
+  wrap('resume', go => { const r = go(); if (S) page(); return r; });
+  // A choice that moves money is paid on the table. Any other is written down.
+  const paid = go => { const m = S ? S.money : 0, r = go(); Sound.play(S && Math.abs(S.money - m) >= 1 ? 'coins' : 'quill', .7); return r; };
+  wrap('choose', paid); wrap('undertake', paid);
+  wrap('showTab', go => { page(.5); return go(); }); wrap('showWho', go => { page(.5); return go(); });
+  // The small ink buttons: mortgage, works, farms, ventures, society.
+  let purse = 0;
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.inkbtn, .lv button')) purse = S ? S.money : 0; }, true);
+  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.inkbtn, .lv button'); if (b && S) Sound.play(Math.abs(S.money - purse) >= 1 ? 'coins' : 'quill', .6); });
+  for (const ev of ['pointerdown', 'keydown']) document.addEventListener(ev, Sound.wake, true);
+  document.addEventListener('visibilitychange', () => Sound.air(document.hidden ? '' : airNow()));
+
+  // The one control: a word in the corner of the desk.
+  const b = document.createElement('button'); b.id = 'hush'; b.type = 'button';
+  const show = () => { b.textContent = Sound.muted ? 'Sound off' : 'Sound on'; b.setAttribute('aria-pressed', String(!Sound.muted)); };
+  b.onclick = () => { Sound.quiet(!Sound.muted); show(); }; show();
+  const st = document.createElement('style');
+  st.textContent = '#hush{position:fixed;top:6px;right:10px;z-index:5;background:none;border:0;padding:4px 6px;cursor:pointer;font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:#d9c9a3;opacity:.8}#hush:hover,#hush:focus-visible{opacity:1}#hush[aria-pressed="false"]{text-decoration:line-through}';
+  document.head.appendChild(st); document.body.appendChild(b);
+  heard();
+})();
 </script>

@@ -4,7 +4,7 @@ set -e
 cd "$(dirname "$0")"
 JS="src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js src/estate.js"
 ART="const ART = new Set([$( [ ! -d art ] || find art -type f \( -name '*.jpg' -o -name '*.webp' -o -name '*.png' \) | sed 's#^art/##' | sort | sed "s/.*/'&'/" | paste -sd, - )]);"
-script() { cat $JS; echo "$ART"; cat src/ui.js; }
+script() { cat $JS; echo "$ART"; cat src/ui.js src/sound.js; }
 {
   cat src/head.html
   echo '<style>'; cat src/style.css; echo '</style>'
