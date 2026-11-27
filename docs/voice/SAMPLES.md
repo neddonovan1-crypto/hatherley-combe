@@ -78,4 +78,18 @@ If you second him, **old**:
 
 **New**
 
-> In your pocket-book: “Hatherley against Kintbury on the common, for eleven pair of gloves. Kintbury won by 14 notches. The smith bowled. He hit the wicket once and the Kintbury long-stop three times. Lost 0. 10. 6 to Mr Hartopp.”
+> In your pocket-book: “Hatherley played Kintbury on the Common for eleven Pair of Gloves. Kintbury beat us by 14 Notches. The Smith bowled. He hit the Wicket once and the Kintbury Long-stop three times. Lost to Mr. Hartopp on the Match 0. 10. 6.”
+
+## Brandy for the Bench
+
+**Old**
+
+> It is, he explains to your boots, “the gentleman’s share”. The free traders run it up from Christchurch by night through six parishes, and a tub is left for every magistrate along the road, as it was for your uncle, by way of thanking him for his sound sleep.
+
+**New**
+
+> “That’s the gentleman’s share, sir.” Mudge speaks to your boots. “They runs it up from Christchurch by night. There’s a tub left for every justice on the road. Your uncle had his regular.”
+>
+> “And what did my uncle do for it?”
+>
+> “Slept, sir.”
