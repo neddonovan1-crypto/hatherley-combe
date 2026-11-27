@@ -6,29 +6,65 @@ const E = () => S.flags.edmund || null;
 const kittyAge = () => 17 + (S.year - 1795);
 
 ev({ id:'speen', fixed:'1795-0', title:'The Pelican at Speen',
-  text:() => `The magistrates of the county are met at the Pelican at Speen, by advertisement, to consider the state of the labouring poor, and have begun, as the bench does generally begin, with the turbot. Bread is at elevenpence the quartern. A man with a wife and three children has eight shillings a week to buy it with, and the gentlemen present are too good arithmeticians to pretend that the sum comes out.
+  text:() => `The Pelican at Speen, the sixth of May. The Berkshire bench sits down to a turbot.
 
-Dr Gall has a paper. Leave wages where the farmers have put them, he says, and let the parish make every family up out of the rates, by a table: three shillings for the man, eighteenpence for his wife, eighteenpence for each child, the whole to rise and fall with the gallon loaf. “It is charity by the rule of three, gentlemen. It will cost the farmer nothing, and the labourer his impudence.” He looks down the cloth for a seconder, and his eye stops at you.`,
+The business is on a half-sheet beside each plate. Wheat is at seventy-five shillings. The quartern loaf is elevenpence in Newbury market. A labourer in this county has eight shillings a week. Dr Gall waits until the fish has been carried out before he stands.
+
+“Gentlemen, I shall not ask the farmer for a penny. Let wages lie. Let the parish make each family up from the rates, by a table. When the gallon loaf is a shilling, three shillings to the man and eighteenpence to every mouth he feeds. When the loaf rises, the table rises.” He holds his paper out over the cloth. “Who is with me?”
+
+Nobody moves. The Doctor turns his whole body in his chair until it faces you.
+
+“Mr ${S.sur}?”`,
   choices:[
-    {t:'Second the Doctor’s table.', go:() => { fl('speen'); add({goodwill:4, standing:1}); reg('gall',2,'You seconded his bread scale at Speen');
-      return `The table is carried with two dissentients and ordered to be printed. Mr Hartopp has it by heart before the cloth is drawn, and has found in it what the Doctor did not put there: that if the parish will make a man up to nine shillings, the farmer is a fool who pays him above six. He says so to his neighbour, and does not lower his voice to say it. The paper goes to the Reading Mercury on Monday with your name second upon it.`; }},
-    {t:'Move that the bench fix wages by the price of bread, and pay them at Hatherley yourself.', go:() => { fl('wages'); add({goodwill:9, standing:-3}); reg('gall',-1); reg('hartopp',-1,'Thinks your wages will ruin him'); reg('pryor',1);
-      return `You are heard with the attention gentlemen give to a neighbour who has stood up in the wrong place in the Litany. It is observed that such notions do very well for Mr Whitbread, who sells beer, and may reasonably wish the poor more money to buy it. The motion is lost. You put your own men to nine shillings from Monday, and by Sunday there is not a hedger between Hungerford and Newbury but knows which estate pays it.`; }},
-    {t:'Attend to the turbot.', go:() => { add({goodwill:-3, standing:1});
-      return `You say nothing, and are thought to have said it very properly. The Doctor’s table is carried without you. In the yard the ostlers, who have had the whole of it through the open window and will have it in every tap on the Bath road by night, hold your stirrup with great civility and look at the horse.`; }}
+    {t:'Second him.', go:() => { fl('speen'); add({goodwill:4, standing:1}); reg('gall',2,'You seconded his bread scale at Speen');
+      return `“Seconded.” The show of hands takes less time than the carving did. A clerk is called in to copy the table fair for the Reading Mercury.
+
+Hartopp has a pencil out before the cheese comes. He writes on the back of his half-sheet, turns it round and pushes it across to you. “Parish makes a man up to 9s. I pay him 6s. Parish finds 3s.” Under that he has drawn a line. Under the line: “Why pay 6?”
+
+Your name goes to Reading second on the list.`; }},
+    {t:'Stand. Move that the bench fix a wage by the price of bread, and pay it at Hatherley yourself.', go:() => { fl('wages'); add({goodwill:9, standing:-3}); reg('gall',-1); reg('hartopp',-1,'Thinks your wages will ruin him'); reg('pryor',1);
+      return `You stand. You say the bench has power under the statute of Elizabeth to fix a wage. You say it should fix one by the price of bread. You say the farmer who hires a man should be the one to feed him.
+
+“Ruin,” says Hartopp. Somebody asks whether Mr ${S.sur} holds shares in Whitbread’s brewery. Dr Gall puts it to the vote out of politeness. Three hands go up.
+
+On Monday you raise every man at Hatherley to nine shillings. On Sunday there are faces in church from Kintbury and Inkpen that you have never seen there before. They have walked over to look at you.`; }},
+    {t:'Help yourself to the turbot.', go:() => { add({goodwill:-3, standing:1});
+      return `You help yourself to the turbot. The table is carried round you.
+
+Afterwards, in the yard, your horse is brought by an ostler you do not know. The taproom window stands open behind him. He holds the stirrup. He does not touch his hat until you are in the saddle and looking down at him.`; }}
   ]});
 
 ev({ id:'flour', fixed:'1795-1', title:'The Old Price',
-  text:() => `Market day at Wyvern, and the quartern loaf at elevenpence. In the corn market some dozen women of Hatherley have stopped Pocock the miller’s cart, taken down his sacks, and are selling the flour upon the cobbles at the old price, which they have settled among themselves and will not be argued out of. Sukey Pryor keeps the measure. She has a child on one hip, and strikes the peck level with the flat of her other hand.
+  text:() => `Wyvern, market day. You hear it from the bridge.
 
-Every penny goes into Pocock’s own hat. He stands holding it out before him, like a thing he may be asked about upon oath, and when he sees you ride in under the arch of the George he calls on you by name, as a magistrate, to do your duty.`,
+Pocock’s cart is stopped in the corn market with its tailboard down. A dozen Hatherley women have his sacks open on the cobbles. Sukey Pryor has the peck measure in one hand and her youngest on her hip. “Old price! Old price and honest measure!” A girl of ten takes the money. She carries each coin across to the miller and drops it into his hat.
+
+Pocock holds the hat in both hands. He has not put it down and he has not put it on. He sees you over the heads. “Mr ${S.sur}! You are a magistrate, sir! I call on you!”
+
+The selling stops. Sukey Pryor looks at you. She does not put down the measure.`,
   choices:[
     {t:'Read the Riot Act and send for the Volunteers.', go:() => { fl('riotAct'); add({standing:3, goodwill:-10}); reg('pryor',-2,'You read the Riot Act at his wife'); reg('gall',1);
-      return `“Our Sovereign Lord the King chargeth and commandeth all persons, being assembled, immediately to disperse themselves.” You read it from the steps of the Corn Exchange with your hat off, and it is over sooner than a grace. The law allows them an hour to go in. They use the whole of it. When the Volunteers ride in there is no flour and no crowd, and Pocock has his money told out exact upon the tailboard. Nobody is taken up. Sukey Pryor drops you a curtsey as she goes by, the first she ever troubled to make you.`; }},
+      return `You climb the steps of the Corn Exchange and take off your hat. “Our Sovereign Lord the King chargeth and commandeth all persons, being assembled, immediately to disperse themselves.” It is done in under a minute. Your voice cracks on “habitations”.
+
+They have one hour by law. Nobody goes. The selling starts again, faster. You stand on the steps for fifty minutes with the Act in your hand.
+
+The Volunteers trot in at ten minutes to the hour. The cobbles are white. The sacks are folded on the cart. Pocock is counting. Sukey Pryor walks past the steps with her flour on her head and the child asleep. “Good day, sir.” Nobody else from Hatherley says it to you that week.`; }},
     {t:'Buy the whole cart yourself and let them carry on.', note:'£140', go:() => { add({money:-140, goodwill:8, standing:-2}); reg('cullerne',-1,'Thinks you bought off a mob'); reg('pryor',1,'You paid for his wife’s flour');
-      return `You give Pocock a draft upon Tidmarsh for the difference, a hundred and forty pounds. He reads it twice. He has been robbed and paid in one morning, and has not settled which he shall complain of. The women give you three cheers and go back to the last sack. Lord Cullerne has the story with his second course, and is understood to have asked whether Mr ${S.sur} keeps a mob of his own, or only hires.`; }},
+      return `“What is the load worth today, Pocock?” He tells you. “And at the old price?” He tells you that too. You write him a draft on Tidmarsh’s bank for the difference. One hundred and forty pounds.
+
+Pocock folds it small and puts it inside his coat. He does not thank you. The women do, three cheers, and then they go back to the sacks.
+
+Lord Cullerne’s groom is outside the George holding a horse. He has watched all of it. He will be at the Castle before you are home.`; }},
     {t:'Take Pocock aside and mention his lease.', go:() => { fl('millerCowed'); add({goodwill:4, standing:1});
-      return `You walk him a little apart, and say that you have been thinking of Hatherley Mill, the lease of which falls in at Michaelmas, and that you never saw a prettier fall of water. Pocock finds he had meant all along to sell at the old price this week, from Christian feeling. He says so aloud, twice. The women carry home their flour. The miller carries home his feeling, and it is not thought he will part with that under the market rate.`; }}
+      return `You get down and take Pocock by the elbow. Ten yards off, by the pump, you ask him when his lease falls in.
+
+“Michaelmas, sir.”
+
+“So I thought. It is a pretty mill.”
+
+He looks at the pump for some time. Then he walks back to his cart. “Old price,” he tells the women. “This week. Out of Christian feeling.” He says it a second time, louder.
+
+That evening he drives home past your gate. He keeps his eyes on the horse.`; }}
   ]});
 
 ev({ id:'powder', fixed:'1795-2', title:'A Guinea a Head',
@@ -114,16 +150,32 @@ ev({ id:'bankFate', follow:true, title:'Mr Tidmarsh Calls',
   ]});
 
 ev({ id:'nore', fixed:'1797-1', cond:() => E() === 'navy', title:'A Letter from the Nore',
-  text:() => `The fleet at the Nore has hoisted the red flag and stopped the river, and the Thetis is named among the ships. For nine days you have no word. On the tenth comes a letter, charged double, with the direction in Edmund’s hand.
+  text:() => `The Mercury has it on the front page. The fleet at the Nore has run up the red flag. The paper prints the ships in a column. The Thetis is the ninth name down.
 
-“Sheerness, Sunday. My dear Father, You will have seen by the papers what has happened here, and I write that my mother may know I am on shore and perfectly well. We were put into the boats on Friday with great civility. The ship’s cook, who has now the command of her, handed down my chest himself and begged I would excuse the trouble. They ask that their pay be raised, which it has not been since King Charles’s time, and that the purser’s pound be sixteen ounces like another man’s, and not fourteen. I do not find, sir, that I can think them wrong. Pray do not let this be seen by any friend of Captain Holloway’s.
+Henrietta reads the column twice and goes to the window. She is at that window for ten days. On the eleventh the post-boy brings a letter in Edmund’s hand. You pay eightpence for it at the door.
 
-I am, my dear Father, your dutiful son, E. ${S.sur}.”`,
+“Sheerness, Sunday night.
+
+My dear Father, I am on shore and not hurt. Tell my mother first.
+
+They sent the officers away on Friday. Nobody was struck. The cook has the ship. He carried my chest to the side himself and asked me to mind the wet step. The men want a shilling a day. They want sixteen ounces to the pound from the purser. He gives fourteen and keeps two. That is all they want. I have turned it over for two nights. I cannot make them wrong.
+
+Burn this. Captain Holloway dines with people you know.
+
+Your dutiful son, Edmund.”`,
   choices:[
-    {t:'Write to the Admiralty urging mercy for the men.', go:() => { add({standing:-2}); reg('edmund',2,'You wrote to the Admiralty for his shipmates');
-      return `Your letter is acknowledged by a clerk in eleven words, four of them your own name and style. In June the ships come in one by one and strike the red flag. Parker, the president of their delegates, is hanged on board the Sandwich, and eight and twenty after him; the cook of the Thetis is flogged round the fleet, and lives. Edmund never speaks of what you wrote. But his next letter is signed your affectionate son, where it used to be dutiful.`; }},
-    {t:'Write to Edmund that mutiny is mutiny.', go:() => { add({standing:1}); reg('edmund',-1);
-      return `You write four sides upon duty, and have them copied fair. Edmund’s answer fills one, and is chiefly about the wind in the Downs. The delegates are hanged, flogged or pardoned, each according to his luck. The shilling a day is granted to the rest, the country having found in June that it could afford what in April would have ruined it.`; }}
+    {t:'Write to the Admiralty. Ask mercy for the men.', go:() => { add({standing:-2}); reg('edmund',2,'You wrote to the Admiralty for his shipmates');
+      return `You write to Lord Spencer at the Admiralty. A clerk replies. “Sir, I am commanded by their Lordships to acknowledge the receipt of your letter.”
+
+The red flags come down in June. Richard Parker is hanged from the yardarm of the Sandwich. Twenty-eight more follow him. The cook of the Thetis is flogged round the fleet. He lives.
+
+Edmund’s next letter is about a gale off the Texel. He does not mention yours. He signs it “Your affectionate son”.`; }},
+    {t:'Write to Edmund. Mutiny is mutiny.', go:() => { add({standing:1}); reg('edmund',-1);
+      return `You fill four sides. Duty. The King. What your uncle would have said. You copy it fair and send it.
+
+The answer is one side long. The wind has been in the east. He has had a cold. He is, sir, your obedient son.
+
+Parker hangs in June with twenty-eight others. In the same month Parliament votes the seamen their shilling.`; }}
   ]});
 
 ev({ id:'defence', fixed:'1798-1', title:'In Case of the French',

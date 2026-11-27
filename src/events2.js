@@ -15,29 +15,77 @@ Crabbe, invited to explain, folds his hands. The books, he says, are a little li
 
 ev({ id:'thorneLease', from:1795, to:1800, weight:4, title:'The Widow of Long Barrow',
   text:() => { meet('thorne'); const st = F('crabbeGone') ? 'Lark' : 'Crabbe';
-    return `Samuel Thorne of Long Barrow is dead, of a chill taken in his own water meadow, where he stood an hour in the wet disputing a point with his neighbour’s drowner. Long Barrow is two hundred and forty acres, and the best farm you have. His widow asks to be continued in it.
+    return `They buried Samuel Thorne on Tuesday. On Wednesday his widow is in your estate office at nine o’clock. She has brought the farm book.
 
-${st} has put his opinion in writing, which he does when he wishes to be able to find it again. “Mem. A female tenant cannot be distrained upon without odium, nor sit at the audit dinner without constraint to the company. Mrs T. has, I allow, had the whole management these ten years, the late T. being a talker. But the county does not know it, and a farm is let to the county’s opinion as much as to the tenant. ${F('crabbeGone') ? 'A Mr Dredge of Hungerford' : 'My nephew'} would give £100 in hand for the preference.”`; },
+Long Barrow. Two hundred and forty acres. She opens the book on your desk and turns it to face you. Ten years of yields, all in one hand. It is not Samuel’s hand.
+
+“I want the lease in my name, sir. Same rent. Same terms.”
+
+${st} is standing behind your chair. He bends to your ear. “A woman tenant, sir. The county will not like it. And there is ${F('crabbeGone') ? 'a man from Hungerford' : 'my nephew'}. A hundred pounds in hand, this morning, for the preference.”
+
+Mrs Thorne has good ears. She shuts the book and waits.`; },
   choices:[
     {t:'Renew the lease to Abigail Thorne.', go:() => { add({standing:-1, goodwill:3}); reg('thorne',4,'You gave her the lease when the county said a woman could not farm'); if (!F('crabbeGone')) reg('crabbe',-1);
-      return `She reads the lease through before she signs it, the covenants and the Latin with them, and has Mr Oakes up from the vicarage to construe the Latin. Then she signs: Abigail Thorne, in a round hand, very black. At harvest Long Barrow gives four bushels an acre above any farm you have, and the county allows that a woman may farm, much as it allows that a Frenchman may be brave.`; }},
+      return `“Draw it in her name.”
+
+She reads every line of the lease before she signs. Mr Oakes is fetched from the vicarage to put the Latin into English. She hears all of it. Then she writes Abigail Thorne at the foot, slowly, and blots it herself.
+
+At harvest Long Barrow threshes out four bushels an acre above any other farm you own. ${F('crabbeGone') ? 'Lark reads you the figure twice.' : 'Crabbe enters the figure in the book. He writes it very small.'}`; }},
     {t:() => F('crabbeGone') ? 'Let it to the Hungerford man.' : 'Let it to Crabbe’s nephew.', note:'+£100', go:() => { fl('nephewFarm'); S.rentAdj *= 0.96; add({money:100, goodwill:-5}); reg('thorne',-5,'You turned her out of Long Barrow'); if (!F('crabbeGone')) reg('crabbe',2,'You gave Long Barrow to his nephew');
-      return `Mrs Thorne quits at Lady Day with one wagon, and takes two rooms over the saddler’s in Wyvern. The new tenant is at market four days in the seven, where he may be heard upon the capabilities of the land. The land has a crop of docks. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} enters the hundred pounds under Casual Profits, and it is the last profit of any description that Long Barrow shows this year.`; }},
+      return `She is out by Lady Day. One wagon. She takes two rooms over the saddler’s shop in Wyvern.
+
+The new man likes a market. Newbury on Thursday, Reading on Saturday, Wyvern in between. By July there are docks in the wheat at Long Barrow. By August there are thistles in the docks.
+
+The hundred pounds is in the book under Casual Profits.`; }},
     {t:'Renew to her, at twenty pounds a year more.', go:() => { S.rentAdj *= 1.01; add({goodwill:-1}); reg('thorne',1,'You gave her the lease, and raised the rent on a widow');
-      return `She looks at the figure and then at you, no longer than is needed, and signs. The rent comes to the day, Lady Day and Michaelmas, in guineas while there are guineas to be had, told out one at a time upon your table. She will not sit down while she does it.`; }}
+      return `You name the new rent. Twenty pounds more.
+
+She looks at you for as long as it takes. Then she signs.
+
+She pays on the day, at Lady Day and at Michaelmas, in gold. She counts it on to your desk one coin at a time. She will not take a chair.`; }}
   ]});
 
 ev({ id:'poacher', from:1796, to:1812, weight:3, title:'A Hare in Evidence',
-  text:() => `Jem Pryor is brought up to the justice room at ten by Mudge, your keeper, who took him at first light in Cuckoo Copse with two wires in his pocket and a hare inside his frock. The hare is laid upon the table. Mudge deposes to the wires, to the hare, and three several times to “a look he give me, sir, as I should know again”.
+  text:() => `The justice room, ten o’clock. A dead hare lies on your table on a sheet of the Mercury.
 
-Pryor, asked what he has to say, says the hare ran at him. He has a wife, five children, and ${F('enclosed') ? 'since the enclosure not so much as a cow' : 'a cow on the common'}. He has taken the game of Hatherley since he was nine years old, and your uncle, who committed him twice, used to say there was not such another hand with a wire in Berkshire. The statute is five pounds, or three months. The hare might fetch three shillings.`,
+Mudge stands on one side of it and Jem Pryor on the other. Mudge still has him by the collar.
+
+“Cuckoo Copse, sir. First light. Two wires in his pocket. That hare up his frock. And he give me a look.”
+
+“A look?”
+
+“A look, sir.”
+
+You know Pryor. Five children. ${F('enclosed') ? 'No cow, since the enclosure.' : 'One cow, on the common.'} Your uncle sent him to gaol twice. Your uncle also called him the best hand with a wire in Berkshire.
+
+“Well, Pryor?”
+
+“Her run at me, sir.”
+
+The Act lies open in front of you. Five pounds, or three months.`,
   choices:[
     {t:'Three months in Reading gaol.', go:() => { add({standing:1, goodwill:-5}); reg('pryor',-3,'You gave him three months for a hare'); if (!F('gallDead')) reg('gall',1); S.game += 1;
-      return `Three months in the House of Correction at Reading. Sukey Pryor and the children come upon the parish the same week, at four shillings, so that by the time he is out the overseer reckons the hare to have stood the ratepayers of Hatherley in two pounds twelve. Jem walks home. He touches his hat to you in the lane, as a man should, and you carry it between your shoulders as far as the lodge.`; }},
+      return `“Three months.”
+
+Mudge walks him to Reading himself. On Saturday Sukey Pryor comes to the vestry with the five children and asks for relief. The overseer allows her four shillings a week. Thirteen weeks. Two pounds twelve shillings out of the rates, for one hare.
+
+Pryor comes home. You meet him in Mill Lane. He stops, takes off his hat and holds it against his chest until you have gone by. You do not look round. You want to.`; }},
     {t:'Fine him five pounds, and lend him the five pounds.', note:'£5', go:() => { add({money:-5, goodwill:2}); reg('pryor',1,'You fined him five pounds and paid it yourself');
-      return `“Five pounds, Pryor, and I shall lay it down for you. You will bring me a shilling the first Saturday in every month.” He works it in his head, moving his lips, and makes it eight years and four months, which is right. The shillings come to the kitchen door in a dock leaf. Mrs Bunce takes them up with the tongs.`; }},
+      return `“Five pounds.” Pryor says nothing. He has never held five pounds. “I shall pay it. You will bring me a shilling on the first Saturday of every month.”
+
+His lips move. “Eight year and four month, sir.”
+
+“Yes.”
+
+The first shilling comes to the kitchen door wrapped in a dock leaf. Mrs Bunce carries it up to you on a plate.`; }},
     {t:'Dismiss the charge, and give him the hare.', go:() => { add({standing:-2, goodwill:4}); reg('pryor',3,'You let him go, and gave him the hare'); if (!F('gallDead')) reg('gall',-2,'Thinks you soft on poachers'); S.game -= 1;
-      return `You find that a look is not evidence, and that a hare discovered in a man’s frock may, for anything the bench can prove, have got in of herself. Mudge turns the colour of a mulberry. Pryor takes the hare up by the ears and feels along her back. “Her wants four days’ hanging, sir, this weather, and not an hour over.” Then, nothing more being said, he puts her inside his frock again and makes his bow at the door, which Mudge does not hold for him.`; }}
+      return `“A look is not evidence, Mudge. Nobody saw him set the wire. Charge dismissed.” Mudge goes dark red to the ears. “Give him the hare.”
+
+Pryor picks her up and runs his thumb down her spine.
+
+“Four days I’d hang her, sir. This weather. No more.”
+
+He puts her back inside his frock and nods to you. Mudge will not open the door for him. Pryor opens it himself.`; }}
   ]});
 
 ev({ id:'pryorFriend', from:1798, to:1814, weight:3, cond:() => S.chars.pryor.r >= 2, title:'Something at the Back Door',
@@ -54,18 +102,32 @@ This Friday there is something else in the cabbage leaf: a scrap of paper, in a 
   ]});
 
 ev({ id:'rickFire', follow:true, title:'Fire in the Stackyard',
-  text:() => `You are woke a little after midnight by a light in the room, of a colour the moon does not come in. Two wheat ricks in the home stackyard are alight from the eaves down. There is no wind, and they burn straight up, with a noise like a great many people whispering.
+  text:() => `Henrietta shakes you awake. The bedroom ceiling is orange.
 
-Half the parish is at the stackyard rails. Some have brought buckets, and have set them down.`,
+From the window you can see the home stackyard. Two wheat ricks are burning. There is no wind. The flames go straight up and the sparks go higher.
+
+You are down the stairs with your boots in your hand. Half of Hatherley is at the stackyard rails already. You count nine buckets. Every one of them is standing on the ground.`,
   choices:[
     {t:'Post a reward of fifty guineas for the incendiary.', note:'£52', go:() => { add({money:-300 - 52, goodwill:-4, standing:1});
-      return `The bill is printed at Wyvern by noon, and pasted on the church door, at the Bell and at the turnpike gate. “FIFTY GUINEAS REWARD. Whereas some evil-disposed Person or Persons did, on the Night of Tuesday last, wilfully and maliciously set Fire to two Ricks of Wheat in the Stackyard of ${S.name}, Esquire; whoever will discover the Offender or Offenders, so that he or they be brought to Justice, shall on Conviction receive the above Reward. An Accomplice impeaching shall have the same, and Interest made for his Pardon.”
+      return `You have the bill printed in Wyvern before noon.
 
-Fifty guineas is three years’ wages to a Hatherley man. The bill hangs till the rain takes it down, and nobody comes. The wheat was worth three hundred pounds.`; }},
+“FIFTY GUINEAS REWARD. Whereas some evil-disposed Person or Persons did, on the Night of Tuesday last, wilfully and maliciously set Fire to two Ricks of Wheat in the Stackyard of ${S.name}, Esquire; whoever will discover the Offender or Offenders, so that he or they be brought to Justice, shall on Conviction receive the above Reward. An Accomplice impeaching shall have the same, and Interest made for his Pardon.”
+
+It goes up on the church door, at the Bell and on the turnpike gate. Fifty guineas would keep a Hatherley family for three years. A week goes by. A month. The rain brings down the one on the church door. Nobody has knocked.
+
+Three hundred pounds of wheat.`; }},
     {t:'Take a bucket and join the line.', go:() => { add({money:-300, goodwill:3});
-      return `You carry from the horse pond till daylight, in your shirt, with the wheelwright before you in the line and a boy of ten behind. The ricks are lost: three hundred pounds of wheat, in something under the hour. But the line is longer at four o’clock than it was at one, and when the last of it is black and steaming somebody puts a mug of beer into your hand and says “Here”, and not “sir”.`; }},
+      return `You pick up a bucket and walk to the horse pond. The wheelwright comes after you. Then a boy of about ten. Then the rest.
+
+Both ricks are gone by two o’clock. Three hundred pounds of wheat. The line keeps on regardless and wets the barn thatch until it is light.
+
+At dawn you sit down on the mounting block in your shirt. A hand holds out a mug of beer. “Here.” You look up to see who has forgotten to call you sir. He has gone back to his bucket.`; }},
     {t:'Go back to bed. Let it be seen that you do not frighten.', go:() => { add({money:-300, standing:1, goodwill:-2});
-      return `You look from the window a minute, and draw the curtain. In the morning it is three hundred pounds, and all Wyvern has it that the squire of Hatherley turned over and slept. Mudge brings in a tinder-box, found on the post of the stackyard gate, set square in the middle where a man must see it. He lays it by your plate and says he supposes it is nobody’s.`; }}
+      return `You watch for one minute. Then you draw the curtain and get back into bed. Henrietta stares at you.
+
+In the morning the ricks are two black rings. Three hundred pounds of wheat. Mudge comes in while you are at breakfast and puts a tinder-box down by your plate. “Top of the gatepost, sir. Left where I should see it.”
+
+They are still talking of it in Wyvern at the end of the week. Some of them call it nerve.`; }}
   ]});
 
 ev({ id:'hartoppShearing', from:1797, to:1810, weight:2, title:'Three Days of Tups and Toasts',

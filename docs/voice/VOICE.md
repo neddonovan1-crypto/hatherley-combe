@@ -6,25 +6,54 @@ Companions: [LEXICON.md](LEXICON.md) for money, titles, dates and vocabulary; [S
 
 ## What was wrong
 
-Not the jokes. The first draft was funny, and a good many of its lines survive. The trouble was where the narrator stood. He stood in our century, looking back, with a history of the period open on his knee. He told the player what the game laws were. He knew that the Speenhamland scale would last forty years. He delivered a neat line at the foot of nearly every paragraph, at an even pace, like a man tipping his hat at each lamp-post. One voice did everything: the vicar, the poacher, the newspaper and the steward all came out of the same mouth.
+Two things, and the second took two attempts to see.
 
-A reader hears that as a modern comic writer in costume. The cure is a change of position more than a change of words.
+The narrator stood in our century. He explained the game laws. He knew the Speenhamland scale would last forty years.
 
-## Where the narrator stands
+Worse, nearly every sentence had the same build. A statement. A comma. Then a comment hung on the end to be clever about the statement. Ned put two of them side by side:
 
-Inside the year. He knows what Wyvern knows on market day and no more. He has not read the Hammonds. When the bench adopts a bread scale he can tell you what Hartopp said about it over the cheese; he cannot tell you what it did to England.
+> over a turbot that cost more than a ploughman earns in a month, to decide what a ploughman ought to earn in a month. Nobody sees the joke.
 
-So: no hindsight. Nothing "for the rest of his life", nothing "it will be forty years". The one place allowed to look back is the Reading Mercury at the end, and even the Mercury only looks back from 1815.
+> A man with a wife and three children has eight shillings a week to buy it with, and the gentlemen present are too good arithmeticians to pretend that the sum comes out.
 
-And no lecturing. If the player needs to know that a man without a hundred a year in land may not kill a hare, let the keeper say it, or the vicar, or put the penalty on the table as a sum. The period explained itself to nobody. People complained, quoted prices and cited the statute at each other, and that is how a reader of Woodforde or Cobbett learns it.
+The second has better words in it. It is the same sentence. Period vocabulary poured into that mould still reads as a machine being wry. The checker counted the old text: more than one sentence in five ended on a hung clause.
 
-He is a neighbour of some education, dry, fond of the place, not shocked by much. He approves of things in a way that leaves them damaged. He is exact about money because everyone was.
+## The hung clause
+
+This is the rule that matters most.
+
+A sentence does one job. It reports what happened, or what was said, or what something cost. It does not then turn round and remark on itself.
+
+Forms to refuse:
+- "..., and [dry observation]."
+- "..., which is [deflation]."
+- "..., as [comparison that explains the joke]."
+- "..., the first she ever troubled to make you."
+- A short knowing sentence after a paragraph, doing the same work from outside: "Nobody sees the joke." "Everybody remembers."
+
+What to do instead. Cut the comment and see whether the fact stands. It nearly always does. If the comment held something the player needs, turn it into an event: a thing done, a thing said aloud, a line in a document. Hartopp does not get a clause saying he has spotted the flaw in the bread scale. He takes out a pencil and writes "Why pay 6?" on the back of the agenda.
+
+Commas are not banned. Lists need them. So does a clause that comes first: "When the loaf rises, the table rises." The fault is the tail.
+
+## The narrator
+
+Inside the year. He knows what Wyvern knows on market day. Nothing "for the rest of his life". The Reading Mercury at the end may look back, and only from 1815.
+
+He does not explain. The player learns the penalty for a hare because the Act is open on the table.
+
+He has no opinions. He has eyes and ears. He says who stood where, what they held, what was said, what it cost, what they did with their hats. The wit belongs to the people in the room and to the arithmetic.
+
+His sentences are mostly short and plain, in the way Cobbett's are and Dahl's are. Period feeling comes from the nouns (a peck measure, a tailboard, a draft on Tidmarsh's bank), from the sums, and from the forms of the other four hands. It does not come from syntax in fancy dress.
+
+Dialogue carries a great deal. Write it as lines, each on its own.
+
+Vary the pace by what is happening. A fire is short sentences. A woman reading every clause of a lease may have a longer one. Do not vary it by formula.
 
 ## Five hands, not one
 
 The single largest change. Text reaches the player in one of five hands, and they should not sound alike.
 
-**The narrator.** Second person, present tense, as now. Sentences that carry their freight to the end, set against short flat ones. See below.
+**The narrator.** Second person, present tense. See above.
 
 **The letter.** Edmund from his ship, Kitty from Northampton, Tidmarsh, the Lord Lieutenant's clerk. A letter has a place and a day at its head, a salutation, and a subscription, and the subscription is a gauge of feeling: when Edmund moves from "your dutiful son" to "your affectionate son" something has happened, and nobody need say what. Letters are charged to whoever receives them, by the sheet, which is why the young cross theirs and the rich get them franked.
 
@@ -34,41 +63,27 @@ The single largest change. Text reaches the player in one of five hands, and the
 
 **Speech.** By rank, and each person with a habit. Lord Cullerne drops his g's and says "ain't", as a Whig earl of his generation did, and never explains himself. Dr Gall speaks in periods and quotes Scripture against people. Crabbe is all respect and subordinate clauses. Hartopp has caught his vocabulary from Arthur Young and cannot see a field without "capabilities". Jem Pryor says little, and what he says is Berkshire: "her" for she, "I be", "un" for him, a "z" now and then. One mark of dialect to a speech is enough. Mrs Bunce does not speak; things are reported of her. Keep that.
 
-## The narrator's sentences
+## How to write an event
 
-Borrow the period's grammar and leave its upholstery.
+Do not revise old prose. It carries its skeleton with it, and the skeleton is the fault.
 
-Take these:
-- The sentence that holds back its point. "You say nothing, and are thought to have said it very properly."
-- Passive and impersonal constructions for the county's opinion: "it is understood", "it is allowed on all sides", "he is said to have asked".
-- Litotes. "Not thought likely to part with it under the market rate."
-- The abstract noun given a job. "His civility", "her resolution", "the Doctor's indignation" may act as persons.
-- Prepositions the period preferred: upon, among, above (for more than), at the George, in the commission.
-- Old strong forms where they fall naturally: "you are woke", "had rose", "betted", "catched" in speech.
-- Semicolons, sparingly, to hold two facts against each other.
-
-Leave these: thee and thou outside dialect, "prithee", "forsooth", the long s, 'tis and 'twas in narration, and any sentence that could be read aloud in a pantomime. If it sounds like a costume, cut it.
-
-Rhythm: Austen and Cobbett both put a five-word sentence after a fifty-word one. Do that. Do not do it every time.
+1. Reduce the event to beats on a scrap: who, where, what is asked, each choice, what follows each choice, which flags and sums move. No phrases from the old text.
+2. Close the old text.
+3. Write from the beats. Ask what a person standing in the room would see and hear.
+4. Put the code back round it exactly as it was.
 
 ## Where the comedy goes
 
-Into fact. A sum, a measure, a date, the order in which a man lists his losses. "The hare might fetch three shillings" beside "the statute is five pounds, or three months" is the joke, and nobody has to make it.
+Into what people do and what things cost. Five pounds or three months, for a hare. Four shillings a week for thirteen weeks out of the rates. A miller holding his own hat with his own money in it.
 
-Rations, which the checker counts:
-- One simile to an event. Two if both are short. The period used them less than we do and preferred "as a man who" to "like a".
-- No more than one passage in three may end on a short punchline. Let the others stop on a gesture, a price, or something somebody did with their hat.
-- The ", which is" deflation ("which is how you know he is miserable") once in an event, and not in consecutive events.
-- No joke that needs the twentieth century to get it.
-
-Some outcomes should not be funny at all. The boy in the spring-gun is not, and was rightly left alone.
+One simile to an event, or none. Some outcomes should not be funny at all.
 
 ## Never
 
 - Em dashes or en dashes. Commas, semicolons, colons, full stops.
 - genuinely, straightforward, moreover, furthermore, "it is worth noting", and the rest of the checker's list.
-- The three-part list with a twist in the tail, more than once in an event. It is the commonest tic in the old text.
-- "Nobody sees the joke." "Everybody remembers." The narrator nudging. If it is funny they saw.
+- The hung clause, above.
+- The three-part list with a twist in the tail.
 - Paragraphs of equal length marching down the card.
 - Explaining a custom the characters would take for granted.
 - Americanisms and American spelling.
@@ -76,6 +91,7 @@ Some outcomes should not be funny at all. The boy in the spring-gun is not, and 
 
 ## Before you commit
 
+0. Did you write it from beats, with the old text shut?
 1. Which of the five hands is this in? If "narrator" for the fourth event running, find a letter or a bill in it.
 2. Read it aloud. Where you perform, cut.
 3. Check every sum against LEXICON.md and every title against who the person is.

@@ -47,8 +47,9 @@ function strings(code){ const out = []; const re = /`((?:[^`\\]|\\.)*)`/g; let m
   while ((m = re.exec(code))) if (/[a-z] [a-z]/.test(m[1]) && m[1].length > 60) out.push(m[1]);
   return out; }
 function sentences(s){ return s.replace(/\$\{[^}]*\}/g, 'x').split(/(?<=[.!?”])\s+/).filter(x => x.trim()); }
-function lastIsPunch(s){ const ss = sentences(s); if (ss.length < 3) return false;
-  const w = ss[ss.length - 1].trim().split(/\s+/).length; return w <= 6; }
+// The tail: a statement, a comma, then a comment hung on the end. The owner's chief complaint.
+const TAIL = /,\s+(and|but|which|who|whom|whose|as|though|so that|like|having|being|not|or)\b[^,;:]*[.!?]”?$/i;
+function tails(s){ const ss = sentences(s.replace(/“[^”]*”/g, 'Q')); return [ss.filter(x => TAIL.test(x.trim())).length, ss.length]; }
 
 let errors = 0; const rows = []; const tot = {events:0, simile:0, which:0, punch:0, strings:0, hind:0};
 for (const f of FILES) {
@@ -62,17 +63,17 @@ for (const f of FILES) {
     for (const b of BANNED) if (text.toLowerCase().includes(b)) { notes.push('ERROR banned: ' + b); errors++; }
     for (const a in ANACHRONISMS) { const re = new RegExp('\\b' + a, 'i'); if (re.test(text)) notes.push('period: "' + a + '". ' + ANACHRONISMS[a]); }
     const sim = (text.match(SIMILE) || []).length, wh = (text.match(WHICH) || []).length, hind = (text.match(HINDSIGHT) || []).length;
-    const punch = ss.filter(lastIsPunch).length;
-    if (idm) { tot.events++; tot.simile += sim; tot.which += wh; tot.punch += punch; tot.strings += ss.length; tot.hind += hind; }
+    let tl = 0, sn = 0; for (const x of ss) { const [a, b] = tails(x); tl += a; sn += b; }
+    if (idm) { tot.events++; tot.simile += sim; tot.which += wh; tot.punch += tl; tot.strings += sn; tot.hind += hind; }
     if (idm && sim > 2) notes.push('similes: ' + sim + ' (ration is one, two at a pinch)');
     if (idm && wh > 1) notes.push('", which is" deflations: ' + wh);
-    if (idm && ss.length >= 3 && punch > ss.length / 3) notes.push('short punchline closers: ' + punch + ' of ' + ss.length + ' passages');
+    if (idm && sn >= 8 && tl > sn / 6) notes.push('statement, comma, aside: ' + tl + ' of ' + sn + ' sentences end on a hung clause (keep it under one in six)');
     if (hind) notes.push('hindsight: the narrator knows the future ' + hind + ' time' + (hind > 1 ? 's' : ''));
     if (notes.length || showAll) rows.push([id, notes]);
   }
 }
 for (const [id, notes] of rows) { console.log(id); for (const n of notes) console.log('   ' + n); }
 console.log('\n' + tot.events + ' events. Per event: ' + (tot.simile / tot.events).toFixed(1) + ' similes, '
-  + (tot.which / tot.events).toFixed(1) + ' which-deflations, ' + Math.round(100 * tot.punch / tot.strings) + '% of passages end on a punchline, '
+  + (tot.which / tot.events).toFixed(1) + ' which-deflations, ' + Math.round(100 * tot.punch / tot.strings) + '% of sentences end on a hung clause, '
   + tot.hind + ' lapses into hindsight in all.');
 if (errors) { console.log(errors + ' hard error' + (errors > 1 ? 's' : '') + '.'); process.exit(1); }

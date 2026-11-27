@@ -80,15 +80,15 @@ const NEWS = {
 const VIGNETTES = [
   [ // spring
     `A late frost. The blossom on the orchard wall goes brown overnight and Mrs Bunce takes it as an omen, though she declines to say of what.`,
-    `In your pocket-book: “Rooks building high in the elms. Mudge says it is for a fine summer. He said so last year, and it rained from St Swithin to Michaelmas. I put him in mind of it, and he said the rooks had been deceived. Gave him 0. 1. 0.”`,
+    `In your pocket-book: “Rooks building in the tops of the elms. Mudge calls it the sign of a dry summer. Gave him 0. 1. 0. Sowed the last of the barley. Dined on a boiled leg of mutton and capers.”`,
     `Lambing on the Down. The shepherd has not slept in a bed for three weeks and has begun to answer questions in the voice he uses for ewes.`,
     `The rent audit dinner. Eleven farmers eat a round of beef between them and each explains, separately, that he alone is being ruined.`,
-    `In your pocket-book, against the 14th of April: “Heard the cuckoo in the Copse, the same day as last year. Mudge had a shilling of me upon it. Paid the mole-catcher his quarter, 0. 10. 6. Dined on a couple of rabbits smothered with onions, and a gooseberry tart.”`
+    `In your pocket-book: “April 14. Heard the cuckoo in the Copse at seven this morning. Paid the mole-catcher his quarter, 0. 10. 6. He shewed me 41 tails. A couple of rabbits smothered in onions for dinner, and a gooseberry tart.”`
   ],
   [ // summer
     `Haymaking. The whole parish is in Kennet Meadow with rakes, and the beer goes out to them in buckets. By evening nobody can say with certainty whose child is whose.`,
-    `In your pocket-book: “Sheep washed in the Lambourn, 900 and odd. To the washers, beer and bread and cheese as usual, and 0. 5. 0 among them. The shepherd an hour up to his middle, and very short with me after. Dined late, on cold lamb.”`,
-    `In your pocket-book: “Hatherley played Kintbury on the common for eleven pair of gloves, and lost them by 14 notches. The smith bowled very fast, and not at the wicket. Lost 0. 10. 6 to Mr Hartopp upon it, who does not understand the game and betted on the colour of the hats.”`,
+    `In your pocket-book: “Washed 900 sheep in the Lambourn. Beer, bread and cheese to the washers, and 0. 5. 0 between them. The shepherd stood to his middle in the river from six till noon. Sent him a glass of rum.”`,
+    `In your pocket-book: “Hatherley against Kintbury on the common, for eleven pair of gloves. Kintbury won by 14 notches. The smith bowled. He hit the wicket once and the Kintbury long-stop three times. Lost 0. 10. 6 to Mr Hartopp.”`,
     `Three weeks without rain. The pond shrinks to a green plate and something is found in the middle of it that your uncle was known to have lost in 1771.`,
     `A travelling show at Wyvern exhibits a Learned Pig that tells the time and picks out the greatest rogue in the company. It picks out Crabbe. Crabbe laughs longest.`
   ],
@@ -96,13 +96,13 @@ const VIGNETTES = [
     `Harvest home. The last load comes in with a boy on top of it dressed in ribbons, and you make the same speech your uncle made, because nobody would forgive a new one.`,
     `The gleaners are out on Long Barrow at first light, bent double, women and children in a line. A good gleaning family will carry home six bushels, and know to the ear who took more.`,
     `Wyvern Michaelmas Fair. Servants stand for hire in the market place: carters with whipcord in their hats, shepherds with a lock of wool, and one man with a turnip, whom nobody likes to ask.`,
-    `In your pocket-book: “1st October. Out with Mudge and the two spaniels. Four brace of pheasants and a hare. Mr Hartopp sent over to say that three of the birds had rose on his side of the hedge. Sent him a brace, with my compliments, and the hedge’s.”`,
-    `In your pocket-book: “A great mist in the combe. Mushrooms on the Down, of which Mrs Bunce made catchup, 11 bottles. Every copper in the parish boiling elderberries, and the smell of it as far as the church door. Recd of Farmer Dewey for half a year’s rent 62. 10. 0, and gave him back 0. 2. 6 for luck, as my uncle did.”`
+    `In your pocket-book: “October 1. Out at eight with Mudge and both spaniels. Four brace of pheasants, one hare. Three of the birds fell over Mr Hartopp’s hedge. His man came for them before we had reloaded. Let him have a brace.”`,
+    `In your pocket-book: “Thick mist in the combe till ten. Mushrooms all over the Down. Mrs Bunce made 11 bottles of catchup. Recd of Farmer Dewey half a year’s rent, 62. 10. 0. Gave him back 0. 2. 6 luck money. My uncle always did.”`
   ],
   [ // winter
-    `In your pocket-book: “Snow to the tops of the hedges, and no mail these nine days. Read prayers to the household in the hall, the church path not being cut. Sent a sack of coals and 0. 2. 6 to the Widow Harris. Find I do not want the newspaper so much as I had supposed.”`,
+    `In your pocket-book: “Snow level with the hedge tops. No mail for nine days. Read prayers in the hall, the church path being stopped. Sent a sack of coals and 0. 2. 6 to Widow Harris. Backgammon with H. in the evening. Lost 0. 1. 6.”`,
     `The mummers come to the Hall on Christmas Eve. Saint George is killed by the Turkish Knight and raised by the Doctor, who is the wheelwright, and drunk, and has to be raised himself.`,
-    `In your pocket-book: “Pig-killing week. A flitch in every chimney in the parish, and a bladder for the children to kick. We killed two here, 16 score the pair. Sent a spare-rib to the vicarage and the chitterlings to the lodge, and dined on the fry.”`,
+    `In your pocket-book: “Killed two pigs. 16 score the pair. Spare-rib to the vicarage, chitterlings to the lodge. A bladder to the Pryor children. They had kicked it into the carp pond by three o’clock. Dined on the fry.”`,
     `A hard frost. The carp pond bears, and the footmen skate on it after dark when they think the house is asleep.`,
     `Plough Monday. The plough boys drag a plough from door to door, asking for pennies, and drawing a furrow across the gravel of anyone who refuses. Your gravel is spared, at a price.`
   ]
