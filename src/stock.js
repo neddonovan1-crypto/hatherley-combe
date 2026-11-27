@@ -47,11 +47,13 @@ function stockHTML(calm){ let h = '';
   HERDS.forEach((g, gi) => { if ((g.on && !g.on()) || !ART.has('plan/s/' + g.s + '-walk.webp')) return; for (let i = 0; i < g.k; i++) h += stockEl(g.s, 'h' + gi + '.' + i); });
   ROADS.forEach((g, gi) => { if (!calm && ART.has('plan/s/' + g.s + '-walk.webp')) h += stockEl(g.s, 'r' + gi); });
   return h; }
-const stockEl = (s, id) => { const t = STRIPS[s]; return `<i class="stock" data-b="${id}" style="background-image:url(art/plan/s/${s}-walk.webp);background-size:${t.n * 100}% 100%;aspect-ratio:${(1 / t.r).toFixed(3)}"></i>`; };
+/* Each creature has two faces laid one upon the other, looking left and looking right, and only one is shown. Turning it by a transform made some browsers draw the strip afresh, and the beast went out for a moment as it turned. */
+const stockEl = (s, id) => { const t = STRIPS[s], face = `style="background-image:url(art/plan/s/${s}-walk.webp);background-size:${t.n * 100}% 100%"`; return `<i class="stock" data-b="${id}" style="aspect-ratio:${(1 / t.r).toFixed(3)}"><b ${face}></b><b class="r" ${face}></b></i>`; };
 const stockFar = y => .74 + y * .0042;
 function stockShow(el, t, x, y, frame, left, size, fade){ const st = el.style;
   st.left = x.toFixed(2) + '%'; st.top = y.toFixed(2) + '%'; st.width = (t.w * size).toFixed(2) + '%';
-  st.backgroundPositionX = (t.n > 1 ? frame / (t.n - 1) * 100 : 0) + '%'; st.transform = left ? '' : 'scaleX(-1)'; st.opacity = fade; st.visibility = 'visible'; }
+  const at = (t.n > 1 ? frame / (t.n - 1) * 100 : 0) + '%', a = el.firstChild.style, b = el.lastChild.style;
+  a.backgroundPositionX = at; b.backgroundPositionX = at; a.opacity = left ? 1 : 0; b.opacity = left ? 0 : 1; st.opacity = fade; st.visibility = 'visible'; }
 /* One beast: it grazes, lifts its head, walks to another spot on its own ground, puts its head down again. */
 function stockBeast(o, h, t, dt){
   if (!o.p || (o.key !== STOCK_KEY && !stockOK(o.p[0], o.p[1]))) { o.p = stockSpot(h); if (!o.p) return false; o.mode = 'nib'; o.t = rnd(0, 20); o.c = rnd(0, 9); o.left = Math.random() < .5; }
