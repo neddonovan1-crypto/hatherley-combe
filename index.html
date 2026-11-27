@@ -546,6 +546,7 @@ function beginSeason(){
   if (q === 0) { S.yearIncome = 0; if (!S.priceSeen.includes(y)) S.priceSeen.push(y); }
   estateSync();
   if (q === 0 || q === 2) rentDay(line);
+  ventureTick(line);
   if (q === 1) { const w = 100 + (F('merino') ? (y < 1811 ? 110 : 15) : 0) + (F('merinoRam') ? 15 : 0); line('The wool clip', w); S.yearIncome += w;
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
@@ -2464,7 +2465,7 @@ function addFarm(id, o){ if (farm(id) || S.farms.length >= MAX_FARMS) return nul
 const mortCap = () => S.mortCap || 9000;
 
 /* What makes one farm worth more than its acres: its order, the works done on it, the common gone. */
-function farmF(f){ let x = COND[f.cond] * (1 + 0.025 * Math.min(S.improve, 10));
+function farmF(f){ let x = COND[f.cond] * (f.mult || 1) * (1 + 0.025 * Math.min(S.improve, 10));
   if (f.common && F('enclosed')) x *= 1.3;
   if (f.id === 'kennet') x *= (F('newMill') ? 1.06 : 1) * (F('meadows') ? 1.08 : 1);
   return x; }
@@ -2686,6 +2687,82 @@ Long Barrow is sold by private treaty to Lord Cullerne’s agent for ${fmt(p)}. 
     {t:'Sell nothing.', go:() => { S.dead = 'ruin';
       return `Mr Tidmarsh rolls up the map. He says he is sorry for it. The writs are served on Thursday.`; }}
   ]});
+
+/* ---------- ventures: each can make him, and each can break him ---------- */
+const wageIdx = y => 0.55 + 0.45 * trail(y, 5) / 50;
+const vent = id => S.vent && S.vent[id];
+const live = id => vent(id) && !vent(id).ended;
+const VENTURES = {
+  plough:{ name:'Plough up the down', where:'Long Barrow', cost:250, if:() => !!farm('longbarrow'),
+    well:'The farm is worth a quarter more to let, from the first crop.', ill:'The shepherd says there are seven crops in that turf and no more.',
+    begin:() => { farm('longbarrow').mult = 1.25; }, state:v => 'In corn since ' + v.year,
+    endLabel:'Lay it down to grass', endCost:300, end:v => { const lb = farm('longbarrow'); v.heal = S.year + 5; if (lb) lb.mult = S.year - v.year > 7 ? 0.8 : 1;
+      return `The down at Long Barrow is sown with sainfoin and rye-grass. The shepherd says it will be five years before it carries a flock.`; }},
+  merino:{ name:'Merinos', where:'The home farm', cost:420, if:() => S.year >= 1800,
+    well:'Fine wool worth £110 more at each clip, and rams that sell to gentlemen.', ill:'The price of a ram is whatever gentlemen will give this year.',
+    begin:() => { fl('merino'); }, state:v => 'A flock since ' + v.year,
+    endLabel:'Sell the flock', end:() => { const y = S.year, p = y <= 1805 ? 400 : y <= 1810 ? 400 + 200 * (y - 1805) : 60; fl('merino', false); S.money += p;
+      return `The merino flock is sold at Reading. It makes ${fmt(p)}.`; }},
+  peat:{ name:'Cut the peat', where:'Kennet Bottom', cost:300, if:() => !!farm('kennet'),
+    well:'About £170 a year in peat and ashes, for nine years or ten.', ill:'The peat lies under the best of the meadow.', state:v => 'Digging since ' + v.year },
+  forage:{ name:'Forage for the barracks', where:'The estate', cost:200, if:() => S.year < 1814,
+    well:'£130 a year, as long as there is cavalry at Reading.', ill:'The contract binds you to deliver at the price agreed, in peace or war.', state:v => 'Under contract since ' + v.year,
+    endLabel:'Give up the contract', end:() => `The forage contract is given up. The commissary has found a man at Theale.` },
+  thresher:{ name:'A threshing machine', where:'The home farm', cost:120, if:() => S.year >= 1803 && !F('thresher'),
+    well:'Saves about £50 a year in winter wages.', ill:'Six men thresh in your barn from Martinmas to Lady Day. They have no other work.',
+    begin:() => { fl('thresher'); add({goodwill:-4}); }, state:v => 'In the great barn since ' + v.year },
+  bank:{ name:'A partner’s share in the Wyvern Bank', where:'The estate', cost:1000,
+    well:'Fifteen per cent, and a seat in the bank parlour.', ill:'Every partner answers for the notes with all he has.', state:v => 'A partner since ' + v.year,
+    endLabel:'Withdraw from the bank', canEnd:() => !moneyTight(S.year), endWhy:'No partner can be let go while money is tight.',
+    end:() => { S.money += 1000; return `You have withdrawn from the Wyvern Bank. Mr Tidmarsh repays the £1,000 and takes your name off the notes.`; }},
+  spa:{ name:'The Hatherley Spa', where:'The estate', cost:1800,
+    well:'If the waters take, £300 a year rising to £750.', ill:'Bath is thirty miles off, and Cheltenham had the King.',
+    begin:v => { const r = Math.random(); v.fate = r < 0.3 ? 'hit' : r < 0.8 ? 'dull' : 'flop'; }, state:v => 'A pump room since ' + v.year,
+    endLabel:'Shut the pump room', end:() => `The pump room is shut and the attendant paid off. The spring runs into the ditch as before.` }
+};
+function venturesList(){ const open = S.phase !== 'end' && !S.dead;
+  return Object.keys(VENTURES).map(id => { const d = VENTURES[id], v = vent(id), state = !v ? 'open' : v.ended ? 'ended' : 'inHand';
+    let why = ''; if (state === 'open') { if (!open) why = 'The books are closed.'; else if (d.if && !d.if()) why = 'Not to be had at present.'; else if (S.money < d.cost) why = 'The purse will not stand ' + fmt(d.cost) + '.'; }
+    const canEnd = open && state === 'inHand' && !!d.end && (!d.canEnd || d.canEnd()) && S.money >= (d.endCost || 0);
+    return {id, name:d.name, where:d.where, cost:d.cost, well:d.well, ill:d.ill, state, can:state === 'open' && !why, why,
+      note:state === 'inHand' ? d.state(v) : state === 'ended' ? (v.how || 'Given up') + ', ' + v.ended : '',
+      canEnd, endLabel:state === 'inHand' && d.end ? d.endLabel + (d.endCost ? ', ' + fmt(d.endCost) : '') : '', endWhy:state === 'inHand' && d.end && !canEnd && d.canEnd && !d.canEnd() ? d.endWhy : ''}; }); }
+function beginVenture(id){ const x = venturesList().find(v => v.id === id); if (!x || !x.can) return false; const d = VENTURES[id];
+  S.vent = S.vent || {}; const v = S.vent[id] = {year:S.year, t:S.t}; S.money -= d.cost; if (d.begin) d.begin(v);
+  S.journal.unshift({when:stamp(), title:'Ventures', did:'Ventured ' + fmt(d.cost) + ': ' + d.name}); save(); render(); return true; }
+function endVenture(id){ const x = venturesList().find(v => v.id === id); if (!x || !x.canEnd) return false; const d = VENTURES[id], v = vent(id);
+  S.money -= d.endCost || 0; v.ended = S.year; v.how = d.endLabel; const said = d.end(v);
+  S.journal.unshift({when:stamp(), title:'Ventures', did:d.endLabel + '. ' + said}); save(); render(); return true; }
+function stopVenture(id, how){ const v = vent(id); v.ended = S.year; v.how = how; }
+
+/* The quarter's reckoning of every venture in hand. */
+function ventureTick(line){ if (!S.vent) return; const y = S.year, q = S.season, n = id => y - vent(id).year, st = steward(), earn = (label, a) => { line(label, a); if (a > 0) S.yearIncome += Math.round(a); };
+  const lb = farm('longbarrow'), kb = farm('kennet');
+  if (vent('plough') && lb && q === 0) { const v = vent('plough');
+    if (!v.ended) { lb.mult = n('plough') <= 7 ? 1.25 : 0.7; if (n('plough') === 8) S.notes.push(`The wheat on the down at Long Barrow has come up thin and yellow. ${st} has taken near half off his valuation of the farm.`); }
+    else if (lb.mult !== 1 && y >= v.heal) { lb.mult = 1; S.notes.push('There are sheep on the down at Long Barrow again.'); } }
+  if (live('merino') && q === 1 && y >= 1806 && y <= 1810 && n('merino') >= 1) earn('Merino rams sold at the shearing', 150);
+  if (live('merino') && !F('merino')) stopVenture('merino', 'The flock gone');
+  if (live('peat') && q === 2 && n('peat') >= 1) { if (n('peat') <= 9) earn('Peat and ashes from Kennet Bottom', 170 * (0.8 + 0.4 * Math.random()));
+    else { stopVenture('peat', 'Dug out'); if (kb && !F('meadows')) kb.cond = Math.max(0, kb.cond - 1);
+      S.notes.push(`The peat at Kennet Bottom is dug out. Forty acres of the old meadow are water and rushes.${F('meadows') ? ' The floated meadows above are untouched.' : ''}`); } }
+  if (live('forage') && q === 3 && n('forage') >= 1) {
+    if (y === 1802 || y === 1814) { line('Forage left on hand at the peace', -220); S.notes.push('The cavalry have marched out of Reading barracks. The hay bought for them is sold at Newbury for what it will fetch.'); if (y === 1814) stopVenture('forage', 'Ended with the war'); }
+    else if (chance(0.1)) { line('Forage refused by the commissary', -60); S.notes.push('The commissary has refused two loads of hay as mouldy.'); }
+    else earn('Forage contract, Reading barracks', 130); }
+  if (live('thresher') && q === 3) { earn('Wages saved by the threshing machine', 45 * wageIdx(y));
+    if (y >= 1811 && S.goodwill < 45 && chance(0.25)) { stopVenture('thresher', 'Broken and burnt'); line('The great barn, and the machine in it', -300); add({goodwill:-2});
+      S.notes.push('The threshing machine was broken up in the night and the great barn fired. Nobody in Hatherley saw anything.'); } }
+  if (live('bank')) { const v = vent('bank');
+    if (q === 3) { earn('Share of profits, Wyvern Bank', 150); add({standing:1}); }
+    if (q === 1 && ((y === 1797 && chance(0.2)) || (y === 1810 && chance(0.15))) && v.year < y) { line('Paid in to meet a run on the Wyvern Bank', -500); S.notes.push('There was a run on the Wyvern Bank on Saturday. Each partner has paid in £500 to meet it.'); }
+    if (q === 2 && y === 1815 && chance(0.45)) { const c = 1500 + Math.round(Math.random() * 25) * 100; stopVenture('bank', 'The bank broke'); line('Call on the partners of the Wyvern Bank', -c); add({standing:-8});
+      S.notes.push(`The Wyvern Bank stopped payment on Tuesday. The shutters are up and there is a crowd in the market place holding its notes. Your share of ${fmt(1000)} is gone and the partners are called on for ${fmt(c)} each.`); } }
+  if (live('spa') && q === 2 && n('spa') >= 1) { const v = vent('spa'), k = n('spa');
+    if (v.fate === 'hit') { earn('Hatherley Spa, the season', Math.min(750, 300 + 75 * (k - 1))); if (k === 1) { add({standing:4}); S.notes.push('A physician at Bath has published a pamphlet on the Hatherley waters. Eleven families have taken lodgings in the village for the season.'); } }
+    else if (v.fate === 'dull') { earn('Hatherley Spa, the season', 90); if (k === 1) S.notes.push('The pump room at Hatherley Spa took £90 this season. Most of it came from Wyvern people on Sundays.'); }
+    else { line('Hatherley Spa, the attendant and the fires', -60); if (k === 1) S.notes.push('Nine persons drank the waters at Hatherley Spa this season. One of them has written to the Mercury about the taste.'); } }
+}
 const ART = new Set(['frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/persons.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png']);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
