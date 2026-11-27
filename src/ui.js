@@ -29,13 +29,15 @@ function sceneSVG(q){ const C = [['#cddfdd','#b6cc9c','#98b97f','#7c9f69'], ['#c
     <path d="M0 192C160 166 300 186 430 179S620 170 700 186V260H0Z" fill="${C[2]}" stroke="${k}" stroke-width="1"/>
     <path d="M40 214c120-14 220 6 330-2s200-16 300-4" fill="none" stroke="${k}" stroke-width=".8" stroke-dasharray="2 5"/>
     ${tree(112, 206, 1.6)}${tree(176, 196, 1.1)}${tree(528, 192, 1.25)}${tree(612, 208, 1.75)}</svg>`; }
-function plateHTML(q, src, cap){ return `<figure class="plate">${sceneSVG(q)}${pic(src, cap)}</figure>`; }
+const platePic = (src, cap) => { const u = artURL(src); return u ? `<img src="${u}" alt="${esc(cap || '')}" onerror="this.parentNode.classList.remove('has');this.remove()">` : ''; };
+function plateHTML(q, src, cap){ const i = platePic(src, cap); return `<figure class="plate${i ? ' has' : ''}">${sceneSVG(q)}${i}</figure>`; }
+[0, 1, 2, 3].forEach(i => { const u = artURL('seasons/' + i); if (u) new Image().src = u; });
 
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
   if (!S) { LEAF = -1; stage.classList.remove('turn');
-    stage.innerHTML = `<figure class="plate band">${sceneSVG(1)}${pic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
+    stage.innerHTML = `<figure class="plate band${artURL('frontispiece') ? ' has' : ''}">${sceneSVG(1)}${platePic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
     const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
     $('verso').innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>'; $('verso').appendChild(told);
     $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
