@@ -4,7 +4,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1;
-const TABS = [['accounts', 'Accounts'], ['works', 'Works'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
+const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
@@ -136,6 +136,8 @@ function meter(label, v, words){ return `<div class="meter${v < 40 ? ' low' : ''
 
 function versoHTML(){
   const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
+  if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll</h2>` + farmsHTML();
+  if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures</h2>` + venturesHTML();
   if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2>` + worksHTML();
   if (TAB === 'persons') return head + `<h2 class="qtitle">Persons of Consequence</h2>` + peopleHTML();
   if (TAB === 'wheat') return head + `<h2 class="qtitle">Wheat at Wyvern Market</h2>` + chartHTML();
@@ -160,6 +162,29 @@ function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state 
     ${open.length ? `<h3>That might be put in hand</h3>${common ? `<p class="note bad">${esc(common)}</p>` : ''}<ul class="works">${open.map(w => `<li><div><b>${esc(w.name)}</b><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div>
       <small>${esc(w.note)}. ${esc(w.gain)}.</small><q>${esc(w.blurb)}</q>${w.why && !common ? `<small class="why">${esc(w.why)}</small>` : ''}</li>`).join('')}</ul>` : ''}
     ${done.length ? `<h3>Finished</h3><ul class="works done">${done.map(w => `<li><div><b>${esc(w.name)}</b></div></li>`).join('')}</ul>` : ''}`; }
+
+/* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
+const DRAFT_FARMS = [
+  {name: 'Long Barrow', land: 'Down and sheepwalk', acres: 600, tenant: 'Abigail Thorne', rent: 540, held: 'On lease, falling in 1802'},
+  {name: 'Kennet Bottom', land: 'Wet clay, with the mill', acres: 500, tenant: 'Widow Harris', rent: 470, held: 'At will. Neglected'},
+  {name: 'Church Farm', land: 'Strips in the open field', acres: 550, tenant: 'Not yet let', rent: 610, held: 'At will'}];
+const DRAFT_VENTURES = [
+  {name: 'Plough up the down', where: 'Long Barrow', cost: 250, well: 'The farm lets a quarter higher, at once.'},
+  {name: 'Merinos', where: 'The home farm', cost: 420, well: 'Wool worth £110 more a year, and rams at fancy prices.'},
+  {name: 'Cut the peat', where: 'Kennet Bottom', cost: 300, well: 'About £170 a year in peat and ashes.'},
+  {name: 'Forage for the barracks', where: 'The estate', cost: 200, well: '£130 a year, as long as there is cavalry at Reading.'},
+  {name: 'A threshing machine', where: 'The home farm', cost: 120, well: 'Saves about £50 a year in wages.'},
+  {name: 'A partner’s share in the Wyvern Bank', where: 'The estate', cost: 1000, well: 'Fifteen per cent, and a seat in the bank parlour.'},
+  {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
+const DRAFT_NOTE = '<p class="fine">A specimen leaf. These figures come from the new economy’s design and do not yet touch the accounts.</p>';
+function farmsHTML(){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sum = list.reduce((a, f) => a + f.rent, 0);
+  return `${live ? '' : DRAFT_NOTE}<table class="acct roll"><thead><tr><th>Farm and tenant</th><th class="n">Acres</th><th class="n l">£ a year</th></tr></thead><tbody>
+    ${list.map(f => `<tr><td>${esc(f.name)}<small>${esc(f.land)}. ${esc(f.tenant)}.</small><em>${esc(f.held)}</em></td><td class="n">${f.acres}</td><td class="n l">${f.rent}</td></tr>`).join('')}
+    <tr class="total"><td>The rental</td><td class="n">${list.reduce((a, f) => a + f.acres, 0)}</td><td class="n l">${sum.toLocaleString('en-GB')}</td></tr></tbody></table>
+    <p class="fine">Room on the estate for ${list.length < 5 ? ['', 'four', 'three', 'two', 'one'][list.length] + ' more' : 'no more'}. Five farms is as far as Hatherley goes.</p>`; }
+function venturesHTML(){ const live = typeof venturesList === 'function', list = live ? venturesList() : DRAFT_VENTURES;
+  return `${live ? '' : DRAFT_NOTE}<p class="fine">Works are sound. These are the other kind.</p><ul class="works">${list.map(v => `<li><div><b>${esc(v.name)}</b>${live && v.id ? `<button class="inkbtn" onclick="beginVenture('${v.id}')" ${v.can ? '' : 'disabled'}>Venture ${fmt(v.cost)}</button>` : `<span class="cost">${fmt(v.cost)}</span>`}</div>
+    <small>${esc(v.where)}</small><q>${esc(v.well)}</q></li>`).join('')}</ul>`; }
 
 function peopleHTML(){
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id]; const note = c.notes[c.notes.length - 1];
