@@ -355,3 +355,5 @@ table.acct tbody tr:not(.neg) td.n{color:var(--good)}
 .bal.purse{gap:8px 20px;flex-wrap:nowrap} .bal.purse dd{font-size:clamp(1.7rem,2.6vw,2.4rem);white-space:nowrap} .bal .creditbox button{font-size:.94rem;white-space:nowrap;padding:3px 8px}
 @media (max-width:520px){ .bal.purse{flex-wrap:wrap} }
 .people small{white-space:normal;overflow:visible;text-overflow:clip}
+details.pick .opts button small i{display:block;font-style:normal;font-family:var(--display);font-size:.92rem;line-height:1.25} details.pick .opts button small i.pos{color:var(--good)} details.pick .opts button small i.neg{color:var(--bad)}
+details.pick .opts{max-height:min(24rem, 70vh)}
