@@ -16,7 +16,7 @@ function kittyRole(){ const k = S.flags.kitty || 'free';
   if (k === 'dubreuil') return 'Madame Dubreuil, near Saint-Malo';
   return 'Your daughter, ' + (17 + S.year - 1795) + (F('kittyBotanist') ? ', botanist' : ''); }
 function edmundRole(){ const e = S.flags.edmund, y = S.year;
-  if (F('edmundDead')) return 'Killed at Waterloo, June 1815';
+  if (F('edmundDead')) return S.flags.edmundRoleDead || 'Killed at Waterloo, June 1815';
   if (!e) return 'Your son, ' + (19 + y - 1795);
   if (e === 'army') return (F('major') ? 'Major' : y < 1800 ? 'Ensign' : y < 1807 ? 'Lieutenant' : 'Captain') + ', 52nd Foot';
   if (e === 'navy') return (y < 1801 ? 'Master’s mate' : y < 1811 ? 'Lieutenant' : 'Commander') + ', Royal Navy';
@@ -161,6 +161,7 @@ function beginSeason(){
   if (F('wages')) line('Home farm wages above the common rate', -30);
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
+  if (F('kittyAllowance') && q === 0) line('Mrs Vane, her allowance', -80);
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
   if (q === 3) {
@@ -821,13 +822,17 @@ function reckoning(){
     : `Among the gentry he is asked to the large parties.`);
   if (F('mp')) P.push(`He sits for the borough of Wyvern. He has spoken in the House twice. The second time he had risen to leave.`);
   // children
-  const kl = {vane:`His daughter is Mrs Vane. ${F('kittySettled') ? 'She lives at Northampton on forty pounds a year. Her husband cannot touch it.' : 'She follows the Captain from garrison to garrison. His creditors follow one town behind.'}`,
+  const kl = {vane:F('kittyAllowance') ? `His daughter is Mrs Vane. She keeps a school for young ladies over the stationer’s at Wyvern. The Captain is believed to be in Dublin.` : F('kittyNorthampton') ? `His daughter is Mrs Vane. She makes lace at Northampton with the Captain’s mother. Her boy is at the Hall.` : `His daughter is Mrs Vane. ${F('kittySettled') ? 'She lives at Northampton on forty pounds a year. Her husband cannot touch it.' : 'She follows the Captain from garrison to garrison. His creditors follow one town behind.'}`,
     pinch:F('kittyManumit') ? `His daughter is the widow of Mr Pinch of Bristol. She has given freedom to three hundred persons in Jamaica. It took the greater part of her fortune. Clifton thinks her out of her mind. Hatherley thinks her the pick of the family.` : F('kittyWidow') ? `His daughter is the widow of Mr Pinch of Bristol. She is very rich. She does not say where the money came from.` : `His daughter is Mrs Pinch, of Clifton. She keeps two carriages.`,
     oakes:`His daughter married the ${F('oakesVicar') ? 'curate. He is now the vicar' : 'curate. He is the curate still'}. She has five children and no carriage. She has not once said she is sorry.`,
     dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
     free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
   P.push(kl[k]);
-  if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
+  if (F('crimcon')) P.push(`The case of ${S.sur} against the Earl of Cullerne is in the law reports. Mrs ${S.sur} lives at Hatherley. They dine together.`);
+  if (S.flags.heir === 'kitty') P.push(`The land is settled on his daughter.`);
+  if (S.flags.heir === 'cousin') P.push(`The heir is a button-maker of Birmingham. He has asked twice about the chimneys.`);
+  if (F('edmundDead') && S.flags.edmundTomb) P.push(S.flags.edmundTomb);
+  else if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
   else if (e === 'army') P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur}, ${S.flags.edmundFate || 'served through the Peninsula'}. He is home on half-pay. He has the Volunteers’ old serjeant out on the lawn at six, learning the new drill.`);
   else if (e === 'navy') P.push(`His son commands a sloop of war. She is laid up. He is ashore at Hatherley. He walks the terrace eight paces each way.`);
   else if (e === 'church') P.push(F('edmundVicar') ? `His son is vicar of the parish. His sermons are twelve minutes.` : `His son is in orders, in Hampshire. He writes on Sundays.`);

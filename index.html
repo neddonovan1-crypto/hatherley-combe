@@ -667,7 +667,7 @@ function kittyRole(){ const k = S.flags.kitty || 'free';
   if (k === 'dubreuil') return 'Madame Dubreuil, near Saint-Malo';
   return 'Your daughter, ' + (17 + S.year - 1795) + (F('kittyBotanist') ? ', botanist' : ''); }
 function edmundRole(){ const e = S.flags.edmund, y = S.year;
-  if (F('edmundDead')) return 'Killed at Waterloo, June 1815';
+  if (F('edmundDead')) return S.flags.edmundRoleDead || 'Killed at Waterloo, June 1815';
   if (!e) return 'Your son, ' + (19 + y - 1795);
   if (e === 'army') return (F('major') ? 'Major' : y < 1800 ? 'Ensign' : y < 1807 ? 'Lieutenant' : 'Captain') + ', 52nd Foot';
   if (e === 'navy') return (y < 1801 ? 'Master’s mate' : y < 1811 ? 'Lieutenant' : 'Commander') + ', Royal Navy';
@@ -812,6 +812,7 @@ function beginSeason(){
   if (F('wages')) line('Home farm wages above the common rate', -30);
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
+  if (F('kittyAllowance') && q === 0) line('Mrs Vane, her allowance', -80);
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
   if (q === 3) {
@@ -1472,13 +1473,17 @@ function reckoning(){
     : `Among the gentry he is asked to the large parties.`);
   if (F('mp')) P.push(`He sits for the borough of Wyvern. He has spoken in the House twice. The second time he had risen to leave.`);
   // children
-  const kl = {vane:`His daughter is Mrs Vane. ${F('kittySettled') ? 'She lives at Northampton on forty pounds a year. Her husband cannot touch it.' : 'She follows the Captain from garrison to garrison. His creditors follow one town behind.'}`,
+  const kl = {vane:F('kittyAllowance') ? `His daughter is Mrs Vane. She keeps a school for young ladies over the stationer’s at Wyvern. The Captain is believed to be in Dublin.` : F('kittyNorthampton') ? `His daughter is Mrs Vane. She makes lace at Northampton with the Captain’s mother. Her boy is at the Hall.` : `His daughter is Mrs Vane. ${F('kittySettled') ? 'She lives at Northampton on forty pounds a year. Her husband cannot touch it.' : 'She follows the Captain from garrison to garrison. His creditors follow one town behind.'}`,
     pinch:F('kittyManumit') ? `His daughter is the widow of Mr Pinch of Bristol. She has given freedom to three hundred persons in Jamaica. It took the greater part of her fortune. Clifton thinks her out of her mind. Hatherley thinks her the pick of the family.` : F('kittyWidow') ? `His daughter is the widow of Mr Pinch of Bristol. She is very rich. She does not say where the money came from.` : `His daughter is Mrs Pinch, of Clifton. She keeps two carriages.`,
     oakes:`His daughter married the ${F('oakesVicar') ? 'curate. He is now the vicar' : 'curate. He is the curate still'}. She has five children and no carriage. She has not once said she is sorry.`,
     dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
     free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
   P.push(kl[k]);
-  if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
+  if (F('crimcon')) P.push(`The case of ${S.sur} against the Earl of Cullerne is in the law reports. Mrs ${S.sur} lives at Hatherley. They dine together.`);
+  if (S.flags.heir === 'kitty') P.push(`The land is settled on his daughter.`);
+  if (S.flags.heir === 'cousin') P.push(`The heir is a button-maker of Birmingham. He has asked twice about the chimneys.`);
+  if (F('edmundDead') && S.flags.edmundTomb) P.push(S.flags.edmundTomb);
+  else if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
   else if (e === 'army') P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur}, ${S.flags.edmundFate || 'served through the Peninsula'}. He is home on half-pay. He has the Volunteers’ old serjeant out on the lawn at six, learning the new drill.`);
   else if (e === 'navy') P.push(`His son commands a sloop of war. She is laid up. He is ashore at Hatherley. He walks the terrace eight paces each way.`);
   else if (e === 'church') P.push(F('edmundVicar') ? `His son is vicar of the parish. His sermons are twelve minutes.` : `His son is in orders, in Hampshire. He writes on Sundays.`);
@@ -4244,7 +4249,7 @@ His next letter is to her.`
 Henrietta has taken to dining with a book. She lays it open between the two of you and reads it.`; }}
   ]});
 
-ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home', title:'Edmund and the Volunteers',
+ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home' && !F('edmundDead'), title:'Edmund and the Volunteers',
   text:() => `Edmund is rising thirty. He knows every field on the estate and what it let for in 1790.
 
 The war has begun again. Two of his schoolfellows are at sea. One is at Malta. Edmund reads the Gazette at breakfast and leaves his egg.
@@ -4880,7 +4885,7 @@ She draws it from the leads with the naked eye, every clear night for nine weeks
 
 Henrietta finds the drawings. She says they would make a pretty screen.`},
   /* Mrs Vane */
-  {id:'kitty-vane-bailiff', kind:'want', sum:60, w:() => K() === 'vane', x:() => `A letter from Kitty. It is dated from lodgings in ${['Sunderland', 'Colchester', 'Weymouth'][S.t % 3]}.
+  {id:'kitty-vane-bailiff', kind:'want', sum:60, w:() => K() === 'vane' && !F('vaneGone'), x:() => `A letter from Kitty. It is dated from lodgings in ${['Sunderland', 'Colchester', 'Weymouth'][S.t % 3]}.
 
 “My dear Papa, The Captain has had a misfortune at cards. There is a bailiff sitting in the passage. He is a very civil man. I have given him tea. He says sixty pounds would take him out of the house, and that he has known cases a great deal worse. I am quite well.”`,
     a:() => `You send the sixty pounds to Kitty by name.
@@ -4898,10 +4903,10 @@ The Colonel does not answer. The bailiff takes the thirty and the Captain’s se
 There is no answer for a quarter. Then four lines. They have moved. She does not say where from.
 
 The direction is care of a pastry-cook.`},
-  {id:'kitty-vane-march', kind:'news', w:() => K() === 'vane', x:() => `A letter from Kitty.
+  {id:'kitty-vane-march', kind:'news', w:() => K() === 'vane' && !F('vaneGone'), x:() => `A letter from Kitty.
 
 “My dear Papa, The Regiment has marched again. This is my eleventh lodging. I can pack everything we own in forty minutes. The Captain is on the recruiting service and is a great success at fairs. I have learnt to make a pudding without eggs and a fire without coals. ${F('kittySettled') ? 'The forty pounds came at Lady Day. I have not told him which day it comes.' : 'Do not send money to him. If you send any, send it to me.'}”`},
-  {id:'kitty-vane-child', kind:'news', w:() => K() === 'vane' && S.year >= 1800, x:() => `A letter from Kitty.
+  {id:'kitty-vane-child', kind:'news', w:() => K() === 'vane' && S.year >= 1800 && !F('vaneGone') && !F('kittyDoor'), x:() => `A letter from Kitty.
 
 “My dear Papa, You have a grandson. He was born on Tuesday in a room over a saddler’s. The Captain was at Newmarket. The Surgeon of the Regiment came, and the Colonel’s lady sent a fowl. He is to be Edmund Barnaby. He has your uncle’s nose. I looked for anybody else’s and could not find it.”`},
   /* Mrs Pinch */
@@ -5858,6 +5863,445 @@ The organ is lost by seven to four. The vestry votes the blacksmith five shillin
 On Sunday the band play the people out to “Rule, Britannia”. ${vicar()} waits in the vestry until they have done.`; }}]}
 ];
 pooled('county', COUNTY, 'cty', {from:1797, to:1815, weight:6, repeatGap:3});
+
+/* ---- Henrietta and the Earl ----
+   Three papers. henSongs wanders in when she is cool towards him; henPorch and henRichmond follow by the queue
+   unless the matter is mended. She is always back under his roof at the end of it, so every other paper holds. */
+ev({ id:'henSongs', from:1799, to:1810, weight:4, cond:() => !F('henA') && (S.chars.henrietta.r <= 1 || S.family < 50), title:'Six Italian Songs',
+  text:() => `Henrietta has dined at the Castle twice this month. You were not asked. The first time was to make up the old Countess’s table at whist. Nobody has said what the second was for.
+
+On Thursday the Castle groom brings a parcel. Six Italian songs, bound in green. “Lord Cullerne’s compliments to Mrs ${S.sur}.”
+
+She has not sung since Kitty was born. She is at the instrument before breakfast. She has done her hair a new way. Mrs Tamworth remarked it in church.`,
+  choices:[
+    {t:'Say nothing. It is a book of songs.', go:() => { fl('henA'); later('henPorch', 3);
+      return `You say nothing.
+
+She sings in the mornings. On Tuesdays the Castle carriage fetches her to the old Countess’s whist. The old Countess is eighty-one. She has been deaf since the American war.
+
+Mudge mentions that his lordship’s grey has stood three afternoons at the keeper’s lodge in Hatherley Copse. He mentions it while looking down a gun barrel.`; }},
+    {t:'Take her to London for the season.', note:'£300', go:() => { fl('henA'); add({money:-300, family:6}); reg('henrietta',2,'You gave her a season in Wimpole Street');
+      const mended = chance(0.7); if (mended) fl('henMended'); else later('henPorch', 4);
+      return `A house in Wimpole Street for ten weeks. Three hundred pounds. The opera twice. Mrs Siddons. A rout where four hundred people stood on the stairs.
+
+Henrietta is asked everywhere once. You go with her. You stand behind her chair.
+
+The green book stayed at Hatherley on the instrument. There is dust on it when you come home.${mended ? ' She puts it in the canterbury with the old music.' : '\n\nA second parcel is on the hall table. It is the same size.'}`; }},
+    {t:'Send the songs back.', go:() => { fl('henA'); add({family:-3}); reg('henrietta',-2,'You sent back the Earl’s songs'); reg('cullerne',-1); later('henPorch', 2);
+      return `The green book goes back to the Castle by Mudge. You write the note yourself. “Mrs ${S.sur} has no occasion for them.”
+
+Henrietta watches Mudge down the drive from the drawing-room window. She shuts the instrument. She turns the key and puts it in her pocket.
+
+She does not sing. On Tuesday the Castle carriage comes for her as before. She gets into it.`; }}
+  ]});
+
+ev({ id:'henPorch', follow:true, cond:() => F('henA') && !F('henMended'), title:'What Mrs Tamworth Saw',
+  text:() => `Mrs Tamworth stops you in the church porch. She has her hand on your sleeve.
+
+“I should not say it. I was at Speenhamland on Wednesday, at the Pelican. The Castle chariot was in the yard with the blinds down. A lady went up the back stairs in a grey veil. I know the veil. I gave it her.”
+
+At home there is a sheet of blotting paper on Henrietta’s writing-table. You hold it to the glass.
+
+“Thursday, if he rides to Sessions.”
+
+Thursday is Sessions.`,
+  choices:[
+    {t:'Speak to her tonight.', go:() => {
+      if (S.chars.henrietta.r >= 0 || S.family >= 50) { fl('henMended'); add({family:-6}); reg('henrietta',1); reg('cullerne',-1);
+        return `You speak when the servants are gone up. You hold out the blotting paper.
+
+She looks at it a long time.
+
+“He listens when I speak. You have not asked me a question since the year Edmund went to school.”
+
+She writes one line to the Castle. She gives it to you unsealed. It goes by Mudge. On Thursday you do not ride to Sessions. You ask her eleven questions at breakfast. She answers four.`; }
+      add({family:-8}); reg('henrietta',-1); later('henRichmond', 2);
+      return `You speak when the servants are gone up. You hold out the blotting paper.
+
+“He listens when I speak,” she says.
+
+She will not write to the Castle. She will not be examined in her own dressing-room. The door is shut. You hear the key.
+
+On Thursday you ride to Sessions. You sit six hours on the bench. You do not hear a case.`; }},
+    {t:'Call him out.', go:() => { fl('henMended'); reg('cullerne',-4,'You met him on the Down at twelve paces'); const r = Math.random();
+      const open = `Mr Hartopp carries your note to the Castle in his best coat. He brings back the Earl’s answer. He has left a pamphlet there on the Swedish turnip.
+
+Six in the morning on the Down, at twelve paces.
+
+`;
+      if (r < 0.3) { add({standing:4, family:-4});
+        return open + `Your ball takes Lord Cullerne in the right arm above the elbow. His goes into the turf. He bows, with his left hand on the place.
+
+The surgeon has the ball out on the grass. The Earl goes to Brighton until Christmas for his health.
+
+Henrietta is told at breakfast. She puts down her cup. “Which of you?” she says.`; }
+      if (r < 0.75) { add({standing:2, family:-4});
+        return open + `You fire. A lark goes up. The Earl fires into the air. He says he has no quarrel with Mr ${S.sur} and regrets extremely any misapprehension.
+
+Hartopp declares honour satisfied. He says it twice.
+
+On Tuesday the Castle carriage does not come. Henrietta sits at the window with her bonnet on until noon. Then she takes it off.`; }
+      add({standing:1, family:3, money:-40}); reg('henrietta',1);
+      return open + `The Earl’s ball goes through the flesh of your thigh. Yours breaks a flint. You sit down on the grass.
+
+Ferris takes you home in the Castle chariot. It is the only carriage on the Down. The cushions are grey.
+
+Six weeks on a sofa and forty pounds to Ferris. Henrietta nurses you herself. She does not go out on Tuesdays. Neither of you says why.`; }},
+    {t:'Ride to Sessions on Thursday.', go:() => { add({family:-4}); later('henRichmond', 2);
+      return `On Thursday you ride to Sessions. You commit a man for stealing two fowls. You dine with the bench. You ride home by the long road.
+
+Her lamp is lit when you come in. She asks who was at Sessions.
+
+You tell her who was not.`; }}
+  ]});
+
+ev({ id:'henRichmond', follow:true, cond:() => F('henA') && !F('henMended'), title:'The Blue Room',
+  text:() => `Henrietta’s maid brings your shaving water. The footman should have brought it.
+
+“My mistress went at six, sir. In a post-chaise from the Bell. She took the dressing-case and the green book.”
+
+There is a letter on the pincushion. “I am at Richmond. Do not send Kitty to me. H.”
+
+Lord Cullerne has taken a house on Richmond Hill by the quarter. It is known in Wyvern by noon. It will be known in Reading by Sunday.`,
+  choices:[
+    {t:'Bring an action for criminal conversation.', note:'£400', go:() => { fl('henMended'); fl('henBack'); fl('crimcon'); add({money:-400, standing:-8, family:-22}); reg('henrietta',-4,'You had her letters read out in the King’s Bench'); reg('cullerne',-5,'You had him before a jury for criminal conversation'); reg('kitty',-1);
+      const won = chance(0.7); if (won) add({money:2000});
+      return `Serjeant Best opens for you in the King’s Bench. Four hundred pounds in fees. Your own servants are sworn. The footman tells the court what he saw through the window of the keeper’s lodge. Counsel reads her letters aloud. He does the voice.
+
+${won ? 'The jury gives two thousand pounds against the Earl.' : 'The jury finds for you. Damages, one shilling. The foreman holds a farm under the Castle.'} The Mercury gives it nine columns.
+
+A divorce wants an Act of Parliament and a second fortune. You do not move for one. The Earl gives up the Richmond house at the quarter.
+
+In March a post-chaise sets Henrietta down at the lodge. She walks up the drive with the dressing-case. She goes up to the blue room. At five she comes down to dinner.`; }},
+    {t:'Go to Richmond and ask her home.', go:() => { fl('henMended'); fl('henBack'); add({standing:-5, family:-10}); reg('henrietta',2,'You came to Richmond and asked her home'); reg('cullerne',-3);
+      return `You post to Richmond. The house has a green door and a view of the river. A man in the Castle livery says his lordship is at Brighton.
+
+She is in a back parlour with the blinds half down. She is alone. He has been at Brighton three weeks.
+
+“Have you come to forgive me? I had rather you did not. Ask me to come home.”
+
+You ask. She fetches her bonnet.`; }},
+    {t:'Shut the door on her.', go:() => { fl('henMended'); fl('henBack'); add({standing:-6, family:-25}); reg('henrietta',-3,'You shut the door on her for a year'); reg('kitty',-2,'You shut the door on her mother'); reg('cullerne',-3);
+      return `You have her things sent to Richmond in nine trunks. You write nothing.
+
+At Michaelmas the Earl gives up the house. Henrietta goes to her mother at Bath. Her mother writes. Her mother writes again.
+
+In February a chaise comes up the drive with a parrot’s cage on the roof. The old lady is handed down first.
+
+“I have brought you your wife, sir. I am seventy-three. I cannot keep her and the bird both.”`; }}
+  ]});
+
+/* ---- Mrs Vane comes home ---- */
+ev({ id:'kittyDoor', from:1803, to:1812, weight:5, cond:() => K() === 'vane' && !F('kittyDoor'), title:'The Carrier’s Cart',
+  text:() => `The Wyvern carrier stops at the lodge. He hands down a hair trunk, a child of three and Kitty.
+
+Her pelisse is brown. It was blue. She walked from Reading to Theale to save the fare.
+
+Captain Vane has sold his commission. Fifteen hundred pounds. He was at the agent’s in Craig’s Court on Tuesday and on the Holyhead mail on Wednesday. A Miss Decamp of the Norwich theatre was on it with him.
+
+There are bills in Kitty’s reticule for four hundred and ten pounds. Every one is made out in her name.
+
+“I have not come for money,” she says. The child is asleep on the trunk.`,
+  choices:[
+    {t:'Pay the bills, and eighty pounds a year to her.', note:'£410 and £80 a year', go:() => { fl('kittyDoor'); fl('vaneGone'); fl('kittyAllowance'); add({money:-410, family:5, standing:-2}); reg('kitty',3,'You paid the Captain’s bills and asked her nothing'); reg('henrietta',2);
+      return `Four hundred and ten pounds to nine tradesmen in three garrison towns. Eighty pounds a year to Kitty, by the quarter, into her own hand.
+
+She will not live at the Hall. She takes four rooms over the stationer’s at Wyvern. There is a brass plate. “Mrs Vane. Young Ladies instructed in French and the Use of the Globes.”
+
+She walks out on Sundays with the boy. He is put down at the lodge and runs the rest.`; }},
+    {t:'Keep the child. She must go to the Captain’s people.', go:() => { fl('kittyDoor'); fl('vaneGone'); fl('kittyNorthampton'); add({family:-8, standing:1}); reg('kitty',-4,'You kept her boy and sent her to Northampton'); reg('henrietta',-2,'You sent Kitty from the door');
+      return `“The boy shall want for nothing. Your place is with your husband’s family.”
+
+The Captain’s mother lives at Northampton on an annuity of sixty pounds. Kitty goes by the wagon. She does not turn round on the seat.
+
+The child asks for her at bedtime for nine nights. On the tenth he asks for Mrs Bunce.`; }},
+    {t:'Send a Bow Street man after the Captain.', note:'£120', go:() => { fl('kittyDoor'); add({money:-120, family:-2}); reg('kitty',-1,'You fetched the Captain back to her'); reg('vane',-2);
+      return `A hundred and twenty pounds to a runner from Bow Street. He finds the Captain in a fortnight, at a faro table in Dame Street, Dublin. Miss Decamp left on the Friday with a wine-merchant.
+
+Two hundred remain of the fifteen. He comes back for his passage and a new hat.
+
+Kitty looks at him across the hall. She thanks you. They go into lodgings at Reading. The trunk goes on the same cart that brought it.`; }}
+  ]});
+KITTY.push(
+  {id:'kitty-wyvern', kind:'news', w:() => F('kittyAllowance'), x:() => `Sunday. Kitty walks out from Wyvern with the boy. She has six pupils now, at a guinea a quarter. One is a Miss Tamworth.
+
+The boy is put down at the lodge and runs the rest. He is in the stable before she reaches the door.
+
+“No letter,” she says, before anybody asks. “There is a man in Dublin who writes to me for the Captain’s debts. He writes a very civil hand.”`},
+  {id:'kitty-northampton', kind:'news', w:() => F('kittyNorthampton'), x:() => `A letter from Kitty, from Northampton.
+
+“My dear Papa, Mrs Vane and I live on sixty pounds a year and the lace-pillow. I make three yards a week of the narrow edging. She makes one, and unpicks it. Tell Barnaby that I have his letter. The letters are very well formed for five, and I know Mrs Bunce’s hand in the capitals. I ask nothing. I ask how tall he is.”`}
+);
+
+/* ---- Edmund in danger ----
+   Four ways into it, by his calling and the year. Each choice sets the odds and queues edmundFate, which rolls once.
+   If he dies, edmundDead is set (as Waterloo sets it), the tablet and the role are recorded, and the heir follows. */
+const edmRank = () => E() === 'navy' ? (S.year < 1801 ? 'Mr' : S.year < 1811 ? 'Lieutenant' : 'Commander') : E() === 'army' ? (F('major') ? 'Major' : S.year < 1800 ? 'Ensign' : S.year < 1807 ? 'Lieutenant' : 'Captain') : E() === 'militia' ? 'Captain' : 'Mr';
+const edmAge = () => 19 + S.year - 1795;
+const peril = (kind, p, how) => { S.peril = {kind, p, how}; later('edmundFate', kind === 'duel' ? 1 : 2); };
+const fate = () => { const P = S.peril || {kind:'walcheren', p:0}; if (P.dead === undefined) P.dead = chance(P.p); return P; };
+const TOMB = {
+  walcheren:() => ['Died of the fever at Walcheren, 1809', `His son, Captain ${S.sur} of the 52nd, died of the fever at Walcheren in 1809. He is buried on the island. There is a tablet in Hatherley church.`],
+  badajoz:() => ['Killed in the breach at Badajoz, 1812', `His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, fell in the great breach at Badajoz. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`],
+  fever:() => ['Died of the yellow fever at Port Royal, ' + S.year, `His son, a Lieutenant in the Navy, died of the yellow fever at Port Royal and is buried at the Palisadoes. His quadrant is on the library table.`],
+  duel:() => ['Shot on Hatherley Down, ' + S.year, `His son was shot on Hatherley Down by a Cornet of Dragoons, at ${edmAge()}. He lies in the churchyard. The Cornet is believed to be in Ostend.`]
+};
+function edmundDies(blame){ const P = fate(), t = TOMB[P.kind](); fl('edmundDead'); fl('edmundRoleDead', t[0]); fl('edmundTomb', t[1]);
+  add({family:-25, standing: P.kind === 'duel' ? -2 : 3}); if (P.how === 'let') reg('henrietta', -2, 'You let Edmund go'); S.peril = null; later('heir', 3); }
+function edmundLives(){ const P = fate(); if (P.kind === 'badajoz') { fl('major'); fl('edmundFate', 'was in the breach at Badajoz'); } if (P.kind === 'walcheren' && P.p > 0) fl('edmundFate', 'came through Walcheren and the Peninsula'); S.peril = null; }
+
+ev({ id:'walcheren', from:1809, to:1809, weight:40, cond:() => E() === 'army' && !F('edmundDead') && !S.peril && !F('perilDone') && S.season >= 1, title:'Ordered for the Scheldt',
+  text:() => `Edmund writes from Deal.
+
+“My dear Father, We embark on Friday. Forty thousand men, and ships past counting; I made it two hundred from the beach and left off. Nobody will say where. The sutlers say Flushing. Our Surgeon has asked for bark and been told there is none to spare, this not being the West Indies. I have my Corunna boots, which let water.”
+
+Henrietta has the atlas open. The island is called Walcheren. The map shows it lower than the sea.`,
+  choices:[
+    {t:'Send him bark, flannel and port wine.', note:'£30', go:() => { fl('perilDone'); add({money:-30}); reg('edmund',1); peril('walcheren', 0.15, 'bark');
+      return `Thirty pounds. Six pounds of Peruvian bark from Apothecaries’ Hall, flannel waistcoats and a case of port. It goes down to Deal by the mail under the guard’s own hand.
+
+The fleet sails on the twenty-eighth of July. No greater ever left England.
+
+Nothing comes for seven weeks.`; }},
+    {t:'Write to the Horse Guards to keep him at home.', go:() => { fl('perilDone'); add({standing:-1}); reg('edmund',-3,'You had him kept from Walcheren'); reg('henrietta',2); peril('walcheren', 0, 'kept');
+      return `You write to a Member. The Member speaks to a General. Edmund is ordered to the depot at Chatham to drill recruits.
+
+His letter is four lines. “I am to teach ploughboys their left foot while the Regiment is in Holland. I am told I have you to thank.”
+
+The fleet sails without him. Henrietta sleeps the night through.`; }},
+    {t:'Give him your blessing.', note:'£10', go:() => { fl('perilDone'); add({money:-10}); reg('edmund',1); peril('walcheren', 0.35, 'let');
+      return `You write that he will do his duty and that his mother sends her love. You enclose ten guineas.
+
+The fleet sails on the twenty-eighth of July. Flushing is bombarded and taken in a fortnight. The Gazette prints it. They ring the bells at Wyvern.
+
+Then nothing comes for seven weeks.`; }}
+  ]});
+
+ev({ id:'badajoz', from:1812, to:1812, weight:40, cond:() => E() === 'army' && !F('edmundDead') && !S.peril && !F('stormDone') && S.season <= 1, title:'The Forlorn Hope',
+  text:() => `Edmund writes from the lines before Badajoz.
+
+“My dear Father, The breaches will be practicable within the month. A storming party goes in first with ladders and hay-bags. It is all volunteers. The officer who leads it and lives has his step without purchase. ${F('major') ? 'I have my majority already, by your kindness, and have no need of it. I have put my name down notwithstanding. Eleven of my company have put theirs.' : 'I am a Captain, and eleven hundred pounds short of a majority. I have put my name down.'} The men call it the Forlorn Hope. The Adjutant says that is Dutch and means only a lost troop. I did not find that it helped.”
+
+The letter was three weeks coming.`,
+  choices:[
+    {t:'Buy him the majority. He need not climb for it.', note:'£1,100', if:() => !F('major'), go:() => { fl('stormDone'); fl('major'); add({money:-1100}); reg('edmund',-1); peril('badajoz', 0.15, 'bought');
+      return `Eleven hundred pounds to Cox and Greenwood in Craig’s Court. They send it out by the King’s messenger with the army’s gold.
+
+The Gazette has him Major by purchase. He takes his name off the list. Another captain puts his on.
+
+The breaches are stormed on the night of the sixth of April. The Light Division goes in behind the storming party.`; }},
+    {t:'Forbid it. He has a mother.', go:() => { fl('stormDone'); reg('edmund',-2,'You forbade him the storming party'); peril('badajoz', 0.4, 'forbade');
+      return `You write that he has a mother. You underline it.
+
+The letter is three weeks to Lisbon and a week more to the lines. The breaches were stormed on the night of the sixth of April.
+
+It will reach the camp about the twentieth.`; }},
+    {t:'Write that he must judge.', go:() => { fl('stormDone'); reg('edmund',2,'You left Badajoz to his own judgment'); peril('badajoz', 0.4, 'let');
+      return `You write that he is thirty-six and a soldier and must judge. You write it four times before it will go on one sheet.
+
+The breaches were stormed on the night of the sixth of April. The Gazette has not the lists yet.
+
+Henrietta asks what you wrote. You tell her. She goes out of the room.`; }}
+  ]});
+
+ev({ id:'jamaica', from:1803, to:1810, weight:5, cond:() => E() === 'navy' && !F('edmundDead') && !S.peril && !F('perilDone'), title:'The Jamaica Station',
+  text:() => `Edmund writes from Spithead.
+
+“My dear Father, We are ordered to the Jamaica station with the convoy. The First Lieutenant has been out before. He says there are two seasons, the sickly and the very sickly, and that a frigate buries a third of her people in the first year. The vacancies make promotion brisk. He told me this as good news. I am to bring a cask of bark and six dozen of port, if I have a friend to pay for them.”
+
+Captain Holloway’s name still passes at the Admiralty.`,
+  choices:[
+    {t:'Send the bark and the port.', note:'£30', go:() => { fl('perilDone'); add({money:-30}); reg('edmund',1); peril('fever', 0.15, 'bark');
+      return `Thirty pounds. The cask and the six dozen go down to Portsmouth by Clarke’s wagon. Edmund signs for them on the Hard.
+
+The convoy sails with the first east wind. A hundred and forty sail of sugar ships and four of the King’s.
+
+A letter from Jamaica is nine weeks coming, when the packet is not taken.`; }},
+    {t:'Ask Captain Holloway for a ship in the Channel.', go:() => { fl('perilDone'); add({standing:-1}); reg('edmund',-3,'You had him taken out of the Jamaica convoy'); reg('henrietta',2); peril('fever', 0, 'kept');
+      return `Captain Holloway writes to a Lord of the Admiralty. Edmund is moved into a seventy-four of the Channel fleet, off Brest.
+
+He does not write for a quarter. When he does it is to his mother.
+
+The convoy sails without him.`; }},
+    {t:'Wish him prize money.', go:() => { fl('perilDone'); reg('edmund',1); peril('fever', 0.35, 'let');
+      return `You write that the West Indies have made many a young officer. You wish him prize money.
+
+The convoy sails with the first east wind. A hundred and forty sail of sugar ships and four of the King’s.
+
+A letter from Jamaica is nine weeks coming, when the packet is not taken.`; }}
+  ]});
+
+ev({ id:'edmundDuel', from:1800, to:1812, weight:3, cond:() => (E() === 'home' || E() === 'militia') && !F('edmundDead') && !S.peril && !F('perilDone'), title:'Words in the Card-room',
+  text:() => `There were words in the card-room at the Wyvern Assembly. A Cornet Lascelles of the Tenth Light Dragoons, quartered at Reading, said that old Mr ${S.sur} signed his will with another man’s hand on the pen.
+
+Edmund threw a glass of negus in his face.
+
+They meet on the Down at six tomorrow. Young Hartopp is to second him. Edmund has no pistols of his own. He is in the gun room doorway.
+
+“May I have my uncle’s, sir?”`,
+  choices:[
+    {t:'Bind them both over to keep the peace.', go:() => { fl('perilDone'); add({standing:-2}); reg('edmund',-3,'You bound him over like a poacher'); reg('henrietta',2); peril('duel', 0, 'kept');
+      return `The constable is at the Bell before supper with two warrants. Both gentlemen are bound over in two hundred pounds to keep the peace for a twelvemonth.
+
+The Cornet bows. He says he quite understands a father’s feelings. He says it in the public room.
+
+Edmund does not dine at home that month.`; }},
+    {t:'Lend him the pistols.', go:() => { fl('perilDone'); reg('edmund',2,'You lent him the Wogdons'); peril('duel', 0.3, 'let');
+      return `Your uncle’s pistols, by Wogdon. You clean them yourself. The left one throws high. You tell him so.
+
+He goes out at five with young Hartopp. You stand at the landing window. The Down is in mist.
+
+At twenty past six there are two reports, close together.`; }},
+    {t:'Go to the Cornet tonight with two hundred pounds.', note:'£200', go:() => { fl('perilDone'); add({money:-200, standing:-3}); peril('duel', 0, 'bought');
+      return `The Cornet counts it. He writes an apology at the table of the Bell and signs it. He has leave to join his regiment the same night.
+
+The apology is read out in the coffee room. Edmund believes he frightened the man. Half Wyvern knows better. Nobody tells him.
+
+The Cornet buys a charger with the money. He calls it Hatherley.`; }}
+  ]});
+
+const FATES = {
+  walcheren:{
+    dead:() => `The letter is from the Surgeon of the 52nd, dated Middelburg.
+
+“Sir, It is my painful duty. Captain ${S.sur} was taken with the fever of this island on the ninth of September and died on the fourteenth at four in the afternoon. He was sensible until the last day. He asked that his watch go to his sister and his sword to you. We have buried four officers and fifty-one men this month. I have not the bark to treat the rest.”
+
+The sword comes in November by the Harwich wagon, in a deal case. The watch is not with it.`,
+    kept:() => `The transports come into Deal in September. Edmund is sent over from Chatham to meet them.
+
+“My dear Father, They carried them up the beach on doors. Of our six hundred, three hundred and ninety are sick and sixty are buried on the island. The French did not kill forty. My own company has nineteen men fit. The Serjeant did not know me. Then he did, and asked where I had been. I told him.”
+
+He has signed it with his rank and his full name.`,
+    alive:P => `A letter from Harwich, in pencil.
+
+“My dear Father, I am landed and can stand. We took Flushing in a fortnight and then sat down in the wet to wait for orders. The fever came with the September mists. Men were well at parade and dead at tattoo. Of our six hundred, three hundred and ninety were in hospital at once. ${P.how === 'bark' ? 'I had your bark and shared it through the company as far as it went. It went four days.' : 'There was no bark. The Surgeon gave port while there was port.'} I shake every third day at about four o’clock. They tell me it wears off in a year or two.”`},
+  badajoz:{
+    dead:() => `The letter is from his Colonel.
+
+“Sir, ${F('major') ? 'Major' : 'Captain'} ${S.sur} fell in the great breach at Badajoz on the night of the sixth of April. He was seen upon the ladder three times. He was found in the morning under the chevaux-de-frise with eleven men of his company. The Regiment has lost more officers in one night than in four years. I enclose his ring.”
+
+The Gazette comes the day after. His name is fourth in the list of the 52nd. It is spelt with one R.`,
+    alive:P => `“My dear Father, I am alive and cannot tell you why. We went down into the ditch at ten at night. The French had chained planks across the breach, stuck full of sword-blades. I do not know how many times we went up. A dead man knocked me off the ladder and I lay under him until morning. I think it preserved me. The Light Division has lost nine hundred. Lord Wellington came to look at the breach at daylight. I am told he wept. ${P.how === 'bought' ? 'I had rather have the men.' : 'I am a Major. I had rather have the men.'}”${P.how === 'forbade' ? '\n\nYour own letter is enclosed. It reached him on the twentieth. He has not broken the seal.' : ''}`},
+  fever:{
+    dead:() => `The letter is from his Captain, dated Port Royal.
+
+“Sir, Lieutenant ${S.sur} died of the yellow fever on the third of September and was buried at the Palisadoes the same evening, as the climate requires. He was a very promising officer. His effects were sold at the mast according to the custom of the service and fetched nineteen pounds four shillings, which the Purser will remit. I have kept back his quadrant and his mother’s letters.”
+
+The quadrant comes home in the spring. The letters are tied with a rope-yarn. There are sixty-one.`,
+    kept:() => `Edmund writes from a seventy-four off Brest.
+
+“My dear Father, We have been at sea nineteen weeks and have seen the French once, at anchor, through a glass. My old ship is come home from Jamaica. She sailed with two hundred and sixty men and has brought back a hundred and ten. The Admiral has put her officers’ names in for promotion, those that are left to have names. I should have been Second of her.”
+
+He does not say which he would have chosen.`,
+    alive:P => `A letter from Port Royal. The paper is yellow and so is the ink.
+
+“My dear Father, We have buried the Purser, the Surgeon’s mate, four Midshipmen and thirty-one hands. I had the fever in August and was read over twice by the Chaplain, who then died. ${P.how === 'bark' ? 'I am told the bark saved me. The port certainly saved the Gunner.' : 'I had no bark. The Gunner dosed me with rum and gunpowder and sat on my chest.'} I am made First of the ship, there being nobody else. We have taken a Spanish schooner laden with cocoa. My share is forty pounds.”`},
+  duel:{
+    dead:() => `Young Hartopp comes up the drive at seven. He is on foot. He has no hat.
+
+Four men are behind him with a hurdle. There is a cloak over it.
+
+“He fired in the air, sir. I am to say that he fired in the air.”
+
+The Cornet has posted for Harwich. The left pistol is in young Hartopp’s hand. He does not know where to put it down.`,
+    kept:() => `The Tenth Light Dragoons march out of Reading for the coast. Cornet Lascelles rides with them.
+
+The Mercury has it in the spring. He has shot a brother officer at Brighton over a dog. The ball went in under the fourth rib. The officer died on the Thursday.
+
+Edmund reads it at breakfast. He reads it again. He passes you the paper. He does not say anything.`,
+    alive:() => `Edmund comes in at seven with wet boots.
+
+“He fired first. It took the button off my sleeve. I meant to fire wide and I hit his hat. He says it was a twelve-guinea hat.”
+
+He eats four eggs. Henrietta comes down at eight. She asks why the gun room smells of powder at this hour.`}
+};
+const fateText = () => { const P = fate(), f = FATES[P.kind]; return P.dead ? f.dead(P) : P.p === 0 ? f.kept(P) : f.alive(P); };
+
+ev({ id:'edmundFate', follow:true, cond:() => !!S.peril && !F('edmundDead'),
+  get title(){ const P = fate(); return P.dead ? (P.kind === 'duel' ? 'Twenty Past Six' : 'A Letter in a Strange Hand') : P.kind === 'duel' && P.p > 0 ? 'Wet Boots' : 'Edmund Writes'; },
+  cut:() => 'fate-' + fate().kind + (fate().dead ? '-dead' : fate().p === 0 ? '-kept' : '-alive'),
+  text:() => fateText(),
+  choices:[
+    {t:'Go up and tell Henrietta.', if:() => fate().dead, go:() => { const duel = fate().kind === 'duel'; edmundDies(); reg('henrietta',1);
+      return duel ? `She is on the stairs. She saw the hurdle from her window.
+
+“Not in the hall,” she says. “Carry him to his own room.”
+
+She goes up before the men to turn down the bed. She orders the blinds drawn on the south front. Every one.` : `She is at her glass. She sees the paper in your hand.
+
+“Not aloud,” she says.
+
+You give her the letter. She reads it standing. She folds it in four and puts it inside her gown. She rings, and orders the blinds drawn on the south front. Every one.`; }},
+    {t:'Put up a tablet in the church.', note:'£40', if:() => fate().dead, go:() => { const rank = edmRank(), role = TOMB[fate().kind]()[0], age = edmAge(); edmundDies(); add({money:-40, standing:1});
+      return `A tablet of white marble on the north wall, by a mason from Reading. Forty pounds.
+
+“${rank} Edmund ${S.sur}. ${role}. Aged ${age}.”
+
+The mason has room for one line more. Henrietta is asked for it. She says there is nothing to add to the age.`; }},
+    {t:'Go into the gun room and shut the door.', if:() => fate().dead, go:() => { edmundDies(); add({family:-3});
+      return `His fowling piece is on the rack. It has not been cleaned since he last had it out.
+
+You clean it. It takes the afternoon.
+
+At six Mudge comes in. He stands a while. He takes the rod out of your hand and finishes the barrel.`; }},
+    {t:'Read it to Henrietta.', if:() => !fate().dead && !(fate().kind === 'duel'), go:() => { edmundLives(); add({family:3}); reg('henrietta',1);
+      return `You read it to her in the breakfast-room. She has you read it again.
+
+She takes the letter. It goes into her work-box with the others. She keeps them in order, with the dates outward.`; }},
+    {t:'Answer by this post.', if:() => !fate().dead && !(fate().kind === 'duel'), go:() => { edmundLives(); reg('edmund',1);
+      return `You write the same night. You cover two sheets. You tell him about the barley, the new pointer and the Tamworths’ chimney. You find no way to say the other thing.
+
+He answers in the spring. “I had yours about the barley. I understood it.”`; }},
+    {t:'Tell her he has been after rabbits.', if:() => !fate().dead && fate().kind === 'duel' && fate().p > 0, go:() => { edmundLives(); add({standing:2});
+      return `“Rabbits, my dear.”
+
+“With a pistol?”
+
+Edmund looks at his plate. Henrietta looks at the button gone from his sleeve. She sews on another before church. She uses black thread.`; }},
+    {t:'Tell her.', if:() => !fate().dead && fate().kind === 'duel' && fate().p > 0, go:() => { edmundLives(); add({standing:2, family:-2}); reg('henrietta',-1,'You lent Edmund the pistols');
+      return `You tell her.
+
+She does not speak to either of you until Sunday. On Sunday she takes Edmund’s arm into church. She does not take yours.`; }},
+    {t:'Say nothing.', if:() => !fate().dead && fate().kind === 'duel' && fate().p === 0, go:() => { edmundLives(); reg('edmund',1);
+      return `You say nothing. You fold the paper and lay it by his plate.
+
+After dinner he brings the decanter round to your end of the table himself.`; }},
+    {t:'Say that a hat is cheaper.', if:() => !fate().dead && fate().kind === 'duel' && fate().p === 0, go:() => { edmundLives();
+      return `“A hat would have been twelve guineas, Edmund.”
+
+“Yes, sir.”
+
+He finishes his egg. He does not leave the room.`; }}
+  ]});
+
+ev({ id:'heir', follow:true, cond:() => F('edmundDead') && !S.flags.heir && S.year < 1815, title:'A Cousin from Birmingham',
+  text:() => `Hatherley is settled on heirs male. The next is Mr Josiah ${S.sur} of Birmingham. He is your second cousin. He makes buttons.
+
+He has written to condole. On Thursday he comes himself, in a new black coat. He admires the hall. He paces the drawing-room heel to toe while he thinks you are looking at the fire.
+
+His wife would be glad to know whether the chimneys draw.
+
+Your attorney says a recovery might be suffered and the land settled afresh. It wants three hundred pounds. It wants the cousin not to hear of it before Hilary term.`,
+  choices:[
+    {t:'Break the entail. Settle it on Kitty.', note:'£300', go:() => { fl('heir','kitty'); add({money:-300, family:4}); reg('kitty',2,'You settled Hatherley on her'); reg('henrietta',1);
+      return `Three hundred pounds to the attorney. The deeds are engrossed on nine skins.
+
+Mr Josiah ${S.sur} hears of it in Hilary term. He writes eleven sides. He has taken counsel’s opinion.
+
+Counsel’s opinion is that he should have kept his feet still.`; }},
+    {t:'Show him the house. He is the heir.', go:() => { fl('heir','cousin'); add({family:-5}); reg('henrietta',-2,'You showed the button-maker over the Hall');
+      return `You show him the house from the cellars to the leads. He writes the number of bedrooms on his cuff.
+
+Henrietta receives him in the yellow drawing-room. She does not ask him to sit.
+
+At the door he presses your hand. He hopes you may be spared many years. He asks your age.`; }},
+    {t:'Tell him every chimney smokes.', go:() => { fl('heir','cousin'); add({family:1});
+      return `“Every one of them smokes, Mr ${S.sur}. The roof wants two thousand pounds. There is dry rot in the hall.”
+
+He looks at the ceiling. He goes back to Birmingham by the night coach.
+
+At Christmas he writes to ask after the rot.`; }}
+  ]});
 /* What a man brings with him. One event for each choice made at the inheritance.
    Written in the Hatherley hand (docs/voice/VOICE.md): plain narrator, inside the year, the wit left to the people and the sums. */
 const first = () => S.name.split(' ')[0];
