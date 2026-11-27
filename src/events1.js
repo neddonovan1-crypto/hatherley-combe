@@ -635,213 +635,209 @@ const mpPast = () => F('mp') ? ((S.mpWins || 1) > 1 ? `Wyvern has returned you $
   : F('cullerneMan') ? 'He has sat on your three votes since the last election.' : '';
 const POLLS = {
   1802:{
-    mp:() => `Parliament is dissolved. You must be elected again.
+    mp:() => `Parliament is dissolved, and you must be chosen again.
 
-The owners of the Wyvern plots have not forgotten last time. Three of them call at the Hall before breakfast. Each asks after your health. Each mentions the price of bread.
+The owners of the Wyvern plots have not forgotten the last occasion. Three of them call at the Hall before breakfast; and each, having asked after your health, goes on to mention the price of bread.
 
-Lord Cullerne’s agent was in Pig Lane yesterday with a measuring chain.`,
-    out:() => `Parliament is dissolved. Mr Fitzroy Bligh offers himself for Wyvern again. He has not yet spoken in the House.
+Lord Cullerne’s agent was seen yesterday in Pig Lane with a measuring chain.`,
+    out:() => `Parliament is dissolved; and Mr Fitzroy Bligh, who has not yet opened his mouth in the House, offers himself once more for Wyvern.
 
 ${mpPast()}
 
-A cart from the Castle is at the kitchen door. This time it carries a tub. In the tub is a live turtle.
+There is a cart from the Castle at the kitchen door, carrying this time a tub, and in the tub a live turtle.
 
 “Lord Cullerne’s compliments, sir.”
 
-The tub is put in the scullery. The turtle rests its chin on the rim. It is watching Mrs Bunce.`,
+The tub is set down in the scullery, where the turtle rests its chin upon the rim, and watches Mrs Bunce.`,
     keep:'Vote for Fitzroy and keep the turtle.', back:'Send the turtle back and stay out of it.',
-    hold:() => `Seven hundred pounds. The same back kitchens.
+    hold:() => `It is seven hundred pounds, laid out in the same back kitchens.
 
-You hold the seat. The returning officer does not read out the figures. Six men chair you round the market place. They drop you once, at the pump. They dropped the last Member there too.`,
-    lose:() => `Seven hundred pounds. The same back kitchens.
+You hold the seat, by figures which the returning officer does not read out. Six men chair you round the market place, and drop you once, at the pump, where they dropped the last Member also.`,
+    lose:() => `It is seven hundred pounds, laid out in the same back kitchens.
 
-Three of the plots you counted on change hands at breakfast on the day of the poll. The new Member is a brewer from Reading. Lord Cullerne calls him “biddable”.
+On the day of the poll three of the plots upon which you had counted change hands at breakfast; and the new Member is a brewer of Reading, whom Lord Cullerne calls “biddable”.
 
-${hh(`Henrietta gives up the house in Half Moon Street. “I never liked it,” she says. She has kept the door-knocker.`, `Henrietta gives up the house in Half Moon Street from Bath. “I never liked it,” she writes. She has had the door-knocker sent to her.`)}`,
-    quit:() => `You write to the electors. The cares of your estate forbid you to offer yourself again.
+${hh(`Henrietta gives up the house in Half Moon Street. “I never liked it,” she says; but she has kept the door-knocker.`, `Henrietta gives up the house in Half Moon Street from Bath. “I never liked it,” she writes; but she has had the door-knocker sent to her.`)}`,
+    quit:() => `You write to the electors, that the cares of your estate forbid you to offer yourself again.
 
-The letter is in the Mercury on Saturday. On Monday a note comes from the Castle. “Lord Cullerne is obliged to Mr ${S.sur}.”
+The letter is in the Mercury on Saturday; and on Monday there comes a note from the Castle: “Lord Cullerne is obliged to Mr ${S.sur}.”
 
-It is the first note from the Castle in some years. ${hh(`Henrietta reads it and puts it on the fire.`, `You send it on to Gay Street. It is not sent back.`)}`,
+It is the first note from the Castle in some years. ${hh(`Henrietta reads it, and puts it on the fire.`, `You send it on to Gay Street, and it is not sent back.`)}`,
     vote:() => `“Thank his lordship.”
 
-Mr Bligh is returned. A man comes down from London to deal with the turtle. Mrs Bunce will not be in the kitchen while he does it.
+Mr Bligh is returned. A man comes down from London on purpose to deal with the turtle; and Mrs Bunce will not stay in the kitchen while he does it.
 
-The soup comes up in the blue tureen. You have two plates. Then a third.`,
-    win:() => `You leave the tub where it is and spend nine hundred pounds.
+The soup comes up in the blue tureen. You take two plates of it, and then a third.`,
+    win:() => `You leave the tub where it stands, and lay out nine hundred pounds.
 
-You are in by three votes. One elector has been dead since Candlemas. He votes twice. The second vote is objected to.
+You are in by three votes. One of the electors, who has been dead since Candlemas, votes twice; and it is to the second vote that objection is taken.
 
-You are Member for Wyvern. A week later the scullery tub is empty. The gardener finds the turtle in the carp pond. There are fewer carp.`,
-    beat:() => `You spend nine hundred pounds. Thirty-one electors drink it, with their friends.
+You are Member for Wyvern. A week afterwards the tub in the scullery is found empty, and the turtle is discovered by the gardener in the carp pond, where there are fewer carp than there were.`,
+    beat:() => `You lay out nine hundred pounds, and thirty-one electors drink it, with their friends.
 
-You lose. There is a blue ribbon left on your hat and a pain behind your eyes.
+You lose; and have to show for it a blue ribbon in your hat, and a pain behind the eyes.
 
-The tub goes back to the Castle on the cart. The turtle keeps its head over the rim as far as the lodge.`,
+The tub goes back to the Castle upon the cart, with the turtle keeping its head over the rim as far as the lodge.`,
     home:() => `“Take it back. My compliments.”
 
-Mr Bligh is returned without your votes. Lord Cullerne has pigsties enough.
+Mr Bligh is returned without your votes, Lord Cullerne having pigsties enough.
 
 Mrs Bunce scrubs the scullery floor twice.`},
   1806:{
-    mp:() => `Mr Fox is dead. The Ministry has dissolved Parliament to count who is left.
+    mp:() => `Mr Fox is dead; and the Ministry has dissolved Parliament, in order to count who is left.
 
-${mpPast()} The plot-holders come to the Hall one at a time this year. Each has a son who would like a place in the Excise.
+${mpPast()} The plot-holders come to the Hall this year one at a time; and every one of them has a son who would like a place in the Excise.
 
-Lord Cullerne has bought the two plots behind the tan-yard. He gave four hundred pounds for a pigsty and a pump.`,
-    out:() => `Mr Fox is dead and Parliament is dissolved. Mr Fitzroy Bligh offers himself for Wyvern again. He spoke once, in the session of 1804. It was to ask that a window be shut.
+Lord Cullerne has bought the two plots behind the tan-yard, giving four hundred pounds for a pigsty and a pump.`,
+    out:() => `Mr Fox is dead, and Parliament is dissolved. Mr Fitzroy Bligh offers himself again for Wyvern, having spoken once in the House, in the session of 1804, to desire that a window might be shut.
 
 ${mpPast()}
 
-The Castle cart is at the kitchen door. This time it is a barrel of Colchester oysters. Three hundred, the groom says. They were alive at Reading.
+The Castle cart is at the kitchen door, and brings this time a barrel of Colchester oysters: three hundred of them, the groom says, and alive at Reading.
 
 “Lord Cullerne’s compliments, sir.”
 
 Mrs Bunce puts her ear to the barrel.`,
     keep:'Vote for Fitzroy and open the barrel.', back:'Send the oysters back and stay out of it.',
-    hold:() => `Seven hundred pounds. A place in the Excise is promised to four sons. There is one place.
+    hold:() => `It is seven hundred pounds; and a place in the Excise is promised to four sons, there being one place.
 
-You hold the seat by two votes. The last man to poll for you has a fifth son. He has asked for nothing.
+You hold the seat by two votes. The last man who polls for you has a fifth son, for whom he has asked nothing; but he says that he will call in the spring.`,
+    lose:() => `It is seven hundred pounds.
 
-He says he will call in the spring.`,
-    lose:() => `Seven hundred pounds.
+The two plots behind the tan-yard poll for the Castle, and so do the two beside them, whose owners were seen at the Bell on Wednesday in new hats.
 
-The two plots behind the tan-yard poll for the Castle. So do the two beside them. Their owners were at the Bell on Wednesday in new hats.
-
-The new Member is a Mr Cheyne, home from Madras with a liver. He has never seen Wyvern. He asks the returning officer what county it is in.
+The new Member is a Mr Cheyne, come home from Madras with a liver, who has never seen Wyvern, and who asks the returning officer what county it is in.
 
 Henrietta gives up Half Moon Street by letter.`,
-    quit:() => `You tell each plot-holder as he comes that you will not offer yourself.
+    quit:() => `You tell each plot-holder, as he comes, that you will not offer yourself.
 
-The first says he is sorry to hear it. The ninth says so in the same words. They have met at the George.
+The first is sorry to hear it; and as the ninth is sorry in the very same words, it is plain that they have met at the George.
 
-The Castle has the seat without a poll. A brace of pheasants comes from Lord Cullerne on Friday. Mrs Bunce hangs them where callers can see.`,
+The Castle has the seat without a poll. On Friday there comes a brace of pheasants from Lord Cullerne, and Mrs Bunce hangs them where callers may see.`,
     vote:() => `“Thank his lordship.”
 
-Mr Bligh is returned. Three hundred oysters must be eaten in four days. You have them raw. You have them stewed. You have them in a pie with the beef.
+Mr Bligh is returned; and three hundred oysters are to be eaten in four days. You have them raw; you have them stewed; and you have them in a pie with the beef.
 
-On the fifth day Mrs Bunce sends up a boiled egg. Nobody complains.`,
-    win:() => `The barrel goes back unopened. Nine hundred pounds goes to the George.
+On the fifth day Mrs Bunce sends up a boiled egg, and nobody complains.`,
+    win:() => `The barrel goes back unopened, and nine hundred pounds go to the George.
 
-They poll in the rain. Seventeen for you. Fourteen for Mr Bligh. He shakes your hand on the hustings. His uncle has gone home.
+They poll in the rain: for yourself, seventeen; for Mr Bligh, fourteen. He shakes your hand upon the hustings, his uncle having gone home.
 
-You are Member for Wyvern. The oysters reached the Castle on Friday. The groom says they were no longer alive.`,
-    beat:() => `The barrel goes back. You spend nine hundred pounds at the George.
+You are Member for Wyvern. The oysters reached the Castle on Friday; by which time, the groom says, they were no longer alive.`,
+    beat:() => `The barrel goes back, and you lay out nine hundred pounds at the George.
 
-Thirteen votes. Mr Bligh has eighteen. He thanks the electors in four sentences from a card. It is the card he had in ’96.
+You have thirteen votes, and Mr Bligh eighteen; for which he thanks the electors in four sentences, from a card, and it is the card he had in ’96.
 
 On Sunday the Castle servants fill two pews. They have had the oysters.`,
     home:() => `“Take them back. My compliments.”
 
-The groom says they will not keep as far as the Castle. He leaves the barrel at your lodge and drives off.
+The groom answers that they will not keep as far as the Castle; and he leaves the barrel at your lodge, and drives off.
 
-Mr Bligh is returned without your votes. Nobody will fetch the barrel. By Thursday the lodge-keeper has gone to his sister’s.`},
+Mr Bligh is returned without your votes. As nobody will fetch the barrel, by Thursday the lodge-keeper is gone to his sister’s.`},
   1807:{
-    mp:() => `Parliament is dissolved again. It was six months old. The King has turned out his Ministers over the Catholic officers. The cry is No Popery.
+    mp:() => `Parliament is dissolved again, at six months old; the King having turned out his Ministers upon the question of the Catholic officers, and the cry being No Popery.
 
-It is chalked on the door of the George. It is chalked on your lodge gate. There is not a Papist in Wyvern.
+Though there is not a Papist in Wyvern, it is chalked upon the door of the George, and upon your own lodge gate.
 
-${mpPast()} The electors were last paid in November. They are very warm for the Church.`,
-    out:() => `Parliament is dissolved again. It was six months old. The King has turned out his Ministers. The cry is No Popery.
+${mpPast()} The electors, who were last paid in November, are very warm for the Church.`,
+    out:() => `Parliament is dissolved again, at six months old; the King having turned out his Ministers, and the cry being No Popery.
 
 Mr Fitzroy Bligh offers himself. ${mpPast()}
 
-The Castle cart brings a ham and a bundle of printed bills.
+The Castle cart brings a ham, and a bundle of printed bills.
 
 “BLIGH and the PROTESTANT CONSTITUTION. No POPE at WYVERN.”
 
-The groom is to nail one on your lodge gate, if you have no objection. He has brought his own hammer.`,
+The groom is to nail one upon your lodge gate, if you have no objection; and he has brought his own hammer.`,
     keep:'Vote for Fitzroy. Let him nail it up.', back:'Nail nothing and stay out of it.',
-    hold:() => `Seven hundred pounds, six months after the last. Mr Tidmarsh counts it out himself. He counts it twice.
+    hold:() => `It is seven hundred pounds, six months after the last; and Mr Tidmarsh counts it out himself, twice over.
 
-You wear an orange cockade for the Protestant Constitution. The Castle’s man wears one too. The electors cry No Popery for both and drink with both.
+You wear an orange cockade for the Protestant Constitution, and so does the Castle’s man; and the electors, crying No Popery for both, drink with both.
 
-You hold the seat. The chalk stays on the lodge gate until it rains.`,
-    lose:() => `Seven hundred pounds. The Castle’s bill is on every door in Pig Lane. It asks how Mr ${S.sur} voted on the Catholic question.
+You hold the seat. The chalk remains upon the lodge gate until it rains.`,
+    lose:() => `It is seven hundred pounds. The Castle’s bill, posted upon every door in Pig Lane, desires to know how Mr ${S.sur} voted on the Catholic question.
 
-You did not vote. You were at Hatherley for the lambing.
+You did not vote, being at Hatherley for the lambing.
 
-Thirteen for you. Eighteen against. The new Member is Lord Cullerne’s attorney. He thanks the electors for saving the Church. He is a Unitarian.
+There are thirteen for you, and eighteen against. The new Member is Lord Cullerne’s attorney, a Unitarian, who thanks the electors for having saved the Church.
 
 Henrietta sells the lease of Half Moon Street to a dentist.`,
-    quit:() => `You write to the Mercury. Two contests in seven months are more than a private gentleman’s estate will bear.
+    quit:() => `You write to the Mercury, that two contests in seven months are more than the estate of a private gentleman will bear; and the letter is printed between a stallion and a deserter.
 
-The letter is printed between a stallion and a deserter.
-
-At the Sessions dinner Lord Cullerne says that Mr ${S.sur} has shown sense. He passes you the port with his own hand.`,
+At the Sessions dinner Lord Cullerne observes that Mr ${S.sur} has shown sense, and passes you the port with his own hand.`,
     vote:() => `“Nail it up.”
 
-The bill is on the gate by noon. Mr Bligh is returned. Nobody stood against him. No Pope appeared.
+The bill is upon the gate by noon. Mr Bligh is returned, nobody standing against him, and no Pope appearing.
 
-The ham is eaten by Whitsun. The bill hangs until harvest. The nail is there yet.`,
-    win:() => `The ham and the bills go back. You have your own printed. “${(S.sur || '').toUpperCase()} and the PROTESTANT CONSTITUTION.” Nine hundred pounds.
+The ham is eaten by Whitsun, and the bill hangs until harvest; but the nail is there yet.`,
+    win:() => `The ham and the bills go back; and you have your own printed, “${(S.sur || '').toUpperCase()} and the PROTESTANT CONSTITUTION”, at a cost, with the rest, of nine hundred pounds.
 
-The electors can find no difference between the candidates. They poll for the better beer. The George wins by two.
+The electors, being unable to find any difference between the candidates, poll for the better beer; and the George has it by two.
 
-You are Member for Wyvern. On Sunday ${F('gallDead') ? 'the Vicar' : 'Dr Gall'} preaches against the Bishop of Rome. He bows to the Hall pew first.`,
-    beat:() => `The ham goes back. Nine hundred pounds. Your bills go up beside the Castle’s on every door.
+You are Member for Wyvern. On Sunday ${F('gallDead') ? 'the Vicar' : 'Dr Gall'} preaches against the Bishop of Rome, having first bowed to the Hall pew.`,
+    beat:() => `The ham goes back; and for nine hundred pounds your bills go up beside the Castle’s upon every door.
 
-On Tuesday night it is put about that you dined with a priest at Reading in ’98. He was a French abbé. There were nine others at table.
+On the Tuesday night it is put about that in ’98 you dined with a priest at Reading. He was a French abbé, and there were nine others at the table.
 
-Twelve votes. Somebody has chalked a triple crown on your ${keepsCarriage() ? 'carriage' : 'hall'} door. It is washed off. It shows when the sun is low.`,
+You have twelve votes. Somebody has chalked a triple crown upon your ${keepsCarriage() ? 'carriage' : 'hall'} door; and although it is washed off, it shows when the sun is low.`,
     home:() => `“I nail my own gate.”
 
-The groom puts up his hammer. He leaves the ham. He says he was told nothing about the ham.
+The groom puts up his hammer, but leaves the ham, saying that he was told nothing about the ham.
 
-Mr Bligh is returned without your votes. ${hh(`You eat the ham. Henrietta says a ham is not a vote. She has a second slice.`, `You eat the ham. It lasts you and the Johns till Thursday.`)}`},
+Mr Bligh is returned without your votes. ${hh(`You eat the ham. Henrietta observes that a ham is not a vote, and takes a second slice.`, `You eat the ham, and it lasts you and the Johns till Thursday.`)}`},
   1812:{
     mp:() => `Parliament is dissolved. Mr Perceval was shot dead in the lobby in May. ${(S.mpSince || 1796) <= 1811 ? 'You heard the pistol from the stairs.' : 'Lord Liverpool has the Treasury.'}
 
-${mpPast()} Wheat is at ${wheatNow()} shillings. The plot-holders do not ask for beer this time.
+${mpPast()} Wheat is at ${wheatNow()} shillings; and the plot-holders, this time, do not ask for beer.
 
-Lord Cullerne has had the Bell new painted. There is a baker’s cart in the yard with his crest on it.`,
-    out:() => `Parliament is dissolved. Mr Perceval was shot dead in the lobby in May. Lord Liverpool has the Treasury.
+Lord Cullerne has had the Bell new painted, and there stands in the yard of it a baker’s cart with his crest upon the side.`,
+    out:() => `Parliament is dissolved. Mr Perceval was shot dead in the lobby in May, and Lord Liverpool has the Treasury.
 
-Mr Fitzroy Bligh offers himself for Wyvern. He is stout now and walks with a stick. ${mpPast()}
+Mr Fitzroy Bligh, who is grown stout, and walks with a stick, offers himself for Wyvern. ${mpPast()}
 
-The Castle cart is at the kitchen door with a Cheshire cheese. It weighs eighty pounds. Two men lift it down.
+The Castle cart is at the kitchen door with a Cheshire cheese of eighty pounds weight, and two men to lift it down.
 
 “Lord Cullerne’s compliments, sir. His lordship says the times are too dear for turtle.”
 
 Mrs Bunce measures it round with her apron string.`,
     keep:'Vote for Fitzroy and keep the cheese.', back:'Send the cheese back and stay out of it.',
-    hold:() => `Seven hundred pounds. Half of it goes in bread. The electors ask for it so.
+    hold:() => `It is seven hundred pounds, of which one half, by the electors’ own desire, goes in bread.
 
-You are returned. There is no chairing. The six men say they have not the legs for it this year. They have five shillings each instead.
+You are returned; but there is no chairing, the six men declaring that they have not the legs for it this year, and taking five shillings apiece instead.
 
-You walk round the market place on your own feet with your hat off.`,
-    lose:() => `Seven hundred pounds.
+You walk round the market place upon your own feet, with your hat off.`,
+    lose:() => `It is seven hundred pounds.
 
-A stranger comes down on Monday with two thousand. He has the contract for the army’s biscuit in Spain. He buys five plots outright before the poll, pigs and all.
+On the Monday a stranger comes down with two thousand. He has the contract for the army’s biscuit in Spain; and before the poll he buys five plots outright, pigs and all.
 
-You are out by four. He is chaired. He gives the six men a guinea each not to drop him.
+You are out by four. He is chaired, having first given the six men a guinea each not to drop him.
 
-Half Moon Street is given up at Christmas. ${hh(`Henrietta says London was always too far from the linen.`, `Henrietta writes that London was always too far from the Pump Room.`)}`,
-    quit:() => `You tell the electors at the George that you will not offer yourself again. You have spoken in the House twice.
+Half Moon Street is given up at Christmas. ${hh(`Henrietta says that London was always too far from the linen.`, `Henrietta writes that London was always too far from the Pump Room.`)}`,
+    quit:() => `You tell the electors at the George that you will not offer yourself again, having spoken in the House twice.
 
-They give you three cheers and a dinner. You pay for the dinner.
+They give you three cheers and a dinner; and you pay for the dinner.
 
-A note comes from the Castle on Monday. “Lord Cullerne is obliged to Mr ${S.sur}.” There is a haunch with it.`,
+On Monday there comes a note from the Castle, and a haunch with it: “Lord Cullerne is obliged to Mr ${S.sur}.”`,
     vote:() => `“Thank his lordship.”
 
-Mr Bligh is returned. He is helped up the steps of the hustings.
+Mr Bligh is returned, and is helped up the steps of the hustings.
 
-The cheese has a shelf of its own in the dairy. The household eats at it until Lady Day. The mice have the rind.`,
-    win:() => `The cheese goes back on the cart. Nine hundred pounds. Bread is dear. The money goes further in Pig Lane than it ever did.
+The cheese has a shelf to itself in the dairy, where the household eats at it until Lady Day, and the mice have the rind.`,
+    win:() => `The cheese goes back upon the cart; and as bread is dear, nine hundred pounds go further in Pig Lane than they ever went before.
 
-Nineteen for you. Twelve for Mr Bligh. He cannot be chaired and you are not. The six men are paid to stay at home.
+There are nineteen for you, and twelve for Mr Bligh. He cannot be chaired, and you are not, the six men being paid to stay at home.
 
-You are Member for Wyvern. You take your seat in November. The gentleman beside you asks whose son you are.`,
-    beat:() => `The cheese goes back. Nine hundred pounds.
+You are Member for Wyvern, and take your seat in November; where the gentleman beside you asks whose son you are.`,
+    beat:() => `The cheese goes back, and you lay out nine hundred pounds.
 
-On the poll day the Castle gives a loaf and a pound of cheese to every man in Wyvern, elector or no. It is the same cheese.
+Upon the day of the poll the Castle gives a loaf and a pound of cheese to every man in Wyvern, elector or no; and it is the same cheese.
 
-Fourteen votes. You ride home past forty men eating on the churchyard wall. Several take off their hats.`,
+You have fourteen votes. You ride home past forty men eating upon the churchyard wall, several of whom take off their hats.`,
     home:() => `“My compliments. We make our own cheese.”
 
-Two men lift it back. Mr Bligh is returned without your votes.
+Two men lift it back, and Mr Bligh is returned without your votes.
 
-At dinner Mrs Bunce brings up the Hatherley cheese. It is the size of a hat. She sets it in the middle of the table and waits.`}
+At dinner Mrs Bunce brings up the Hatherley cheese, of the bigness of a hat; sets it in the middle of the table; and waits.`}
 };
 const poll = () => POLLS[S.year] || POLLS[1802];
 
