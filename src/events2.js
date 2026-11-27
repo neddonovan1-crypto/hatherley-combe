@@ -1052,45 +1052,503 @@ Wages, £120. Nokes reckons the saving to the rates at £80. He writes the two f
 The ha-ha is finished. A cow falls into it the first week.`; }}
   ]});
 
-ev({ id:'edmundLetter', from:1798, to:1814, weight:3, repeatGap:10, cond:() => (E() === 'army' || E() === 'navy') && !F('edmundDead'), title:'A Letter from Edmund',
-  text:() => { const y = S.year; let body;
-    if (E() === 'army') {
-      if (y <= 1800) body = `“Chelmsford Barracks. My dear Father, It has rained here nineteen days. We have been reviewed four times since we came. Each General told us we were a fine body of men and rode away to his dinner. I can shave in cold water now. Tamworth of ours keeps a jackdaw. It says Damn the French very distinctly. It says one thing more. Pray do not let my mother ask what.”`;
-      else if (y <= 1802) body = `“Camp before Alexandria. My dear Father, We came ashore at Aboukir in the flat boats. The French had guns on the sandhills and gave us grape all the way in. The man on the next thwart was killed. We beat them again here on the 21st. Sir Ralph had a ball in the thigh and is dead of it. I have seen the Pyramids from nine miles off. Then I took the ophthalmia with half the regiment and saw nothing at all for three weeks. I am mended. I can tell a camel from a field officer at forty yards.”`;
-      else if (y <= 1807) body = `“Shorncliffe Camp. My dear Father, Sir John Moore has us out at five. We are to fight in pairs, one man loading while the other fires. The men are to be told the reason of an order. Nobody is to be flogged without cause. Major Pott says the service is ruined. I was never so tired in my life and I would not be anywhere else. On a clear day we see the French camp at Boulogne from the cliff. On Monday they had their washing out.”`;
-      else if (y <= 1809) body = `“Plymouth. My dear Father, I am alive and have both my feet. We marched to Corunna in the snow, two hundred and fifty miles, with Marshal Soult a day behind. At Bembibre men sold their shoes for rum and lay down in the road. We left them. Sir John was struck by a round shot on the 16th. They buried him on the rampart in his cloak before it was light. I have no stockings. I have eaten part of a mule. My mother need not hear of the mule.”`;
-      else if (y <= 1812) body = `“Camp before Badajoz. My dear Father, We are in the trenches and the trenches are full of water. Lord Wellington rode by on Tuesday in a grey frock and a plain hat. He looked at our parallel for one minute and said it would do. The men speak of it still. My servant Pedro has stolen a pig from the Spaniards. I reprimanded him before the company. We dine on it Thursday.”`;
-      else body = `“St Jean de Luz. My dear Father, We are in France. The country people bring us eggs and fowls and take dollars for them. His Lordship hanged two men last week for plundering a farm. A woman here told my serjeant she would sooner quarter us than her own army. I am as brown as a saddle. On Sunday I slept in a bed and did not like it. Tell my mother I wear the flannel.”`;
-    } else {
-      if (y <= 1799) body = `“Off Ushant. My dear Father, We have been eleven weeks on this station. Each morning we stand in and count the French in Brest Water. They count us. Then we stand out again. The purser’s goat has eaten the Captain’s signal book, private signals and all. The Captain wished her shot. The surgeon reminded him that she gives milk. I am rated master’s mate. I took the noon sight yesterday and put the ship within four miles of where she was.”`;
-      else if (y <= 1802) body = `“Yarmouth Roads. My dear Father, We were at Copenhagen on the 2nd under Lord Nelson. Sir Hyde made the signal to leave off. They say his Lordship put the glass to his blind eye and declared he could not see it. I had three guns on the main deck. I heard nothing for two days after and there is a singing in my head still. I have passed for Lieutenant. Captain Holloway said, ‘I suppose you will do.’ The gunroom tells me he never said so much to any man before.”`;
-      else if (y <= 1805) body = `“Off Toulon. My dear Father, We are two years on this station this month. I have not been ashore in fourteen. The beef cask we opened on Monday was branded 1789. We have lemons from Sardinia. I dined in the Victory last week. I could think of nothing to say and spoke of your turnips. On Thursday Lord Nelson hailed our boat. He asked how the turnips did.”`;
-      else if (y <= 1810) body = `“Off the Skaw. My dear Father, There are no French at sea. We bring two hundred merchantmen down from the Baltic at four knots and fire a gun at any that straggle. The event of the quarter was the wardroom cheese. It went overboard in a gale on the 9th. Captain Holloway has the gout and keeps his cabin. I am First Lieutenant and I work the ship. I find that I can.”`;
-      else if (y <= 1812) body = `“Halifax. My dear Father, We are sent to the American station. Their frigates carry twenty-four pounders and are built like seventy-fours. We met one off Sandy Hook. She looked at us and we looked at her. Our orders are to give no offence. Captain Holloway has gone home with his gout. I am made Commander into the Sparrow sloop, 18 guns. She makes fourteen inches of water in a watch. I would not change her for a three-decker.”`;
-      else body = `“Halifax. My dear Father, The American frigates carry twenty-four pounders and sail two feet to our one. They have taken the Guerriere and the Java. The London papers reach us six weeks old and very angry. We have had nobody to fight these seven years and our gunnery shows it. I am made Commander into the Sparrow sloop, 18 guns. She makes fourteen inches of water in a watch. I would not change her for a three-decker.”`;
-    }
-    return `The post-boy brings a letter from Edmund. There is one and a penny to pay on it. He has crossed it to save a second sheet.\n\n${body}`; },
-  choices:[
-    {t:'Send him fifty pounds.', note:'£50', go:() => { add({money:-50, family:2}); reg('edmund',1,'You sent money when he was on service');
-      return `You send a draft for fifty pounds on Tidmarsh’s.
+/* ---- Edmund ----
+   One event, many papers. Where he is decides whether it is a letter or a call at the book-room door. The year, the war, his purse,
+   his prospects, the settlement and his temper towards you decide which. Every piece has a stable id; a woodcut may be hung on it at
+   art/events/<id>. Kinds: news (a letter), talk (he comes in person), ask (he wants money), girl (he wants to marry),
+   settle (Long Barrow and his signature), cold (you are not on terms). */
+const edmWhere = () => F('edmundVicar') ? 'vicar' : (E() || 'home');
+const edmAway = () => ['army', 'navy', 'militia', 'church'].includes(edmWhere());
+const edmR = () => S.chars.edmund.r;
+const yr = (a, b) => S.year >= a && S.year <= b;
+const at = (...w) => w.includes(edmWhere());
+const lbAtStake = () => farm('longbarrow') && !F('soldLongBarrow') && !F('lbWord') && (S.mortgage >= 6000 || S.money < 0);
+const armyRank = () => F('major') ? 'Major' : S.year < 1800 ? 'Ensign' : S.year < 1807 ? 'Lieutenant' : 'Captain';
 
-His answer is eleven lines. He has bought ${E() === 'army' ? 'a horse, a boat-cloak and a dinner for his company' : 'a sextant, a sea-cloak and a dinner for the gunroom'}. He does not say what each cost.`; }},
-    {t:'Write him four sides about the estate.', go:() => { add({family:3}); reg('edmund',1);
-      return `You write four sides. The wheat. The lambing. Who is dead and who is married. What the bay mare did to the coach-house door.
+const EDMUND = [
+  /* ---------- the Army: 52nd Foot ---------- */
+  {id:'edmund-chelmsford', kind:'news', w:() => at('army') && yr(1796, 1800), x:() => `“Chelmsford Barracks. My dear Father, It has rained here nineteen days. We have been reviewed four times since we came. Each General told us we were a fine body of men and rode away to his dinner. I can shave in cold water now. Tamworth of ours keeps a jackdaw. It says Damn the French very distinctly. It says one thing more. Pray do not let my mother ask what.”`},
+  {id:'edmund-colour', kind:'news', w:() => at('army') && yr(1796, 1799), x:() => `“Chelmsford. My dear Father, I carried the King’s colour on Thursday for the first time. It weighs more than I had been told and there was a wind. An Ensign has four shillings and eightpence a day. The mess takes three shillings. My servant takes sixpence. The washerwoman takes what she can find. I have dined twice this week with the Major to save candles.”`},
+  {id:'edmund-ferrol', kind:'news', w:() => at('army') && yr(1800, 1801), x:() => `“At sea, off Ferrol. My dear Father, We were landed on the 25th in boats. We marched up a hill. The Generals looked at the town through their glasses for a day. Then we marched down the hill and were put on board again. Nobody has told us why. I lost a shoe in the surf going in and found another coming out. It is not a pair.”`},
+  {id:'edmund-aboukir', kind:'news', w:() => at('army') && yr(1801, 1802), x:() => `“Camp before Alexandria. My dear Father, We came ashore at Aboukir in the flat boats. The French had guns on the sandhills and gave us grape all the way in. The man on the next thwart was killed. We beat them again here on the 21st. Sir Ralph had a ball in the thigh and is dead of it. I have seen the Pyramids from nine miles off. Then I took the ophthalmia with half the regiment and saw nothing at all for three weeks. I am mended. I can tell a camel from a field officer at forty yards.”`},
+  {id:'edmund-reduced', kind:'news', w:() => at('army') && yr(1802, 1803), x:() => `“Chatham. My dear Father, It is Peace and the Army is to be reduced. Nine of our subalterns go upon half-pay at Michaelmas. I am eleventh on the list. The talk in the mess is all of curacies and coal merchants. Tamworth has sold his jackdaw to a Major of Marines. If I am the tenth, is there work for me at Hatherley? I can keep a company’s books.”`},
+  {id:'edmund-beacon', kind:'news', w:() => at('army') && yr(1803, 1805), x:() => `“Shorncliffe. My dear Father, We sleep in our boots. On Tuesday night the beacon on the hill was seen alight and the whole brigade stood to arms. We were three hours on the beach in the dark with sixty rounds a man. At four a dragoon rode in. It was a lime kiln at Folkestone. Sir John said we had turned out very well and might do it again on Thursday.”`},
+  {id:'edmund-shorncliffe', kind:'news', w:() => at('army') && yr(1803, 1807), x:() => `“Shorncliffe Camp. My dear Father, Sir John Moore has us out at five. We are to fight in pairs, one man loading while the other fires. The men are to be told the reason of an order. Nobody is to be flogged without cause. Major Pott says the service is ruined. I was never so tired in my life and I would not be anywhere else. On a clear day we see the French camp at Boulogne from the cliff. On Monday they had their washing out.”`},
+  {id:'edmund-zealand', kind:'news', w:() => at('army') && yr(1807, 1808), x:() => `“Before Copenhagen. My dear Father, We have burnt a good part of this town and taken the Danish fleet out of the harbour. The Danes were not at war with us in July. Our picquet is in a gentleman’s garden among his currant bushes. His wife sells us cream at the gate every morning. She will not look at us while she does it. I am very well fed.”`},
+  {id:'edmund-vimeiro', kind:'news', w:() => at('army') && yr(1808, 1808), x:() => `“Vimeiro, Portugal. My dear Father, I have now seen the French come on. They come in a column forty men across with the drums beating. We stood on the hill in a line two deep and fired into the head of it. In a quarter of an hour they were going down the hill again. Sir Arthur called for the dragoons. Then Sir Harry Burrard came ashore, being the senior, and said we had done enough for one day.”`},
+  {id:'edmund-corunna', kind:'news', w:() => at('army') && yr(1809, 1809), x:() => `“Plymouth. My dear Father, I am alive and have both my feet. We marched to Corunna in the snow, two hundred and fifty miles, with Marshal Soult a day behind. At Bembibre men sold their shoes for rum and lay down in the road. We left them. Sir John was struck by a round shot on the 16th. They buried him on the rampart in his cloak before it was light. I have no stockings. I have eaten part of a mule. My mother need not hear of the mule.”`},
+  {id:'edmund-busaco', kind:'news', w:() => at('army') && yr(1810, 1810), x:() => `“Busaco. My dear Father, We lay down behind the crest in the fog and heard them climbing. General Craufurd stood alone on a rock in front. When their drums were forty yards off he took off his hat and called us up. Eighteen hundred men stood up out of the heather at once. I saw the faces of their front rank. We did not fire above three rounds. I have a French serjeant’s pipe.”`},
+  {id:'edmund-hounds', kind:'news', w:() => at('army') && yr(1810, 1811), x:() => `“Behind the Lines, near Arruda. My dear Father, Lord Wellington keeps a pack of hounds and hunts three days a week. On Saturday the fox ran straight for the French outposts. Their picquet turned out and cheered him through. Then they cheered us. The Field Marshal was not pleased with the huntsman. Pray ask Mudge what is given for mange. Two couple have it.”`},
+  {id:'edmund-rodrigo', kind:'news', w:() => at('army') && yr(1812, 1812), x:() => `“Ciudad Rodrigo. My dear Father, We went up the lesser breach at seven on the night of the 19th. It was over in half an hour. General Craufurd was hit at the foot of it and died on the 24th. The Division carried him to the breach and buried him in it. Marching back we came to a pool across the road. Nobody went round. He never let us go round.”`},
+  {id:'edmund-badajoz', kind:'news', w:() => at('army') && yr(1811, 1812), x:() => `“Camp before Badajoz. My dear Father, We are in the trenches and the trenches are full of water. Lord Wellington rode by on Tuesday in a grey frock and a plain hat. He looked at our parallel for one minute and said it would do. The men speak of it still. My servant Pedro has stolen a pig from the Spaniards. I reprimanded him before the company. We dine on it Thursday.”`},
+  {id:'edmund-vitoria', kind:'news', w:() => at('army') && yr(1813, 1813), x:() => `“Vitoria. My dear Father, We have taken King Joseph’s whole baggage on the road east of the town. Two thousand carriages. I saw a private of ours in a lady’s ball dress, carrying a ham. I saw another boiling his kettle on a fire of muskets. Dollars are sold tonight at eight for a guinea, being too heavy to carry. I have a silver dish and a French dictionary. Pedro has a monkey.”`},
+  {id:'edmund-pyrenees', kind:'news', w:() => at('army') && yr(1813, 1814), x:() => `“St Jean de Luz. My dear Father, We are in France. The country people bring us eggs and fowls and take dollars for them. His Lordship hanged two men last week for plundering a farm. A woman here told my serjeant she would sooner quarter us than her own army. I am as brown as a saddle. On Sunday I slept in a bed and did not like it. Tell my mother I wear the flannel.”`},
+  {id:'edmund-toulouse', kind:'news', w:() => at('army') && yr(1814, 1814), x:() => `“Toulouse. My dear Father, It is Peace. We fought here on Easter Sunday and lost four thousand men. On the Tuesday a Colonel rode in from Paris. Bonaparte had abdicated four days before the battle. Nobody had told Marshal Soult. Nobody had told us. The theatre is open and the people throw white cockades into the boxes. I sat through an opera. I have not sat in a chair since Lisbon.”`},
+  {id:'edmund-cantonments', kind:'news', w:() => at('army'), x:() => `“My dear Father, There is nothing to tell. We drill, we are inspected and we are moved nine miles to drill again. My company is sixty-one men, of whom eleven can read. I write their letters on Sundays. Most begin ‘Dear Mother, this comes hoping’. One began ‘Dear Mary’ and wanted a deal of altering when he remembered his wife’s name was Ann.”`},
+
+  /* ---------- the Navy ---------- */
+  {id:'edmund-ushant', kind:'news', w:() => at('navy') && yr(1796, 1799), x:() => `“Off Ushant. My dear Father, We have been eleven weeks on this station. Each morning we stand in and count the French in Brest Water. They count us. Then we stand out again. The purser’s goat has eaten the Captain’s signal book, private signals and all. The Captain wished her shot. The surgeon reminded him that she gives milk. I am rated master’s mate. I took the noon sight yesterday and put the ship within four miles of where she was.”`},
+  {id:'edmund-berth', kind:'news', w:() => at('navy') && yr(1796, 1800), x:() => `“At sea. My dear Father, There are eleven of us in the midshipmen’s berth and one candle. The biscuit is alive. We tap it on the table before we bite and the weevils walk out. The rats are fed on it in a cask by a boy named Lott. He sells them at threepence, skinned. I have not bought one. I have tasted one. Do not tell my mother.”`},
+  {id:'edmund-copenhagen', kind:'news', w:() => at('navy') && yr(1801, 1802), x:() => `“Yarmouth Roads. My dear Father, We were at Copenhagen on the 2nd under Lord Nelson. Sir Hyde made the signal to leave off. They say his Lordship put the glass to his blind eye and declared he could not see it. I had three guns on the main deck. I heard nothing for two days after and there is a singing in my head still. I have passed for Lieutenant. Captain Holloway said, ‘I suppose you will do.’ The gunroom tells me he never said so much to any man before.”`},
+  {id:'edmund-paidoff', kind:'news', w:() => at('navy') && yr(1802, 1803), x:() => `“Portsmouth. My dear Father, The ship is paid off. There are four hundred Lieutenants in this town on half-pay and one coffee-room. I share a lodging over a sail-maker’s with two of them. We have one good coat among the three and take it in turn to call upon the Port Admiral. Tuesday is my day. He has not yet been at home on a Tuesday.”`},
+  {id:'edmund-toulon', kind:'news', w:() => at('navy') && yr(1803, 1805), x:() => `“Off Toulon. My dear Father, We are two years on this station this month. I have not been ashore in fourteen. The beef cask we opened on Monday was branded 1789. We have lemons from Sardinia. I dined in the Victory last week. I could think of nothing to say and spoke of your turnips. On Thursday Lord Nelson hailed our boat. He asked how the turnips did.”`},
+  {id:'edmund-tetuan', kind:'news', w:() => at('navy') && yr(1805, 1806), x:() => `“Gibraltar. My dear Father, We were not in the battle. We were sent to Tetuan with Admiral Louis for water and bullocks on the 3rd of October. We came back with the bullocks on the 30th. The Victory was towed in here under jury masts with the flag at half mast. Our people stood along the side and said nothing. I am now the only Lieutenant of my standing who has missed the Nile and Trafalgar both.”`},
+  {id:'edmund-skaw', kind:'news', w:() => at('navy') && yr(1806, 1810), x:() => `“Off the Skaw. My dear Father, There are no French at sea. We bring two hundred merchantmen down from the Baltic at four knots and fire a gun at any that straggle. The event of the quarter was the wardroom cheese. It went overboard in a gale on the 9th. Captain Holloway has the gout and keeps his cabin. I am First Lieutenant and I work the ship. I find that I can.”`},
+  {id:'edmund-prize', kind:'news', w:() => at('navy') && yr(1806, 1810), x:() => `“The Nore. My dear Father, We have taken a Danish brig off Anholt. She was laden with tar, deals and nine hundred cheeses. The Prize Court gives her to us. My share is sixty-one pounds four shillings, less the agent. The agent’s share is not stated. We kept forty of the cheeses for the gunroom. They are a hard red cheese. The carpenter says he could plank a boat with them.”`},
+  {id:'edmund-flushing', kind:'news', w:() => at('navy') && yr(1809, 1810), x:() => `“Off Flushing. My dear Father, We carried six hundred soldiers to the island of Walcheren in August. They went ashore singing. We are now carrying them home. They lie on the gun deck in rows and shake. It is a fever out of the ditches. We have buried forty-one over the side between this and the Downs. Not a man of ours has it. The surgeon puts it down to rum.”`},
+  {id:'edmund-sandyhook', kind:'news', w:() => at('navy') && yr(1811, 1812), x:() => `“Halifax. My dear Father, We are sent to the American station. Their frigates carry twenty-four pounders and are built like seventy-fours. We met one off Sandy Hook. She looked at us and we looked at her. Our orders are to give no offence. Captain Holloway has gone home with his gout. I am made Commander into the Sparrow sloop, 18 guns. She makes fourteen inches of water in a watch. I would not change her for a three-decker.”`},
+  {id:'edmund-java', kind:'news', w:() => at('navy') && yr(1813, 1814), x:() => `“Halifax. My dear Father, The American frigates carry twenty-four pounders and sail two feet to our one. They have taken the Guerriere and the Java. The London papers reach us six weeks old and very angry. We have had nobody to fight these seven years and our gunnery shows it. The Sparrow makes fourteen inches of water in a watch. I exercise the great guns every day but Sunday.”`},
+  {id:'edmund-shannon', kind:'news', w:() => at('navy') && yr(1813, 1814), x:() => `“Halifax. My dear Father, The Shannon has taken the Chesapeake off Boston. It was done in fifteen minutes. She brought her in here on Sunday during morning service. Somebody opened the church door and called it out. The whole congregation got up and went down to the wharves. The clergyman went with them. Captain Broke was carried ashore with his head laid open. He drilled his gunners every day for seven years.”`},
+  {id:'edmund-middlewatch', kind:'news', w:() => at('navy'), x:() => `“At sea. My dear Father, I write in the middle watch. There is no news. Yesterday we sighted a sail. It was a Portuguese with salt. The day before, we scrubbed hammocks. I have read the Hatherley letters until they come apart at the folds. Tell me how the wheat looks in Twelve Acres. Tell me who has the mill. Tell me anything that grows.”`},
+
+  /* ---------- the Militia ---------- */
+  {id:'edmund-ipswich', kind:'news', w:() => at('militia') && yr(1803, 1808), x:() => `“Ipswich Barracks. My dear Father, I have ninety Berkshire ploughmen in red coats. Forty are substitutes at ten guineas a head. One has been a substitute in three counties. They drill well enough. They will not keep step past a field of wheat without looking over the hedge. Yesterday the whole company gave its opinion of a Suffolk ploughing as it marched by. The opinion was low.”`},
+  {id:'edmund-dover', kind:'news', w:() => at('militia') && yr(1804, 1810), x:() => `“Dover Castle. My dear Father, We mount guard on the Western Heights and look at France. On a clear morning I can count the windows in Calais. They are building round towers along this shore, one to every half mile, with a gun on top. The men call them Mr Pitt’s pepper-pots. A tower costs seven thousand pounds. My company has not had new shoes since Reading.”`},
+  {id:'edmund-hythe', kind:'news', w:() => at('militia') && yr(1805, 1809), x:() => `“Hythe. My dear Father, We are lent to the Engineers to dig. There is to be a canal from here to Rye to keep out the French, thirty feet wide. A Frenchman who has crossed the Channel is to be stopped by a ditch. My ploughmen dig it better than the navigators and for less. The Colonel is very proud of this. The men would sooner have the navigators’ wages.”`},
+  {id:'edmund-volunteering', kind:'news', w:() => at('militia') && yr(1807, 1812), x:() => `“My dear Father, A serjeant of the Line has been through the barracks with a drum. Any Militia man who goes into the regulars has ten guineas. I have lost thirty-four from my company in a week. They go to Portugal. I asked the Colonel for leave to go with them as a volunteer. He said that I was a married man or ought to be, and that somebody must teach the next thirty-four their left feet.”`},
+  {id:'edmund-normancross', kind:'news', w:() => at('militia') && yr(1808, 1813), x:() => `“Norman Cross. My dear Father, We are guarding six thousand French prisoners in wooden barracks on a heath. They have a market at the gate every forenoon. They sell ships made of mutton bones, with all their rigging. They sell straw hats. One sells lessons in fencing. I have bought my mother a work-box. The man who made it was a dragoon at Marengo. He asked me whether we had any news of peace.”`},
+  {id:'edmund-huddersfield', kind:'news', w:() => at('militia') && yr(1812, 1813), x:() => `“Huddersfield. My dear Father, We are marched into Yorkshire to guard shearing frames against Englishmen. The croppers come at night with their faces blacked and break the frames with a great hammer. They call the hammer Enoch. My men are quartered on the town at five to a house. Nobody here will sell us an egg. I joined to keep the French out of Kent.”`},
+  {id:'edmund-disembodied', kind:'news', w:() => at('militia') && yr(1814, 1815), x:() => `“Reading. My dear Father, It is Peace and the Regiment is to be disembodied. The men give in their arms on Monday and have fourteen days’ pay to carry them home. Most have been eleven years from their parishes. My serjeant asked me what a man does who has been a serjeant. I could not tell him. I shall be at Hatherley on Thursday week with one trunk and a dog.”`},
+  {id:'edmund-guardroom', kind:'news', w:() => at('militia'), x:() => `“My dear Father, I am Captain of the day and write from the guard-room. Nothing has happened here since we came. The men mount guard over a magazine, a pump and a hay-stack. On Sunday a private of mine was found asleep against the hay-stack. He said in his defence that nobody had ever tried to take it. The Colonel gave him seven days.”`},
+
+  /* ---------- the Church, before he has a living ---------- */
+  {id:'edmund-oriel', kind:'news', w:() => at('church') && yr(1796, 1799), x:() => `“Oriel College. My dear Father, Chapel is at seven. I read Greek Testament with Mr Copleston at ten and Paley at twelve. Dinner is at three and the port goes round until six. There are men here who have not been seen sober since they matriculated and will be Deans. I have learnt one thing thoroughly. It is how to cross the quadrangle so that the Provost does not see my boots.”`},
+  {id:'edmund-ordained', kind:'news', w:() => at('church') && yr(1799, 1801), x:() => `“Oxford. My dear Father, I was ordained Deacon on Sunday. The Bishop’s chaplain examined me on the Saturday. He was shaving. He asked me to construe a verse of St John and said ‘Very well’ before I had done. Then he asked whose son I was. That took longer. There were eleven of us in the Cathedral. Two had been in the Army and one had failed as an attorney.”`},
+  {id:'edmund-curacy', kind:'news', w:() => at('church') && yr(1800, 1815), x:() => `“My dear Father, I have a curacy in Hampshire at fifty pounds a year. There are two churches seven miles apart. I serve one in the morning and ride to the other after a cold dinner. The Rector lives at Bath for his health. He has nine hundred a year from the tithe. I have seen him once. He told me that the people here were very attached to short sermons.”`},
+  {id:'edmund-burials', kind:'news', w:() => at('church') && yr(1800, 1815) && (PRICES[S.year] || 0) >= 100, x:() => `“My dear Father, I have buried nineteen since Christmas in a parish of three hundred. Eleven were children. It is not a fever. Wheat is too dear for a man on eight shillings to buy any. They live on tea and potatoes. I wrote to the Rector at Bath to ask for coals and flour for the poor. He sent two guineas and a tract on frugal cookery.”`},
+  {id:'edmund-tithepig', kind:'news', w:() => at('church') && yr(1801, 1815), x:() => `“My dear Father, I am sent by the Rector’s agent to take the tithe. Every tenth cock of hay. Every tenth lamb. On Tuesday it was a tenth pig, from a litter of nine. The farmer said that there was no tenth and the Church might have the next. His wife said I looked hungry and gave me bacon and eggs. I think I am not the man for this part of the work.”`},
+  {id:'edmund-pressed', kind:'news', w:() => at('church') && yr(1803, 1813), x:() => `“My dear Father, We are eleven miles from Portsmouth. On Saturday night the press gang came through and took four men out of the Anchor. I had married one of them on the Thursday. On Sunday his wife sat in the front pew by herself. I had a sermon ready upon contentment. I read them the hundred and seventh Psalm, about those that go down to the sea, and sent them home.”`},
+  {id:'edmund-waiting', kind:'news', w:() => at('church') && yr(1804, 1815), x:() => `“My dear Father, I have now been a curate eleven years counting from my Deacon’s orders. The Rector is seventy-four and takes the waters. I asked his agent who has the next presentation. It is sold already to a gentleman in the City for his nephew. The nephew is nine. I keep a pig, a pony and a school for six farmers’ sons. How does ${F('gallDead') ? 'the new man do at Hatherley' : 'Dr Gall do'}?”`},
+
+  /* ---------- at home, the heir ---------- */
+  {id:'edmund-rentbook', kind:'talk', w:() => at('home'), x:() => `Edmund comes to the book-room with the rent book under his arm.
+
+“Church Farm has paid the same rent since 1784, sir. Wheat was forty shillings then.”
+
+He has it worked out on a sheet of paper. He would raise it by a tenth at Lady Day.`,
+    a:() => `“Do it.”
+
+He writes the notice himself in a fair hand. He carries it to Church Farm himself. He is back in an hour.
+
+“He gave me a glass of ale, sir. He said he had expected it these five years.”`,
+    b:() => `You sit down with him and the book until the candles are changed. He knows what every field bore last year. You find two mistakes in his sums and he finds one in yours.
+
+At eleven Henrietta sends to ask whether either of you means to go to bed.`,
+    c:() => `“I will think about it.”
+
+“Yes, sir.”
+
+He shuts the book. He puts the sheet of paper inside it. It is there when you open the book at Michaelmas.`},
+  {id:'edmund-gun', kind:'talk', w:() => at('home') && (S.season === 2 || S.season === 3), x:() => `Edmund is cleaning both guns at the hall table.
+
+“Mudge has too many hen pheasants and no ground for them, sir. I would turn the rough end of Cuckoo Copse into cover. Forty rods of furze. One man, three weeks.”
+
+He does not look up from the lock.`,
+    a:() => `You give him the man and the three weeks. He is in the copse every morning in his shirt with a bill-hook.
+
+In October you and he walk it up together. Eleven brace. He lets you take the right-hand birds.`,
+    b:() => `You walk down to the copse with him. He shows you where the furze is to go. He has it pegged out already.
+
+A cock pheasant gets up between your feet. Neither of you has a gun. You both laugh.`,
+    c:() => `“We shall see.”
+
+He finishes the lock. He hangs up the guns. Next week you see the pegs in Cuckoo Copse. Nobody has pulled them up.`},
+  {id:'edmund-gazette', kind:'talk', w:() => at('home') && yr(1798, 1814), x:() => `The Gazette has come. Edmund reads it standing at the window.
+
+“Tamworth has his company,” he says. “He was below me at school.”
+
+He folds the paper. He asks whether you want him for anything this morning.`,
+    a:() => `“Take the grey and ride to Newbury market. Sell the barley as you think fit.”
+
+He sells it at two shillings over what Crabbe had asked. He tells you the price at dinner. He does not mention the Gazette.`,
+    b:() => `You take him round the home farm. You ask his opinion of every field and you take it in two.
+
+At the last gate he says, “I know what you are doing, sir.”
+
+He holds the gate for you.`,
+    c:() => `“Nothing this morning.”
+
+He goes out. You hear him in the yard, speaking to the groom. He rides towards the Down. He is not back for dinner.`},
+  {id:'edmund-drains', kind:'talk', w:() => at('home') && !S.projectsDone.drain, x:() => `Edmund has been at Hartopp’s. He comes back with clay to the knee.
+
+“He has put stone drains under twenty acres, sir. He was sowing on it in February. Kennet Bottom is the same clay.”
+
+He has brought a piece of the clay in his handkerchief. He puts it on your desk.`,
+    a:() => `You let him try five acres at the wet end. He is out with the men at six.
+
+By spring the five acres are dry enough to walk. He walks you over them twice.`,
+    b:() => `You ride to Hartopp’s with him the next morning. Hartopp talks for two hours. Edmund asks him the cost by the rod. He asks it three times before Hartopp answers.
+
+“That boy of yours,” says Hartopp, “will be a nuisance to somebody.”`,
+    c:() => `“Not this year.”
+
+He takes the clay off your desk. There is a mark on the leather. It is there still.`},
+  {id:'edmund-thirty', kind:'talk', w:() => at('home') && yr(1806, 1815), x:() => `It is Edmund’s birthday. He is ${19 + S.year - 1795}.
+
+He comes in after dinner and stands with his back to the fire.
+
+“I should like something that is mine to do, sir. I do not mean an allowance.”`,
+    a:() => `You give him the woods. Every copse on the estate, the felling, the sales and the planting.
+
+He has a book ruled for them by Friday. On Monday he marks forty oaks in Cuckoo Copse with a scribing-iron. He marks them himself.`,
+    b:() => `You talk until one. You tell him what your uncle left and what he owed. He has guessed most of it.
+
+“I had rather know, sir,” he says on the stairs.`,
+    c:() => `“You have the whole estate to learn.”
+
+“I have learnt it, sir.”
+
+He bows. He goes up. You hear his door.`},
+
+  /* ---------- farming on his own account ---------- */
+  {id:'edmund-swedes', kind:'talk', w:() => at('farmer'), x:() => `Edmund rides up from his farm before breakfast. He has a Swede turnip in each coat pocket.
+
+“Eleven pounds, that one, sir. Off the wet end. Your home farm has nothing over seven.”
+
+He puts them both on the breakfast table. Henrietta moves the butter.`,
+    a:() => `You buy his seed for the home farm at his price. He counts the money on the table.
+
+“I should have asked more,” he says.
+
+He stays to breakfast.`,
+    b:() => `You ride back with him. Sophia shows you the dairy. Edmund shows you the Swedes, the drains and a bull.
+
+You are there until four. The bull is the only thing on the farm you would not have yourself.`,
+    c:() => `“Very fine.”
+
+He looks at you. He puts the turnips back in his pockets.
+
+“Sophia sends her duty, sir.” He does not stay to breakfast.`},
+  {id:'edmund-rent', kind:'talk', w:() => at('farmer') && S.season === 2, x:() => `Michaelmas. Edmund comes to the audit with the other tenants. He waits his turn behind Mr Froome.
+
+He lays his rent on the table in notes and silver.
+
+“I would have the same abatement as any other tenant, sir. Or none, as they have.”`,
+    a:() => `You give him a receipt as you gave Froome. You take off nothing.
+
+He reads it and puts it in his hat. At the audit dinner he sits among the farmers. He carves.`,
+    b:() => `You keep him after the others have gone. You go through his year with him. He has cleared forty pounds.
+
+“It is forty more than I had from the Army,” he says. “And I was not shot at.”`,
+    c:() => `You push ten pounds back across the table.
+
+“For my grandchildren.”
+
+He leaves it lying there. Sophia sends for it on Tuesday, with her thanks.`},
+  {id:'edmund-christening', kind:'talk', w:() => at('farmer') && yr(1805, 1815), x:() => `Edmund and Sophia have another child. He comes to ask whether you will stand godfather.
+
+“Sophia would like him called Barnaby, sir. For the estate.”
+
+He turns his hat round in his hands.`,
+    a:() => `The child is christened Barnaby. You give him a silver mug with the name cut on it.
+
+At the font he roars. The clergyman says it is the Devil going out. Henrietta says it is your uncle coming in.`,
+    b:() => `You walk down to see the child. He is asleep. You are allowed to hold him for as long as he stays so.
+
+It is four minutes. You stand very still for all of it.`,
+    c:() => `“Call him what you like. Not Barnaby.”
+
+He is christened Thomas. Sophia calls him Barnaby in the house.`},
+  {id:'edmund-machine', kind:'talk', w:() => at('farmer') && yr(1806, 1815), x:() => `Edmund has been to see a threshing machine at work. He comes up to the Hall with chaff in his hair.
+
+“It did in a day what my four men do in a fortnight, sir. Then I looked at my four men.”
+
+He asks what you would do.`,
+    a:() => `“Keep your men.”
+
+He keeps them. His wheat is at market in March with everybody else’s. He does not complain of the price.`,
+    b:() => `You and he reckon it together. The machine saves him thirty pounds a winter. The four families cost the parish thirty-five if they come on the rate.
+
+“And I pay the rate,” says Edmund. He tears up the paper.`,
+    c:() => `“It is your farm.”
+
+“Yes, sir. That is why I asked.”
+
+He goes home. You do not hear which he chose.`},
+
+  /* ---------- vicar of the parish ---------- */
+  {id:'edmund-sermon', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the sermon for Sunday in his pocket. He reads it to you in the book-room.
+
+It is upon the labourer and his hire. It is nine minutes long. You are in it, though not by name.
+
+“I had rather you heard it here first, sir.”`,
+    a:() => `“Preach it.”
+
+He preaches it. You sit in the Hall pew with your face to the pulpit. Hartopp turns round twice to look at you.
+
+In the churchyard four labourers take off their hats to the Vicar. They have never done that before.`,
+    b:() => `You argue it with him until midnight. He gives up one sentence. You give up two.
+
+On Sunday he looks at you when he reaches the place. You nod.`,
+    c:() => `“I should leave out the part about the hire.”
+
+He preaches on the Prodigal Son. He reads it flat and fast. Henrietta asks in the carriage what you said to him.`},
+  {id:'edmund-tithe', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the tithe book that Dr Gall kept. He lays it open on your desk.
+
+“He took a tenth of the cottagers’ potatoes, sir. And their eggs. I should like to stop at the corn and the hay.”
+
+It would cost the living thirty pounds a year. The living is in your gift.`,
+    a:() => `“They are your tithes.”
+
+He lets the potatoes go. On the next Sunday there are eleven more in church. One brings him a basket of eggs.
+
+He sends it back with a shilling.`,
+    b:() => `You go through Gall’s book together. The Doctor had tithed a widow’s bees.
+
+“Honey, two pounds,” reads Edmund. “Wax, a quarter.” He shuts the book.`,
+    c:() => `“The next vicar will not thank you.”
+
+He takes the tithe as Gall took it. He pays the potatoes back at Christmas out of his own pocket. He thinks you do not know.`},
+  {id:'edmund-vestry', kind:'talk', w:() => at('vicar') && yr(1800, 1815), x:() => `Edmund has been in the chair at the vestry. He comes up to the Hall afterwards without his hat.
+
+“They voted to cut the allowance to the old people, sir. Froome moved it. I had no vote, only the chair.”
+
+He walks up and down your carpet.`,
+    a:() => `You call a second vestry and attend it. You have six votes for your rating. The allowance is put back.
+
+Froome says the Hall and the Vicarage are become one house. Edmund says he hopes so.`,
+    b:() => `He stays to dinner. He is still angry at the cheese.
+
+“I had it easier at ${E() === 'church' ? 'the curacy' : 'school'},” he says. “Nobody there was a relation.”
+
+Henrietta laughs. Then he does.`,
+    c:() => `“The vestry is the ratepayers’ business.”
+
+“And the old people are mine, sir.”
+
+He bows. He goes down the drive bareheaded in the rain.`},
+
+  /* ---------- he asks for money ---------- */
+  {id:'edmund-kit', kind:'ask', sum:80, w:() => at('army') && yr(1809, 1809), x:() => `“Plymouth. My dear Father, Everything I had is in a ditch in Galicia. Two coats, my bed, my saddle and the horse under it. The Regiment is to go out again in the summer. A Captain cannot go in a borrowed coat. I must ask you for eighty pounds. I had rather ask for it than owe it to the paymaster.”`},
+  {id:'edmund-mess', kind:'ask', sum:60, w:() => at('army'), x:() => `“My dear Father, I am obliged to trouble you. The Colonel has ordered a new pattern of jacket for the officers, with silver lace. It is the third pattern since I joined. There is also the mess plate, to which every officer subscribes, and a horse I backed at Canterbury. Sixty pounds would clear me. The horse is the smallest part of it. I mention the horse because you will hear of it from Tamworth’s father.”`},
+  {id:'edmund-outfit', kind:'ask', sum:70, w:() => at('navy') && yr(1801, 1804), x:() => `“Portsmouth. My dear Father, I have my commission as Lieutenant. I have no coat to wear it in. A Lieutenant must have a full dress and an undress coat, a sword, a sextant of his own and a share in the gunroom wine. The tailor on the Hard will not trust a midshipman. Seventy pounds would rig me. I will pay it out of the first prize.”`},
+  {id:'edmund-agent', kind:'ask', sum:60, w:() => at('navy') && yr(1805, 1814), x:() => `“My dear Father, My prize agent has broke. He held two hundred and ten pounds of mine and is gone to Boulogne with it. I owe the gunroom steward and the tailor and I have nothing coming in until the quarter. Sixty pounds would keep me from asking the Captain. I had sooner ask you.”`},
+  {id:'edmund-plate', kind:'ask', sum:80, w:() => at('militia'), x:() => `“My dear Father, The mess has voted itself a silver tureen. The Colonel proposed it, so nobody spoke against. My share is eleven guineas. There is also the band, which the officers pay for, and the regimental ball, and my serjeant’s wife, who has been brought to bed of twins. Eighty pounds would cover all. The twins are the cheapest item.”`},
+  {id:'edmund-pony', kind:'ask', sum:45, w:() => at('church') && yr(1800, 1815), x:() => `“My dear Father, My pony is dead. She fell in the lane on Sunday between the two churches and I read evening prayer an hour late in a wet surplice. I cannot serve both parishes on foot. A sound cob is thirty pounds here. I also owe the bookseller at Winchester. Forty-five pounds in all. A curate’s year is fifty.”`},
+  {id:'edmund-hunter', kind:'ask', sum:70, w:() => at('home'), x:() => `Edmund finds you in the stable yard.
+
+“Loveday has a brown gelding to sell, sir. Six years old. He asks seventy guineas and would take pounds.”
+
+He has ridden the same cob since he was sixteen. He does not say so.`},
+  {id:'edmund-ram', kind:'ask', sum:60, w:() => at('farmer'), x:() => `Edmund is back from Hartopp’s shearing.
+
+“There is a New Leicester shearling ram to be let for the season, sir. Sixty pounds. I have forty. He would put four pounds of wool on every lamb I breed.”
+
+He names the twenty he wants. He names the day he will repay it.`},
+  {id:'edmund-chancel', kind:'ask', sum:90, w:() => at('vicar'), x:() => `Edmund takes you into the chancel after service. He points up.
+
+There is daylight through the roof over the altar. A starling goes in by it.
+
+“The chancel is the Rector’s to mend, sir. I am the Rector. The plumber says ninety pounds. The living is worth a hundred and eighty.”`},
+
+  /* ---------- he wishes to marry ---------- */
+  {id:'edmund-miss-army', kind:'girl', lady:'Miss Charlotte Pott', father:'Major Pott', w:() => at('army') && yr(1803, 1814) && !F('edmundMarried'), x:() => `“My dear Father, I write upon a subject I have not opened before. Major Pott of ours has a daughter. Miss Charlotte Pott is twenty-two. She has followed the Regiment since she was nine and can tell a good biscuit from a bad one in the dark. She has no fortune. I have asked her and she has said yes if you do. I await your answer with more fear than I ever felt of the French.”`},
+  {id:'edmund-miss-navy', kind:'girl', lady:'Miss Anne Hallett', father:'Mr Hallett', w:() => at('navy') && yr(1802, 1814) && !F('edmundMarried'), x:() => `“My dear Father, Our purser, Mr Hallett, has a sister at Gosport who keeps house for him. Miss Anne Hallett is twenty-four. She has waited on the Hard for the same ship to come in these six years, to see her brother. Lately I find that I am looked for too. She has five hundred pounds in the Navy Five per Cents. I have asked her. She says a sailor’s wife sees her husband one month in twelve and she has had practice.”`},
+  {id:'edmund-miss-militia', kind:'girl', lady:'Miss Mary Finnis', father:'Mr Finnis', w:() => at('militia') && !F('edmundMarried'), x:() => `“My dear Father, I am to tell you of Miss Mary Finnis, of Dover. Her father is a brewer and supplies the garrison. I was sent to complain of the beer and stayed to tea. I have since complained of the beer on eleven occasions. Mr Finnis says he will give four thousand pounds with her. He would like to hear it from you that a brewer’s daughter will be received at Hatherley.”`},
+  {id:'edmund-miss-church', kind:'girl', lady:'Miss Jane Lyford', father:'Mr Lyford', w:() => at('church') && yr(1801, 1815) && !F('edmundMarried'), x:() => `“My dear Father, The surgeon of this place, Mr Lyford, has five daughters. The second is Miss Jane. She teaches in my Sunday school and has mended my surplice twice without being asked. We could not marry on fifty pounds. We could on a hundred and fifty. I do not ask for the hundred. I ask whether you would object to the lady if I had it.”`},
+  {id:'edmund-miss-home', kind:'girl', lady:'Miss Sophia Loveday', father:'Mr Loveday', w:() => at('home', 'vicar') && yr(1807, 1815) && !F('edmundMarried'), x:() => `Edmund has dined at the Lovedays’ every Thursday since Michaelmas.
+
+He comes to the book-room in his best coat.
+
+“I have spoken to Miss Sophia Loveday, sir. I have not yet spoken to her father. I thought I should speak to mine.”`},
+
+  /* ---------- Long Barrow and his signature ---------- */
+  {id:'edmund-settle-letter', kind:'settle', w:() => edmAway() && lbAtStake() && edmR() >= 0, x:() => `“My dear Father, I have had a letter from Mr Spurling. He writes that Long Barrow may have to be sold to clear the mortgage, and that being settled land it wants my hand to the deed. I do not write to refuse. I write to ask what is owed. I have never been told. If my name is to go on a parchment I should like to read the figures first.”`},
+  {id:'edmund-settle-stiff', kind:'settle', w:() => edmAway() && lbAtStake() && edmR() < 0, x:() => `“Sir, Mr Spurling informs me that you may wish to sell Long Barrow, and that my signature is required. I am to have that farm by my great-uncle’s settlement and my son after me. I have had little else from Hatherley. I shall want better reasons than Mr Spurling’s before I sign. I remain, Sir, your obedient son.”`},
+  {id:'edmund-settle-room', kind:'settle', w:() => !edmAway() && lbAtStake(), x:() => `Edmund has met Mr Spurling in Wyvern market place.
+
+He shuts the book-room door behind him.
+
+“He tells me Long Barrow may be sold, sir. And that I must sign. ${edmR() >= 0 ? 'I should like to know what we owe.' : 'I think I had a right to hear it from you.'}”`},
+
+  /* ---------- not on terms ---------- */
+  {id:'edmund-cold-letter', kind:'cold', w:() => edmAway() && edmR() <= -2, x:() => `“Sir, I have received my mother’s letter of the 4th and beg you will thank her for the flannel. I am in good health. The weather has been wet. I have nothing further to communicate. I remain, Sir, your dutiful son, Edmund ${S.sur}.”
+
+It is the whole letter. It does not cover one side.`},
+  {id:'edmund-cold-room', kind:'cold', w:() => !edmAway() && edmR() <= -2, x:() => `Edmund has not dined at your table since ${['Lady Day', 'Midsummer', 'Michaelmas', 'Christmas'][(S.season + 3) % 4]}.
+
+You meet him in the stable yard. He takes off his hat.
+
+“Good morning, sir.”
+
+He stands with it off until you have gone by.`}
+];
+
+const edmNow = () => { S.did = S.did || {};
+  if (S.edm && S.edm.t === S.t) { const p = EDMUND.find(x => x.id === S.edm.id); if (p) return p; }
+  const ok = EDMUND.filter(p => p.w()), fresh = ok.filter(p => S.did[p.id] === undefined);
+  const special = fresh.filter(p => p.kind !== 'news' && p.kind !== 'talk');
+  let pool = special.length && chance(0.5) ? special : fresh.length ? fresh : ok.slice().sort((a, b) => S.did[a.id] - S.did[b.id]).slice(0, 3);
+  // news that belongs to one year goes before news that would keep
+  const p = pick(pool) || EDMUND.find(x => x.id === 'edmund-cantonments');
+  S.edm = {t:S.t, id:p.id}; S.did[p.id] = S.t; return p; };
+const edmKind = k => edmNow().kind === k;
+const PREFACE = [
+  `The post-boy brings a letter from Edmund. There is one and a penny to pay on it. He has crossed it to save a second sheet.`,
+  `A letter from Edmund. The wafer is cracked. Henrietta has read the direction three times before you come down.`,
+  `Edmund’s hand, on the hall table. Eightpence to pay. Henrietta stands by while you break the wafer.`,
+  `The carrier leaves a letter at the lodge. It is from Edmund. The lodge-keeper’s wife brings it up herself and waits in the hall.`];
+const mates = () => at('army') ? 'the mess' : at('navy') ? 'the gunroom' : at('militia') ? 'the mess' : 'his landlady';
+
+ev({ id:'edmundLetter', from:1797, to:1815, weight:4, repeatGap:5, cond:() => !F('edmundDead') && !!E() && (!at('army', 'navy') || S.year >= 1798),
+  get title(){ return S.pending === 'edmundLetter' && !edmAway() ? 'Edmund at the Book-room Door' : 'A Letter from Edmund'; },
+  cut:() => edmNow().id,
+  text:() => { const p = edmNow(); return edmAway() ? `${PREFACE[S.t % PREFACE.length]}\n\n${p.x()}` : p.x(); },
+  choices:[
+    /* a letter of news */
+    {t:'Send him fifty pounds.', note:'£50', if:() => edmKind('news'), go:() => { add({money:-50, family:2}); reg('edmund',1,'You sent money when he was away');
+      return pick([
+        `You send a draft for fifty pounds on Tidmarsh’s.
+
+His answer is eleven lines. He has bought ${at('army') ? 'a horse, a boat-cloak and a dinner for his company' : at('navy') ? 'a sextant, a sea-cloak and a dinner for the gunroom' : at('militia') ? 'a new sash, a second-hand charger and a dinner for his serjeants' : 'a cob, a great-coat and forty bushels of coals for the poor of two parishes'}. He does not say what each cost.`,
+        `Fifty pounds goes by the next post.
+
+He writes back in a week. He has paid his tailor, his servant and ${mates()}. There is four pounds over. He asks whether he should send it back.`,
+        `You send fifty pounds and no advice.
+
+His answer is to his mother. There is a line in it for you. “Tell my father the money came on the very day it was wanted. I will not say for what.”`]); }},
+    {t:'Write him four sides about the estate.', if:() => edmKind('news'), go:() => { add({family:3}); reg('edmund',1);
+      return pick([
+        `You write four sides. The wheat. The lambing. Who is dead and who is married. What the bay mare did to the coach-house door.
 
 You read it over. It is dull. You seal it.
 
 His next letter has a postscript.
 
-“${E() === 'army' ? 'Tamworth asks whether the bay mare is sold. The mess has money on it.' : 'Mr Hallett asks whether the bay mare is sold. The gunroom has money on it.'}”`; }},
-    {t:'Let Henrietta answer. She has knitted him something.', go:() => { add({family:1}); reg('henrietta',1);
-      return `Henrietta writes eleven sides. She packs two flannel waistcoats, a plum cake and a receipt against the flux.
+“${at('army') ? 'Tamworth asks' : at('navy') ? 'The Master asks' : at('militia') ? 'My serjeant asks' : 'My landlady asks'} whether the bay mare is sold. ${at('church') ? 'She has sixpence on it with the clerk.' : 'There is money on it here.'}”`,
+        `You write four sides. You give him the price of wheat at Newbury and what each field bore. You tell him Mudge has shot a white stoat.
+
+He answers every paragraph in order. Against the stoat he has written, “Stuff it.”`,
+        `You write on Sunday evening. Four sides, crossed. The rent audit, the new hedge, the death of old Dewey’s dog.
+
+He writes back that he read it aloud to ${mates()}. Nobody believed in the dog.`]); }},
+    {t:'Let Henrietta answer. She has knitted him something.', if:() => edmKind('news'), go:() => { add({family:1}); reg('henrietta',1);
+      return pick([
+        `Henrietta writes eleven sides. She packs two flannel waistcoats, a plum cake and a receipt against the flux.
 
 His answer comes addressed to her. She reads you one line of it.
 
 “The cake was of the greatest interest to the surgeon.”
 
-She folds the letter and puts it in her work-box.`; }}
+She folds the letter and puts it in her work-box.`,
+        `Henrietta sends six pair of worsted stockings and a letter. You are not shown the letter.
+
+His answer is to her. She laughs twice while she reads it. She does not say at what.`,
+        `Henrietta writes for two evenings. She encloses a lock of the dog’s hair, a sermon and a pot of calves’-foot jelly.
+
+The jelly travels badly. He thanks her for the sermon. He says the paper was very useful.`]); }},
+    /* he calls in person */
+    {t:'Let him have his way in it.', if:() => edmKind('talk'), go:() => { add({family:1}); reg('edmund',2,'You let him have his way'); return edmNow().a(); }},
+    {t:'Go into it with him.', if:() => edmKind('talk'), go:() => { add({family:3}); reg('edmund',1); return edmNow().b(); }},
+    {t:'Put him off.', if:() => edmKind('talk'), go:() => { add({family:-1}); reg('edmund',-1,'You put him off'); return edmNow().c(); }},
+    /* he asks for money */
+    {t:'Let him have the whole of it.', note:() => '£' + edmNow().sum, if:() => edmKind('ask'), go:() => { add({money:-edmNow().sum, family:2}); reg('edmund',2,'You paid when he asked');
+      return edmAway() ? pick([
+        `You send a draft for the whole sum by return.
+
+His answer is one line. “My dear Father, It came. I shall not forget it. E.”`,
+        `You send it all. You add nothing about economy.
+
+He writes that he read your letter twice to find the sermon in it. He has kept the letter.`])
+      : `“You shall have it.”
+
+He had the next sentence ready. He does not need it. He stands a moment with his mouth open.
+
+“Thank you, sir.” He goes out fast.`; }},
+    {t:'Half, and a page of advice.', note:() => '£' + Math.round(edmNow().sum / 2), if:() => edmKind('ask'), go:() => { add({money:-Math.round(edmNow().sum / 2)}); reg('edmund',0);
+      return edmAway() ? `You send half. You send with it a page upon living within one’s means. You wrote from experience.
+
+He thanks you for the draft. He says he has read the advice to ${mates()} and it was much admired.`
+      : `You give him half. You tell him how you managed at his age.
+
+“Yes, sir,” he says. He has heard how you managed at his age. He heard it from your uncle’s steward.`; }},
+    {t:'Advice only.', if:() => edmKind('ask'), go:() => { add({family:-2}); reg('edmund',-2,'You sent advice when he asked for money');
+      return edmAway() ? `You write two sides upon debt. You enclose nothing.
+
+There is no answer for eleven weeks. Then Henrietta has a letter. He has sold his watch.`
+      : `“We cannot run to it this year.”
+
+“No, sir.”
+
+He does not ask again. He does not ask for anything again.`; }},
+    /* he wishes to marry */
+    {t:'Give your consent, and three hundred pounds to begin on.', note:'£300', if:() => edmKind('girl'), go:() => { const p = edmNow(); fl('edmundMarried'); add({money:-300, family:6}); reg('edmund',3,'You gave your blessing and three hundred pounds'); reg('henrietta',1);
+      return `You give your consent in six lines. You send three hundred pounds with it.
+
+They are married within the quarter. ${p.lady} writes to Henrietta as “My dear Madam”. Her hand is small and upright. She has asked for the receipt for Mrs Bunce’s plum cake.
+
+Henrietta sends it. She leaves out the brandy.`; }},
+    {t:'Ask what her father means to give with her.', if:() => edmKind('girl'), go:() => { const p = edmNow();
+      if (chance(0.5)) { fl('edmundMarried'); add({family:3}); reg('edmund',0);
+        return `You write to ${p.father}. You ask what he proposes to settle.
+
+${p.father} answers by return. He names a sum. It is more than you would have asked. He names what he expects from you. It is nothing.
+
+They are married within the quarter. You are thanked by everybody. Edmund thanks you last.`; }
+      add({family:-2}); reg('edmund',-2,'You asked her father for his figures');
+      return `You write to ${p.father}. You ask what he proposes to settle.
+
+${p.father} answers that he had not understood his daughter was for sale.
+
+The lady releases Edmund from his word. He tells you so in four lines.`; }},
+    {t:'Forbid it.', if:() => edmKind('girl'), go:() => { const p = edmNow(); add({family:-4}); reg('edmund',-3,'You forbade ' + p.lady); reg('henrietta',-1);
+      return `You write that it will not do.
+
+His answer is short. “Sir, I have told ${p.lady} what you say. She did not cry. I had rather she had.”
+
+Henrietta does not speak of it. She does not speak of much else to you that week.`; }},
+    /* the settlement */
+    {t:'Show him the accounts, every page.', if:() => edmKind('settle'), go:() => { add({family:2}); reg('edmund',2,'You showed him the accounts');
+      return edmAway() ? `You have ${F('crabbeGone') ? 'Lark' : 'Crabbe'} copy the whole account. The mortgage. The interest. The rental. What your uncle owed at Brooks’s. It makes nine sheets.
+
+Edmund’s answer comes in a fortnight. “I have read it three times. I had no notion. If it must be signed I will sign, and I thank you for treating me as a man.”`
+      : `You take down the ledgers. You go through them with him from your uncle’s death. It takes until two in the morning.
+
+He says very little. At the end he squares the books on the desk.
+
+“If it comes to it, sir, I will sign.”`; }},
+    {t:'Give him your word that Long Barrow shall not be sold.', if:() => edmKind('settle'), go:() => { fl('lbWord'); add({family:1}); reg('edmund',1,'You gave your word on Long Barrow');
+      return edmAway() ? `You write that Long Barrow will come to him as your uncle meant. You sign it and date it.
+
+He writes back that he has put the letter with his commission and his mother’s hair.`
+      : `“Long Barrow comes to you. You have my word.”
+
+He looks at you for some time.
+
+“I shall hold you to it, sir.” He holds out his hand. You take it.`; }},
+    {t:'Tell him the estate is yours while you live.', if:() => edmKind('settle'), go:() => { add({family:-3}); reg('edmund',-2,'You told him the estate was none of his business');
+      return edmAway() ? `You write that the estate is yours while you live, and that Mr Spurling had no business to write.
+
+There is no answer. Mr Spurling tells you in Wyvern that he has had one. He does not show it to you.`
+      : `“The estate is mine while I live.”
+
+“And the debts, sir? Whose are those to be?”
+
+He does not wait for the answer.`; }},
+    /* not on terms */
+    {t:'Make the first move.', if:() => edmKind('cold'), go:() => { add({family:3}); reg('edmund',2,'You made the first move');
+      return edmAway() ? `You write as you did when he was at school. You tell him the dog has had pups. You tell him his rod is where he left it. You sign it “your affectionate father”.
+
+His answer covers three sides. It begins “My dear Father”.`
+      : `You go round to the gun room after dinner. He is there with a book.
+
+“I was wrong,” you say. You do not say in what. There is a choice.
+
+He puts the book down. After a time he gets out the backgammon board.`; }},
+    {t:'Send fifty pounds and say nothing.', note:'£50', if:() => edmKind('cold'), go:() => { add({money:-50}); reg('edmund',1);
+      return edmAway() ? `You send a draft for fifty pounds in a blank cover.
+
+It is acknowledged. “Sir, I have received fifty pounds, for which I am obliged.” There is a postscript. “How is my mother’s cough?”`
+      : `You leave fifty pounds on his dressing-table in a folded paper.
+
+He does not mention it. On Sunday he walks to church beside you. He has not done that since the spring.`; }},
+    {t:'Let him come round in his own time.', if:() => edmKind('cold'), go:() => { add({family:-2});
+      return edmAway() ? `You do not answer. Henrietta does. She writes him four sides and shows you none of them.
+
+His next letter is to her.`
+      : `You say nothing. He says nothing.
+
+Henrietta has taken to dining with a book. She lays it open between the two of you and reads it.`; }}
   ]});
 
 ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home', title:'Edmund and the Volunteers',
