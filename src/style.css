@@ -178,6 +178,7 @@ table.acct tr.total .n{font-size:1.3rem}
 .lots details[open] summary{border-bottom-color:transparent} .lots details[open] summary b::before{content:"\261E\FE0E  ";color:var(--madder)}
 .lots details > div{padding:0 0 12px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .lots details p{margin:0;font-size:.95rem;line-height:1.4} .lots .terms{color:var(--muted);font-size:.86rem} .lots .terms em{color:var(--bad)}
+.lots .tag{font-family:var(--caps);font-style:normal;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:7px} .lots b small{display:inline-block;font-size:.8rem;color:var(--muted);margin-left:6px;white-space:nowrap}
 .amt{font-variant-numeric:tabular-nums;white-space:nowrap} .amt.pos{color:var(--good)} .amt.neg{color:var(--bad)}
 .inkbtn:disabled .amt{color:inherit}
 .lots .fx{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:.98rem;line-height:1.35} .lots .fx .pos{color:var(--good)} .lots .fx .neg{color:var(--bad)}
