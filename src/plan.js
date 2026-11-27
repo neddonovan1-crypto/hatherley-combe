@@ -153,6 +153,9 @@ function piecesOn(){ const on = [], y = S.year, est = footing();
   for (const id of ['lbfold', 'churchhouse', 'coldyards', 'coldclover', 'starvepond', 'rookgranary', 'withybank', 'withybarn', 'maddlesainfoin', 'cricket']) if (isBuilt(id)) on.push(id);
   for (const id of ['hops', 'limekiln', 'cherries', 'osiers', 'gravel', 'sheepfair', 'warren']) if (isLive(id)) on.push(id);
   if (isBuilt('pound') && !F('enclosed')) on.push('pound');
+  for (const id of ['rookdrain', 'starveburn', 'homeyards']) if (isBuilt(id)) on.push(id);
+  for (const id of ['gallops', 'dairy']) if (isLive(id)) on.push(id);
+  if (F('enclosed')) { for (const id of ['cplime', 'cpcloses']) if (isBuilt(id)) on.push(id); if (isLive('potatoes')) on.push('potatoes'); }
   for (const id of ['maddle', 'withymead', 'starveall']) if (farmAt(id)) on.push('farm-' + id);
   if (isLive('merino')) on.push('sheepwalk');
   if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
