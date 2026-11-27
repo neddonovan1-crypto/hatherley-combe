@@ -318,3 +318,5 @@ details.meter > summary:hover span{text-decoration:underline;text-decoration-thi
 details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--display);font-size:.95rem;line-height:1.3;columns:2;column-gap:18px} details.meter .fx .pos{color:var(--good)} details.meter .fx .neg{color:var(--bad)} details.meter .fx li:first-child{color:var(--muted)}
 .digest{display:flex;flex-direction:column;gap:6px} .digest .bal dd .amt{font-size:inherit} .digest .daybook{margin:0}
 @media (max-width:1080px){ .digest{display:none} }
+.bal .creditbox{margin-left:auto;align-self:center} details.pick.credit > summary{padding:6px 30px 6px 14px} details.pick.credit > summary b{font-family:var(--caps);font-size:.86rem;letter-spacing:.12em;text-transform:uppercase}
+details.pick.credit .opts{left:auto;right:0;width:min(23rem, 78vw);max-height:22rem} details.pick.credit .opts button .amt{font-family:var(--display);font-size:1.02rem} details.pick.credit .opts button:disabled small{color:var(--bad)}

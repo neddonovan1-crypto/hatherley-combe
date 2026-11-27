@@ -322,6 +322,8 @@ details.meter > summary:hover span{text-decoration:underline;text-decoration-thi
 details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--display);font-size:.95rem;line-height:1.3;columns:2;column-gap:18px} details.meter .fx .pos{color:var(--good)} details.meter .fx .neg{color:var(--bad)} details.meter .fx li:first-child{color:var(--muted)}
 .digest{display:flex;flex-direction:column;gap:6px} .digest .bal dd .amt{font-size:inherit} .digest .daybook{margin:0}
 @media (max-width:1080px){ .digest{display:none} }
+.bal .creditbox{margin-left:auto;align-self:center} details.pick.credit > summary{padding:6px 30px 6px 14px} details.pick.credit > summary b{font-family:var(--caps);font-size:.86rem;letter-spacing:.12em;text-transform:uppercase}
+details.pick.credit .opts{left:auto;right:0;width:min(23rem, 78vw);max-height:22rem} details.pick.credit .opts button .amt{font-family:var(--display);font-size:1.02rem} details.pick.credit .opts button:disabled small{color:var(--bad)}
 </style>
 <div class="desk">
   <div class="book">
@@ -8518,7 +8520,7 @@ function versoHTML(){
   return head + `<h2 class="qtitle">${esc(QUARTER[S.season])} Quarter, ${S.year}</h2>
     ${accountHTML()}
     <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}${typeof mortCap === 'function' ? `<small>of ${fmt(mortCap())}</small>` : ''}</dd></div>
-      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}</dl>${over || typeof creditList !== 'function' ? '' : creditHTML()}
+      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}${over || typeof creditList !== 'function' ? '' : creditHTML()}</dl>
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W, 'goodwill', 'sullen', 'The parish is sullen')}
@@ -8533,9 +8535,8 @@ function hazardHTML(v){
   if (v.odds) { const o = v.odds, pc = x => Math.round((x || 0) * 100); return `<span class="hazard"><span>Hazard</span><span class="oddsbar" role="img" aria-label="${pc(o.well)} in 100 well, ${pc(o.dull)} middling, ${pc(o.ill)} ill"><i class="w" style="flex:${pc(o.well)}"></i><i class="d" style="flex:${pc(o.dull)}"></i><i class="l" style="flex:${pc(o.ill)}"></i></span></span>`; }
   if (!Number.isFinite(v.risk)) return '';
   return `<span class="hazard" role="img" aria-label="Hazard ${v.risk} of 4"><span>Hazard</span>${[1, 2, 3, 4].map(i => `<i class="pip${i <= v.risk ? ' on' : ''}"></i>`).join('')}</span>`; }
-function creditHTML(){ const all = creditList(), main = all.filter(c => c.id === 'mortgage' || c.id === 'repay'), rest = all.filter(c => !main.includes(c));
-  const row = c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`;
-  return `<h3 class="orn">Credit</h3><div class="lots credit">${main.map(row).join('')}${rest.length ? `<details class="more" ${MORE ? 'open' : ''} ontoggle="MORE = this.open"><summary><b>Other ways to raise money</b><span>${rest.length}</span></summary><div class="lots">${rest.map(row).join('')}</div></details>` : ''}</div>`; }
+function creditHTML(){
+  return `<div class="creditbox"><details class="pick credit"><summary><b>Credit</b></summary><div class="opts">${creditList().map(c => `<button type="button" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}><b>${esc(c.name)}</b>${c.gets ? amt(c.gets, c.gets) : ''}<small>${c.why && !c.can ? esc(c.why) : (c.fx || []).slice(1).map(esc).join('. ') + (c.note ? (c.fx && c.fx.length > 1 ? '. ' : '') + esc(c.note) : '')}</small></button>`).join('')}</div></details></div>`; }
 function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
