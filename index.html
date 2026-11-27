@@ -3923,7 +3923,7 @@ const EDMUND = [
   {id:'edmund-ordained', kind:'news', w:() => at('church') && yr(1799, 1801), x:() => `“Oxford. My dear Father, I was ordained Deacon on Sunday, having been examined on the Saturday by the Bishop’s chaplain, who was shaving. He asked me to construe a verse of St John, and said ‘Very well’ before I had done; and then he asked whose son I was, which took longer. There were eleven of us in the Cathedral, of whom two had been in the Army, and one had failed as an attorney.”`},
   {id:'edmund-curacy', kind:'news', w:() => at('church') && yr(1800, 1815), x:() => `“My dear Father, I have a curacy in Hampshire, at fifty pounds a year. There are two churches, seven miles apart, of which I serve one in the morning, and ride to the other after a cold dinner. The Rector lives at Bath for his health, and has nine hundred a year from the tithe. I have seen him once, when he told me that the people here were very attached to short sermons.”`},
   {id:'edmund-burials', kind:'news', w:() => at('church') && yr(1800, 1815) && (PRICES[S.year] || 0) >= 100, x:() => `“My dear Father, I have buried nineteen since Christmas, in a parish of three hundred, and eleven of them children. It is not a fever. Wheat is too dear for a man upon eight shillings to buy any, and they live on tea and potatoes. I wrote to the Rector at Bath, to ask for coals and flour for the poor; and he sent two guineas, and a tract upon frugal cookery.”`},
-  {id:'edmund-tithepig', kind:'news', w:() => at('church') && yr(1801, 1815), x:() => `“My dear Father, I am sent by the Rector’s agent to take the tithe, which is every tenth cock of hay, and every tenth lamb; and on Tuesday it was a tenth pig, from a litter of nine. The farmer said that there was no tenth, and the Church might have the next. His wife said that I looked hungry, and gave me bacon and eggs. I think I am not the man for this part of the work.”`},
+  {id:'edmund-tithepig', kind:'news', w:() => at('church') && yr(1801, 1815), x:() => `“My dear Father, I am sent by the Rector’s agent to take the tithe, that is to say every tenth cock of hay, and every tenth lamb; and on Tuesday it was a tenth pig, from a litter of nine. The farmer said that there was no tenth, and the Church might have the next. His wife said that I looked hungry, and gave me bacon and eggs. I think I am not the man for this part of the work.”`},
   {id:'edmund-pressed', kind:'news', w:() => at('church') && yr(1803, 1813), x:() => `“My dear Father, We are eleven miles from Portsmouth; and on Saturday night the press gang came through, and took four men out of the Anchor, one of whom I had married on the Thursday. On Sunday his wife sat in the front pew by herself. I had a sermon ready upon contentment; but I read them the hundred and seventh Psalm, about those that go down to the sea, and sent them home.”`},
   {id:'edmund-waiting', kind:'news', w:() => at('church') && yr(1804, 1815), x:() => `“My dear Father, I have now been a curate eleven years, counting from my Deacon’s orders. The Rector is seventy-four, and takes the waters; and upon my asking his agent who has the next presentation, I learnt that it is sold already to a gentleman in the City, for his nephew, who is nine. I keep a pig, a pony, and a school for six farmers’ sons. How does ${F('gallDead') ? 'the new man do at Hatherley' : 'Dr Gall do'}?”`},
 
@@ -4382,7 +4382,7 @@ But in the evenings he reads the Gazette by himself, and keeps one finger under 
 ev({ id:'kittyBotany', from:1806, to:1812, weight:2, cond:() => K() === 'free' && !F('dubreuilWaits'), title:'Miss Kitty and the Orchids',
   text:() => `Kitty is ${kittyAge()}, and has refused four men, of whom the last was a rural dean.
 
-She walks upon Hatherley Down every morning with a tin box; and she has found there a small green orchid, which is neither in Withering nor in Hudson, and of which she has made a drawing at four times the size of life, and dried a specimen. Both of these she wishes to send to Sir Joseph Banks.
+She walks upon Hatherley Down every morning with a tin box; and she has found there a small green orchid, to be found neither in Withering nor in Hudson, of which she has made a drawing at four times the size of life, and dried a specimen. Both of these she wishes to send to Sir Joseph Banks.
 
 “A woman who writes to the Royal Society will never be asked for again,” says Henrietta.
 
@@ -5402,179 +5402,175 @@ pooled('member', MEMBER, 'mem', {from:1796, to:1815, weight:8, repeatGap:3, cond
    and are taken from docs/SOURCES.md; the rest may come in any year. */
 const kenMan = () => { const f = tenantOf('kennet'); return f ? Called(f) : 'The tenant'; };
 const COUNTY = [
-  {id:'county-hen', hot:true, once:true, title:'The Hen at the Turnpike', w:() => yr(1806, 1807), x:() => `A pedlar at the back door has news from Leeds. A hen there lays eggs with writing on the shell. “Crist is coming.” The public pays a penny to see one.
+  {id:'county-hen', hot:true, once:true, title:'The Hen at the Turnpike', w:() => yr(1806, 1807), x:() => `A pedlar at the back door has news from Leeds, of a hen there that lays eggs with writing upon the shell, “Crist is coming”, which the public pays a penny to see.
 
-By the month’s end Hatherley has a hen. She belongs to Widow Tubb at the turnpike cottage. The egg says REPENT. The N is backwards.
+By the month’s end Hatherley has a hen. She belongs to Widow Tubb at the turnpike cottage; and her egg says REPENT, with the N backwards.
 
-There are forty people in the lane. Widow Tubb has put a plate by the door.`,
+There are forty people in the lane, and Widow Tubb has put a plate by the door.`,
     o:[{t:'Pay your penny and look.', go:() => { add({goodwill:1});
-      return `You pay your penny. The egg lies in a basin on the dresser, on a clean cloth. REPENT, in brown.
+      return `You pay your penny. The egg lies in a basin upon the dresser, on a clean cloth, with REPENT upon it in brown; and the hen, a common barn-door fowl, is under the table, with a ribbon on her leg.
 
-The hen is under the table. She is a common barn-door fowl. She has a ribbon on her leg.
-
-Widow Tubb takes eleven shillings in the week. Then the hen goes broody and lays nothing. The Widow says that is a sign too.`; }},
+Widow Tubb takes eleven shillings in the week. Then the hen goes broody, and lays nothing; and the Widow says that that is a sign too.`; }},
     {t:'Send the curate to examine the egg.', go:() => { add({goodwill:-1, standing:1});
-      return `The curate takes the egg to the window. He smells it. He wets his finger and rubs.
+      return `The curate takes the egg to the window, and smells it, and wetting his finger, rubs.
 
 “Vinegar, ma’am. A quill dipped in vinegar. It eats the shell.”
 
-Widow Tubb has no quill and cannot write. Her grandson is nine and goes to the dame school. He is fetched from behind the pigsty. He writes REPENT on a slate for the curate. The N is backwards.`; }},
+Widow Tubb has no quill, and cannot write. But she has a grandson of nine, who goes to the dame school; and he being fetched from behind the pigsty, and set to write REPENT upon a slate for the curate, the N is backwards.`; }},
     {t:'Buy the hen.', note:'£1', go:() => { add({money:-1});
-      return `A guinea. The hen comes up to the Hall in a basket.
+      return `You give a guinea, and the hen comes up to the Hall in a basket.
 
-Mrs Bunce puts her in the yard with the others. She lays a brown egg every second day. There is nothing on any of them.
+Mrs Bunce puts her in the yard with the others, where she lays a brown egg every second day, with nothing upon any of them.
 
-By Michaelmas Mrs Bunce cannot say which hen she was. There was a fowl at table on Sunday.`; }}]},
+By Michaelmas Mrs Bunce cannot say which hen she was; and there was a fowl at table on Sunday.`; }}]},
 
-  {id:'county-goldcup', hot:true, once:true, title:'Ascot Heath', w:() => S.year === 1811 && S.season === 1, x:() => `Ascot Heath, the Thursday. The Gold Cup is two miles and a half, for a hundred guineas. The Queen is in the stand with five Princesses. The Prince Regent is on horseback in a green coat.
+  {id:'county-goldcup', hot:true, once:true, title:'Ascot Heath', w:() => S.year === 1811 && S.season === 1, x:() => `It is the Thursday, upon Ascot Heath. The Gold Cup is two miles and a half, for a hundred guineas; and the Queen is in the stand with five Princesses, and the Prince Regent on horseback in a green coat.
 
-${K() === 'vane' ? 'Captain Vane has written. Smallhopes cannot lose. He has it from the horse’s own groom.' : 'Mr Loveday has it from a groom that Smallhopes cannot lose.'}
+${K() === 'vane' ? 'Captain Vane has written, that Smallhopes cannot lose, and that he has it from the horse’s own groom.' : 'Mr Loveday has it from a groom that Smallhopes cannot lose.'}
 
-The ring lays three to one against Smallhopes and two to one Jannette. A man on a stool will take twenty pounds.`,
+The ring lays three to one against Smallhopes, and two to one Jannette; and there is a man upon a stool who will take twenty pounds.`,
     o:[{t:'Twenty pounds on Smallhopes.', note:'£20', go:() => { add({money:-20});
-      return `Smallhopes comes in first by a length. You have won sixty pounds. You start for the stool.
+      return `Smallhopes comes in first by a length; and having won sixty pounds, you start for the stool.
 
-The Stewards are sent for. The owner of Smallhopes has not paid his stake. The horse is struck out. The Cup goes to Jannette.
+But the Stewards are sent for. The owner of Smallhopes has not paid his stake; and the horse is struck out, and the Cup goes to Jannette.
 
-The man on the stool keeps your twenty. He says he is sorry for it. He is laughing.`; }},
+The man upon the stool keeps your twenty, and says that he is sorry for it, laughing.`; }},
     {t:'Twenty pounds on Jannette.', note:'£20', go:() => { add({money:40});
-      return `Jannette is beaten a length by Smallhopes. You tear your ticket across.
+      return `Jannette is beaten a length by Smallhopes, and you tear your ticket across.
 
-The Stewards are sent for. The owner of Smallhopes never paid his stake. The Cup is given to Jannette.
+But the Stewards are sent for; and the owner of Smallhopes never having paid his stake, the Cup is given to Jannette.
 
-You find both halves in the grass. The man on the stool holds them together to read the number. He pays forty pounds on them.`; }},
+You find both halves in the grass. The man upon the stool holds them together to read the number, and pays forty pounds upon them.`; }},
     {t:'Keep your money and look at the Queen.', go:() => { add({family:1});
-      return `You stand at the rails by the Royal stand. The Queen takes snuff. The Princesses eat cherries out of a basket.
+      return `You stand at the rails by the Royal stand, where the Queen takes snuff, and the Princesses eat cherries out of a basket.
 
-The Regent rides down the course before the race. He is twenty stone. The horse is a grey. It sweats at a walk.
+The Regent rides down the course before the race. He is twenty stone; and the horse, a grey, sweats at a walk.
 
-Smallhopes is first past the post and is struck out. All round you men are tearing up paper. Others are on their knees looking for it.`; }}]},
+Smallhopes is first past the post, and is struck out; and all round you there are men tearing up paper, and other men upon their knees looking for it.`; }}]},
 
-  {id:'county-hot', hot:true, once:true, title:'Hot Wednesday', w:() => S.year === 1808 && S.season === 1, x:() => `Wednesday the thirteenth of July. By noon the glass in the hall stands at ninety-six. It has never stood there.
+  {id:'county-hot', hot:true, once:true, title:'Hot Wednesday', w:() => S.year === 1808 && S.season === 1, x:() => `It is Wednesday the thirteenth of July; and by noon the glass in the hall stands at ninety-six, where it has never stood.
 
-Twenty acres of hay are down in Kennet Meadow. The mowers have left their scythes and gone under the hedge. The butter has run through the dairy shelf. A post-horse lies dead on the Bath road.
+Twenty acres of hay are down in Kennet Meadow, and the mowers have left their scythes, and gone under the hedge. The butter has run through the dairy shelf, and a post-horse lies dead upon the Bath road.
 
-Mr ${stew()} says the hay must be carried by Friday. He does not like the look of the west.`,
+Mr ${stew()} says that the hay must be carried by Friday, not liking the look of the west.`,
     o:[{t:'Rest the men until evening.', go:() => { add({money:-30, goodwill:3});
-      return `The men lie under the hedge until six. They carry until dark. They are at it again by four on Thursday.
+      return `The men lie under the hedge until six, and carry until dark, and are at it again by four on Thursday.
 
-On Friday at two it comes up black out of Wiltshire. Hailstones the size of pullets’ eggs. Half the meadow is still in cock.
+On Friday at two it comes up black out of Wiltshire, with hailstones of the size of pullets’ eggs, and half the meadow still in cock.
 
-Thirty pounds of hay is spoiled. Nobody is dead. ${stew()} enters both in the book.`; }},
+Thirty pounds of hay is spoiled, and nobody is dead; and ${stew()} enters both in the book.`; }},
     {t:'Keep them at it.', go:() => { add({goodwill:-4});
-      return `They carry through the heat for a shilling a man over. The meadow is cleared by Thursday night.
+      return `They carry through the heat, for a shilling a man over, and the meadow is cleared by Thursday night.
 
-Old Tom Ilsley sits down against a wagon wheel at three on Wednesday. He does not get up. He was sixty-eight. He had mown that meadow fifty-one summers.
+But at three on Wednesday old Tom Ilsley, who was sixty-eight, and had mown that meadow fifty-one summers, sits down against a wagon wheel, and does not get up.
 
-The hail comes on Friday. The rick is thatched. There are forty men at the burying.`; }},
+The hail comes on Friday, when the rick is thatched. There are forty men at the burying.`; }},
     {t:'Carry by moonlight.', note:'£4 in beer', go:() => { add({money:-4, goodwill:1});
-      return `The men sleep until nine. They carry from ten at night to five in the morning.
+      return `The men sleep until nine, and carry from ten at night to five in the morning, the women raking by lantern; and it costs four pounds in beer.
 
-Four pounds in beer. The women rake by lantern. At two a wagon goes into the ditch. Nobody is under it.
+At two a wagon goes into the ditch, with nobody under it.
 
-The meadow is clear on Friday morning. The hail breaks forty panes at the Hall. There is not a cock of hay out.`; }}]},
+The meadow is clear on Friday morning; and when the hail comes, though it breaks forty panes at the Hall, there is not a cock of hay out.`; }}]},
 
   {id:'county-scouring', hot:true, title:'The Scouring of the Horse', w:() => [1803, 1808, 1813].includes(S.year) && S.season === 1, x:() => `A bill is posted at the Bell.
 
 “WHITE HORSE HILL. The Scouring of the Horse will be on Whit-Monday. A Flitch of Bacon to be run for by Asses. A Cheese to be run for down the Manger. A Hat for Men in Sacks, every Man to bring his own Sack. Cart-horses to race in their Harness and Bells, the Carters to ride in Smock Frocks without Saddles. No Whipping allowed.”
 
-It is nineteen miles. Your carter has read the bill through twice. He is standing beside Boxer with his hat off.`,
+It is nineteen miles; and your carter, who has read the bill through twice, is standing beside Boxer with his hat off.`,
     o:[{t:'Enter Boxer and the carter.', go:() => { add({goodwill:2});
-      return `Boxer runs in his bells. Nine start. There is crossing and there is jostling. There is no whipping.
+      return `Boxer runs in his bells. Nine start; and there is crossing, and there is jostling, but there is no whipping.
 
-Boxer is second to a mare from Lambourn. The carter comes off at the post. He is second too.
+Boxer is second to a mare from Lambourn; and the carter, coming off at the post, is second too.
 
-He has a new whip and a split lip. He hangs the whip up in the stable. He says it is too good to use.`; }},
+He has a new whip, and a split lip; and he hangs the whip up in the stable, saying that it is too good to use.`; }},
     {t:'Give a guinea to the prizes and go and look.', note:'£1', go:() => { add({money:-1, goodwill:1});
-      return `Your guinea buys a waistcoat. It is for the man who can take a bullet out of a tub of flour with his mouth.
+      return `Your guinea buys a waistcoat, for the man who can take a bullet out of a tub of flour with his mouth.
 
-Eleven try. A sawyer from Uffington has it at the fourth dip. He is white to the shoulders.
+Eleven try; and a sawyer from Uffington has it at the fourth dip, and is white to the shoulders.
 
-Thirty thousand people are on the hill. The cheese goes down the Manger with forty men behind it. A waiter from Faringdon has it. He went down on his back.`; }},
+There are thirty thousand people upon the hill. The cheese goes down the Manger with forty men behind it, and is got by a waiter from Faringdon, who went down upon his back.`; }},
     {t:'Keep man and horse at home.', go:() => { add({goodwill:-1});
       return `“Whit-Monday is a working day, Carter.”
 
 “Yes, sir.”
 
-On Monday the stables are empty by five. The men are back on Tuesday at noon. Nobody says where he has been. Boxer has a ribbon plaited in his tail. The carter takes it out when he sees you looking.`; }}]},
+On Monday the stables are empty by five; and the men are back on Tuesday at noon, and nobody says where he has been. But Boxer has a ribbon plaited in his tail, which the carter, seeing you look at it, takes out.`; }}]},
 
-  {id:'county-flood', hot:true, once:true, title:'The Water Out', w:() => S.year === 1809 && S.season === 0, x:() => `The frost broke on the twenty-fourth of January. The snow went in a day.
+  {id:'county-flood', hot:true, once:true, title:'The Water Out', w:() => S.year === 1809 && S.season === 0, x:() => `The frost broke on the twenty-fourth of January, and the snow went in a day.
 
-The Kennet is half a mile wide at Kennet Bottom. ${kenMan()} is at an upper window. The cows are swimming in the yard.
+The Kennet is half a mile wide at Kennet Bottom, where ${kenMan()} is at an upper window, and the cows are swimming in the yard.
 
-The six cottages by the ford have water to the bedroom sills. There are people on the thatch. One woman has brought her clock up with her.`,
+The six cottages by the ford have water to the bedroom sills, and there are people upon the thatch; one of whom, a woman, has brought her clock up with her.`,
     o:[{t:'The people first. Bring them to the Hall.', note:'£20', go:() => { add({money:-20, goodwill:4});
-      return `Two boats work until dark. Thirty-one people are brought off the roofs and up to the Hall.
+      return `Two boats work until dark, and thirty-one people are brought off the roofs, and up to the Hall.
 
-They sleep in the servants’ hall and the laundry. Mrs Bunce feeds them a fortnight. Twenty pounds. The clock is put on the kitchen dresser. Its owner winds it at nine each night.
+They sleep in the servants’ hall and the laundry, and Mrs Bunce feeds them a fortnight, for twenty pounds. The clock is put upon the kitchen dresser, where its owner winds it at nine each night.
 
-Eleven cows are drowned at Kennet Bottom. They are counted from the upper window.`; }},
+Eleven cows are drowned at Kennet Bottom, and are counted from the upper window.`; }},
     {t:'The stock first.', go:() => { add({goodwill:-3});
-      return `The boats go to the farm. The cows are roped by the horns and swum to the bank one at a time. All but two are saved.
+      return `The boats go to the farm; and the cows, being roped by the horns, are swum to the bank one at a time, and all but two saved.
 
-The people sit on the thatch until dark. The curate takes them bread in a punt.
+The people sit upon the thatch until dark, and the curate takes them bread in a punt.
 
-They are fetched off by lantern at nine. The woman will not step into the boat until her clock has been handed down first.`; }},
+They are fetched off by lantern at nine; and the woman will not step into the boat until her clock has been handed down first.`; }},
     {t:'Send to Newbury wharf for the barge-men.', note:'£10', go:() => { add({money:-10, goodwill:2});
-      return `Ten pounds to four barge-men from Newbury wharf. They pole a coal lighter up over the meadows.
+      return `You give ten pounds to four barge-men from Newbury wharf, who pole a coal lighter up over the meadows, and in the one voyage take the people off the roofs, and the cows out of the yard; the woman with the clock sitting between two heifers.
 
-It takes the people off the roofs and the cows out of the yard in the one voyage. The woman with the clock sits between two heifers.
+The water is three weeks going down, in which time there is no christening, wedding or burying; and ${vicar().replace('The', 'the')} writes it in the register.`; }}]},
 
-The water is three weeks going down. There is no christening, wedding or burying in that time. ${vicar()} writes it in the register.`; }}]},
+  {id:'county-forbury', hot:true, once:true, title:'The King’s Birthday at Reading', w:() => S.year === 1809 && S.season >= 1, x:() => `It is the King’s birthday, at Reading, where the Volunteers and the new Local Militia parade in the Forbury, and are both afterwards given beer.
 
-  {id:'county-forbury', hot:true, once:true, title:'The King’s Birthday at Reading', w:() => S.year === 1809 && S.season >= 1, x:() => `The King’s birthday, at Reading. The Volunteers and the new Local Militia parade in the Forbury. Then both are given beer.
-
-By four o’clock the Volunteers are calling across the grass. The Militia were promised two guineas a man. They have not had it.
+By four o’clock the Volunteers are calling across the grass; for the Militia were promised two guineas a man, and have not had it.
 
 “Boys, stick out for your guineas!”
 
-Forty militiamen have grounded their arms. Fourteen are Hatherley men. Major Simonds is speaking. Nobody can hear him. You are a magistrate and you have your hat on.`,
+Forty militiamen have grounded their arms, of whom fourteen are Hatherley men. Major Simonds is speaking, and nobody can hear him. You are a magistrate, and you have your hat on.`,
     o:[{t:'Go among the Hatherley men.', go:() => { add({standing:2, goodwill:1});
-      return `You walk across the grass. You know the fourteen by name. You say each name.
+      return `You walk across the grass. You know the fourteen by name, and you say each name.
 
-“Pick it up, Will Tubb.” He picks it up. Thirteen more pick theirs up after him.
+“Pick it up, Will Tubb.”
 
-The Woodley Cavalry ride in at five with swords drawn. They find fourteen men standing to attention. Twenty-six are sitting down.`; }},
+He picks it up, and thirteen more after him; so that the Woodley Cavalry, riding in at five with swords drawn, find fourteen men standing to attention, and twenty-six sitting down.`; }},
     {t:'Pay the fourteen their guineas yourself.', note:'£29', go:() => { add({money:-29, goodwill:3});
-      return `Fourteen men at two guineas. Twenty-nine pounds eight. You count it out of your own pocket-book on a drum-head.
+      return `Fourteen men at two guineas is twenty-nine pounds eight; and you count it out of your own pocket-book, upon a drum-head.
 
-The fourteen fall in. The other twenty-six ask who that gentleman is and where he lives.
+The fourteen fall in. The other twenty-six ask who that gentleman is, and where he lives.
 
-In September the Pay Office sends down the bounty. It is one guinea a man. The Minister has cut it. Nobody mentions your fourteen.`; }},
+In September the Pay Office sends down the bounty; and the Minister having cut it, it is one guinea a man. Nobody mentions your fourteen.`; }},
     {t:'Stand back and let the cavalry come.', go:() => { add({standing:-1});
       return `You stand under the Abbey gateway with two other justices.
 
-The Woodley Cavalry ride in at five. The Militia take up their arms. The Volunteers go home singing.
+The Woodley Cavalry ride in at five; upon which the Militia take up their arms, and the Volunteers go home singing.
 
-Lord Liverpool writes that such conduct cannot go unpunished. It is the Volunteers who are broke. They hand in their coats at the Town Hall. Several coats come in without buttons.`; }}]},
+Lord Liverpool writes that such conduct cannot go unpunished; and it is the Volunteers who are broke. They hand in their coats at the Town Hall, and several coats come in without buttons.`; }}]},
 
-  {id:'county-barclay', hot:true, once:true, title:'A Thousand Miles in a Thousand Hours', w:() => S.year === 1809 && S.season >= 1, x:() => `Captain Barclay has engaged to walk a thousand miles in a thousand hours at Newmarket. One mile in every hour, day and night, for a thousand guineas. He began on the first of June.
+  {id:'county-barclay', hot:true, once:true, title:'A Thousand Miles in a Thousand Hours', w:() => S.year === 1809 && S.season >= 1, x:() => `Captain Barclay has engaged to walk a thousand miles in a thousand hours at Newmarket, one mile in every hour, day and night, for a thousand guineas; and having begun on the first of June, he has done six hundred.
 
-He has done six hundred. He walks in a flannel jacket with pistols in his belt. The course is lit by lamps on poles. The lamps are shot at. On the twenty-sixth day he fell asleep walking and his man beat him awake with a stick.
+He walks in a flannel jacket, with pistols in his belt, along a course lit by lamps upon poles; and the lamps are shot at. On the twenty-sixth day he fell asleep walking, and his man beat him awake with a stick.
 
-At the Bell they lay two to one that he drops. The landlord holds the stakes in a tea-pot.`,
+At the Bell they lay two to one that he drops, and the landlord holds the stakes in a tea-pot.`,
     o:[{t:'Fifty pounds that he does it.', note:'£50', go:() => { add({money:100});
-      return `Fifty pounds into the tea-pot.
+      return `You put fifty pounds into the tea-pot.
 
-He walks his thousandth mile on the twelfth of July at three in the afternoon. He is thirty-two pounds lighter. He sleeps seventeen hours. Then he joins his regiment for Walcheren.
+He walks his thousandth mile on the twelfth of July, at three in the afternoon, thirty-two pounds lighter; and having slept seventeen hours, he joins his regiment for Walcheren.
 
-The landlord counts a hundred pounds onto the bar beside your fifty. He counts it slowly. Most of the room had gone the other way.`; }},
+The landlord counts a hundred pounds onto the bar beside your fifty, and counts it slowly, most of the room having gone the other way.`; }},
     {t:'Fifty pounds that he drops.', note:'£50', go:() => { add({money:-50});
-      return `Fifty pounds says he drops.
+      return `You lay fifty pounds that he drops.
 
-He does not drop. On the twelfth of July he walks the thousandth mile in twenty-two minutes. The bells of Newmarket are rung.
+He does not drop. On the twelfth of July he walks the thousandth mile in twenty-two minutes, and the bells of Newmarket are rung.
 
-Your fifty goes to a corn-factor from Wantage. He buys the room a bowl of punch out of it. You have a glass.`; }},
+Your fifty goes to a corn-factor from Wantage, who buys the room a bowl of punch out of it; and you have a glass.`; }},
     {t:'Go to Newmarket and see it.', note:'£12', go:() => { add({money:-12});
-      return `Twelve pounds in chaises and a bed over a saddler’s. There is not another bed in ten miles.
+      return `It costs twelve pounds in chaises, and a bed over a saddler’s, there not being another bed in ten miles.
 
-At two in the morning you stand at the rope. A big man walks by in a flannel jacket with his eyes shut. Gully the prize-fighter walks behind him. A lamp goes out with a bang.
+At two in the morning you stand at the rope. A big man walks by in a flannel jacket, with his eyes shut, and Gully the prize-fighter behind him; and a lamp goes out with a bang.
 
-An hour later he walks by again. You stay for nine miles. They are all the same mile.`; }}]},
+An hour later he walks by again. You stay for nine miles, and they are all the same mile.`; }}]},
 
-  {id:'county-crapper', hot:true, once:true, title:'Mr Crapper and the Generals', w:() => yr(1809, 1810), x:() => `Mr Crapper is a chemist at Wantage. He is also agent for the French officers on parole there. They may walk one mile out on any road.
+  {id:'county-crapper', hot:true, once:true, title:'Mr Crapper and the Generals', w:() => yr(1809, 1810), x:() => `Mr Crapper is a chemist at Wantage, and agent besides for the French officers upon parole there, who may walk one mile out upon any road.
 
-Two French generals have been driven ten miles to dine with Sir John Throckmorton. A magistrate lent the carriage. Mr Crapper has arrested both generals.
+Two French generals have been driven ten miles to dine with Sir John Throckmorton, in a carriage lent by a magistrate; and Mr Crapper has arrested both generals.
 
 The bench is asked to support him. Mr Price, J.P., has written. “Being a low man himself, he assumes a power which he is too ignorant to exercise.”
 
@@ -5582,286 +5578,282 @@ The papers are before you at Sessions.`,
     o:[{t:'Support Mr Crapper.', go:() => { add({standing:-1, goodwill:1});
       return `“The mile is the mile, gentlemen. A general may count it as well as an ensign.”
 
-The bench hears you out. It votes the other way, nine to one. At dinner the decanter stops at Mr Price.
+The bench hears you out, and votes the other way, nine to one; and at dinner the decanter stops at Mr Price.
 
 The Transport Board has the generals marched to Wincanton. Mr Crapper sends you a box of his lozenges, with his respects.`; }},
     {t:'Vote with the bench.', go:() => { add({standing:1});
-      return `The bench declines to support the agent. Ten to none.
+      return `The bench declines to support the agent, ten to none.
 
-The Transport Board supports him. The generals are marched to Wincanton behind a corporal.
+The Transport Board supports him, and the generals are marched to Wincanton behind a corporal.
 
-Sir John Throckmorton has two places empty at his table. He asks two of the magistrates.`; }},
+Sir John Throckmorton, having two places empty at his table, asks two of the magistrates.`; }},
     {t:'Ask who measured the mile.', go:() => { add({standing:1, goodwill:1});
       return `“Who measured the mile, and from what door?”
 
-Nobody knows. A surveyor is sent with a chain. The milestone on the Faringdon road stands four hundred yards beyond the mile. It has been moved. The moss is on the south side.
+Nobody knows. A surveyor is sent with a chain; and the milestone upon the Faringdon road is found to stand four hundred yards beyond the mile, having been moved, with the moss upon the south side.
 
-It is put back. For a month the French officers walk to the stone, touch it and turn. Then it is found four hundred yards out again.`; }}]},
+It is put back. For a month the French officers walk to the stone, and touch it, and turn; and then it is found four hundred yards out again.`; }}]},
 
-  {id:'county-balloon', hot:true, once:true, title:'A Descent in the Home Pasture', w:() => yr(1810, 1811) && S.season >= 1 && S.season <= 2, x:() => `A balloon comes over the Down at six in the evening. It is striped crimson and yellow. It is losing height.
+  {id:'county-balloon', hot:true, once:true, title:'A Descent in the Home Pasture', w:() => yr(1810, 1811) && S.season >= 1 && S.season <= 2, x:() => `A balloon comes over the Down at six in the evening, striped crimson and yellow, and losing height; and it comes down in the home pasture, where the cows go through the hedge into the barley, and where Mudge is, with a gun.
 
-It comes down in the home pasture. The cows go through the hedge into the barley. Mudge is in the pasture with a gun.
-
-A man in a blue coat climbs out of the basket and takes off his hat.
+A man in a blue coat climbs out of the basket, and takes off his hat.
 
 “Mr Abel Finch, aeronaut, from Oxford. Forty miles in fifty minutes. Might I ask what county this is?”
 
-He has a barometer, a cold fowl and a cat.`,
+He has a barometer, a cold fowl, and a cat.`,
     o:[{t:'Give him his dinner and a cart to Wyvern.', go:() => { add({family:2, goodwill:1});
-      return `He dines at the Hall. He eats for two. He tells Henrietta that at two miles up a man hears dogs barking and nothing else.
+      return `He dines at the Hall, and eats for two; and he tells Henrietta that at two miles up a man hears dogs barking, and nothing else.
 
-${kittyAtHome() ? 'Kitty' : 'Henrietta'} asks what the cat was for. It was to see whether a cat minds. It minds.
+${kittyAtHome() ? 'Kitty' : 'Henrietta'} asks what the cat was for. It was to see whether a cat minds; and it minds.
 
-The balloon goes to Wyvern on a wagon in a heap. The cat stays at the Hall. She will not go near a basket of any kind.`; }},
+The balloon goes to Wyvern upon a wagon, in a heap. The cat stays at the Hall, and will not go near a basket of any kind.`; }},
     {t:'Charge him for the barley.', note:'£6 to you', go:() => { add({money:6});
-      return `Mr ${stew()} walks the barley and puts it at six pounds. Mr Finch pays in Oxford notes.
+      return `Mr ${stew()} walks the barley, and puts it at six pounds; and Mr Finch pays in Oxford notes.
 
-He says the Dean of Christ Church never charged him. He says the Dean had less barley.
+He says that the Dean of Christ Church never charged him, and that the Dean had less barley.
 
 Eleven men fold the silk. The cows will not go back into the pasture until it has rained.`; }},
     {t:'Go up in it on a rope.', note:'£5', go:() => { add({money:-5, standing:1, family:-1});
-      return `There is gas left for one. Five pounds. Eleven men hold the rope.
+      return `There is gas left for one; and for five pounds, with eleven men holding the rope, you go up two hundred feet.
 
-You go up two hundred feet. You see the Hall roof and where it wants lead. You see Lord Cullerne’s woods. They are a good deal larger than yours.
+You see the Hall roof, and where it wants lead; and you see Lord Cullerne’s woods, and that they are a good deal larger than yours.
 
-The rope slips a yard. You are heard in the village. Henrietta has watched from the terrace through her fingers.`; }}]},
+The rope slips a yard, and you are heard in the village. Henrietta has watched from the terrace, through her fingers.`; }}]},
 
-  {id:'county-coat', hot:true, once:true, title:'The Newbury Coat', w:() => S.year === 1811 && S.season >= 1 && S.season <= 2, x:() => `Sir John Throckmorton has bet a thousand guineas on a coat. Mr Coxeter of Greenham Mills is to take the wool off the sheep at sunrise. Sir John is to sit down to dinner in it at sunset.
+  {id:'county-coat', hot:true, once:true, title:'The Newbury Coat', w:() => S.year === 1811 && S.season >= 1 && S.season <= 2, x:() => `Sir John Throckmorton has bet a thousand guineas upon a coat. Mr Coxeter of Greenham Mills is to take the wool off the sheep at sunrise, and Sir John is to sit down to dinner in it at sunset.
 
-It is the twenty-fifth of June. Two Southdowns were shorn at five this morning. There are five thousand people in the mill yard.
+It is the twenty-fifth of June. Two Southdowns were shorn at five this morning, and there are five thousand people in the mill yard.
 
-By noon the wool is spun and on the loom. At the gate they lay even money that the coat is on his back by seven.`,
+By noon the wool is spun, and upon the loom; and at the gate they lay even money that the coat is upon his back by seven.`,
     o:[{t:'Twenty pounds on the coat.', note:'£20', go:() => { add({money:20});
-      return `The cloth is off the loom by four. It is dyed, dried and pressed. Mr White and nine tailors sit down to it cross-legged on a table.
+      return `The cloth is off the loom by four, and is dyed, dried and pressed; and Mr White and nine tailors sit down to it, cross-legged upon a table.
 
-At twenty past six Sir John puts it on. It is damson-coloured. It is still warm.
+At twenty past six Sir John puts it on. It is damson-coloured, and still warm.
 
-You take twenty pounds off a clothier from Trowbridge. He says it cannot be done. He says it with the coat in front of him.`; }},
+You take twenty pounds off a clothier from Trowbridge, who says that it cannot be done, and says it with the coat in front of him.`; }},
     {t:'Twenty pounds against.', note:'£20', go:() => { add({money:-20});
       return `You lay twenty pounds that wool cannot be dry by seven.
 
-It is dry by five. At twenty past six Sir John puts on a damson hunting coat and walks about in it. Five thousand people cheer a coat.
+It is dry by five; and at twenty past six Sir John puts on a damson hunting coat, and walks about in it, and five thousand people cheer a coat.
 
-You pay a clothier from Trowbridge. The two sheep are roasted whole in the yard. The man carving gives you a slice. He says it is off the one that made the sleeves.`; }},
+You pay a clothier from Trowbridge. The two sheep are roasted whole in the yard; and the man who carves, giving you a slice, says that it is off the one that made the sleeves.`; }},
     {t:'Send Coxeter a fleece of your own.', note:'£4', go:() => { add({money:-4});
-      return `You send Mr Coxeter a Hatherley fleece and four pounds. He is to make it up at his leisure.
+      return `You send Mr Coxeter a Hatherley fleece, and four pounds, to make it up at his leisure.
 
-Sir John dines in his coat at seven with forty gentlemen. A hundred and twenty gallons of strong beer go round the yard.
+Sir John dines in his coat at seven, with forty gentlemen, and a hundred and twenty gallons of strong beer go round the yard.
 
-Yours comes in November by the wagon. Thirteen hours for a baronet. Five months for a squire. It is a good coat. It is brown.`; }}]},
+Yours comes in November, by the wagon; so that it is thirteen hours for a baronet, and five months for a squire. It is a good coat. It is brown.`; }}]},
 
-  {id:'county-hocktide', once:true, title:'Hock Tuesday', w:() => S.season === 0, x:() => `Hock Tuesday. You have business at Hungerford and have driven in with Henrietta.
+  {id:'county-hocktide', once:true, title:'Hock Tuesday', w:() => S.season === 0, x:() => `It is Hock Tuesday; and having business at Hungerford, you have driven in with Henrietta.
 
-Two men are coming down the High Street with poles. The poles are dressed in flowers and ribbons. Each has an orange stuck on the top. A third man walks behind with a sack of oranges and a feather in his hat.
+Two men are coming down the High Street with poles, dressed in flowers and ribbons, and each with an orange stuck upon the top; and behind them walks a third, with a sack of oranges, and a feather in his hat.
 
-They are the Tutti-men. They call at every house for a penny from the master and a kiss from the lady. They have stopped at the step of the gig. They are looking at Henrietta.`,
+They are the Tutti-men, who call at every house for a penny from the master, and a kiss from the lady. They have stopped at the step of the gig; and they are looking at Henrietta.`,
     o:[{t:'A penny and a kiss. It is the custom.', note:'£1 for the punch', go:() => { add({money:-1, family:1, goodwill:1});
-      return `You give the penny. Henrietta gives her cheek. The Orange Man bows and hands her an orange.
+      return `You give the penny, and Henrietta her cheek; and the Orange Man bows, and hands her an orange.
 
-“We don’t know the gentleman,” says the first Tutti-man. A stranger must be shod. A blacksmith takes your boot on his knee and drives a nail at the heel. You are to cry “Punch”.
+“We don’t know the gentleman,” says the first Tutti-man. Now a stranger must be shod; and a blacksmith, taking your boot upon his knee, drives a nail at the heel, until you shall cry “Punch”.
 
-You cry it at the second blow. The punch is a guinea for the company. Henrietta eats her orange going home. She does not offer you a piece.`; }},
+You cry it at the second blow, the punch being a guinea for the company. Henrietta eats her orange going home, and does not offer you a piece.`; }},
     {t:'A shilling, and the lady keeps her kisses.', go:() => { add({family:-1});
       return `“A shilling, and the lady keeps her kisses.”
 
-They take the shilling. The Orange Man gives Henrietta her orange all the same.
+They take the shilling; and the Orange Man gives Henrietta her orange all the same.
 
 “I was not asked,” she says, a mile out of the town.`; }},
     {t:'Drive on.', go:() => { add({goodwill:-1});
-      return `You touch up the horse. The Tutti-men step back. The Orange Man throws an orange after the gig. It lands in Henrietta’s lap.
+      return `You touch up the horse. The Tutti-men step back; and the Orange Man throws an orange after the gig, which lands in Henrietta’s lap.
 
-At the bridge a blacksmith is waiting with a hammer. He walks beside the wheel as far as the turnpike. He is looking at your boots.
+At the bridge a blacksmith is waiting, with a hammer, who walks beside the wheel as far as the turnpike, looking at your boots.
 
-Your business at Hungerford takes four hours. Nobody you came to see is at home.`; }}]},
+Your business at Hungerford takes four hours, nobody whom you came to see being at home.`; }}]},
 
-  {id:'county-lottery', title:'The State Lottery', w:() => S.year >= 1798, x:() => `The State Lottery begins drawing at Guildhall on Monday fortnight. Twenty thousand tickets. Two prizes of twenty thousand pounds.
+  {id:'county-lottery', title:'The State Lottery', w:() => S.year >= 1798, x:() => `The State Lottery begins drawing at Guildhall on Monday fortnight, with twenty thousand tickets, and two prizes of twenty thousand pounds.
 
-The Wyvern stationer is agent for Bish of Cornhill. A whole ticket is eighteen pounds. A sixteenth is one pound six.
+The Wyvern stationer is agent for Bish of Cornhill; and a whole ticket is eighteen pounds, and a sixteenth one pound six.
 
 “Dr Mitford of Reading had the twenty thousand in ’97, sir. His little girl chose the number. Two, two, two, four.”
 
-He has the tickets fanned out on the counter.`,
+He has the tickets fanned out upon the counter.`,
     o:[{t:'A whole ticket.', note:'£18', go:() => { add({money:-18});
       if (chance(0.12)) { add({money:50, family:1});
-        return `A whole ticket. Eighteen pounds. Henrietta chooses the number.
+        return `You take a whole ticket, at eighteen pounds, and Henrietta chooses the number.
 
-The Blue-coat boy draws it on the ninth morning. Fifty pounds.
+The Blue-coat boy draws it upon the ninth morning, for fifty pounds.
 
-The stationer walks out to the Hall with the news himself. He stays in the passage until he is given something.`; }
-      return `A whole ticket. Eighteen pounds. Henrietta chooses the number.
+The stationer walks out to the Hall with the news himself, and stays in the passage until he is given something.`; }
+      return `You take a whole ticket, at eighteen pounds, and Henrietta chooses the number.
 
-It is drawn a blank on the first morning.
+It is drawn a blank upon the first morning.
 
-The stationer says the first morning is thought the luckiest to lose on. He has the next lottery’s tickets in his pocket.`; }},
+The stationer says that the first morning is thought the luckiest to lose on; and he has the next lottery’s tickets in his pocket.`; }},
     {t:'A sixteenth.', note:'£1', go:() => { add({money:-1});
       if (chance(0.25)) { add({money:1});
-        return `Your number comes up a twenty-pound prize. A sixteenth of twenty pounds is one pound five. Bish stops a shilling for postage.
+        return `Your number comes up a twenty-pound prize. Now a sixteenth of twenty pounds is one pound five, from which Bish stops a shilling for postage; so that having laid out one pound six, you have one pound four.
 
-You laid out one pound six. You have one pound four.
+Henrietta says that you have won, and tells the Tamworths that you have won.`; }
+      return `It is Number 11,307, and a blank; and a sixteenth of a blank is a blank.
 
-Henrietta says that you have won. She tells the Tamworths that you have won.`; }
-      return `Number 11,307. It is a blank. A sixteenth of a blank is a blank.
-
-The stationer says the other fifteen gentlemen bore it very well.`; }},
+The stationer says that the other fifteen gentlemen bore it very well.`; }},
     {t:'Buy a quire of paper and go home.', go:() => {
-      return `You buy a quire of post paper. Ninepence.
+      return `You buy a quire of post paper, for ninepence.
 
-One of the twenty thousands goes to nine footmen in Portman Square who clubbed for a ticket. The Mercury prints the number.
+One of the twenty thousands goes to nine footmen in Portman Square, who clubbed for a ticket; and the Mercury prints the number.
 
-Henrietta reads it out. She asks what number you would have chosen. You tell her. She runs her finger down the column and says nothing.`; }}]},
+Henrietta reads it out, and asks what number you would have chosen; and when you have told her, she runs her finger down the column, and says nothing.`; }}]},
 
-  {id:'county-quack', title:'The Cordial Balm of Gilead', x:() => `A yellow chariot is drawn up in Wyvern market place. A black servant in a turban beats a drum on the box.
+  {id:'county-quack', title:'The Cordial Balm of Gilead', x:() => `A yellow chariot is drawn up in Wyvern market place, with a black servant in a turban beating a drum upon the box.
 
-Dr Tolley sells the Cordial Balm of Gilead at half a guinea the bottle. It cures the nerves, the liver, the consequences of youthful error and the staggers in horses. He has a letter from a Duchess. He holds it up. Nobody is near enough to read it.
+Dr Tolley sells the Cordial Balm of Gilead, at half a guinea the bottle, which cures the nerves, the liver, the consequences of youthful error, and the staggers in horses. He has a letter from a Duchess, and holds it up, nobody being near enough to read it.
 
-He has sold forty bottles since ten. Mr Ferris the surgeon is at the back of the crowd with his arms folded.`,
+He has sold forty bottles since ten. Mr Ferris the surgeon is at the back of the crowd, with his arms folded.`,
     o:[{t:'Buy two bottles.', note:'£1', go:() => { add({money:-1, family:1});
-      return `A guinea for two. One for Henrietta’s nerves. One for the grey mare.
+      return `You give a guinea for two, one for Henrietta’s nerves, and one for the grey mare.
 
-Henrietta takes a glass at night. She sleeps nine hours and comes down singing. The mare has hers in a mash and lies down in the yard.
+Henrietta takes a glass at night, and sleeps nine hours, and comes down singing; and the mare, who has hers in a mash, lies down in the yard.
 
 Ferris smells the cork. “French brandy and cardamoms, sir. The Bell will sell it you at three shillings.”`; }},
     {t:'Have him up as a vagrant.', go:() => { add({standing:1, goodwill:-2});
-      return `You send the constable. Dr Tolley shows a medicine licence, a hawker’s licence and a receipt for the stamp duty on forty gross of bottles.
+      return `You send the constable; to whom Dr Tolley shows a medicine licence, a hawker’s licence, and a receipt for the stamp duty upon forty gross of bottles.
 
 He has paid the King more this year than you have.
 
-He sells sixty bottles before dark. He tells the crowd that the faculty and the magistracy have persecuted him in nine counties.`; }},
+He sells sixty bottles before dark, and tells the crowd that the faculty and the magistracy have persecuted him in nine counties.`; }},
     {t:'Give Ferris a guinea to find what is in it.', note:'£1', go:() => { add({money:-1});
-      return `Ferris buys two bottles with your guinea and takes them home.
+      return `Ferris buys two bottles with your guinea, and takes them home.
 
-He is back on Thursday. Brandy, cardamom, a little tincture of cantharides. “It will do what brandy does, sir.”
+He is back on Thursday. It is brandy, and cardamom, and a little tincture of cantharides. “It will do what brandy does, sir.”
 
-He has not brought the bottles. He says the analysis used them up.`; }}]},
+He has not brought the bottles, the analysis, he says, having used them up.`; }}]},
 
-  {id:'county-fight', title:'A Fight on the Common', w:() => !F('enclosed'), x:() => `There is to be a fight on Hatherley Common on Tuesday. The Wyvern butcher against a Bristol man. Twenty-five guineas a side.
+  {id:'county-fight', title:'A Fight on the Common', w:() => !F('enclosed'), x:() => `There is to be a fight upon Hatherley Common on Tuesday, between the Wyvern butcher and a Bristol man, for twenty-five guineas a side.
 
-A prize-fight is a breach of the peace. You are the nearest magistrate. Four thousand people are looked for, and eleven coaches from London.
+A prize-fight is a breach of the peace, and you are the nearest magistrate; and four thousand people are looked for, and eleven coaches from London.
 
-The constable has come to ask what he is to do. He has two pounds on the butcher.`,
+The constable has come to ask what he is to do. He has two pounds upon the butcher.`,
     o:[{t:'Stop it.', go:() => { add({standing:1, goodwill:-3});
-      return `You ride onto the Common at noon with the constable and read the proclamation.
+      return `You ride onto the Common at noon, with the constable, and read the proclamation.
 
-Four thousand people hear you out. Then the stakes are pulled up. The whole crowd walks two miles west and over the county stone into Wiltshire. The ring is pitched again forty yards beyond it.
+Four thousand people hear you out. Then the stakes are pulled up; and the whole crowd walks two miles west, and over the county stone into Wiltshire, and pitches the ring again forty yards beyond it.
 
-You sit your horse on the Berkshire side. You can see quite well from there.`; }},
+You sit your horse upon the Berkshire side, from which you can see quite well.`; }},
     {t:'Have business at Reading on Tuesday.', go:() => { add({goodwill:1, standing:-1});
       return `You have business at Reading on Tuesday.
 
-The butcher is beaten in thirty-four rounds and fifty-one minutes. He goes home on a hurdle. The constable has lost his two pounds.
+The butcher is beaten in thirty-four rounds, and fifty-one minutes, and goes home upon a hurdle; and the constable has lost his two pounds.
 
-On Wednesday the Common is trodden as flat as a floor. The cottagers pick up eleven shillings in coppers, a watch and a set of teeth.`; }},
+On Wednesday the Common is trodden as flat as a floor, and the cottagers pick up eleven shillings in coppers, a watch, and a set of teeth.`; }},
     {t:'Go, and lay ten pounds on the butcher.', note:'£10', go:() => { add({goodwill:1, standing:-1});
       if (chance(0.5)) { add({money:10});
-        return `Ten pounds on the butcher, with a gentleman from London in a white hat.
+        return `You lay ten pounds upon the butcher, with a gentleman from London in a white hat.
 
-The Bristol man has the better of twenty rounds. In the twenty-first the butcher hits him under the ear. He does not come to time.
+The Bristol man has the better of twenty rounds. But in the twenty-first the butcher hits him under the ear, and he does not come to time.
 
-The gentleman in the white hat pays. He asks whether there is a magistrate in these parts. You say there is one somewhere.`; }
+The gentleman in the white hat pays, and asks whether there is a magistrate in these parts; and you say that there is one somewhere.`; }
       add({money:-10});
-      return `Ten pounds on the butcher, with a gentleman from London in a white hat.
+      return `You lay ten pounds upon the butcher, with a gentleman from London in a white hat.
 
-The butcher goes home on a hurdle in the thirty-fourth round.
+The butcher goes home upon a hurdle in the thirty-fourth round.
 
-The gentleman in the white hat takes your ten pounds. He asks your name for his book. You give him Mr Tamworth’s.`; }}]},
+The gentleman in the white hat takes your ten pounds, and asks your name for his book; and you give him Mr Tamworth’s.`; }}]},
 
-  {id:'county-wife', once:true, title:'Sold in the Market', x:() => `Wyvern market. A man is leading a woman through the beast-pens by a halter. The halter is new. It is round her waist.
+  {id:'county-wife', once:true, title:'Sold in the Market', x:() => `It is Wyvern market; and a man is leading a woman through the beast-pens by a halter, a new one, tied about her waist.
 
-He is Job Ilsley, a hurdle-maker. She is his wife. He has paid the clerk of the market fourpence toll, as for a heifer. He puts her up at five shillings.
+He is Job Ilsley, a hurdle-maker, and she is his wife. He has paid the clerk of the market fourpence toll, as for a heifer; and he puts her up at five shillings.
 
-She is about thirty. She has her best bonnet on. She is looking steadily at a carter by the pump.
+She is about thirty, and has her best bonnet on, and is looking steadily at a carter by the pump.
 
 “It is not law,” says ${vicar().replace('The', 'the')} beside you. “They all believe it is.”`,
     o:[{t:'Stop the sale.', go:() => { add({standing:1, goodwill:-2});
-      return `You go into the pen as a magistrate and stop it.
+      return `You go into the pen as a magistrate, and stop it.
 
-Ilsley takes off the halter. His wife tells you she has been three years getting him to market. The carter by the pump puts five shillings back in his pocket.
+Ilsley takes off the halter. His wife tells you that she has been three years getting him to market; and the carter by the pump puts five shillings back in his pocket.
 
-She walks to the carter’s cottage that night with no sale at all. Ilsley keeps the halter. He asks the clerk for his fourpence.`; }},
+She walks to the carter’s cottage that night with no sale at all. Ilsley keeps the halter, and asks the clerk for his fourpence.`; }},
     {t:'Let it go on.', go:() => { add({goodwill:1});
-      return `The carter bids five shillings. Nobody bids against him. A quart of beer is thrown in for luck.
+      return `The carter bids five shillings, and nobody bidding against him, a quart of beer is thrown in for luck.
 
-Ilsley hands over the halter end. The carter takes it off her and gives her his arm. All three go into the Bell together.
+Ilsley hands over the halter end; and the carter takes it off her, and gives her his arm, and all three go into the Bell together.
 
-The clerk enters it in the toll book. “One wife, 5s. Toll 4d.” The line above is a heifer. The line below is nine ewes.`; }},
+The clerk enters it in the toll book. “One wife, 5s. Toll 4d.” The line above is a heifer, and the line below nine ewes.`; }},
     {t:'Bid six shillings.', go:() => { add({family:-1, goodwill:1});
       return `You bid six shillings.
 
-The market goes quiet. The woman looks at you. She looks at the carter. The carter goes red and bids seven. He has to borrow two of it.
+The market goes quiet. The woman looks at you, and then at the carter; and the carter goes red, and bids seven, of which he has to borrow two.
 
-You let him have her. Henrietta has heard of it before you are home. She asks what you would have done at eight.`; }}]},
+You let him have her. Henrietta has heard of it before you are home, and asks what you would have done at eight.`; }}]},
 
-  {id:'county-bounds', once:true, title:'Beating the Bounds', w:() => S.season === 0, x:() => `Rogation Monday. The parish walks its bounds. ${vicar()} goes first in his surplice. After him come the churchwardens with white wands, forty men and nine boys.
+  {id:'county-bounds', once:true, title:'Beating the Bounds', w:() => S.season === 0, x:() => `It is Rogation Monday, when the parish walks its bounds; ${vicar().replace('The', 'the')} going first in his surplice, and after him the churchwardens with white wands, forty men, and nine boys.
 
-At each boundary stone a boy is taken by the heels and bumped upon it. Then he has a penny. He will remember the place when he is old.
+At each boundary stone a boy is taken by the heels, and bumped upon it, and has a penny; so that he shall remember the place when he is old.
 
-At the ninth stone there is a new oak paling. It is Lord Cullerne’s. It runs six yards on the Hatherley side for a quarter of a mile. The stone is behind it.`,
+At the ninth stone there is a new oak paling. It is Lord Cullerne’s; and it runs six yards upon the Hatherley side for a quarter of a mile, with the stone behind it.`,
     o:[{t:'Have it down.', go:() => { add({goodwill:3}); reg('cullerne',-2,'You pulled down his paling on Rogation Monday');
       return `“That is the parish’s six yards. Have it down.”
 
-Forty men have it down in an hour. They are very willing. A boy is bumped on the stone and has twopence.
+Forty men have it down in an hour, and are very willing; and a boy is bumped upon the stone, and has twopence.
 
-The Castle’s attorney writes on Thursday. By Friday the pales are stacked at your lodge and counted. Lord Cullerne’s man counts them again. He gives a receipt.`; }},
+The Castle’s attorney writes on Thursday. By Friday the pales are stacked at your lodge, and counted; and Lord Cullerne’s man, having counted them again, gives a receipt.`; }},
     {t:'Write to the Castle.', go:() => { add({standing:-1});
       return `You write that there appears to be some mistake as to the line.
 
-The Earl’s agent answers in a fortnight. His lordship’s surveyor is satisfied. A plan is enclosed. On the plan the stone has moved.
+The Earl’s agent answers in a fortnight, that his lordship’s surveyor is satisfied, and encloses a plan; upon which plan the stone has moved.
 
 Next Rogation the boys are bumped against the paling.`; }},
     {t:'Bump a boy on the paling and go on.', go:() => { add({goodwill:-2}); reg('cullerne',1);
-      return `There is no getting at the stone. The smallest boy is bumped against the paling and has his penny.
+      return `There is no getting at the stone; and the smallest boy is bumped against the paling, and has his penny.
 
 The churchwardens look at you. ${vicar()} reads the Gospel at the paling.
 
-At the beer afterwards the oldest man in the parish says the bound was always at the paling. He has a Castle rabbit in his pocket.`; }}]},
+At the beer afterwards the oldest man in the parish, who has a Castle rabbit in his pocket, says that the bound was always at the paling.`; }}]},
 
-  {id:'county-elephant', title:'The Elephant at the Bridge', w:() => S.year >= 1798, x:() => `Mr Polito’s Menagerie is on the Bath road. Nine caravans, a lion, two kangaroos and an elephant on foot.
+  {id:'county-elephant', title:'The Elephant at the Bridge', w:() => S.year >= 1798, x:() => `Mr Polito’s Menagerie is upon the Bath road, of nine caravans, a lion, two kangaroos, and an elephant on foot.
 
-The elephant has come to Hatherley bridge. He has put one foot on it. He has taken the foot off. He will not cross.
+The elephant has come to Hatherley bridge, and put one foot upon it, and taken the foot off; and he will not cross.
 
-Four wagons are stopped behind him, and the Bristol mail. His keeper asks leave to take him through the river at your water-meadow. The meadow is laid up for hay. The elephant weighs four tons.`,
+There are four wagons stopped behind him, and the Bristol mail. His keeper asks leave to take him through the river at your water-meadow; but the meadow is laid up for hay, and the elephant weighs four tons.`,
     o:[{t:'Let him through the meadow.', note:'£8 of hay', go:() => { add({money:-8, goodwill:3});
-      return `He goes down through the meadow and into the river. He stands in the middle. He will not come out. He squirts the mail coach.
+      return `He goes down through the meadow, and into the river, and stands in the middle, and will not come out; and he squirts the mail coach.
 
-It is an hour. The parish is on the bank. Mr Polito’s man gets him out with a loaf.
+It is an hour, with the parish upon the bank, before Mr Polito’s man gets him out with a loaf.
 
-${stew()} measures the footprints. Each is a foot and a half across and nine inches deep. He counts two hundred and twelve. Eight pounds of hay.`; }},
+${stew()} measures the footprints, each of which is a foot and a half across, and nine inches deep; and counting two hundred and twelve, he puts it at eight pounds of hay.`; }},
     {t:'Four guineas for the meadow. One a foot.', note:'£4 to you', go:() => { add({money:3});
       return `“Four guineas. One a foot.”
 
-Mr Polito pays in gold. The elephant goes through the river and up the far bank. He takes a gate with him.
+Mr Polito pays in gold; and the elephant goes through the river, and up the far bank, taking a gate with him.
 
-One of the four guineas is bad. Mr Polito is at Marlborough by then.`; }},
+One of the four guineas is bad. Mr Polito is by then at Marlborough.`; }},
     {t:'He must cross the bridge as others do.', go:() => { add({goodwill:-1});
-      return `The keeper tries beer. He tries a bun. He tries walking over first himself, backwards.
+      return `The keeper tries beer, and a bun, and walking over first himself, backwards.
 
-At four o’clock the elephant turns round. He sets off towards Newbury. The nine caravans turn after him one at a time in the width of the road.
+At four o’clock the elephant turns round, and sets off towards Newbury; and the nine caravans turn after him, one at a time, in the width of the road.
 
-The Bristol mail is three hours late. The guard writes “Elephant” in the time-bill.`; }}]},
+The Bristol mail is three hours late, and the guard writes “Elephant” in the time-bill.`; }}]},
 
-  {id:'county-band', title:'The West Gallery', w:() => S.year >= 1806, x:() => `The church band sits in the west gallery. A bassoon, a clarinet, two fiddles and the blacksmith on the serpent. They have played the Old Hundredth at the one pace for thirty years. It is not the pace of the singers.
+  {id:'county-band', title:'The West Gallery', w:() => S.year >= 1806, x:() => `The church band sits in the west gallery: a bassoon, a clarinet, two fiddles, and the blacksmith upon the serpent. They have played the Old Hundredth at the one pace for thirty years, and it is not the pace of the singers.
 
-${vicar()} has a printed paper from Flight and Robson. A barrel organ, thirty pounds. Ten psalm tunes on the barrel. A child may turn the handle.
+${vicar()} has a printed paper from Flight and Robson, of a barrel organ, at thirty pounds, with ten psalm tunes upon the barrel, and a handle that a child may turn.
 
-The band have heard of it. On Sunday they played the people out to “The Girl I Left Behind Me”.`,
+The band have heard of it; and on Sunday they played the people out to “The Girl I Left Behind Me”.`,
     o:[{t:'Buy the organ.', note:'£30', go:() => { add({money:-30, standing:1, goodwill:-3});
-      return `The organ comes from London in three cases. Thirty pounds. The clerk’s boy turns the handle.
+      return `The organ comes from London in three cases, at thirty pounds, and the clerk’s boy turns the handle.
 
-The band sit below in their Sunday coats with their arms folded. At the third psalm the barrel sticks. It plays the first line of the Easter Hymn eleven times.
+The band sit below in their Sunday coats, with their arms folded. At the third psalm the barrel sticks, and plays the first line of the Easter Hymn eleven times.
 
-The blacksmith goes up the gallery stairs. There is one blow. The organ plays on. He comes down and folds his arms again.`; }},
+The blacksmith goes up the gallery stairs. There is one blow, and the organ plays on; and he comes down, and folds his arms again.`; }},
     {t:'Buy the band a new bassoon.', note:'£4', go:() => { add({money:-4, goodwill:3});
-      return `Four pounds for a bassoon from Reading. The old one was mended with pitch and a bootlace.
+      return `You give four pounds for a bassoon from Reading, the old one having been mended with pitch and a bootlace.
 
-On Sunday the band play the Old Hundredth. They play it faster, to show the bassoon. The congregation is left two lines behind.
+On Sunday the band play the Old Hundredth, and play it faster, to show the bassoon; by which the congregation is left two lines behind.
 
-${vicar()} puts the printed paper away in his sermon case. It is seen there again at Easter.`; }},
+${vicar()} puts the printed paper away in his sermon case, where at Easter it is seen again.`; }},
     {t:'Leave it to the vestry.', go:() => { add({goodwill:1});
-      return `The vestry meets in the church porch. Eleven ratepayers. Four are the band. Two are fathers of the band.
+      return `The vestry meets in the church porch, of eleven ratepayers, four of whom are the band, and two are fathers of the band.
 
-The organ is lost by seven to four. The vestry votes the blacksmith five shillings for a new mouthpiece.
+The organ is lost by seven to four; and the vestry votes the blacksmith five shillings for a new mouthpiece.
 
-On Sunday the band play the people out to “Rule, Britannia”. ${vicar()} waits in the vestry until they have done.`; }}]}
+On Sunday the band play the people out to “Rule, Britannia”, and ${vicar().replace('The', 'the')} waits in the vestry until they have done.`; }}]}
 ];
 pooled('county', COUNTY, 'cty', {from:1797, to:1815, weight:6, repeatGap:3});
 
