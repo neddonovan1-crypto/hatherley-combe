@@ -33,7 +33,7 @@ Taken from Freesound's high-quality mp3 previews, cut as above, mixed to mono an
 
 ## How they are played
 
-`src/sound.js`, stitched in last by `build.sh`. It wraps `render`, `start`, `resume`, `choose`, `undertake`, `showTab` and `showWho` and changes nothing inside them.
+`src/sound.js`, stitched in last by `build.sh`. It wraps `render`, `start`, `resume`, `choose`, `undertake`, `showTab` and `showWho` and changes nothing inside them. It plays each file through a plain `<audio>` element. The Web Audio API was tried first and Safari on the Mac would not sound it, so do not go back to it without a Safari to test on.
 
 - `Sound.play(name, volume, delay)` plays a file once. `Sound.air(name)` sets the long recording under everything, lapped over itself.
 - Which paper makes which noise is the `ARRIVES` table. An event not named there knocks; a handbill turns a leaf.
