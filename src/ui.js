@@ -4,7 +4,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts';
-const TABS = [['accounts', 'Accounts'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
+const TABS = [['accounts', 'Accounts'], ['works', 'Works'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const steward = () => F('crabbeGone') ? 'Mr Lark' : 'Mr Crabbe';
@@ -93,8 +93,8 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand, and will want ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. For the rest, one undertaking, and only one.' : 'One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner.'}</p></div>
-    <div class="choices">${o.map((c, i) => `<button class="choice${c.project ? ' work' : ''}" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('')}</div>`; }
+    <div class="prose"><p>One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner. Works on the estate are another matter, and may be put in hand at any time.</p></div>
+    <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function endHTML(){ const r = reckoning();
   return `${runhead('Pasted inside the back board', 'Finis')}
@@ -110,6 +110,7 @@ function meter(label, v, words){ return `<div class="meter${v < 40 ? ' low' : ''
 
 function versoHTML(){
   const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
+  if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2>` + worksHTML();
   if (TAB === 'persons') return head + `<h2 class="qtitle">Persons of Consequence</h2>` + peopleHTML();
   if (TAB === 'wheat') return head + `<h2 class="qtitle">Wheat at Wyvern Market</h2>` + chartHTML();
   if (TAB === 'daybook') return head + `<h2 class="qtitle">The Squire’s Day-Book</h2>` + journalHTML();
@@ -125,6 +126,14 @@ function versoHTML(){
       ${S.traits && S.traits.length ? `<p class="fine born">The squire: ${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}</div>
     ${over ? '' : `<div class="rents" role="group" aria-label="Rent policy"><h3>Rents</h3>${pol.map(([v, n]) => `<button class="${S.rentPolicy === v ? 'on' : ''}" aria-pressed="${S.rentPolicy === v}" onclick="setRent(${v})">${n}</button>`).join('')}
       <p class="fine">Half-year rental due: ${fmt(halfRent())}. ${S.rentPolicy > 1 ? 'Rack-rents pay until they don’t.' : S.rentPolicy < 1 ? 'They drink your health at the audit.' : 'As your uncle left them.'}</p></div>`}`; }
+
+function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
+  const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
+  return `<p class="fine">Begin them when you please. They are paid for in the quarter’s accounts and do not cost you the season.</p>
+    ${hand.length ? `<h3>In hand</h3><ul class="works">${hand.map(w => `<li><div><b>${esc(w.name)}</b></div><small>${w.left} season${w.left > 1 ? 's' : ''} more, at ${fmt(w.per)} the quarter</small></li>`).join('')}</ul>` : ''}
+    ${open.length ? `<h3>That might be put in hand</h3>${common ? `<p class="note bad">${esc(common)}</p>` : ''}<ul class="works">${open.map(w => `<li><div><b>${esc(w.name)}</b><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div>
+      <small>${esc(w.note)}. ${esc(w.gain)}.</small><q>${esc(w.blurb)}</q>${w.why && !common ? `<small class="why">${esc(w.why)}</small>` : ''}</li>`).join('')}</ul>` : ''}
+    ${done.length ? `<h3>Finished</h3><ul class="works done">${done.map(w => `<li><div><b>${esc(w.name)}</b></div></li>`).join('')}</ul>` : ''}`; }
 
 function peopleHTML(){
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id]; const note = c.notes[c.notes.length - 1];

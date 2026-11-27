@@ -281,7 +281,7 @@ He had, he explains from his bed, face downward, been gathering mushrooms, as he
       return `The case of ${S.sur} v. Gall is heard at Wyvern before a bench that cannot keep its face straight. He is fined a shilling. The Bell is drunk dry that night. No magistrate has ever been so popular in Hatherley, and no squire so cordially hated at his own vicarage; the Doctor will carry both the shot and the shilling to his grave.`; }}
   ]});
 
-ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.project && !F('encloseRefused'), title:'The Common Question',
+ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.projectsDone.enclosure && !F('encloseRefused'), title:'The Common Question',
   text:() => `Lord Cullerne and ${F('gallDead') ? 'his man of business' : 'Dr Gall'} have called on you together, which is like being visited by both blades of a pair of scissors.
 
 Hatherley Common is four hundred acres of gorse, geese and independence. It is, his lordship says, wasted on cottagers who keep a cow and a pig there, cut their furze, and suppose themselves free. Enclosed, hedged and let, it would add a third to your rental. ${F('gallDead') ? 'The tithe' : 'Dr Gall’s tithe'} would be commuted for land, and no more counting of piglets. It wants a private Act of Parliament, a surveyor, three commissioners, and about twelve hundred pounds.
