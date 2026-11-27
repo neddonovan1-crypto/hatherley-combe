@@ -33,6 +33,7 @@ const platePic = (src, cap) => { const u = artURL(src); return u ? `<img src="${
 function plateHTML(q, src, cap){ const i = platePic(src, cap); return `<figure class="plate${i ? ' has' : ''}">${sceneSVG(q)}${i}</figure>`; }
 [0, 1, 2, 3].forEach(i => { const u = artURL('seasons/' + i); if (u) new Image().src = u; });
 
+let STEP = '', LEAFUP = true;
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
@@ -44,6 +45,7 @@ function render(){
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   if (S.phase === 'event') { if (PAPER !== S.t + ':' + S.pending) { PAPER = S.t + ':' + S.pending; TAB = 'paper'; } } else { PAPER = ''; if (TAB === 'paper') TAB = 'accounts'; }
+  { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
@@ -55,9 +57,11 @@ function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''
   for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.7, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
-  document.body.classList.toggle('reading', TAB === 'paper');
-  $('tabs').innerHTML = (S.phase === 'event' ? [['paper', 'The Paper']] : []).concat(TABS).map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
-function showTab(t){ TAB = t; WHO = ''; drawBook(); }
+  document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
+  const leaf = S.phase === 'event' ? ['paper', 'The Paper'] : ['leaf', S.phase === 'ledger' ? 'The Quarter' : S.phase === 'end' ? 'Finis' : 'The Season'];
+  $('tabs').innerHTML = [leaf].concat(TABS).map(([id, n]) => `<button class="${id === 'leaf' || id === 'paper' ? 'leaf' : ''}${id === 'leaf' ? ' phone' : ''}" aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
+/* On a phone one page shows at a time: LEAFUP is the paper in hand, otherwise the tab chosen. */
+function showTab(t){ LEAFUP = t === 'leaf' || t === 'paper'; if (t !== 'leaf') TAB = t; WHO = ''; drawBook(); if (innerWidth <= 1080) window.scrollTo({top:0}); }
 function showWho(id){ WHO = id; drawBook(); }
 
 function introHTML(){ const has = !!load();
@@ -123,8 +127,6 @@ function ledgerHTML(){
   return `${runhead('Papers received this quarter', 'Cr.')}
     ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
     <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
-    <div class="narrow"><p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
-    <h2>The Accounts</h2>${accountHTML()}</div>
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
