@@ -34,7 +34,7 @@ const PLACES = {
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
 const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'down', enclosure:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
 const VENT_AT = {plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london'};
-const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london'};
+const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london', fishing:'mill', shooting:'hanger', underwood:'hanger'};
 const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
