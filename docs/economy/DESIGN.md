@@ -125,7 +125,7 @@ Four of these turn on dates a player can learn: the soil's seven years, the meri
 
 Mavor is behind three. He describes the Newbury peat and warns that "when the peat land is once dug out, it must be applied to some other purpose". He notes the deep clay of the Kennet valley as fit for bricks, which would make an eighth venture, and the malt sent to London a ninth. The Windsor Bank that broke in 1816 was owned by two ironmongers.
 
-In the model a squire who takes every venture and leaves each in time ends with no debt, four farms and seventeen thousand pounds in hand. The one who takes them all and never leaves is turned over by the bank in 1815 nearly half the time, with a worn-out down, a dead flock and tenants breaking round him.
+In the model a squire who takes every venture and leaves each in time ends with no debt, four farms and some sixteen thousand pounds in hand, and more if the spa takes. The one who takes them all and never leaves is turned over by the bank in 1815 nearly half the time, with a worn-out down, a dead flock and tenants breaking round him.
 
 ## 3. The home farm
 
@@ -234,14 +234,14 @@ Twelve scripted squires, 2,000 lives each. The measure is **clear income**: what
 | The Improver | Everything for the land by 1802, inclosure included | 4 | £4,040 | £1,000 | never |
 | The Engrosser | Saves, takes Starveall at the forced sale, marries Edmund to Coldharbour, incloses, lives handsomely | 5 | £3,750 | £10,500 | never |
 | The Great Man | The trait, then the Improver's programme | 5 | £4,740 | £1,000 | never |
-| The Shrewd Projector | Every venture, and out of each in time | 4 | £4,310, with £17,000 in hand | £1,000 | never |
+| The Shrewd Projector | Every venture, and out of each in time | 4 | £4,310, with about £16,000 in hand | £1,000 | never |
 | The Projector | Every venture, rack rents, Handsome, and never sells | 3 | £2,500 | £5,900 | never; 3% lose a farm |
 | The Rack-Renter | At will, an eighth over, holds tenants to it | 3 | £2,990 | £3,000 | never |
 | The Late Convert | Idles to 1808, then drains, incloses, lets at rack and buys Coldharbour in 1811 | 5 | £2,900 | £24,700 | never |
 | Buys Everything | Every work, two a year, Handsome, and both farms on the market | 4 | £2,560 | £25,400 | never, but 9% lose a settled farm |
 | The Figure | Handsome then Splendid, the front, London, a seat in 1807 | n/a | n/a | n/a | always, in 1806 or 1807 |
 
-What I take from it. The range is now wide: from the auctioneer, through a man with five farms and less to spend than when he had three, up to five farms clear of debt and close on five thousand a year, or four farms and seventeen thousand pounds in the bank. Doing nothing treads water, which is the right floor. The three cheap ways to a fourth farm all pay, and the dear way does not, at least by 1815: the Late Convert holds the grandest rent roll in the book, £4,860 on paper, and owes twenty-five thousand against it. The Rack-Renter leads until 1813 and then sees his receipts fall by a third in two years as tenants break. Splendour on three farms is ruin by 1807. On five farms clear it can be afforded, so the Figure is a prize for getting rich and no way of doing it.
+What I take from it. The range is now wide: from the auctioneer, through a man with five farms and less to spend than when he had three, up to five farms clear of debt and close on five thousand a year, or four farms and sixteen thousand pounds in hand. Doing nothing treads water, which is the right floor. The three cheap ways to a fourth farm all pay, and the dear way does not, at least by 1815: the Late Convert holds the grandest rent roll in the book, £4,860 on paper, and owes twenty-five thousand against it. The Rack-Renter leads until 1813 and then sees his receipts fall by a third in two years as tenants break. Splendour on three farms is ruin by 1807. On five farms clear it can be afforded, so the Figure is a prize for getting rich and no way of doing it.
 
 The weak points, plainly. This is a model of the proposal and not the game. The hall's sixty events are one random sum of about £170 a year, the squires follow scripts, and steps are yearly where the game's are quarterly. The crash bites late, because tenants with savings last out 1815. The ventures are also too kind on average. Even the Projector, who does everything wrong, draws about a thousand a year from them before the bank goes, and the spa pays too often. Their odds want a hard look once they are events with choices. All of it wants re-running inside `test/sim.js` once there is an engine to run.
 
@@ -261,4 +261,4 @@ Three farms to begin, five at most. A trait may start a squire with four. He sho
 ## Still open
 
 - Whether these seven ventures are the right ones, and which others are wanted. A brickfield, a malthouse, a rabbit warren on Starveall and a share in a privateer are all to hand.
-- Whether five thousand a year, or seventeen thousand in hand, is rich enough for "greatly".
+- Whether five thousand a year, or sixteen thousand in hand, is rich enough for "greatly".
