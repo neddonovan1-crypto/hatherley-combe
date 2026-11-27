@@ -842,6 +842,12 @@ function indexEvents(){ for (const e of EVENTS){ if (e.fixed) for (const k of []
 const lab = c => typeof c.t === 'function' ? c.t() : c.t;
 const byId = id => EVENTS.find(e => e.id === id);
 
+/* While Henrietta is at Bath, a wandering paper that has her in it at the Hall is not drawn. The test reads the
+   event's own source, so new papers need no marking. Letters from Gay Street are exempt. */
+const HEN = /Henrietta/;
+function atHall(e){ if (e.hen === undefined) e.hen = e.id !== 'gayStreet' && (e.id === 'henrietta' || e.id === 'bath' || HEN.test(String(Object.getOwnPropertyDescriptor(e, 'text').value || '') + e.choices.map(c => String(c.go)).join('')));
+  return e.hen; }
+function pieceAtHall(p){ if (p.hen === undefined) p.hen = HEN.test(String(p.x) + ['a', 'b', 'c'].map(k => String(p[k] || '')).join('') + (p.o || []).map(c => String(c.go)).join('')); return p.hen; }
 function pickEvent(){
   // A dated event keeps its date. Anything queued for the same season waits one.
   const dated = (FIXED[S.year + '-' + S.season] || []).find(e => !e.cond || e.cond());
@@ -851,7 +857,8 @@ function pickEvent(){
   const fx = FIXED[S.year + '-' + S.season];
   if (fx) for (const e of fx) if (!e.cond || e.cond()) return e.id;
   if (!chance(0.8)) return null;
-  const pool = EVENTS.filter(e => !e.fixed && !e.follow && S.year >= (e.from || 0) && S.year <= (e.to || 9999)
+  const away = F('henriettaAway');
+  const pool = EVENTS.filter(e => !e.fixed && !e.follow && !(away && atHall(e)) && S.year >= (e.from || 0) && S.year <= (e.to || 9999)
     && (S.seen[e.id] === undefined || (e.repeatGap && S.t - S.seen[e.id] >= e.repeatGap)) && (!e.cond || e.cond()));
   if (!pool.length) return null;
   let tot = pool.reduce((a, e) => a + (e.weight || 1), 0), r = Math.random() * tot;
@@ -4504,7 +4511,7 @@ That evening Pascoe makes lobscouse for two.`; }}
    news (a married daughter writes). Stable ids; woodcuts at art/events/<id>. */
 function drawPiece(pool, slot, fallback){ S.did = S.did || {};
   if (S[slot] && S[slot].t === S.t) { const p = pool.find(x => x.id === S[slot].id); if (p) return p; }
-  const ok = pool.filter(p => !p.w || p.w()), fresh = ok.filter(p => S.did[p.id] === undefined);
+  const ok = pool.filter(p => (!p.w || p.w()) && !(F('henriettaAway') && pieceAtHall(p))), fresh = ok.filter(p => S.did[p.id] === undefined);
   const set = fresh.length ? fresh : ok.slice().sort((a, b) => S.did[a.id] - S.did[b.id]).slice(0, 3);
   const p = pick(set) || pool.find(x => x.id === fallback);
   S[slot] = {t:S.t, id:p.id}; S.did[p.id] = S.t; return p; }
@@ -4988,14 +4995,14 @@ A parcel goes with the letter. You are not told what is in it. It is the shape o
    drawn before the rest while it is fresh; once:true is never drawn twice. Woodcuts at art/events/<piece id>. */
 function drawOwn(pool, slot){ S.did = S.did || {};
   if (S[slot] && S[slot].t === S.t) { const p = pool.find(x => x.id === S[slot].id); if (p) return p; }
-  const ok = pool.filter(p => (!p.w || p.w()) && !(p.once && S.did[p.id] !== undefined)), fresh = ok.filter(p => S.did[p.id] === undefined), hot = fresh.filter(p => p.hot);
+  const ok = pool.filter(p => (!p.w || p.w()) && !(p.once && S.did[p.id] !== undefined) && !(F('henriettaAway') && pool !== GAYST && pieceAtHall(p))), fresh = ok.filter(p => S.did[p.id] === undefined), hot = fresh.filter(p => p.hot);
   const set = hot.length ? hot : fresh.length ? fresh : ok.slice().sort((a, b) => S.did[a.id] - S.did[b.id]).slice(0, 3);
   const p = pick(set) || pool[0];
   S[slot] = {t:S.t, id:p.id}; S.did[p.id] = S.t; return p; }
 function pooled(id, pool, slot, opt){ const now = () => drawOwn(pool, slot);
   const hotNow = () => pool.some(p => p.hot && (!S.did || S.did[p.id] === undefined) && (!p.w || p.w()));
   ev({ id, from:opt.from, to:opt.to, get weight(){ return hotNow() ? opt.weight * 3 : opt.weight; }, get repeatGap(){ return hotNow() ? 1 : opt.repeatGap; },
-    cond:() => (!opt.cond || opt.cond()) && pool.some(p => (!p.w || p.w()) && !(p.once && S.did && S.did[p.id] !== undefined)),
+    cond:() => (!opt.cond || opt.cond()) && pool.some(p => (!p.w || p.w()) && !(p.once && S.did && S.did[p.id] !== undefined) && !(F('henriettaAway') && pool !== GAYST && pieceAtHall(p))),
     get title(){ return now().title; }, cut:() => now().id, text:() => now().x(),
     choices:[0, 1, 2].map(i => ({ t:() => now().o[i].t, note:() => now().o[i].note || '', go:() => now().o[i].go() })) }); }
 const stew = () => F('crabbeGone') ? 'Lark' : 'Crabbe';
@@ -5895,7 +5902,7 @@ Henrietta watches Mudge down the drive from the drawing-room window. She shuts t
 She does not sing. On Tuesday the Castle carriage comes for her as before. She gets into it.`; }}
   ]});
 
-ev({ id:'henPorch', follow:true, cond:() => F('henA') && !F('henMended'), title:'What Mrs Tamworth Saw',
+ev({ id:'henPorch', follow:true, cond:() => F('henA') && !F('henMended') && !F('henriettaAway'), title:'What Mrs Tamworth Saw',
   text:() => `Mrs Tamworth stops you in the church porch. She has her hand on your sleeve.
 
 “I should not say it. I was at Speenhamland on Wednesday, at the Pelican. The Castle chariot was in the yard with the blinds down. A lady went up the back stairs in a grey veil. I know the veil. I gave it her.”
@@ -5955,7 +5962,7 @@ Her lamp is lit when you come in. She asks who was at Sessions.
 You tell her who was not.`; }}
   ]});
 
-ev({ id:'henRichmond', follow:true, cond:() => F('henA') && !F('henMended'), title:'The Blue Room',
+ev({ id:'henRichmond', follow:true, cond:() => F('henA') && !F('henMended') && !F('henriettaAway'), title:'The Blue Room',
   text:() => `Henrietta’s maid brings your shaving water. The footman should have brought it.
 
 “My mistress went at six, sir. In a post-chaise from the Bell. She took the dressing-case and the green book.”
@@ -6302,6 +6309,269 @@ He looks at the ceiling. He goes back to Birmingham by the night coach.
 
 At Christmas he writes to ask after the rot.`; }}
   ]});
+
+/* ---- Hard times ----
+   Three pools for the three states the engine raises in regardQuarter (src/estate.js): F('sullen') when the
+   parish has turned, F('cut') when the county has, F('henriettaAway') when she has gone to Gay Street. */
+const PARISH = [
+  {id:'parish-letter', title:'Under the Door', x:() => `A paper is found under the hall door at six in the morning. It is written on the fly-leaf of a prayer-book.
+
+“Mr ${S.sur}. You have had fair warnin. Their is them that have ate barly bread sinse Lammas and seen your dogs ate meat. Your ricks is dry. Remember the pore and you may slepe.”
+
+There is no name. The prayer-book was a Hatherley one. The parish gives one to every child at confirmation.`,
+    o:[{t:'Fifty guineas for the name of the writer.', go:() => { add({standing:1, goodwill:-3});
+      return `A bill goes up at the Bell and on the church door. “FIFTY GUINEAS REWARD.”
+
+Nobody comes for fifty guineas. It is nine years’ wages for a ploughman.
+
+On Sunday the bill on the church door has a line added in pencil. “Sixty, and I will tell you who rote the bill.”`; }},
+    {t:'Read it out at the vestry and ask what is wanted.', go:() => { add({goodwill:4, standing:-1});
+      return `You read it to the vestry on Thursday, spelling and all. You lay it on the table.
+
+Nobody owns it. Nobody is surprised by it. After a time the wheelwright says that coals are two shillings the bushel and the common is shut.
+
+The vestry sits till ten. You come away with a list. It is in the same hand as the letter. You do not remark on it.`; }},
+    {t:'Burn it.', go:() => { add({goodwill:-1});
+      return `You put it on the library fire.
+
+Mudge sits up in the stackyard four nights with a gun. On the fifth night he sleeps.
+
+Nothing is burnt. In the morning there is a prayer-book on the mounting-block with the fly-leaf torn out.`; }}]},
+  {id:'parish-harvest', title:'The Lord of the Harvest', w:() => S.season === 1 || S.season === 2, x:() => `The wheat on the home farm is dead ripe. It will shed if it stands a week.
+
+The reapers have chosen their captain. He is called the Lord of the Harvest and bargains for them all. This year he is Will Tubb. He stands in the yard with fourteen men behind him.
+
+“Twelve shillings the acre, sir, and the beer. Last year was eight. We have talked it over.”
+
+There is not a cloud. The men have their hooks with them. Nobody has taken his out of the straw band.`,
+    o:[{t:'Twelve shillings.', note:'£25 over last year', go:() => { add({money:-25, goodwill:4});
+      return `“Twelve.”
+
+They are in the Twelve Acres before you have left the yard. The wheat is down in nine days and carried in thirteen.
+
+At harvest home Will Tubb proposes your health. Fourteen men drink it. They do not cheer. It is nearer than it was.`; }},
+    {t:'Send to Reading for Irishmen.', note:'£15', go:() => { add({money:-15, goodwill:-4});
+      return `Twenty Irish reapers come out from Reading at seven shillings and their keep. Fifteen pounds over the bargain, with the wagon.
+
+They cut the home farm in six days. They sleep in the great barn and sing at night. The Hatherley men stand at the gate and watch them cut.
+
+The last sheaf is not carried in with ribbons. There is no boy on the load.`; }},
+    {t:'Eight, as last year. Let them think.', go:() => { add({money:-40, goodwill:-1, standing:1});
+      return `They think for five days. On the fourth the wind gets up from the south-west.
+
+On the sixth Will Tubb comes back for ten shillings and you give it. The hooks go in.
+
+Mr ${stew()} walks the stubble after. He puts the shed corn at forty pounds. The gleaners do very well.`; }}]},
+  {id:'parish-pryor', title:'Jem Pryor at the Front Door', x:() => `Jem Pryor has come to the front door. He has never come to it before. He has his hat on.
+
+“I am sent, sir. It was put to the vote at the Bell.”
+
+He has it by heart. Coals. The price of the quartern loaf against nine shillings a week. Gleaning on the home farm before the rake. The path across the park that was stopped.
+
+“That is the four things. I was to say there is a fifth and not say what.”`,
+    o:[{t:'Have him into the library and go through the four.', note:'£20', go:() => { add({money:-20, goodwill:5}); reg('pryor',2,'You heard him in the library');
+      return `He sits on the edge of a chair with his hat on his knee. He has taken it off without being asked.
+
+Coals at cost from the Hall wharf. Twenty pounds. Gleaning before the rake. The path you will think about.
+
+“And the fifth, Pryor?”
+
+“That was if you wouldn’t see me, sir.”`; }},
+    {t:'Hear him on the step.', go:() => { add({goodwill:1}); reg('pryor',-1);
+      return `You hear him on the step with the door open behind you.
+
+He says the four things. You say you will consider them. He waits. You have no more to say.
+
+He goes down the drive. He does not go round by the back. At the lodge there are nine men waiting for him.`; }},
+    {t:'Send Mudge to him.', go:() => { add({goodwill:-4}); reg('pryor',-2,'You sent the keeper to answer him');
+      return `Mudge goes out to him. They were boys together. They stand a minute.
+
+“He won’t, Jem.”
+
+“No. Well. I was sent.”
+
+Pryor puts his hand on the stone lion by the step as he goes. On Saturday the lion has no nose.`; }}]},
+  {id:'parish-audit', title:'Three Cheers', w:() => S.season === 2 || S.season === 3, x:() => `Harvest supper in the great barn. A hundred sit down. The beef is yours and so is the beer.
+
+By custom the oldest labourer rises at the end and calls three cheers for the master.
+
+The oldest is Abel Ilsley. He is seventy-nine. He rises. He looks down the table for some time.
+
+“There’s the supper,” he says. “We thanks the cook.” He sits.`,
+    o:[{t:'Rise and thank the cook yourself.', go:() => { add({goodwill:3});
+      return `You rise.
+
+“Abel Ilsley is right. Three cheers for Mrs Bunce.”
+
+They give them. They are loud. Somebody at the bottom of the table laughs. Abel Ilsley looks at you with his head on one side and lifts his mug an inch.`; }},
+    {t:'Sit it out.', go:() => { add({standing:-1});
+      return `You sit. The fiddler waits to be told.
+
+After a minute the women begin to clear. The men go out by the far door in twos and threes.
+
+You are left at the top table with Mr ${stew()} and a round of beef.`; }},
+    {t:'Stop the beer.', go:() => { add({goodwill:-4, standing:1});
+      return `“Draw no more, Mrs Bunce.”
+
+The barn is empty in ten minutes. Nobody says good night.
+
+The second barrel was not broached. It goes back to the cellar. In the morning it is found with the bung started. There is a pint gone and a halfpenny on the lid.`; }}]}
+];
+pooled('parish', PARISH, 'par', {from:1796, to:1815, weight:7, repeatGap:3, cond:() => F('sullen')});
+
+const COLD = [
+  {id:'cold-card', title:'Your Own Card', x:() => `You leave your card at the Lovedays’ on Tuesday. On Thursday their footman brings a card to the Hall on a salver.
+
+It is your card.
+
+There is no message. The corner you turned down has been turned up again.`,
+    o:[{t:'Give a dinner regardless.', note:'£40', go:() => { add({money:-40, standing:3});
+      return `Cards to fourteen houses. Forty pounds in turbot, venison and a pine-apple.
+
+Three accept. Mr Hartopp, the curate, and an attorney from Wyvern who was not asked. He says the card must have miscarried.
+
+The table is laid for sixteen. The attorney eats for four. He is very good company.`; }},
+    {t:'Ride over and ask Loveday why.', go:() => { add({standing:1});
+      return `Mr Loveday receives you in the stable yard. He does not ask you in.
+
+“I have daughters,” he says. “It is nothing I think myself. It is what is said at the Castle.”
+
+He walks you to your horse. He holds the stirrup. He looks round first to see who is in the yard.`; }},
+    {t:'Put the card back in the case.', go:() => { add({family:1});
+      return `You put it back in the case. It is a good card and cost twopence.
+
+No carriage turns in at the lodge that month. The gravel is raked on Saturday. It is found on the next Saturday as the rake left it.`; }}]},
+  {id:'cold-bench', title:'The Chair at Sessions', x:() => `Quarter Sessions at Reading. The justices sit in a row of eleven chairs under the King’s arms. You have had the fourth from the left for nine years.
+
+Lord Cullerne’s chaplain is in it. He was put in the Commission at Easter.
+
+There is no twelfth chair. The Chairman is reading a paper very closely. The Clerk of the Peace has dropped his pen and is a long time under the table.`,
+    o:[{t:'Stand behind the chair all day.', go:() => { add({standing:2});
+      return `You stand behind the fourth chair from ten until five. You give your voice in every case.
+
+The chaplain does not turn his head. By three the back of his neck is red.
+
+At the next Sessions there are twelve chairs. Yours is the twelfth. It is from the Clerk’s office and has no arms.`; }},
+    {t:'Write to the Lord Lieutenant.', go:() => { add({standing:-1});
+      return `You write to Lord Radnor. You have been in the Commission of the Peace since ’89.
+
+His lordship’s secretary answers. The seating of the bench is a matter for the Chairman. His lordship is confident no slight was intended.
+
+The Chairman is Lord Cullerne’s cousin.`; }},
+    {t:'Sit in the body of the court.', go:() => { add({standing:-2, goodwill:2});
+      return `You sit on the public benches between a hurdle-maker and a woman with a basket.
+
+A Hatherley man is up for taking a hare. He sees you. He looks from you to the bench and back.
+
+He has three months. Going down he says, “Good day, sir.” It is to you that he says it.`; }}]},
+  {id:'cold-cullerne', title:'In Wyvern Market Place', x:() => `Wyvern, market day. Lord Cullerne is crossing from the Bell to his carriage. He has his agent on one side and Mr Tamworth on the other.
+
+You are eight yards off. There is nobody between.
+
+He looks at the Town Hall clock. It is over your head. He goes on looking at it as he comes.`,
+    o:[{t:'Bow.', go:() => { add({standing:-1});
+      return `You take off your hat and bow.
+
+Lord Cullerne has found something amiss with the clock. He remarks on it to the agent. Mr Tamworth looks at his boots.
+
+A butcher’s boy bows back to you from a doorway. He does it rather well.`; }},
+    {t:'Wish him good morning by name.', go:() => { add({standing:2}); reg('cullerne',-1);
+      return `“Good morning, my lord.”
+
+The whole market hears it. He is obliged to stop. He touches his hat with one finger.
+
+“Mr ${S.sur}.”
+
+It is two words. Forty people have heard him say them. Mr Tamworth says good morning as well, a little late.`; }},
+    {t:'Look at the clock yourself.', go:() => { add({goodwill:1});
+      return `You turn and look up at the Town Hall clock.
+
+It is ten minutes slow. It has been ten minutes slow since your uncle’s time.
+
+When you turn round the carriage is at the end of the street. A carter beside you has been looking at the clock too. He asks what you both saw.`; }}]}
+];
+pooled('cold', COLD, 'cld', {from:1796, to:1815, weight:6, repeatGap:4, cond:() => F('cut')});
+
+const GAYST = [
+  {id:'bath-letter', title:'From Gay Street', x:() => `A letter from Henrietta. It is one side.
+
+“I am tolerably well. The rooms are small and the stairs are steep. I drink two glasses at the Pump Room at eight and walk in the Crescent at one. Mrs Loveday is here. She has asked me nothing, which I take very kindly. Pray tell Mrs Bunce that the sheets are to be aired whether I am there or no. H.”
+
+She has not said “your affectionate”. She has written the word and scratched it through.`,
+    o:[{t:'Write and ask her to come home.', go:() => { add({family:4}); reg('henrietta',1);
+      return `You write four lines. The third is “I should be glad if you would come home.”
+
+Her answer is nine days coming.
+
+“I had your letter. I have read the third line several times. I do not say no. Ask me again in a month, and say why.”`; }},
+    {t:'Send fifty pounds.', note:'£50', go:() => { add({money:-50, family:1});
+      return `You enclose a fifty-pound note and say that she is to want for nothing.
+
+She acknowledges it by return. She has taken a box at the theatre for the season.
+
+The acknowledgment is one line. It is signed with both her names.`; }},
+    {t:'Answer about the sheets.', go:() => { add({family:-1});
+      return `You write that the sheets have been aired. You add the price of wheat and that the dog is well.
+
+She does not answer.
+
+Mrs Bunce airs the sheets again on Friday. Nobody has told her to.`; }}]},
+  {id:'bath-selina', title:'Selina’s View', x:() => `Your sister Selina has been to Bath. She comes on to Hatherley to tell you about it. She keeps her bonnet on.
+
+“She has two rooms over a milliner. I counted the stairs. She dines at three on a chop. She is asked out four nights in the week and goes. She looks ten years younger. I thought you should know that.”
+
+She takes off one glove.
+
+“I did not ask her why. I ask you.”`,
+    o:[{t:'Tell Selina why.', go:() => { add({family:3});
+      return `You tell her. It takes some time. You begin in the wrong year and go back.
+
+Selina hears it out. She puts her glove on again.
+
+“Then you had better say that to Henrietta. You said it to me a great deal better than you will say it to her. Write it down tonight.”
+
+You write it down.`; }},
+    {t:'Say it is between man and wife.', go:() => { add({family:-1});
+      return `“It is between Henrietta and me.”
+
+“It is between Henrietta and all Bath. They are very much on her side.”
+
+She will not stay to dine. Her chaise goes down the drive at a trot.`; }},
+    {t:'Ask what the stairs were like.', go:() => { add({family:1});
+      return `“How many stairs?”
+
+“Forty-one.”
+
+You say Henrietta never could abide stairs. Selina looks at you for some time.
+
+“No,” she says. “She must dislike something else more.”`; }}]},
+  {id:'bath-go', title:'Forty-one Stairs', x:() => `It is fifty-two miles to Bath. A chaise will do it in a day.
+
+The house at Hatherley is very quiet. The clocks have been let run down in three rooms. Mrs Bunce sends up dinner for one and it is still too much.
+
+The blue room is kept shut. You have opened the door twice. Her silver brushes are gone from the table. There are four marks in the dust where they stood.`,
+    o:[{t:'Go to Bath.', note:'£12', go:() => { add({money:-12, family:7}); reg('henrietta',2,'You came to Gay Street yourself');
+      return `Twelve pounds in chaises. You are in Gay Street by six.
+
+Forty-one stairs. She opens the door herself. She has a pen in her hand.
+
+“You are out of breath,” she says.
+
+You stay four days at the White Hart. You walk in the Crescent with her at one. On the fourth day she lets you carry her shawl.`; }},
+    {t:'Send the carriage, empty, with her maid.', go:() => { add({family:-2}); reg('henrietta',-1,'You sent an empty carriage for her');
+      return `The carriage goes to Bath with her maid in it and a rug.
+
+It is back on Thursday. The maid is in it. So is the rug.
+
+“My mistress says, sir, that she is not a parcel.”`; }},
+    {t:'Wind the clocks.', go:() => { add({family:1});
+      return `You wind the clocks yourself, all eleven. It takes the morning.
+
+They strike noon one after another for four minutes.
+
+Mrs Bunce comes to the foot of the stairs to listen. She writes to Bath that night. She has the housemaid write it.`; }}]}
+];
+pooled('gayStreet', GAYST, 'gay', {from:1796, to:1815, weight:9, repeatGap:2, cond:() => F('henriettaAway')});
 /* What a man brings with him. One event for each choice made at the inheritance.
    Written in the Hatherley hand (docs/voice/VOICE.md): plain narrator, inside the year, the wit left to the people and the sums. */
 const first = () => S.name.split(' ')[0];
