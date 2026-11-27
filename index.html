@@ -530,7 +530,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
    They run alongside the seasons and do not use up the season's undertaking. */
 const MAX_WORKS = 2;
 const PROJECTS = {
-  enclosure:{ name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
+  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
     blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
@@ -544,12 +544,12 @@ To ${S.name}, Esquire, 400 acres. To the Earl of Cullerne, 190. To the Vicar in 
 Jem Pryor stands up at the back. His family has turned a cow out there since Queen Anne.
 
 “Have you that in writing?” says the clerk.`; }},
-  drain:{ name:'Drain and marl the clay at Kennet Bottom', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
+  drain:{ fx:["+ Kennet Bottom up to fair order", "+ About a sixth more rent"], effects:`Kennet Bottom comes up from neglected to fair order: worth about a sixth more to let.`, name:'Drain and marl the clay at Kennet Bottom', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
     blurb:`Nine miles of stone drains under the low fields. They stand in water from November to May.`, gain:'Kennet Bottom in fair order',
     done:() => { return `The drains are in at Kennet Bottom. There are nine miles of them, laid with stone and blackthorn.
 
 You walk the low fields from end to end. Your boots come home on your feet.`; }},
-  fourcourse:{ name:'Put the home farm under the Norfolk four-course', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
+  fourcourse:{ fx:["+ Home farm wheat", "+ Every farm worth a little more"], effects:`Home farm wheat up by about a sixteenth. Every farm worth a fortieth more to let.`, name:'Put the home farm under the Norfolk four-course', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
     blurb:`Wheat, turnips, barley, clover. No field lies fallow.`, gain:'Yields and rents up',
     done:() => { S.improve += 1; reg('hartopp',1); return `Wheat, turnips, barley, clover. Then wheat again. There is no fallow on the home farm this year.
 
@@ -558,14 +558,14 @@ The old carter stands at the gate of Twelve Acres.
 “That ground ent had a rest since Lady Day twelvemonth, sir.”
 
 He shakes his head at it.`; }},
-  mill:{ name:'Rebuild Hatherley Mill with an iron wheel', seasons:2, cost:() => 420,
+  mill:{ fx:["+ Kennet Bottom worth a sixteenth more", "+ Goodwill"], effects:`Kennet Bottom worth a sixteenth more to let. Goodwill rises.`, name:'Rebuild Hatherley Mill with an iron wheel', seasons:2, cost:() => 420,
     blurb:`The present wheel is of elm. Your grandfather’s father put it in.`, gain:'Kennet Bottom worth more; the parish pleased',
     done:() => { fl('newMill'); add({goodwill:3}); return `The new wheel turns at Hatherley Mill. It is cast iron, from the foundry at Reading. Eighteen feet across. Painted red.
 
 It grinds before noon what the old wheel ground in a day. Pocock the miller walks round it twice with his hands behind him.
 
 “Her’ll never last,” he says.`; }},
-  cottages:{ name:'Build six brick cottages on the Kintbury lane', seasons:2, cost:() => 360,
+  cottages:{ fx:["+ Goodwill, a good deal"], effects:`Goodwill rises a good deal.`, name:'Build six brick cottages on the Kintbury lane', seasons:2, cost:() => 360,
     blurb:`Six on the lane are past mending. The ivy holds up two of them.`, gain:'Goodwill',
     done:() => { fl('cottages'); add({goodwill:9}); return `Six cottages stand on the Kintbury lane. Brick walls. Tiled roofs. Two bedrooms, a bread oven and a pigsty to each.
 
@@ -574,36 +574,36 @@ The six families walk through on Saturday. Nobody speaks. They put their hands o
 One woman stops at the foot of the stairs.
 
 “Is the upstairs ours and all, sir?”`; }},
-  school:{ name:'Endow a dame school in the old tithe barn', seasons:1, cost:() => 160,
+  school:{ fx:["+ Goodwill", "− Dr Gall"], effects:`Goodwill rises. Dr Gall cools.`, name:'Endow a dame school in the old tithe barn', seasons:1, cost:() => 160,
     blurb:`Letters, the catechism and plain sewing for forty children.`, gain:'Goodwill',
     done:() => { fl('school'); add({goodwill:6}); if (!F('gallDead')) reg('gall',-1); return `The school opens in the tithe barn. Forty children. Twenty slates. Hannah Gurney’s niece has them for letters, the catechism and knitting.
 
 “Reading will only make them discontented,” says ${F('gallDead') ? 'old Dewey' : 'Dr Gall'}.
 
 On Friday there is a word chalked on ${F('gallDead') ? 'his yard gate' : 'the vicarage gate'}. It is spelt correctly.`; }},
-  road:{ name:'Mend the Kintbury road, and the bridge with it', seasons:1, cost:() => 240,
+  road:{ fx:["+ Goodwill", "+ Standing"], effects:`Goodwill and standing both rise.`, name:'Mend the Kintbury road, and the bridge with it', seasons:1, cost:() => 240,
     blurb:`Last winter it took two carts and the curate’s pony. The parish has been bound to mend it since Queen Anne.`, gain:'Goodwill and standing',
     done:() => { fl('road'); add({goodwill:3, standing:3}); return `The Kintbury road is made. Flints broken small, rammed and cambered. A ditch on either side. The bridge has a parapet.
 
 The carrier calls twice a week now. On Tuesday a post-chaise goes through at a trot. The children run out to look at it.`; }},
-  front:{ name:'New-front the Hall in Bath stone', seasons:3, cost:() => 900,
+  front:{ fx:["+ Standing, a good deal", "+ Henrietta", "+ Household"], effects:`Standing rises a good deal. Henrietta and the household pleased.`, name:'New-front the Hall in Bath stone', seasons:3, cost:() => 900,
     blurb:`A portico, a pediment and six columns across the park front.`, gain:'Standing; Henrietta',
     done:() => { fl('newFront'); add({standing:9, family:4}); reg('henrietta',2,'You gave the Hall a front she could ask people to'); return `The scaffolding comes down. The Hall has a front of Bath stone, six Ionic columns and a pediment with your arms cut in it. Behind it the old chimneys smoke as before.
 
 Henrietta has the Tamworths to dinner on Thursday. She receives them on the steps.`; }},
-  pinery:{ name:'Build a pinery and raise pine-apples', seasons:1, cost:() => 200,
+  pinery:{ fx:["+ Standing", "+ Household"], effects:`Standing rises. The household pleased.`, name:'Build a pinery and raise pine-apples', seasons:1, cost:() => 200,
     blurb:`A glass house, a pit of tanner’s bark and a Scotch gardener. A pine-apple takes two years.`, gain:'Standing; the household',
     done:() => { fl('pinery'); add({standing:4, family:2}); return `The first pine-apple is cut. It has had two years, forty loads of bark and a Scotchman to itself.
 
 Nobody eats it. It stands in the middle of the table through eleven dinners. Then the Lovedays send to borrow it.`; }},
-  oaks:{ name:'Plant forty acres of oak for the Navy', seasons:1, cost:() => 120,
+  oaks:{ fx:["+ Standing"], effects:`Standing rises a little.`, name:'Plant forty acres of oak for the Navy', seasons:1, cost:() => 120,
     blurb:`A seventy-four takes two thousand grown oaks.`, gain:'Standing; posterity',
     done:() => { fl('oaks'); add({standing:2}); return `Forty acres of acorns are dibbled in on Gallows Piece.
 
 The nurseryman from Newbury says they will make ship timber in a hundred and twenty years. You ask him to say it again.
 
 You ride home at a walk.`; }},
-  icehouse:{ name:'Sink an ice-house in the north shrubbery', seasons:1, cost:() => 140,
+  icehouse:{ fx:["+ Household", "+ Henrietta"], effects:`The household pleased. Henrietta warms.`, name:'Sink an ice-house in the north shrubbery', seasons:1, cost:() => 140,
     blurb:`A brick egg under ground, filled from the carp pond in a hard frost.`, gain:'The household',
     done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk in the north shrubbery. It is a brick egg under a mound of earth. The men are to fill it from the carp pond at the first hard frost.
 
@@ -621,7 +621,7 @@ function worksList(){ const busy = S.works.filter(w => !PROJECTS[w.id].hidden).l
     if (state === 'open') { if (S.phase === 'end' || S.dead) why = 'The books are closed.';
       else if (busy >= MAX_WORKS) why = 'Two works in hand already. There is one estate carpenter, and he is on both.';
       else if (S.money < per) why = 'The purse will not stand the first instalment of ' + fmt(per) + '.'; }
-    return {id, name:p.name, blurb:p.blurb, gain:p.gain, cost, seasons:p.seasons, per,
+    return {id, name:p.name, blurb:p.blurb, gain:p.gain, effects:p.effects || p.gain, fx:p.fx, cost, seasons:p.seasons, per,
       note:fmt(cost) + (p.seasons > 1 ? ', in ' + p.seasons + ' quarterly instalments' : ''), state, left:w ? w.left : 0, can:state === 'open' && !why, why}; }); }
 function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || !w.can) return false;
   startProject(id); S.journal.unshift({when:stamp(), title:'Works', did:'Put in hand: ' + PROJECTS[id].name});
@@ -5034,10 +5034,10 @@ ${who} goes to a brother at Speen. ${f.name} is in hand, and ${steward()} has pu
   ]});
 
 /* ---------- works that belong to a place ---------- */
-PROJECTS.meadows = { name:'Float the water meadows at Kennet Bottom', seasons:2, cost:() => 300,
+PROJECTS.meadows = { fx:["+ Kennet Bottom worth a twelfth more to let"], effects:`Kennet Bottom is worth about a twelfth more to let, for good. Saves the meadow if the peat is ever dug.`, name:'Float the water meadows at Kennet Bottom', seasons:2, cost:() => 300,
   blurb:`Hatches, carriers and drains, to lay the Kennet over forty acres from Christmas to Lady Day.`, gain:'Kennet Bottom worth more to let',
   done:() => { fl('meadows'); return `The hatches are drawn at Kennet Bottom for the first time. The water stands an inch deep over forty acres. There is grass for the ewes in March.`; }};
-PROJECTS.commonpiece = { name:'Fence Common Piece and build a farmhouse', seasons:2, cost:() => 1000, if:() => F('enclosed') && !farm('commonpiece') && S.farms.length < MAX_FARMS,
+PROJECTS.commonpiece = { fx:["+ A new farm of 300 acres", "+£250 a year or so in rent"], effects:`A sixth, seventh or eighth farm of 300 acres, let at about £250 a year to begin.`, name:'Fence Common Piece and build a farmhouse', seasons:2, cost:() => 1000, if:() => F('enclosed') && !farm('commonpiece') && S.farms.length < MAX_FARMS,
   blurb:`Three hundred acres of the old common, staked out by the award. No hedge, no barn, no house.`, gain:'A new farm to let',
   done:() => { const f = addFarm('commonpiece', {own:false}); if (!f) return `The quick is planted round Common Piece. The land is laid to Church Farm.`;
     return `The quick is planted round Common Piece and the farmhouse has its roof on. ${f.tenant} takes the three hundred acres from year to year at ${fmt(f.rent)}. He begins by burning the furze.`; }};
@@ -5048,7 +5048,10 @@ const TIGHT = [1797, 1798, 1799, 1803, 1804, 1805, 1812, 1813, 1815];
 const moneyTight = y => TIGHT.includes(y);
 const canBorrow = () => S.mortgage < mortCap() && !moneyTight(S.year);
 const borrowWhy = () => moneyTight(S.year) ? 'The Funds pay five per cent this year. Mr Tidmarsh has nothing to lend on land.' : S.mortgage >= mortCap() ? 'The estate will carry no more.' : '';
-const salePrice = f => Math.round((moneyTight(S.year) ? 24 : 26) * (f.void ? 0.9 * lettingValue(f, S.year) : Math.min(rentDue(f), lettingValue(f, S.year))) / 10) * 10;
+const grossPrice = f => Math.round((moneyTight(S.year) ? 17 : 20) * (f.void ? 0.9 * lettingValue(f, S.year) : Math.min(rentDue(f), lettingValue(f, S.year))) / 10) * 10;
+/* A farm under lease is sold with the tenant bought out: a year's rent, and a quarter more for each further year he had to run, up to three years. */
+const buyOut = f => f.void || f.lease.type === 'will' ? 0 : Math.round(Math.min(3, 1 + 0.25 * Math.max(0, f.lease.ends - S.year - 1)) * f.rent / 10) * 10;
+const salePrice = f => Math.max(0, grossPrice(f) - buyOut(f));
 const boughtFarm = () => S.farms.filter(f => f.own).sort((a, b) => b.base - a.base)[0];
 const edmundSigns = () => farm('longbarrow') && !F('edmundDead') && S.chars.edmund.r > -3 && !F('soldLongBarrow');
 function conveyFarm(f){ const p = salePrice(f); S.farms.splice(S.farms.indexOf(f), 1); S.money += p; S.soldFarms = S.soldFarms || {}; S.soldFarms[f.id] = f; if (f.capAdd) { S.mortCap = mortCap() - f.capAdd; delete f.capAdd; } return p; }
@@ -5101,29 +5104,29 @@ const wageIdx = y => 0.55 + 0.45 * trail(y, 5) / 50;
 const vent = id => S.vent && S.vent[id];
 const live = id => vent(id) && !vent(id).ended;
 const VENTURES = {
-  plough:{ name:'Plough up the down', where:'Long Barrow', cost:250, if:() => !!farm('longbarrow'),
+  plough:{ fx:["+ Long Barrow lets a quarter higher, seven years", "− Three tenths lower after that", "−£300 to lay it down again"], risk:3, odds:{"well": 0.35, "dull": 0.25, "ill": 0.4}, effects:`Long Barrow lets a quarter higher for seven years. After that it lets three tenths lower until the down is laid to grass again, which costs £300 and takes five years.`, name:'Plough up the down', where:'Long Barrow', cost:250, if:() => !!farm('longbarrow'),
     well:'The farm is worth a quarter more to let, from the first crop.', ill:'The shepherd says there are seven crops in that turf and no more.',
     begin:() => { farm('longbarrow').mult = 1.25; }, state:v => 'In corn since ' + v.year,
     endLabel:'Lay it down to grass', endCost:300, end:v => { const lb = farm('longbarrow'); v.heal = S.year + 5; if (lb) lb.mult = S.year - v.year > 7 ? 0.8 : 1;
       return `The down at Long Barrow is sown with sainfoin and rye-grass. The shepherd says it will be five years before it carries a flock.`; }},
-  merino:{ name:'Merinos', where:'The home farm', cost:420, if:() => S.year >= 1800,
+  merino:{ fx:["+£110 a year in wool", "+£150 a year in rams, 1806 to 1810", "+£400 to £1,400 if sold in time", "− Worth £60 once the fashion ends"], risk:3, odds:{"well": 0.4, "dull": 0.3, "ill": 0.3}, effects:`About £110 more wool each summer, and £150 a year in rams from 1806. The flock sells for £400 to £1,400 while the fashion lasts. If the fashion ends, the wool and the flock are worth next to nothing.`, name:'Merinos', where:'The home farm', cost:420, if:() => S.year >= 1800,
     well:'Fine wool worth £110 more at each clip, and rams that sell to gentlemen.', ill:'The price of a ram is whatever gentlemen will give this year.',
     begin:() => { fl('merino'); }, state:v => 'A flock since ' + v.year,
     endLabel:'Sell the flock', end:() => { const y = S.year, p = y <= 1805 ? 400 : y <= 1810 ? 400 + 200 * (y - 1805) : 60; fl('merino', false); S.money += p;
       return `The merino flock is sold at Reading. It makes ${fmt(p)}.`; }},
-  peat:{ name:'Cut the peat', where:'Kennet Bottom', cost:300, if:() => !!farm('kennet'),
+  peat:{ fx:["+£170 a year, nine years", "− Kennet Bottom falls a grade after"], risk:2, odds:{"well": 0.6, "dull": 0.2, "ill": 0.2}, effects:`About £170 a year for nine years. Then the peat is gone and Kennet Bottom falls a grade, unless the water meadows have been floated.`, name:'Cut the peat', where:'Kennet Bottom', cost:300, if:() => !!farm('kennet'),
     well:'About £170 a year in peat and ashes, for nine years or ten.', ill:'The peat lies under the best of the meadow.', state:v => 'Digging since ' + v.year },
-  forage:{ name:'Forage for the barracks', where:'The estate', cost:200, if:() => S.year < 1814,
+  forage:{ fx:["+£130 in a year of war", "−£60 for a refused load", "−£220 in a year of peace"], risk:1, odds:{"well": 0.75, "dull": 0.15, "ill": 0.1}, effects:`£130 in a year of war. A refused delivery now and then, £60 lost. £220 lost in any year of peace.`, name:'Forage for the barracks', where:'The estate', cost:200, if:() => S.year < 1814,
     well:'£130 a year, as long as there is cavalry at Reading.', ill:'The contract binds you to deliver at the price agreed, in peace or war.', state:v => 'Under contract since ' + v.year,
     endLabel:'Give up the contract', end:() => `The forage contract is given up. The commissary has found a man at Theale.` },
-  thresher:{ name:'A threshing machine', where:'The home farm', cost:120, if:() => S.year >= 1803 && !F('thresher'),
+  thresher:{ fx:["+£50 a year in wages saved", "− Goodwill", "−£300 if the barn is fired"], risk:2, odds:{"well": 0.6, "dull": 0.2, "ill": 0.2}, effects:`Saves about £50 a year. Goodwill falls. From 1811, if the parish is ill disposed, the barn may be fired: £300 lost.`, name:'A threshing machine', where:'The home farm', cost:120, if:() => S.year >= 1803 && !F('thresher'),
     well:'Saves about £50 a year in winter wages.', ill:'Six men thresh in your barn from Martinmas to Lady Day. They have no other work.',
     begin:() => { fl('thresher'); add({goodwill:-4}); }, state:v => 'In the great barn since ' + v.year },
-  bank:{ name:'A partner’s share in the Wyvern Bank', where:'The estate', cost:1000,
+  bank:{ fx:["+£150 a year", "+ Standing", "−£500 in a run", "−£2,500 to £5,000 if the bank breaks"], risk:4, odds:{"well": 0.45, "dull": 0.1, "ill": 0.45}, effects:`£150 a year and standing. A run on the bank may cost £500. If the bank breaks you lose the £1,000 and are called on for £1,500 to £4,000 more. You may withdraw only when money is easy.`, name:'A partner’s share in the Wyvern Bank', where:'The estate', cost:1000,
     well:'Fifteen per cent, and a seat in the bank parlour.', ill:'Every partner answers for the notes with all he has.', state:v => 'A partner since ' + v.year,
     endLabel:'Withdraw from the bank', canEnd:() => !moneyTight(S.year), endWhy:'No partner can be let go while money is tight.',
     end:() => { S.money += 1000; return `You have withdrawn from the Wyvern Bank. Mr Tidmarsh repays the £1,000 and takes your name off the notes.`; }},
-  spa:{ name:'The Hatherley Spa', where:'The estate', cost:1800,
+  spa:{ fx:["+£300 a year rising to £750, if the waters take", "+£90 a year if they half take", "−£60 a year if they fail"], risk:3, odds:{"well": 0.3, "dull": 0.5, "ill": 0.2}, effects:`If the waters take: £300 a year rising to £750, and standing. If they half take: £90 a year. If they fail: £60 a year lost until the pump room is shut.`, name:'The Hatherley Spa', where:'The estate', cost:1800,
     well:'If the waters take, £300 a year rising to £750.', ill:'Bath is thirty miles off, and Cheltenham had the King.',
     begin:v => { const r = Math.random(); v.fate = r < 0.3 ? 'hit' : r < 0.8 ? 'dull' : 'flop'; }, state:v => 'A pump room since ' + v.year,
     endLabel:'Shut the pump room', end:() => `The pump room is shut and the attendant paid off. The spring runs into the ditch as before.` }
@@ -5132,7 +5135,7 @@ function venturesList(){ const open = S.phase !== 'end' && !S.dead;
   return Object.keys(VENTURES).map(id => { const d = VENTURES[id], v = vent(id), state = !v ? 'open' : v.ended ? 'ended' : 'inHand';
     let why = ''; if (state === 'open') { if (!open) why = 'The books are closed.'; else if (d.if && !d.if()) why = 'Not to be had at present.'; else if (S.money < d.cost) why = 'The purse will not stand ' + fmt(d.cost) + '.'; }
     const canEnd = open && state === 'inHand' && !!d.end && (!d.canEnd || d.canEnd()) && S.money >= (d.endCost || 0);
-    return {id, name:d.name, where:d.where, cost:d.cost, well:d.well, ill:d.ill, state, can:state === 'open' && !why, why,
+    return {id, name:d.name, where:d.where, cost:d.cost, well:d.well, ill:d.ill, effects:d.effects, fx:d.fx, risk:d.risk, odds:d.odds, state, can:state === 'open' && !why, why,
       note:state === 'inHand' ? d.state(v) : state === 'ended' ? (v.how || 'Given up') + ', ' + v.ended : '',
       canEnd, endLabel:state === 'inHand' && d.end ? d.endLabel + (d.endCost ? ', ' + fmt(d.endCost) : '') : '', endWhy:state === 'inHand' && d.end && !canEnd && d.canEnd && !d.canEnd() ? d.endWhy : ''}; }); }
 function beginVenture(id){ const x = venturesList().find(v => v.id === id); if (!x || !x.can) return false; const d = VENTURES[id];
@@ -5215,8 +5218,8 @@ function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
 /* ---------- the land market: buy at any time, sell any farm ---------- */
 const MARKET_FARMS = ['coldharbour', 'rooksnest', 'withymead', 'maddle'];
 const landFor = id => (S.soldFarms && S.soldFarms[id]) || Object.assign({id, level:'fair', arrears:0, lease:{type:'will'}}, NEW_FARMS[id]);
-const askPrice = (f, years) => Math.round((years || (moneyTight(S.year) ? 25 : 28)) * lettingValue(f, S.year) / 10) * 10;
-const loanOn = price => moneyTight(S.year) ? 0 : Math.floor(price / 200) * 100;   // the bank lends half on the farm itself, when it lends at all
+const askPrice = (f, years) => Math.round((years || (moneyTight(S.year) ? 19 : 22)) * lettingValue(f, S.year) / 10) * 10;
+const loanOn = price => moneyTight(S.year) ? 0 : Math.floor(price * 0.6 / 100) * 100;   // the bank lends half on the farm itself, when it lends at all
 function farmsForSale(){ estateSync(); const open = S.phase !== 'end' && !S.dead;
   const ids = MARKET_FARMS.concat(Object.keys(S.soldFarms || {}).filter(id => !MARKET_FARMS.includes(id))).filter(id => !farm(id));
   return ids.map(id => { const f = landFor(id), price = askPrice(f), loan = loanOn(price), down = price - loan;
@@ -5231,7 +5234,8 @@ function buyFarm(id){ const x = farmsForSale().find(r => r.id === id); if (!x ||
   S.journal.unshift({when:stamp(), title:'Land', did:'Bought ' + f.name + ', ' + f.acres + ' acres, for ' + fmt(x.price) + (x.loan ? ', ' + fmt(x.loan) + ' of it on mortgage' : '')}); save(); render(); return true; }
 function sellState(id){ const f = farm(id), open = S.phase !== 'end' && !S.dead, settled = !f.own;
   const why = !open ? 'The books are closed.' : S.farms.length <= 1 ? 'The last farm cannot be sold.' : settled && !F('edmundDead') && S.chars.edmund.r <= -3 ? 'Settled land. Edmund will not sign.' : '';
-  return {canSell:!why, sellPrice:salePrice(f), sellWhy:why, settled}; }
+  return {canSell:!why, sellPrice:salePrice(f), sellGross:grossPrice(f), sellPayout:buyOut(f), sellWhy:why, settled,
+    sellEffects:(buyOut(f) ? 'The tenant is paid ' + fmt(buyOut(f)) + ' to give up the lease. ' : '') + (settled ? 'Settled land: Edmund must sign. Standing and the household suffer, and the estate can borrow £3,000 less.' : 'Your own to sell. Standing falls a little.')}; }
 function sellFarm(id){ const f = farm(id); if (!f || !sellState(id).canSell) return false; const settled = !f.own, p = conveyFarm(f);
   if (settled) { S.mortCap = Math.max(0, mortCap() - 3000); add({standing:-5, family:-8}); if (!F('edmundDead')) reg('edmund', -2, 'You sold ' + f.name + ' out of his inheritance'); if (f.id === 'longbarrow') fl('soldLongBarrow'); }
   else add({standing:-2});
@@ -5242,18 +5246,18 @@ function sellFarm(id){ const f = farm(id); if (!f || !sellState(id).canSell) ret
 /* A fourth farm, early and on easy terms. Once, in the second year. */
 const offerId = () => ['coldharbour', 'rooksnest'].find(id => !farm(id));
 ev({ id:'farmOffered', follow:true, cond:() => !!offerId() && S.farms.length < MAX_FARMS, title:'The Executors’ Offer',
-  text:() => { const f = landFor(offerId()), p = askPrice(f, 16);
+  text:() => { const f = landFor(offerId()), p = askPrice(f, 13);
     return `Mr Ayliffe of ${f.name} died at Bath in February. He has left the farm to three nieces in equal shares, and the nieces want money.
 
 Their attorney rides over from Newbury. He will take ${fmt(p)} for the ${f.acres} acres if the conveyance is signed this term. Put up at the George it would fetch ${fmt(askPrice(f))}, he says, and take till Christmas.
 
 ${f.tenant} has the farm from year to year at ${fmt(five(0.95 * lettingValue(f, S.year)))}. Mr Tidmarsh has sent a note by the attorney. He will lend the whole sum on the farm itself at five per cent.`; },
   choices:[
-    {t:'Buy it on Mr Tidmarsh’s money.', note:() => 'Mortgage +' + fmt(askPrice(landFor(offerId()), 16)), go:() => { const p = askPrice(landFor(offerId()), 16), f = takeFarm(offerId(), p); add({standing:2});
+    {t:'Buy it on Mr Tidmarsh’s money.', note:() => 'Mortgage +' + fmt(askPrice(landFor(offerId()), 13)), go:() => { const p = askPrice(landFor(offerId()), 13), f = takeFarm(offerId(), p); add({standing:2});
       return `The conveyance is signed in the attorney’s office at Newbury. Mr Tidmarsh’s clerk counts ${fmt(p)} in notes on to the table and the attorney counts them again.
 
 ${steward()} rules a new page in the book and writes “${f.name}” at the head of it.`; }},
-    {t:'Buy it with your own money.', note:() => fmt(askPrice(landFor(offerId()), 16)), if:() => S.money >= askPrice(landFor(offerId()), 16), go:() => { const p = askPrice(landFor(offerId()), 16); S.money -= p; const f = takeFarm(offerId(), 0); add({standing:2});
+    {t:'Buy it with your own money.', note:() => fmt(askPrice(landFor(offerId()), 13)), if:() => S.money >= askPrice(landFor(offerId()), 13), go:() => { const p = askPrice(landFor(offerId()), 13); S.money -= p; const f = takeFarm(offerId(), 0); add({standing:2});
       return `You give the attorney a draft on Tidmarsh’s for ${fmt(p)}. He reads it twice and puts it in his pocket-book.
 
 ${f.name} is yours from quarter day. ${f.tenant} sends up a goose.`; }},
@@ -5262,11 +5266,11 @@ ${f.name} is yours from quarter day. ${f.tenant} sends up a goose.`; }},
   ]});
 
 /* ---------- more works ---------- */
-PROJECTS.barns = { name:'A new barn and yards at Church Farm', seasons:2, cost:() => 450, if:() => !!farm('church') && farm('church').cond < 4,
+PROJECTS.barns = { fx:["+ Church Farm up a grade", "+ About a seventh more rent"], effects:`Church Farm goes up a grade: worth about a seventh more to let.`, name:'A new barn and yards at Church Farm', seasons:2, cost:() => 450, if:() => !!farm('church') && farm('church').cond < 4,
   blurb:`The old barn is thatch on crucks. The corn is threshed on an earth floor and the beasts winter in the lane.`, gain:'Church Farm in better order',
   done:() => { const f = farm('church'); if (!f) return `The barn is finished. The farm it stands on is no longer yours.`; f.cond = Math.min(4, f.cond + 1);
     return `The new barn at Church Farm is tiled, with a threshing floor of oak plank and yards walled round for forty beasts. ${f.void ? 'It stands empty until the farm is let' : f.tenant + ' has carried the wheat in'}.`; }};
-PROJECTS.chalk = { name:'Chalk the thin ground at Long Barrow', seasons:2, cost:() => 350, if:() => !!farm('longbarrow') && farm('longbarrow').cond < 4,
+PROJECTS.chalk = { fx:["+ Long Barrow up a grade", "+ About a seventh more rent"], effects:`Long Barrow goes up a grade: worth about a seventh more to let.`, name:'Chalk the thin ground at Long Barrow', seasons:2, cost:() => 350, if:() => !!farm('longbarrow') && farm('longbarrow').cond < 4,
   blurb:`Pits sunk on the down, and the chalk drawn out and spread at two hundred loads to the acre.`, gain:'Long Barrow in better order',
   done:() => { const f = farm('longbarrow'); if (!f) return `The chalking is finished. The farm is no longer yours.`; f.cond = Math.min(4, f.cond + 1);
     return `Four pits are open on the down at Long Barrow and the chalk from them lies white over ninety acres. The frost has broken it small. ${steward()} enters the farm as ${ORDER_W[f.cond].toLowerCase()}.`; }};
@@ -5276,17 +5280,17 @@ const CONSOL_YIELD = {1795:4.52,1796:4.88,1797:5.91,1798:5.93,1799:5.09,1800:4.7
 const consolPrice = y => 300 / (CONSOL_YIELD[y] || 5);
 const atWar = y => y !== 1802;
 Object.assign(VENTURES, {
-  funds:{ name:'Five hundred pounds in the Three per Cents', where:'The Bank of England', cost:500,
+  funds:{ fx:["+£25 a year or so", "+ or − the price of the day when sold"], risk:0, odds:{"well": 0.4, "dull": 0.4, "ill": 0.2}, effects:`About £25 a year in dividends. Sold at the price of the day, which has stood anywhere between 50 and 71.`, name:'Five hundred pounds in the Three per Cents', where:'The Bank of England', cost:500,
     well:'The dividend is paid in January and July, in war or peace.', ill:'The price moves with every despatch from the Continent.',
     begin:v => { v.stock = Math.round(500 / consolPrice(S.year) * 10) * 10; }, state:v => fmt(v.stock) + ' stock, worth ' + fmt(v.stock * consolPrice(S.year) / 100) + ' today',
     endLabel:'Sell out of the Funds', end:v => { const p = Math.round(v.stock * consolPrice(S.year) / 100); S.money += p;
       return `Mr Tidmarsh’s London agent has sold ${fmt(v.stock)} Three per Cents at ${Math.round(consolPrice(S.year))}. It comes to ${fmt(p)}.`; }},
-  malthouse:{ name:'A malthouse at Wyvern', where:'The estate', cost:700,
+  malthouse:{ fx:["+£90 a year", "+£140 when barley is cheap", "−£40 in a year of famine prices", "+£400 if sold"], risk:1, odds:{"well": 0.7, "dull": 0.15, "ill": 0.15}, effects:`£90 a year, £140 when wheat is under seventy shillings. £40 lost in a year of famine prices. Sells for £400.`, name:'A malthouse at Wyvern', where:'The estate', cost:700,
     well:'About £90 a year, and more when barley is cheap.', ill:'In a dear year the justices stop the malting to save the grain for bread.', state:v => 'Malting since ' + v.year,
     endLabel:'Sell the malthouse', end:() => { S.money += 400; return `The malthouse is sold to a brewer at Newbury for £400, with the kiln and the cistern.`; }},
-  brickkiln:{ name:'A brick kiln at Kennet Bottom', where:'Kennet Bottom', cost:350, if:() => !!farm('kennet'),
+  brickkiln:{ fx:["+£60 a year", "+£120 in a year of building"], risk:0, odds:{"well": 0.9, "dull": 0.1, "ill": 0}, effects:`£60 a year, £120 in a year when works are in hand.`, name:'A brick kiln at Kennet Bottom', where:'Kennet Bottom', cost:350, if:() => !!farm('kennet'),
     well:'£60 a year, and twice that in any year you are building.', ill:'No carrier will take bricks beyond Wyvern at the price.', state:v => 'Burning since ' + v.year },
-  privateer:{ name:'A sixteenth of a Bristol privateer', where:'The Hetty, 14 guns', cost:600, if:() => atWar(S.year) && S.year < 1814,
+  privateer:{ fx:["+£300 to £1,200 for a prize", "−£80 for a refit", "− The share lost if she is taken", "+£250 if sold"], risk:3, odds:{"well": 0.35, "dull": 0.2, "ill": 0.45}, effects:`In a year of war: perhaps a prize, £300 to £1,200 to your share. Perhaps a refit, £80. Perhaps she is taken and the share is lost. Sells for £250.`, name:'A sixteenth of a Bristol privateer', where:'The Hetty, 14 guns', cost:600, if:() => atWar(S.year) && S.year < 1814,
     well:'A sixteenth of whatever she takes.', ill:'She carries fourteen guns. A French frigate carries forty.', state:v => 'At sea since ' + v.year,
     endLabel:'Sell the share', end:() => { S.money += 250; return `Your sixteenth of the Hetty is sold on the Bristol quay for £250.`; }}
 });
@@ -5306,50 +5310,50 @@ ventureTick = function(line){ ventureTickOne(line); if (!S.vent) return; const y
 /* ---------- society: what money buys in the county and in town, and what can be sold out of the house ---------- */
 /* mark: how far the thing raises (or, sold, lowers) the level the county's opinion settles at. keep: its cost a year in 1795 money. */
 const SOCIETY = {
-  plate:{ name:'The family plate', where:'The strong room', heir:true, mark:4, held:'In the strong room',
+  plate:{ fx:["+£420 if sold", "− Standing, if sold", "− Henrietta, if sold"], effects:`Sold: £420. Standing settles four lower. Henrietta and the household take it hard.`, name:'The family plate', where:'The strong room', heir:true, mark:4, held:'In the strong room',
     well:'Two tureens, four dozen plates and the Queen Anne salvers, with the arms on every piece.', ill:'Henrietta counts it herself on the first of the month.',
     endLabel:'Send it to Rundell’s to be sold', sell:420, end:() => { add({family:-4}); reg('henrietta', -2, 'You sold the plate'); return `The plate goes up to Ludgate Hill in two chests. Rundell’s pay by weight, at five and sixpence the ounce. Dinner is served on Staffordshire ware.`; }},
-  cellar:{ name:'Your uncle’s cellar', where:'Under the east wing', heir:true, mark:2, held:'Ninety dozen, laid down',
+  cellar:{ fx:["+£260 if sold", "− Standing, if sold"], effects:`Sold: £260. Standing settles two lower.`, name:'Your uncle’s cellar', where:'Under the east wing', heir:true, mark:2, held:'Ninety dozen, laid down',
     well:'Port of 1775, claret, and a pipe of Madeira that has been twice to the Indies.', ill:'The county has been drinking it for twenty years and knows the bins.',
     endLabel:'Sell it to a wine merchant', sell:260, end:() => `A wine merchant from Reading takes the whole cellar at a valuation. Three wagons carry it away. The butler keeps the key.` },
-  hunters:{ name:'Four hunters', where:'The stables', heir:true, mark:3, held:'In the stables', keep:60,
+  hunters:{ fx:["−£60 a year to keep", "+£180 if sold", "− Standing, if sold"], effects:`Kept: £60 a year. Sold: £180, standing settles three lower, the household a little put out. No harriers without them.`, name:'Four hunters', where:'The stables', heir:true, mark:3, held:'In the stables', keep:60,
     well:'They carry you with the Craven twice a week from November.', ill:'Each eats as much as a labourer earns.',
     endLabel:'Send them to Tattersall’s', sell:180, end:() => { add({family:-2}); return `The four hunters go up to Hyde Park Corner with a groom. They make forty-five guineas apiece under the hammer. You go to the meet on the cob.`; }},
-  library:{ name:'The library', where:'The Hall', heir:true, mark:1, held:'Two thousand volumes',
+  library:{ fx:["+£240 if sold", "− Household, if sold", "− Kitty, if sold"], effects:`Sold: £240. Standing settles one lower. The household minds, and Kitty most.`, name:'The library', where:'The Hall', heir:true, mark:1, held:'Two thousand volumes',
     well:'Your grandfather’s county histories, the sermons, and a first folio of something.', ill:'Nobody has had the top shelves down since 1760.',
     endLabel:'Sell it to a London bookseller', sell:240, end:() => { add({family:-3}); if ((S.flags.kitty || 'free') === 'free') reg('kitty', -1, 'You sold the library'); return `A bookseller from Pall Mall is three days in the library with a ladder and a clerk. He leaves the sermons. The shelves are dusted and the door is kept shut.`; }},
-  chariot:{ name:'A new chariot from Long Acre', where:'The coach house', cost:190, keep:50, mark:3, held:'In the coach house', verb:'Order it',
+  chariot:{ fx:["+ Standing", "+ Henrietta", "−£50 a year to keep", "+£80 if sold"], effects:`Standing settles three higher. Henrietta pleased. £50 a year to keep. Sells for £80.`, name:'A new chariot from Long Acre', where:'The coach house', cost:190, keep:50, mark:3, held:'In the coach house', verb:'Order it',
     well:'Yellow panels, the arms on the door, and springs that let Henrietta arrive unshaken.', ill:'There is a duty on it, on the horses, and on the man who drives.',
     begin:() => { add({family:2}); reg('henrietta', 1, 'You bought her a London chariot'); },
     endLabel:'Sell it', sell:80, end:() => { reg('henrietta', -1); return `The chariot is sold to a coach master at Reading for eighty pounds. He paints out the arms the same week.`; }},
-  portraits:{ name:'Two portraits by Mr Beechey', where:'The dining room', cost:130, mark:2, held:'Over the sideboard', verb:'Sit for him',
+  portraits:{ fx:["+ Standing", "+ Henrietta", "+ Household"], effects:`Standing settles two higher. Henrietta and the household pleased. Nothing to keep.`, name:'Two portraits by Mr Beechey', where:'The dining room', cost:130, mark:2, held:'Over the sideboard', verb:'Sit for him',
     well:'Yourself in a brown coat, and Henrietta with a harp she does not play.', ill:'Sixty guineas each, and five sittings in Harley Street.',
     begin:() => { add({family:3}); reg('henrietta', 1, 'You had her painted by Beechey'); }},
-  cup:{ name:'A cup at Newbury races', where:'The county', cost:50, keep:50, mark:2, held:'Given yearly', verb:'Give it',
+  cup:{ fx:["+ Standing", "−£50 every year"], effects:`Standing settles two higher. £50 every year until you stop.`, name:'A cup at Newbury races', where:'The county', cost:50, keep:50, mark:2, held:'Given yearly', verb:'Give it',
     well:'Fifty guineas in silver gilt, run for in your name every August.', ill:'A cup once given is looked for every year.',
     endLabel:'Give no cup this year', sell:0, end:() => `The stewards of the course are told there will be no Hatherley Cup. The race is run for a sweepstake.` },
-  harriers:{ name:'A pack of harriers', where:'Kennels at the home farm', cost:320, keep:210, mark:5, held:'Twenty couple', verb:'Buy the pack', if:() => !ended('hunters'), ifWhy:'You have no horses to follow them on.',
+  harriers:{ fx:["+ Standing", "−£210 a year to keep", "− Goodwill", "+£130 if sold"], effects:`Standing settles five higher. £210 a year to keep. Goodwill falls a little. Sells for £130.`, name:'A pack of harriers', where:'Kennels at the home farm', cost:320, keep:210, mark:5, held:'Twenty couple', verb:'Buy the pack', if:() => !ended('hunters'), ifWhy:'You have no horses to follow them on.',
     well:'Twenty couple, a huntsman and a whipper-in. The young men of the county come to you.', ill:'They are fed on horseflesh and oatmeal every day of the year, and they run over growing corn.',
     begin:() => { add({goodwill:-2}); },
     endLabel:'Sell the pack', sell:130, end:() => `The harriers are sold to a gentleman in Hampshire. The huntsman goes with them. The kennels are let to a man who keeps pigs.` },
-  townhouse:{ name:'A house in Upper Brook Street', where:'London', cost:900, keep:260, mark:6, held:'On lease', verb:'Take the lease',
+  townhouse:{ fx:["+ Standing", "+ Henrietta", "+ Household", "−£260 a year to keep", "+£520 if sold"], effects:`Standing settles six higher. Henrietta much pleased. £260 a year to keep. The lease sells for £520.`, name:'A house in Upper Brook Street', where:'London', cost:900, keep:260, mark:6, held:'On lease', verb:'Take the lease',
     well:'Three windows wide, on lease, with a door Henrietta may write on her cards.', ill:'The servants there are paid all the year and the house is lived in for ten weeks.',
     begin:() => { fl('townHouse'); add({family:4}); reg('henrietta', 2, 'You took a house in town'); },
     endLabel:'Sell the lease', sell:520, end:() => { fl('townHouse', false); add({family:-3}); reg('henrietta', -2, 'You gave up the house in town'); return `The lease of the Brook Street house is sold to an East India captain. The furniture comes down by the wagon.`; }},
-  operabox:{ name:'A box at the King’s Theatre', where:'The Haymarket', cost:210, keep:210, mark:3, held:'For the season', verb:'Subscribe', if:() => held('townhouse'), ifWhy:'A box wants a house in town to go home to.',
+  operabox:{ fx:["+ Standing", "+ Henrietta", "−£210 every season"], effects:`Standing settles three higher. Henrietta pleased. £210 every season.`, name:'A box at the King’s Theatre', where:'The Haymarket', cost:210, keep:210, mark:3, held:'For the season', verb:'Subscribe', if:() => held('townhouse'), ifWhy:'A box wants a house in town to go home to.',
     well:'Second tier, six chairs. Everyone Henrietta wishes to be seen by is opposite.', ill:'Two hundred guineas, every season, whether Catalani sings or not.',
     begin:() => { reg('henrietta', 1); },
     endLabel:'Give up the box', sell:0, end:() => `The box is given up at the end of the season. It is taken the same day by a banker’s wife.` },
-  presentation:{ name:'Present Kitty at a Drawing Room', where:'St James’s', cost:260, mark:1, held:'Presented', verb:'Present her', if:() => (S.flags.kitty || 'free') === 'free', ifWhy:'She is spoken for.',
+  presentation:{ fx:["+ Kitty’s prospects", "+ Household", "+ Standing"], effects:`Kitty is out in the world. The household pleased. Standing settles one higher.`, name:'Present Kitty at a Drawing Room', where:'St James’s', cost:260, mark:1, held:'Presented', verb:'Present her', if:() => (S.flags.kitty || 'free') === 'free', ifWhy:'She is spoken for.',
     well:'A hoop, a train, three feathers, and her name called to the Queen.', ill:'The gown is worn once.',
     begin:() => { fl('kittyPresented'); add({family:3}); reg('kitty', 1); reg('henrietta', 1); }},
-  deputy:{ name:'A Deputy Lieutenant’s commission', where:'The county', cost:90, mark:4, held:'In commission', verb:'Take it out', if:() => S.standing >= 50, ifWhy:'The Lord Lieutenant has not offered it.',
+  deputy:{ fx:["+ Standing", "+ Lord Cullerne"], effects:`Standing settles four higher. Lord Cullerne a little warmer. Nothing to keep.`, name:'A Deputy Lieutenant’s commission', where:'The county', cost:90, mark:4, held:'In commission', verb:'Take it out', if:() => S.standing >= 50, ifWhy:'The Lord Lieutenant has not offered it.',
     well:'A scarlet coat with silver lace, and your name in the list after the peers.', ill:'Fees to the Clerk of the Peace, and the uniform at your own charge.',
     begin:() => { reg('cullerne', 1); }},
-  knight:{ name:'A knighthood', where:'St James’s', cost:110, mark:6, held:'Sir, and Lady', verb:'Carry up the address', if:() => S.standing >= 58 && !held('baronet'), ifWhy:'Nobody has asked you to carry up the county’s address.',
+  knight:{ fx:["+ Standing", "+ Henrietta", "+ Household"], effects:`Standing settles six higher. Henrietta is Lady. Nothing to keep.`, name:'A knighthood', where:'St James’s', cost:110, mark:6, held:'Sir, and Lady', verb:'Carry up the address', if:() => S.standing >= 58 && !held('baronet'), ifWhy:'Nobody has asked you to carry up the county’s address.',
     well:'You carry the county’s loyal address to the Levee and rise Sir. Henrietta is Lady from that day.', ill:'A hundred guineas in fees to the Heralds, the Lord Chamberlain’s office and eleven doorkeepers.',
     begin:() => { fl('knight'); add({family:5}); reg('henrietta', 2, 'You made her Lady'); }},
-  baronet:{ name:'A baronetcy', where:'The Patent Office', cost:1200, mark:10, held:'By patent, to heirs male', verb:'Pay the fees', if:() => S.standing >= 68 || F('mp'), ifWhy:'The Minister does not know your name.',
+  baronet:{ fx:["+ Standing, a great deal", "+ Henrietta", "+ Household", "+ Edmund"], effects:`Standing settles ten higher. Henrietta gets what she hoped for. Edmund inherits the title.`, name:'A baronetcy', where:'The Patent Office', cost:1200, mark:10, held:'By patent, to heirs male', verb:'Pay the fees', if:() => S.standing >= 68 || F('mp'), ifWhy:'The Minister does not know your name.',
     well:'Sir, by patent, and Edmund Sir after you.', ill:'The fees on the patent are near twelve hundred pounds. What the Minister expects besides is not written down.',
     begin:() => { fl('baronet'); add({family:8}); reg('henrietta', 3, 'You made her a baronet’s lady'); reg('edmund', 1); }}
 };
@@ -5362,7 +5366,7 @@ function societyList(){ const open = S.phase !== 'end' && !S.dead;
   return Object.keys(SOCIETY).map(id => { const d = SOCIETY[id], state = ended(id) ? 'ended' : held(id) ? 'inHand' : 'open', keep = socKeep(id);
     const why = state !== 'open' ? '' : !open ? 'The books are closed.' : d.if && !d.if() ? d.ifWhy : S.money < d.cost ? 'The purse will not stand ' + fmt(d.cost) + '.' : '';
     const canEnd = open && state === 'inHand' && !!d.end;
-    return {id, name:d.name, where:d.where, cost:d.cost || 0, keep, well:d.well, ill:d.ill, state, can:state === 'open' && !why, why, verb:d.verb || 'Pay for it',
+    return {id, name:d.name, where:d.where, cost:d.cost || 0, keep, sell:d.sell || 0, well:d.well, ill:d.ill, effects:d.effects, fx:d.fx, state, can:state === 'open' && !why, why, verb:d.verb || 'Pay for it',
       held:state === 'inHand' ? d.held : '', note:state === 'inHand' ? (keep ? 'Costs ' + fmt(keep) + ' a year to keep' : d.heir ? 'Came with the house' : 'Since ' + soc(id).year) : state === 'ended' ? (d.sell ? 'Sold' : 'Given up') + ', ' + soc(id).ended : keep ? fmt(keep) + ' a year to keep' : '',
       canEnd, endLabel:state === 'inHand' && d.end ? d.endLabel + (d.sell ? ', ' + fmt(d.sell) : '') : '', endWhy:''}; }); }
 function beginSociety(id){ const x = societyList().find(r => r.id === id); if (!x || !x.can) return false; const d = SOCIETY[id];
