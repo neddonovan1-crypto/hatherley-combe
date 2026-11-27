@@ -191,6 +191,12 @@ function indexEvents(){ for (const e of EVENTS){ if (e.fixed) for (const k of []
 const lab = c => typeof c.t === 'function' ? c.t() : c.t;
 const byId = id => EVENTS.find(e => e.id === id);
 
+/* While Henrietta is at Bath, a wandering paper that has her in it at the Hall is not drawn. The test reads the
+   event's own source, so new papers need no marking. Letters from Gay Street are exempt. */
+const HEN = /Henrietta/;
+function atHall(e){ if (e.hen === undefined) e.hen = e.id !== 'gayStreet' && (e.id === 'henrietta' || e.id === 'bath' || HEN.test(String(Object.getOwnPropertyDescriptor(e, 'text').value || '') + e.choices.map(c => String(c.go)).join('')));
+  return e.hen; }
+function pieceAtHall(p){ if (p.hen === undefined) p.hen = HEN.test(String(p.x) + ['a', 'b', 'c'].map(k => String(p[k] || '')).join('') + (p.o || []).map(c => String(c.go)).join('')); return p.hen; }
 function pickEvent(){
   // A dated event keeps its date. Anything queued for the same season waits one.
   const dated = (FIXED[S.year + '-' + S.season] || []).find(e => !e.cond || e.cond());
@@ -200,7 +206,8 @@ function pickEvent(){
   const fx = FIXED[S.year + '-' + S.season];
   if (fx) for (const e of fx) if (!e.cond || e.cond()) return e.id;
   if (!chance(0.8)) return null;
-  const pool = EVENTS.filter(e => !e.fixed && !e.follow && S.year >= (e.from || 0) && S.year <= (e.to || 9999)
+  const away = F('henriettaAway');
+  const pool = EVENTS.filter(e => !e.fixed && !e.follow && !(away && atHall(e)) && S.year >= (e.from || 0) && S.year <= (e.to || 9999)
     && (S.seen[e.id] === undefined || (e.repeatGap && S.t - S.seen[e.id] >= e.repeatGap)) && (!e.cond || e.cond()));
   if (!pool.length) return null;
   let tot = pool.reduce((a, e) => a + (e.weight || 1), 0), r = Math.random() * tot;
