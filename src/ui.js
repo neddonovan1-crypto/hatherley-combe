@@ -58,7 +58,7 @@ function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''
   const room = innerHeight - 34, wide = Math.min(1420, innerWidth - 32); let z = 1;
   for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.6, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
-function drawBook(){ $('verso').innerHTML = versoHTML();
+function drawBook(){ $('verso').innerHTML = versoHTML(); $('bookx').hidden = !!S.dead || S.phase === 'end';
   document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
   const leaf = ['leaf', S.phase === 'end' ? 'Finis' : 'The Quarter'];
   $('tabs').innerHTML = [leaf].concat(TABS).map(([id, n]) => `<button class="${id === 'leaf' || id === 'paper' ? 'leaf' : ''}${id === 'leaf' ? ' phone' : ''}" aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
@@ -215,8 +215,8 @@ function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id =
   const b = (c, label) => c ? `<button type="button" onclick="takeCredit('${c.id}')" ${c.can ? '' : `disabled title="${esc(c.why || '')}"`}>${label} ${amt(c.gets, c.gets)}</button>` : '';
   return `<div class="creditbox">${b(by('mortgage'), 'Borrow more')}${b(by('repay'), 'Pay off principal')}</div>`; }
 /* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
-function raiseHTML(ids){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
-  return `<h3 class="orn">Raising money</h3><div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
+function raiseHTML(ids, bare){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
+  return `${bare ? '' : '<h3 class="orn">Raising money</h3>'}<div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
 function worksHTML(at){ const list = worksList().filter(w => !at || at(w.id)), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">

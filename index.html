@@ -524,6 +524,14 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 @keyframes beckon{0%, 100%{transform:translateY(-.55em);opacity:.55} 50%{transform:translateY(0);opacity:1}}
 @media (prefers-reduced-motion: reduce){ .lbl .fist{animation:none} }
 .balloon.flip{transform:scaleX(-1)} .balloon.flip span{transform:scaleX(-1)}
+/* the mortgage is paid down or added to from the table of the quarter, under the sum owing */
+#cart .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:stretch;margin-top:7px}
+#cart .creditbox button{display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 9px;font-family:var(--display);font-size:.94rem;line-height:1.3;color:var(--ink);white-space:nowrap;cursor:pointer}
+#cart .creditbox button:hover:not(:disabled), #cart .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink)} #cart .creditbox button:disabled{opacity:.4;cursor:not-allowed} #cart .creditbox button:disabled .amt{color:inherit}
+@media (max-width:1080px), (orientation:portrait){ #cart .creditbox{flex-direction:row;align-self:flex-end;margin-top:3px} #cart .creditbox button{padding:1px 6px;font-size:.78rem;gap:6px} }
+/* the ledger is shut from its corner as well as from the foot of the quarter's leaf */
+#bookx{position:absolute;top:-12px;right:calc(var(--edge) * -.5 - 9px);z-index:6;width:38px;height:38px;background:none;border:0;font-family:var(--display);font-size:2.3rem;line-height:1;color:var(--ink);cursor:pointer} #bookx:hover, #bookx:focus-visible{color:var(--madder)} body.intro #bookx{display:none}
+@media (max-width:1080px){ #bookx{top:0;right:2px;font-size:1.9rem} #stage .runhead{padding-right:30px} }
 /* The last plate, held up over the book when the life ends. It borrows the card, print and side sheet of the other plates (plan.css). */
 #lastplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.86);overflow:auto;animation:heldup .25s ease-out}
 #lastplate[hidden]{display:none}
@@ -536,6 +544,7 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
     <section id="verso" class="page" aria-label="The standing account"></section>
     <main id="stage" class="page" aria-live="polite"></main>
     <nav id="tabs" aria-label="Sections of the book"></nav>
+    <button id="bookx" onclick="shutBook()" aria-label="Shut the book" hidden>×</button>
   </div>
 </div>
 <div id="plan" hidden>
@@ -1183,6 +1192,52 @@ const gouty = () => T('gout') && !F('goutEased');
 const swans = () => T('court') && !F('courtLost') && !F('courtSold');
 
 const OUTCOMES = {
+  fishing:[
+    {id:'fishing-club', x:() => `Six tradesmen of Reading, who dine together once a month as the Friends of the Angle, give ten pounds a rod for the water between the mill tail and Kennet bridge; and Mudge, by the terms of the paper, nails up a board at either end of it.
+
+They come out upon the Saturday in two gigs, with a ham, and a boy to carry the landing net; and by evening they have killed fourteen trout, the largest of two pounds, and have turned off the bank the miller’s two sons, who have fished the mill tail since they could stand.
+
+On Sunday morning the board at the bridge is found in the river.`},
+    {id:'fishing-attorney', x:() => `A gentleman of Lincoln’s Inn takes the water for May and June at sixty pounds, puts up at the George, and is upon the bank each morning by six, in a coat of nine pockets, with a fly of his own tying.
+
+On the fourth day he finds that he is not alone there; and as you are the nearest magistrate, and it is your river, he brings into the justice room, before you have breakfasted, a boy of nine, and one dace upon a hazel twig.
+
+“I ask only for the law, sir.”
+
+The Act lies open upon the table. You fine the boy a shilling; and his mother, who has waited in the yard, pays it in halfpence.`}],
+  grazing:[
+    {id:'grazing-bullocks', x:() => `For seventy pounds, paid down in Reading notes, a butcher of that town has the grass of the park until Michaelmas; and upon the Monday he turns into it sixty Welsh bullocks, which have walked from Brecon, and which discover, by Wednesday, the one place in the sunk fence where a bullock may get up.
+
+Henrietta receives her morning callers in the breakfast parlour, upon the north side of the house.
+
+“We are grown quite a Smithfield,” she tells Mrs Loveday; and at noon she has the drawing-room blinds drawn down.`},
+    {id:'grazing-horses', x:() => `A dealer of Reading, who buys for the cavalry, has seventy young horses to summer before they are fit to be shown to a colonel; and as he gives a pound a head for the park, and pays it before a hoof is through the gate, the bargain is struck in the stable yard in a quarter of an hour.
+
+They bark four of the limes your uncle planted. Upon the Thursday, the gate of the drying ground having been left open by somebody whom nobody will name, they are found among the week’s wash; from which Mrs Bunce recovers eleven of the twelve damask napkins.`}],
+  shooting:[
+    {id:'shooting-deputation', x:() => `Mr Sheldrake, a wine merchant of Mark Lane, gives a hundred pounds for the season’s shooting; and as the law allows no man to kill a pheasant who has not a hundred a year in land, you sign a deputation, by which he becomes, for the purposes of the Act, your gamekeeper.
+
+He comes down by the Bath coach with two friends, a hamper, and a gun in a green baize bag; and on the first of October, between Hanger Wood and the turnpike, in yellow gaiters, the three of them kill nine brace.
+
+“That fellow in the gaiters,” says Lord Cullerne, at Wyvern market. “Whose is he?”
+
+“He has taken my shooting, my lord.”
+
+“Taken it. Has he.”
+
+His card for the battue does not come.`},
+    {id:'shooting-post', x:() => `The Morning Post has it upon the Tuesday, between a cure for the scurvy and a pair of carriage horses:
+
+“TO BE LET, for the Season, the SHOOTING over a Gentleman’s Estate in Berkshire, of Two Thousand Acres, well stocked with Pheasants and Hares; Fifty-eight Miles from Hyde Park Corner. Apply to Mr Skinner, at the George, Wyvern. None but Principals will be treated with.”
+
+It is taken within the week, at a hundred pounds, by two brothers in the Russia trade. But every gentleman within ten miles takes in the Morning Post, and can reckon fifty-eight miles from Hyde Park Corner as well as another; so that at the Sessions dinner you are asked by four persons, one after the other, whether the house goes with it.`}],
+  underwood:[
+    {id:'underwood-hurdles', x:() => `Eleven acres of hazel in Cuckoo Copse, being of twelve years’ growth, are sold standing to a hurdle-maker of Hungerford for eighty pounds; and he brings six men, who cut it to the stool, and tie up everything thicker than a finger.
+
+The women of the lane have had their firing out of that copse by leave of three squires. They come upon the Monday with their aprons, and find it in faggots, counted, and marked with raddle; and the hurdle-maker’s price, which he tells them very civilly, is four shillings the hundred.`},
+    {id:'underwood-poles', x:() => `The ash poles under the oaks in Hanger Wood go to a hop-planter from Farnham, at eighty pounds for the fall; and he sends for them, in the first week of a wet December, three waggons of four horses each.
+
+They go out by the Kintbury lane, loaded, nine times in the fortnight. When they have done, the lane is such that Mudge leads his pony along the top of the bank; and the Kintbury carrier, having looked at it from his seat, sets down the parish’s parcels a mile and a half off, at the turnpike.`}],
   ride:[
     {id:'ride-cider', x:() => `You ride round the tenancies in a day and a half, and are given cider, and then perry, and a cold pie, and cider again. At the last farm the tenant lifts your horse’s off fore, and tells you what he would do; and at the mill you are given a dog.`},
     {id:'ride-thatch', w:() => tenantOf('kennet') && tenantOf('kennet').tenant === 'Widow Harris', x:() => `At Kennet Bottom the Widow Harris takes you up her stairs, to show you the hole in the thatch; and while you stand under it, it comes on to rain.
@@ -1673,6 +1728,11 @@ const UNDERTAKINGS = [
   { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 3 : 2, goodwill:g}); return outcome('sessions'); }},
   { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:3}); return outcome('home'); }},
   { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:3, family:3}); reg('henrietta',1); return outcome('town'); }},
+  /* Four ways of raising a little money off the estate, one to each season, and each paid for in somebody's good opinion. */
+  { id:'fishing', t:'Let the fishing in the Kennet', note:'+£60', hint:'Costs Standing and Goodwill', if:() => S.season === 0, go:() => { add({money:60, standing:-1, goodwill:-2}); return outcome('fishing'); }},
+  { id:'grazing', t:'Let the grass of the park', note:'+£70', hint:'Costs Household', if:() => S.season === 1, go:() => { add({money:70, family:-3}); return outcome('grazing'); }},
+  { id:'shooting', t:'Let the shooting to a London man', note:'+£100', hint:'Costs Standing', if:() => S.season === 2, go:() => { add({money:100, standing:-3}); reg('cullerne', -1, 'You let your shooting for money'); return outcome('shooting'); }},
+  { id:'underwood', t:'Sell a fall of underwood', note:'+£80', hint:'Costs Goodwill', if:() => S.season === 3, go:() => { add({money:80, goodwill:-3}); return outcome('underwood'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -9689,8 +9749,8 @@ const PLACES = {
 };
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
 const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', lbfold:'longbarrow', churchhouse:'church', coldyards:'coldharbour', coldclover:'coldharbour', starveburn:'starveall', starvepond:'starveall', cplime:'common', cpcloses:'common', rookdrain:'rooksnest', rookgranary:'rooksnest', withybank:'withymead', withybarn:'withymead', maddlehouse:'maddle', maddlesainfoin:'maddle', homeyards:'home', enclosure:'common', commonpiece:'common', pound:'common', cricket:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
-const VENT_AT = {dairy:'church', hops:'coldharbour', limekiln:'starveall', potatoes:'common', cherries:'rooksnest', osiers:'withymead', gallops:'maddle', gravel:'common', sheepfair:'common', warren:'common', plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry'};
-const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london'};
+const VENT_AT = {dairy:'church', hops:'coldharbour', limekiln:'starveall', potatoes:'common', cherries:'rooksnest', osiers:'withymead', gallops:'maddle', gravel:'common', sheepfair:'common', warren:'common', plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london'};
+const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london', fishing:'mill', shooting:'hanger', underwood:'hanger'};
 const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
@@ -9865,7 +9925,7 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
-    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span></div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${cueHTML()}
     <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
@@ -9891,10 +9951,12 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   if (p.farm && farmAt(p.farm)) sec('farm', 'The Rent Roll', farmsHTML(p.farm));
   if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
   if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
-  if (vents.length) sec('vents', 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
+  const brazils = id === 'london' && S.bub && S.bub.shares > 0 ? `<div class="lots"><div class="lot done"><b>The Brazil Association</b><span>${S.bub.shares} shares</span></div></div>` : '';
+  if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it') + brazils);
+  if (id === 'london' && typeof creditList === 'function' && S.phase !== 'end') sec('ann', 'Life Annuities', raiseHTML(['annuity', 'redeem'], true));
   /* What is bought in town is found in London; what is bought in the county, at Wyvern. */
   if ((id === 'london' || id === 'wyvern') && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house && COUNTY_LOTS.has(r.id) === (id === 'wyvern')), true, 'beginSociety', 'endSociety', 'Pay for it'));
-  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>${raiseHTML(['annuity', 'redeem'])}`); }
+  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>`); }
   if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
   const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
   const glb = id === 'hall' ? (isBuilt('front') && ART.has('hall/hall-front.glb') ? 'hall-front' : ART.has('hall/hall-old.glb') ? 'hall-old' : '') : '';
@@ -9985,7 +10047,7 @@ function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''
   const room = innerHeight - 34, wide = Math.min(1420, innerWidth - 32); let z = 1;
   for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.6, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
-function drawBook(){ $('verso').innerHTML = versoHTML();
+function drawBook(){ $('verso').innerHTML = versoHTML(); $('bookx').hidden = !!S.dead || S.phase === 'end';
   document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
   const leaf = ['leaf', S.phase === 'end' ? 'Finis' : 'The Quarter'];
   $('tabs').innerHTML = [leaf].concat(TABS).map(([id, n]) => `<button class="${id === 'leaf' || id === 'paper' ? 'leaf' : ''}${id === 'leaf' ? ' phone' : ''}" aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
@@ -10142,8 +10204,8 @@ function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id =
   const b = (c, label) => c ? `<button type="button" onclick="takeCredit('${c.id}')" ${c.can ? '' : `disabled title="${esc(c.why || '')}"`}>${label} ${amt(c.gets, c.gets)}</button>` : '';
   return `<div class="creditbox">${b(by('mortgage'), 'Borrow more')}${b(by('repay'), 'Pay off principal')}</div>`; }
 /* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
-function raiseHTML(ids){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
-  return `<h3 class="orn">Raising money</h3><div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
+function raiseHTML(ids, bare){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
+  return `${bare ? '' : '<h3 class="orn">Raising money</h3>'}<div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
 function worksHTML(at){ const list = worksList().filter(w => !at || at(w.id)), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
