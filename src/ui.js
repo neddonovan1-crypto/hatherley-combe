@@ -90,7 +90,7 @@ const pickList = () => Object.values(PICKS).filter(Boolean);
 /* Favours: three to begin. An advantage spends one or two, a burden earns them back. Each row opens a list; what cannot be afforded is greyed. */
 const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
 function picksHTML(){ const left = pointsLeft(pickList());
-  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${left > 0 ? '●'.repeat(left) : 'none'}</b><small>An advantage spends them. A burden earns them back.</small></p>
+  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${'●'.repeat(Math.max(0, left))}<i>${'○'.repeat(Math.max(0, TRAIT_POINTS - Math.max(0, left)))}</i></b><small>An advantage spends them. A burden earns them back.</small></p>
     ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
       const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${t[0] === '+' ? 'pos' : 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
       return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>

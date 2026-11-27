@@ -368,3 +368,4 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
 .lots .rung.now b::before{content:"\261E\FE0E  ";color:var(--madder)}
 .lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
 @media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
+.favours #pts i{font-style:normal;color:var(--muted);opacity:.7}
