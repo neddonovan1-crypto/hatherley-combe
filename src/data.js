@@ -80,15 +80,15 @@ const NEWS = {
 const VIGNETTES = [
   [ // spring
     `A late frost. The blossom on the orchard wall goes brown overnight and Mrs Bunce takes it as an omen, though she declines to say of what.`,
-    `The rooks are building high in the elms, which Mudge says means a fine summer. Mudge said the same last year, in the rain, without embarrassment.`,
+    `In your pocket-book: “Rooks building high in the elms. Mudge says it is for a fine summer. He said so last year, and it rained from St Swithin to Michaelmas. I put him in mind of it, and he said the rooks had been deceived. Gave him 0. 1. 0.”`,
     `Lambing on the Down. The shepherd has not slept in a bed for three weeks and has begun to answer questions in the voice he uses for ewes.`,
     `The rent audit dinner. Eleven farmers eat a round of beef between them and each explains, separately, that he alone is being ruined.`,
-    `Primroses in Cuckoo Copse, and a cuckoo, which arrives on the fourteenth of April as punctually as a bailiff.`
+    `In your pocket-book, against the 14th of April: “Heard the cuckoo in the Copse, the same day as last year. Mudge had a shilling of me upon it. Paid the mole-catcher his quarter, 0. 10. 6. Dined on a couple of rabbits smothered with onions, and a gooseberry tart.”`
   ],
   [ // summer
     `Haymaking. The whole parish is in Kennet Meadow with rakes, and the beer goes out to them in buckets. By evening nobody can say with certainty whose child is whose.`,
-    `Sheep-washing in the Lambourn. The sheep object. So, after an hour up to his waist, does the shepherd.`,
-    `A cricket match on the common: Hatherley against Kintbury, for eleven pairs of gloves. The blacksmith bowls as if he held a grudge against the wicket personally.`,
+    `In your pocket-book: “Sheep washed in the Lambourn, 900 and odd. To the washers, beer and bread and cheese as usual, and 0. 5. 0 among them. The shepherd an hour up to his middle, and very short with me after. Dined late, on cold lamb.”`,
+    `In your pocket-book: “Hatherley played Kintbury on the common for eleven pair of gloves, and lost them by 14 notches. The smith bowled very fast, and not at the wicket. Lost 0. 10. 6 to Mr Hartopp upon it, who does not understand the game and betted on the colour of the hats.”`,
     `Three weeks without rain. The pond shrinks to a green plate and something is found in the middle of it that your uncle was known to have lost in 1771.`,
     `A travelling show at Wyvern exhibits a Learned Pig that tells the time and picks out the greatest rogue in the company. It picks out Crabbe. Crabbe laughs longest.`
   ],
@@ -96,13 +96,13 @@ const VIGNETTES = [
     `Harvest home. The last load comes in with a boy on top of it dressed in ribbons, and you make the same speech your uncle made, because nobody would forgive a new one.`,
     `The gleaners are out on Long Barrow at first light, bent double, women and children in a line. A good gleaning family will carry home six bushels, and know to the ear who took more.`,
     `Wyvern Michaelmas Fair. Servants stand for hire in the market place: carters with whipcord in their hats, shepherds with a lock of wool, and one man with a turnip, whom nobody likes to ask.`,
-    `The first pheasants of the season, and the first argument of the season about whose they were.`,
-    `Mushrooms on the Down, mist in the combe, and the smell of every cottage copper in the parish boiling elderberries at once.`
+    `In your pocket-book: “1st October. Out with Mudge and the two spaniels. Four brace of pheasants and a hare. Mr Hartopp sent over to say that three of the birds had rose on his side of the hedge. Sent him a brace, with my compliments, and the hedge’s.”`,
+    `In your pocket-book: “A great mist in the combe. Mushrooms on the Down, of which Mrs Bunce made catchup, 11 bottles. Every copper in the parish boiling elderberries, and the smell of it as far as the church door. Recd of Farmer Dewey for half a year’s rent 62. 10. 0, and gave him back 0. 2. 6 for luck, as my uncle did.”`
   ],
   [ // winter
-    `Snow to the tops of the hedges. The mail does not get through for nine days, and you discover how little you missed it.`,
+    `In your pocket-book: “Snow to the tops of the hedges, and no mail these nine days. Read prayers to the household in the hall, the church path not being cut. Sent a sack of coals and 0. 2. 6 to the Widow Harris. Find I do not want the newspaper so much as I had supposed.”`,
     `The mummers come to the Hall on Christmas Eve. Saint George is killed by the Turkish Knight and raised by the Doctor, who is the wheelwright, and drunk, and has to be raised himself.`,
-    `Pig-killing week. Every cottage has a flitch in the chimney and a bladder for the children, and for a fortnight nobody in Hatherley is hungry.`,
+    `In your pocket-book: “Pig-killing week. A flitch in every chimney in the parish, and a bladder for the children to kick. We killed two here, 16 score the pair. Sent a spare-rib to the vicarage and the chitterlings to the lodge, and dined on the fry.”`,
     `A hard frost. The carp pond bears, and the footmen skate on it after dark when they think the house is asleep.`,
     `Plough Monday. The plough boys drag a plough from door to door, asking for pennies, and drawing a furrow across the gravel of anyone who refuses. Your gravel is spared, at a price.`
   ]

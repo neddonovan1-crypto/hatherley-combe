@@ -14,29 +14,30 @@ Crabbe, invited to explain, folds his hands. The books, he says, are a little li
   ]});
 
 ev({ id:'thorneLease', from:1795, to:1800, weight:4, title:'The Widow of Long Barrow',
-  text:() => { meet('thorne'); return `Samuel Thorne has died of a chill, caught standing in his own water meadow arguing with a heron. His widow Abigail wishes to keep on the lease of Long Barrow: two hundred and forty acres, the best farm on the estate.
+  text:() => { meet('thorne'); const st = F('crabbeGone') ? 'Lark' : 'Crabbe';
+    return `Samuel Thorne of Long Barrow is dead, of a chill taken in his own water meadow, where he stood an hour in the wet disputing a point with his neighbour’s drowner. Long Barrow is two hundred and forty acres, and the best farm you have. His widow asks to be continued in it.
 
-${F('crabbeGone') ? 'Lark' : 'Crabbe'} advises against. “A woman cannot farm, sir,” he says; and then, recollecting who has farmed Long Barrow these ten years while Samuel argued with herons, “not in the eyes of the county.” ${F('crabbeGone') ? 'A man from Hungerford' : 'Crabbe has a nephew who'} would take it, and pay a hundred pounds down for the favour.`; },
+${st} has put his opinion in writing, which he does when he wishes to be able to find it again. “Mem. A female tenant cannot be distrained upon without odium, nor sit at the audit dinner without constraint to the company. Mrs T. has, I allow, had the whole management these ten years, the late T. being a talker. But the county does not know it, and a farm is let to the county’s opinion as much as to the tenant. ${F('crabbeGone') ? 'A Mr Dredge of Hungerford' : 'My nephew'} would give £100 in hand for the preference.”`; },
   choices:[
     {t:'Renew the lease to Abigail Thorne.', go:() => { add({standing:-1, goodwill:3}); reg('thorne',4,'You gave her the lease when the county said a woman could not farm'); if (!F('crabbeGone')) reg('crabbe',-1);
-      return `She signs with a firm round hand and reads every clause first, including the ones in Latin, which she has Mr Oakes construe. Within two years Long Barrow is yielding four bushels an acre more than any farm on the estate. The county concedes that a woman can farm, in the tone it uses for a dog walking on its hind legs.`; }},
+      return `She reads the lease through before she signs it, the covenants and the Latin with them, and has Mr Oakes up from the vicarage to construe the Latin. Then she signs: Abigail Thorne, in a round hand, very black. At harvest Long Barrow gives four bushels an acre above any farm you have, and the county allows that a woman may farm, much as it allows that a Frenchman may be brave.`; }},
     {t:() => F('crabbeGone') ? 'Let it to the Hungerford man.' : 'Let it to Crabbe’s nephew.', note:'+£100', go:() => { fl('nephewFarm'); S.rentAdj *= 0.96; add({money:100, goodwill:-5}); reg('thorne',-5,'You turned her out of Long Barrow'); if (!F('crabbeGone')) reg('crabbe',2,'You gave Long Barrow to his nephew');
-      return `Abigail Thorne leaves Long Barrow on Lady Day with one wagon, and takes rooms over the saddler’s in Wyvern. The new man is at market four days in the week and can be heard there, explaining the land. The land, meanwhile, grows docks. A farm can be ruined in less time than it takes to read the lease.`; }},
+      return `Mrs Thorne quits at Lady Day with one wagon, and takes two rooms over the saddler’s in Wyvern. The new tenant is at market four days in the seven, where he may be heard upon the capabilities of the land. The land has a crop of docks. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} enters the hundred pounds under Casual Profits, and it is the last profit of any description that Long Barrow shows this year.`; }},
     {t:'Renew to her, at twenty pounds a year more.', go:() => { S.rentAdj *= 1.01; add({goodwill:-1}); reg('thorne',1,'You gave her the lease, and raised the rent on a widow');
-      return `She looks at the figure, then at you, for exactly as long as it takes to be understood, and signs. She will pay it to the day, every Lady Day and Michaelmas, in gold, counted out on your table one coin at a time.`; }}
+      return `She looks at the figure and then at you, no longer than is needed, and signs. The rent comes to the day, Lady Day and Michaelmas, in guineas while there are guineas to be had, told out one at a time upon your table. She will not sit down while she does it.`; }}
   ]});
 
 ev({ id:'poacher', from:1796, to:1812, weight:3, title:'A Hare in Evidence',
-  text:() => `Jem Pryor stands before you in the justice room, with a dead hare on the table between you like an exhibit in a murder. Mudge, your keeper, took him at dawn in Cuckoo Copse with two wires, the hare, and also, which Mudge mentions three times, “a look”.
+  text:() => `Jem Pryor is brought up to the justice room at ten by Mudge, your keeper, who took him at first light in Cuckoo Copse with two wires in his pocket and a hare inside his frock. The hare is laid upon the table. Mudge deposes to the wires, to the hare, and three several times to “a look he give me, sir, as I should know again”.
 
-Jem is thirty${S.year > 1800 ? '-odd' : ''}, has five children, and has been taking the game of Hatherley since he was nine, with an artistry your uncle used privately to admire. The law says that a man without land worth a hundred a year may not kill a hare, even one that walks in at his door. ${F('enclosed') ? 'Since the enclosure, Jem has not got so much as a cow.' : 'Jem has a cow, on the common, and nothing else.'}`,
+Pryor, asked what he has to say, says the hare ran at him. He has a wife, five children, and ${F('enclosed') ? 'since the enclosure not so much as a cow' : 'a cow on the common'}. He has taken the game of Hatherley since he was nine years old, and your uncle, who committed him twice, used to say there was not such another hand with a wire in Berkshire. The statute is five pounds, or three months. The hare might fetch three shillings.`,
   choices:[
     {t:'Three months in Reading gaol.', go:() => { add({standing:1, goodwill:-5}); reg('pryor',-3,'You gave him three months for a hare'); if (!F('gallDead')) reg('gall',1); S.game += 1;
-      return `Three months. Sukey Pryor and the five children go on the parish, at a cost to the rates of four shillings a week, so that the hare, by the time Jem comes out, has cost Hatherley about two pounds twelve. He walks home from Reading in March. He touches his hat to you in the lane, quite correctly, and you feel it between the shoulder blades all the way to the gate.`; }},
+      return `Three months in the House of Correction at Reading. Sukey Pryor and the children come upon the parish the same week, at four shillings, so that by the time he is out the overseer reckons the hare to have stood the ratepayers of Hatherley in two pounds twelve. Jem walks home. He touches his hat to you in the lane, as a man should, and you carry it between your shoulders as far as the lodge.`; }},
     {t:'Fine him five pounds, and lend him the five pounds.', note:'£5', go:() => { add({money:-5, goodwill:2}); reg('pryor',1,'You fined him five pounds and paid it yourself');
-      return `The law is satisfied; so, after a moment’s calculation, is Jem. He undertakes to repay you at a shilling a month, which will take until 1804. He is punctual. The shillings come to the kitchen door wrapped in a dock leaf, and Mrs Bunce maintains they smell of rabbit.`; }},
+      return `“Five pounds, Pryor, and I shall lay it down for you. You will bring me a shilling the first Saturday in every month.” He works it in his head, moving his lips, and makes it eight years and four months, which is right. The shillings come to the kitchen door in a dock leaf. Mrs Bunce takes them up with the tongs.`; }},
     {t:'Dismiss the charge, and give him the hare.', go:() => { add({standing:-2, goodwill:4}); reg('pryor',3,'You let him go, and gave him the hare'); if (!F('gallDead')) reg('gall',-2,'Thinks you soft on poachers'); S.game -= 1;
-      return `You find the evidence insufficient, a look not being an offence known to English law. Mudge goes purple. Jem picks the hare up by the ears, considers it, and says, “I’d hang her four days, sir, no more, this weather.” It is the only thanks you get, and it is excellent advice.`; }}
+      return `You find that a look is not evidence, and that a hare discovered in a man’s frock may, for anything the bench can prove, have got in of herself. Mudge turns the colour of a mulberry. Pryor takes the hare up by the ears and feels along her back. “Her wants four days’ hanging, sir, this weather, and not an hour over.” Then, nothing more being said, he puts her inside his frock again and makes his bow at the door, which Mudge does not hold for him.`; }}
   ]});
 
 ev({ id:'pryorFriend', from:1798, to:1814, weight:3, cond:() => S.chars.pryor.r >= 2, title:'Something at the Back Door',
@@ -53,16 +54,18 @@ This Friday there is something else in the cabbage leaf: a scrap of paper, in a 
   ]});
 
 ev({ id:'rickFire', follow:true, title:'Fire in the Stackyard',
-  text:() => `You are woken after midnight by a light of the wrong colour for the moon. Two wheat ricks in the home stackyard are burning, quickly and cheerfully, as dry wheat will.
+  text:() => `You are woke a little after midnight by a light in the room, of a colour the moon does not come in. Two wheat ricks in the home stackyard are alight from the eaves down. There is no wind, and they burn straight up, with a noise like a great many people whispering.
 
-Half the village has turned out to watch. Some of them have brought buckets. Not many are using them.`,
+Half the parish is at the stackyard rails. Some have brought buckets, and have set them down.`,
   choices:[
     {t:'Post a reward of fifty guineas for the incendiary.', note:'£52', go:() => { add({money:-300 - 52, goodwill:-4, standing:1});
-      return `The bill is posted on the church door and at the Bell. Nobody claims the money. Fifty guineas is more than a Hatherley man will see in three years, and still nobody claims it, and you find that this tells you more about your standing in the parish than the fire did. The wheat was worth three hundred.`; }},
+      return `The bill is printed at Wyvern by noon, and pasted on the church door, at the Bell and at the turnpike gate. “FIFTY GUINEAS REWARD. Whereas some evil-disposed Person or Persons did, on the Night of Tuesday last, wilfully and maliciously set Fire to two Ricks of Wheat in the Stackyard of ${S.name}, Esquire; whoever will discover the Offender or Offenders, so that he or they be brought to Justice, shall on Conviction receive the above Reward. An Accomplice impeaching shall have the same, and Interest made for his Pardon.”
+
+Fifty guineas is three years’ wages to a Hatherley man. The bill hangs till the rain takes it down, and nobody comes. The wheat was worth three hundred pounds.`; }},
     {t:'Take a bucket and join the line.', go:() => { add({money:-300, goodwill:3});
-      return `You carry water from the horse pond until dawn, in your shirt, between the wheelwright and a boy of ten. The ricks are lost all the same; three hundred pounds of wheat gone up in an hour. But towards the end there are more buckets in the line than there were at the beginning, and when it is over, somebody hands you a mug of beer without calling you sir.`; }},
+      return `You carry from the horse pond till daylight, in your shirt, with the wheelwright before you in the line and a boy of ten behind. The ricks are lost: three hundred pounds of wheat, in something under the hour. But the line is longer at four o’clock than it was at one, and when the last of it is black and steaming somebody puts a mug of beer into your hand and says “Here”, and not “sir”.`; }},
     {t:'Go back to bed. Let it be seen that you do not frighten.', go:() => { add({money:-300, standing:1, goodwill:-2});
-      return `You look at it from the window for a minute, and then draw the curtain. It is thought very cool. It is also three hundred pounds, and Mudge finds a tinderbox by the stackyard gate next morning, laid on the post where it could not be missed, like a card left by a caller.`; }}
+      return `You look from the window a minute, and draw the curtain. In the morning it is three hundred pounds, and all Wyvern has it that the squire of Hatherley turned over and slept. Mudge brings in a tinder-box, found on the post of the stackyard gate, set square in the middle where a man must see it. He lays it by your plate and says he supposes it is nobody’s.`; }}
   ]});
 
 ev({ id:'hartoppShearing', from:1797, to:1810, weight:2, title:'Three Days of Tups and Toasts',
