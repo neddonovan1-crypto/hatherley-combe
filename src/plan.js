@@ -60,11 +60,25 @@ function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CA
   return CALLAT = hit(e.title) || (who && livesAt(who) !== 'hall' ? livesAt(who) : '') || hit(text.slice(0, 320)) || 'hall'; }
 
 /* ---------- which view is up ---------- */
-function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; return; }
+/* Pictures are sent for before they are wanted, and the last of them kept in hand, so that no frame is shown empty and the sheet is never bare. */
+const WARM = new Map();
+function warm(list){ for (const u of list) { if (!u || WARM.has(u)) continue; const i = new Image(); i.decoding = 'async'; i.src = u; if (i.decode) i.decode().catch(() => {}); WARM.set(u, i); }
+  while (WARM.size > 120) WARM.delete(WARM.keys().next().value); }
+const whenIdle = f => (window.requestIdleCallback || (g => setTimeout(g, 200)))(f);
+/* While the will is being read: the sheet for the season the game opens in (or was left in), with everything that may stand on it. */
+function warmIntro(){ let q = 0, first = 'events/speen'; try { const s = load(); if (s) { q = s.season; first = ''; } } catch (err) {}
+  warm([artURL('plan/' + q), artURL('arms/esquire'), artURL('plan/hand'), artURL('plan/wheel'), artURL('ui/book-leaf'), artURL('ui/seal'), artURL(first)]
+    .concat([...ART].filter(a => a.startsWith('plan/s/') || (a.startsWith('plan/f/') && a.includes('-' + q + '.')) || a.startsWith('icons/')).map(a => 'art/' + a))); }
+/* In the quarter: the view of every place on the sheet, the cut of whatever is waiting, and next quarter's sheet. */
+function warmQuarter(){ if (!S || S.phase === 'end') return; const q = (S.season + 1) % 4, e = S.phase === 'event' && S.pending && byId(S.pending);
+  const cut = e ? eventCut(e) : '';
+  warm([artURL(cut), artURL('ui/balloon')].concat(Object.keys(PLACES).filter(placeOn).map(id => artURL(PLACES[id].pic())), [artURL('plan/' + q)],
+    piecesOn().map(id => { for (const p of ['plan/f/' + id + '-' + q, 'plan/f/' + id, 'plan/' + id + '-' + q, 'plan/' + id.replace('hall-', '') + '-' + q]) { const u = artURL(p); if (u) return u; } return ''; }))); }
+function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; whenIdle(warmIntro); return; }
   if (!S.plates) S.plates = [];
   const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; PSTEP = k;
   VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
-  if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
+  if (PLATEUP || VIEW === 'book' || (SHEET === 'season' && S.phase !== 'undertake')) { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
 function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
@@ -80,7 +94,7 @@ function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('la
 const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
 const placeCut = at => { const p = PLACES[at]; return (p && p.pic && artURL(p.pic()) && p.pic()) || 'seasons/' + S.season; };
 /* An outcome is struck off once, with its number, and kept for the Progress. */
-function strike(){ const key = S.t + ':' + S.phase; if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
+function strike(){ const key = S.t + ':' + S.phase + (S.phase === 'undone' ? ':' + (S.rides || 0) : ''); if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
   const o = S.outcome, j = S.journal[0] || {}, under = S.phase === 'undone';
   const src = under ? (o.cut && artURL('undertakings/' + o.cut) ? 'undertakings/' + o.cut : placeCut('hall')) : (S.plateCut || placeCut('hall'));
   S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay(), say:sayOf(o.text)}); delete S.plateCut; save(); }
@@ -91,9 +105,16 @@ function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').rep
   return q.replace(/,$/, '.'); }
 /* The balloon issues from the speaker's mouth. SAY_AT holds where that is on each cut, in hundredths; a cut with nobody on it gets no balloon. */
 function balloonHTML(src, say){ const at = say && ART.has('ui/balloon.png') && typeof SAY_AT === 'object' ? SAY_AT[src] : null; if (!at) return '';
-  const [mx, my] = at, k = 497 / 900 * 1.5, w = Math.max(36, Math.min(42, (my - 3) / k)), h = w * k, flip = mx > 56;
+  const [mx, my] = at, k = 497 / 900 * 1.5, want = Math.max(30, Math.min(48, 26 + say.length * .24)), w = Math.max(25, Math.min(want, Math.max(38, (my - 3) / k))), h = w * k, flip = mx > 56;
   const left = flip ? Math.max(1, mx - 1.5 - w) : Math.min(99 - w, mx + 1.5), top = Math.max(1, my - 1.5 - h);
-  return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span>${esc(say)}</span></q>`; }
+  return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span><i>${esc(say)}</i></span></q>`; }
+/* The words are set in the largest size the balloon will hold. */
+function fitBalloons(){ for (const box of document.querySelectorAll('.balloon span')) { const t = box.firstElementChild, W = box.clientWidth, H = box.clientHeight; if (!t || !W) continue;
+    let lo = 5, hi = Math.max(6, H / 1.6); for (let n = 0; n < 9; n++) { const m = (lo + hi) / 2; t.style.fontSize = m + 'px'; if (t.offsetHeight <= H && t.scrollWidth <= W) lo = m; else hi = m; }
+    /* kept as a share of the balloon's breadth, so that it holds when the cut loads or the window is resized; and a little under the limit, since a line may break otherwise at another size */
+    t.style.fontSize = (.93 * lo / box.parentNode.clientWidth * 100).toFixed(2) + 'cqw'; } }
+addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the italic is fetched when first set, and is broader than what stood in for it */
+if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
 function plateViewHTML(){
   if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
@@ -119,7 +140,7 @@ function drawPlate(){ const el = $('plate'), up = S && (PROGRESS >= 0 || (VIEW =
   el.hidden = !up; document.body.classList.toggle('plateup', !!up); if (!up) { el.innerHTML = ''; return; }
   const key = PROGRESS >= 0 ? 'p' : PSTEP;
   el.className = PROGRESS >= 0 ? 'gallery' : S.phase === 'event' ? 'asks' : 'tells';
-  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`;
+  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`; fitBalloons();
   if (el.dataset.key !== key) { el.dataset.key = key; el.scrollTop = 0; const s = el.querySelector('.pside'); if (s) s.scrollTop = 0; const b = el.querySelector('.choice, .go'); if (b) b.focus({preventScroll:true}); } }
 
 /* ---------- the sheet of the plan ---------- */
@@ -140,7 +161,7 @@ const armsOf = () => isKept('baronet') ? 'baronet' : isKept('knight') ? 'knight'
 /* The sheet is laid in three layers, each redrawn only when its own contents change, so that the moving things do not start again at every touch. */
 const CALM = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function landArtHTML(){ const q = S.season;
-  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
+  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece p-${id}" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
   return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}`; }
 /* Stock and traffic. s: the drawing. at: where its feet stand. w: its breadth in hundredths of the sheet. f: faces right. go: how it moves. */
 const BEASTS = [
@@ -171,7 +192,7 @@ function landLblHTML(){
   const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
     if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
-    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
   return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
@@ -225,15 +246,21 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
 function turnHall(){ ROUND = true; if (!window.customElements || !customElements.get('model-viewer')) { const s = document.createElement('script'); s.type = 'module'; s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'; s.onerror = () => { ROUND = false; drawPlan(); }; document.head.appendChild(s); } drawPlan(); }
 
 let LANDKEY = '';
+/* A new sheet is laid over the old only when every picture on it is ready to be shown, so the plan is never seen bare between quarters. */
+function layArt(el, h){ if (!el.firstChild) { el.innerHTML = h; return; }
+  const d = document.createElement('div'), tok = el._tok = {}; d.innerHTML = h;
+  const lay = () => { if (el._tok !== tok) return; el._tok = null; el.replaceChildren(...d.childNodes); };
+  Promise.all([...d.querySelectorAll('img')].map(i => i.decode ? i.decode().catch(() => {}) : 0)).then(lay); setTimeout(lay, 4000); }
 function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.toggle('planview', on); $('plan').hidden = !on; drawPlate(); if (!on) { LANDKEY = ''; return; }
   const land = $('land'), sheet = $('sheet'), p = PLACES[SHEET];
   /* the sheet itself is redrawn only when what is on it changes, so the moving picture does not start again at every touch */
   const key = JSON.stringify([S.season, piecesOn(), armsOf(), S.phase, S.pending, PLATEUP, SHEET, Object.keys(PLACES).filter(placeOn)]);
   if (!$('landart')) land.innerHTML = '<div id="landart"></div><div id="landmot"></div><div id="landlbl"></div>';
-  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { el._h = h; el.innerHTML = h; } }
+  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { el._h = h; if (k === 'landart') layArt(el, h); else el.innerHTML = h; } }
   if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key;
     const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
   $('cart').innerHTML = cartHTML();
+  whenIdle(warmQuarter);
   const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
   sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
   sheet.innerHTML = SHEET ? sheetHTML() : ''; sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }

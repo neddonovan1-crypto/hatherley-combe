@@ -386,7 +386,7 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
 @media (max-width:520px){ .hh .rung .fx{font-size:.76rem} .hh .rung b{font-size:.74rem;letter-spacing:.04em} }
 
 /* notice to quit: shut until asked for, its cost set out before the button */
-details.evict{margin-top:10px;border-top:1px solid rgba(43,29,16,.3);padding-top:6px} details.evict > summary{list-style:none;cursor:pointer;font-family:var(--caps);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad)} details.evict > summary::-webkit-details-marker{display:none} details.evict .fx{margin:6px 0 8px}
+details.evict{margin-top:10px;border-top:1px solid rgba(43,29,16,.3);padding-top:6px} details.evict > summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;min-height:38px;padding:6px 12px;background:rgba(255,255,255,.25);border:1px solid var(--bad);box-shadow:inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--bad);font-family:var(--caps);font-size:.82rem;letter-spacing:.06em;color:var(--bad);transition:background .15s} details.evict > summary:hover{background:var(--wash)} details.evict > summary::-webkit-details-marker{display:none} details.evict .fx{margin:6px 0 8px}
 
 .hh .rung small{display:block;font-family:var(--display);font-size:.92rem;line-height:1.25;color:var(--muted);margin:2px 0 3px;letter-spacing:0;text-transform:none}
 .hh .rung.what{cursor:default;background:none;display:flex;flex-direction:column;justify-content:center} .hh .rung.what small{color:var(--ink)}
@@ -400,11 +400,11 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
 #landwrap{min-width:0;height:100%;display:grid;place-items:center}
 #landwrap{filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
 /* the scan has a white margin beyond the torn edge of the paper, which is trimmed off here */
-#land{position:relative;width:min(100%, calc((100dvh - 32px) * 1.5));aspect-ratio:3/2;container-type:inline-size;clip-path:inset(1.9% 1.35% 1.9% 1.35% round 2px);user-select:none}
+#land{background:#e7dcc0;position:relative;width:min(100%, calc((100dvh - 32px) * 1.5));aspect-ratio:3/2;container-type:inline-size;clip-path:inset(1.9% 1.35% 1.9% 1.35% round 2px);user-select:none}
 #land .base{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
 #land .base, #land .piece, #land .mot{clip-path:none;pointer-events:none}
 #land .mot{position:absolute;mix-blend-mode:multiply;object-fit:fill}
-#land .piece{position:absolute}
+#land .piece{position:absolute} #land .p-hall-old, #land .p-hall-front{filter:drop-shadow(-.22cqw .28cqw .22cqw rgba(45,28,10,.42))}
 #land .arms{position:absolute;left:3.6%;top:4.8%;width:7.4%;height:auto;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(60,40,20,.25))} #land .arms.baronet{width:12.5%}
 .lbl{position:absolute;transform:translate(-50%, -50%);z-index:2;background:none;border:0;padding:.35em .5em;font-family:var(--display);font-style:italic;font-size:max(12px, 1.36cqw);line-height:1;color:#2b1d10;white-space:nowrap;
   text-shadow:0 0 2px #f6edd4, 0 0 3px #f6edd4, 0 0 5px #f6edd4, 0 0 8px #f6edd4, 0 0 12px #f6edd4}
@@ -483,9 +483,9 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
   #cart .vig{flex:1 1 0;min-width:0;grid-template-columns:minmax(0,1fr);row-gap:1px} #cart .vig img{display:none} #cart .vig span{font-size:.58rem} #cart .vig b{font-size:1.1rem} #cart .vig > i{grid-column:1}
   #cart .next{grid-column:1/-1;flex-direction:row;align-items:center;gap:10px} #cart .next p{flex:1 1 0;min-width:0;font-size:.95rem;text-align:left} #cart .act{width:auto;flex:none;max-width:56%;padding:9px 30px 8px 10px;font-size:.78rem} #cart .act::after{width:34px;height:34px;margin-top:-17px;right:-9px}
   #cart .foot{grid-column:1/-1;margin:0} #cart .foot button{padding:2px;font-size:.9rem}
-  #landwrap{display:block;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
+  #landwrap{display:block;place-items:normal;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
   #land{height:100%;width:auto} #landwrap{filter:none}
-  #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton #land{margin:0 auto}
+  #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton #land{margin:0 auto;justify-self:normal}
   #sheet, #sheet.left, #sheet.right{position:relative;inset:auto;width:auto;padding:14px 16px 20px;box-shadow:0 -6px 18px rgba(0,0,0,.5);animation:none}
   #sheet > h2{font-size:2rem} #sheet > .plate{aspect-ratio:5/2}
   #plate{place-items:start center;padding:10px}
@@ -504,8 +504,9 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 #land .wheel{position:absolute;left:59.44%;top:78.99%;width:1.6%;height:2.58%;pointer-events:none;transform:rotate(-6deg)} #land .wheel img{display:block;width:100%;height:100%;animation:millwheel 9s linear infinite} #land .wheel.calm img{animation:none}
 @keyframes millwheel{to{transform:rotate(360deg)}}
 /* what is said, in a balloon over the cut */
-.cutwrap{position:relative} .balloon{position:absolute;left:2%;top:2%;width:42%;aspect-ratio:900/497;background:url(art/ui/balloon.png) center/100% 100% no-repeat;display:grid;place-items:center;padding:4% 8% 13% 9%;quotes:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
-.balloon span{font-family:var(--display);font-style:italic;font-size:clamp(.5rem, 8cqw, 1.1rem);line-height:1.15;text-align:center;color:#2b1d10;text-wrap:balance}
+.cutwrap{position:relative} .balloon{position:absolute;left:2%;top:2%;width:42%;aspect-ratio:900/497;background:url(art/ui/balloon.png) center/100% 100% no-repeat;quotes:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
+/* the words are set as large as the balloon will hold: fitBalloons() in plan.js finds the size */
+.balloon span{position:absolute;left:14%;right:11%;top:10%;bottom:26%;display:grid;place-items:center;overflow:hidden} .balloon span i{display:block;font-family:var(--display);font-style:italic;font-size:12px;line-height:1.12;text-align:center;color:#2b1d10;text-wrap:balance}
 
 #landart, #landmot, #landlbl{display:contents}
 #land .beast{position:absolute;height:auto;pointer-events:none;translate:-50% -100%;transform:scaleX(var(--f, 1));filter:saturate(.8) drop-shadow(0 .5px 0 rgba(60,40,20,.25))}
@@ -518,6 +519,8 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 #land .beast.wagon{animation:wagon 96s linear infinite !important;animation-duration:96s !important}
 @keyframes wagon{0%{left:93.4%;top:48.9%;opacity:0} 3%{opacity:1} 14%{left:88%;top:50.5%} 28%{left:82%;top:52%} 40%{left:77%;top:52.1%} 54%{left:71%;top:50.4%} 60%{opacity:1} 63%{left:68.2%;top:48.4%;opacity:0} 100%{left:68.2%;top:48.4%;opacity:0}}
 .lbl .fist{position:absolute;left:50%;bottom:100%;width:2.6em;margin-left:-1.3em;pointer-events:none;animation:beckon 1.1s ease-in-out infinite;filter:drop-shadow(1px 3px 3px rgba(40,25,10,.45))} .lbl .fist img{display:block;width:100%;height:auto}
+/* near the head of the sheet there is no room above the name, so the hand stands under it and points up */
+.lbl .fist.under{bottom:auto;top:100%;animation-name:beckonup} @keyframes beckonup{0%, 100%{transform:translateY(.55em);opacity:.55} 50%{transform:translateY(0);opacity:1}} .lbl .fist.under img{transform:scaleY(-1)}
 @keyframes beckon{0%, 100%{transform:translateY(-.55em);opacity:.55} 50%{transform:translateY(0);opacity:1}}
 @media (prefers-reduced-motion: reduce){ .lbl .fist{animation:none} }
 .balloon.flip{transform:scaleX(-1)} .balloon.flip span{transform:scaleX(-1)}
@@ -1697,8 +1700,11 @@ function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
   S.outcome = {title:u.t, text, d:deltas(b), cut:LAST_CUT}; S.phase = 'undone'; save(); render(); }
 
+/* A paper waits from quarter day until it is answered, and the squire may sell the farm or clear the debt it speaks of in the meantime. A paper that has lost its occasion is withdrawn. */
+function pendingStands(){ const e = S.pending && byId(S.pending); if (!e) return false; if (e.follow && e.cond && !e.cond()) return false;
+  try { e.text(); e.choices.filter(c => !c.if || c.if()).forEach(c => { lab(c); if (typeof c.note === 'function') c.note(); }); } catch (err) { return false; } return true; }
 function next(){
-  if (S.phase === 'ledger') { if (S.dead) return finish(); S.phase = S.pending ? 'event' : 'undertake'; }
+  if (S.phase === 'ledger') { if (S.dead) return finish(); if (S.pending && !pendingStands()) S.pending = null; S.phase = S.pending ? 'event' : 'undertake'; }
   else if (S.phase === 'outcome') { if (S.dead) return finish(); S.phase = 'undertake'; }
   else if (S.phase === 'undone' && ridesLeft() > 0 && !S.dead) S.phase = 'undertake';
   else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
@@ -1888,7 +1894,7 @@ ev({ id:'fenn', fixed:'1795-3', title:'A Citizen at the Bell',
 
 Every evening at seven he gets upon a settle and reads Tom Paine to the carters. He reads slowly; and whenever he comes to a long word he stops, and tells them what it means.
 
-Crabbe, who has been down to look, stands in your library with his notebook open.
+${F('crabbeGone') ? 'Lark' : 'Crabbe'}, who has been down to look, stands in your library with his notebook open.
 
 “The new Act says fifty, sir. Fifty persons at a political meeting, and they must have a magistrate’s licence. I counted forty-nine. I counted on three nights.” He turns a page. “Forty-nine each night. The fiftieth waits in the yard.”`,
   choices:[
@@ -8144,7 +8150,9 @@ function ladyDay(){ const y = S.year, st = steward(), up = [];
       if (f.level === 'rack' && f.cond > 0 && chance(0.12)) { f.cond--; S.notes.push(`${f.name} is going back. ${st} counted three fields in wheat after wheat.`); }
       else if (f.level !== 'rack' && f.cond < 2 && f.id !== 'kennet' && chance(0.2)) f.cond++; }
     const secure = f.lease.type !== 'will' && f.lease.ends - y >= 5 && f.lease.years >= 14;
-    if (secure && f.K > 1.4 * f.rent && f.cond >= 1 && f.cond < 4) { f.K -= 0.9 * f.rent; f.cond++;
+    const bound = !!f.lease.drain && f.cond < 4;   // an easy lease carries a covenant to drain and fence, and it is kept the first year
+    if (bound) delete f.lease.drain;
+    if (bound || (secure && f.K > 1.4 * f.rent && f.cond >= 1 && f.cond < 4)) { if (!bound) f.K -= 0.9 * f.rent; f.cond++;
       S.notes.push(`${f.tenant} has drained and fenced at ${f.name} at ${p.his} own cost. ${st} enters the farm as ${ORDER_W[f.cond].toLowerCase()}.`); } }
   if (up.length) S.notes.push('Rents from year to year, moved this Lady Day: ' + up.join('; ') + '.'); }
 
@@ -8223,6 +8231,11 @@ function offerLease(id){ const f = farm(id); if (!f || f.void || f.lease.type !=
 function letting(){ while (S.letQueue && S.letQueue.length){ const x = S.letQueue[0], f = farm(x.id); if (f && !f.void && f.lease.type === 'will') return {f, why:x.why}; S.letQueue.shift(); } return null; }
 function owing(){ while (S.payQueue && S.payQueue.length){ const f = farm(S.payQueue[0]); if (f && !f.void && f.arrears >= 1) return f; S.payQueue.shift(); } return null; }
 function sign(f, type, years, level, rent){ f.lease = type === 'will' ? {type:'will'} : {type, ends:S.year + years, years, level}; f.level = level; if (rent) f.rent = rent; if (!f.since) f.since = 1788; S.letQueue.shift(); }
+/* What a choice on the letting paper does to the rent now paid: the change, not the rent itself, which the squire has already. */
+const rentNote = (f, r, tail) => { const d = r - f.rent; return (d > 0 ? '+' + fmt(d) + ' a year' : d < 0 ? '−' + fmt(-d) + ' a year' : 'The rent as it stands') + ', ' + tail; };
+const willNext = f => { const v = lettingValue(f, S.year); return five(v > f.rent ? Math.min(v, f.rent * 1.12) : Math.max(v, f.rent * 0.9)); };
+const cornNow = f => five(0.86 * f.base * farmF(f) * (0.5 * means(S.year - 1) + 0.5 * market(S.year)));
+const LONG_LEASE = 0.96;   // fourteen years are bought with a twenty-fifth off the rent
 const covenants = `no two white straw crops together, no hay or straw sold off the farm, the hedges kept`;
 
 ev({ id:'leaseFalls', follow:true, cond:() => !!letting(),
@@ -8240,25 +8253,25 @@ ${st} has walked the farm, and brings his valuation upon a half sheet, by which 
 
 ${f.tenant} is in the hall, and has brought the old lease with ${p.him}.`; },
   choices:[
-    {t:() => letting().why === 'offer' ? 'Leave things as they are.' : `Let ${pro(letting().f).him} hold on from year to year.`, note:'The rent moves each Lady Day', go:() => { const {f} = letting(), p = pro(f); sign(f, 'will', 0, 'fair');
+    {t:() => letting().why === 'offer' ? 'Leave things as they are.' : `Let ${pro(letting().f).him} hold on from year to year.`, note:() => rentNote(letting().f, willNext(letting().f), 'and moved again each Lady Day'), go:() => { const {f} = letting(), p = pro(f); sign(f, 'will', 0, 'fair');
       return `Nothing is signed. ${f.tenant} pays the half-year, and asks whether the barn roof is ${p.his} to mend or yours; and ${steward()} enters ${f.name} in the book as held from year to year.`; }},
-    {t:'A lease of seven years.', note:() => '+' + fmt(lettingValue(letting().f, S.year)) + ' a year', go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 7, 'fair', r);
+    {t:'A lease of seven years.', note:() => rentNote(letting().f, lettingValue(letting().f, S.year), 'fixed for seven years'), go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 7, 'fair', r);
       return `The lease, being engrossed upon one skin at Wyvern, is read over in the steward’s room, and ${f.tenant} signs. The rent is ${fmt(r)} until Lady Day ${S.year + 7}.`; }},
-    {t:'A lease of fourteen years.', note:() => '+' + fmt(lettingValue(letting().f, S.year)) + ' a year', go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 14, 'fair', r); add({goodwill:1});
+    {t:'A lease of fourteen years.', note:() => rentNote(letting().f, five(LONG_LEASE * lettingValue(letting().f, S.year)), 'fixed for fourteen years. +Goodwill; the tenant improves the farm in time'), go:() => { const {f} = letting(), r = five(LONG_LEASE * lettingValue(f, S.year)); sign(f, 'term', 14, 'fair', r); add({goodwill:2});
       return `Fourteen years being agreed upon, ${steward()} reads the covenants aloud: ${covenants}. ${f.tenant} signs below your name, and the rent is ${fmt(r)} until Lady Day ${S.year + 14}.`; }},
-    {t:'Fourteen years at an easy rent, the tenant to drain and fence.', note:() => fmt(five(0.88 * lettingValue(letting().f, S.year))) + ' a year', go:() => { const {f} = letting(), p = pro(f), r = five(0.88 * lettingValue(f, S.year)); sign(f, 'term', 14, 'easy', r); add({goodwill:3});
+    {t:'Fourteen years at an easy rent, the tenant to drain and fence.', note:() => rentNote(letting().f, five(0.88 * lettingValue(letting().f, S.year)), 'fixed for fourteen years. +Goodwill; the farm a step better by Lady Day'), go:() => { const {f} = letting(), p = pro(f), r = five(0.88 * lettingValue(f, S.year)); sign(f, 'term', 14, 'easy', r); f.lease.drain = true; add({goodwill:3});
       if (f.tenant === 'Mrs Thorne') reg('thorne', 1, 'You gave her fourteen years at a rent she could mend the farm on');
       return `The rent is set at ${fmt(r)} for fourteen years, ${f.tenant} covenanting to lay stone drains in the wet grounds, and to plant quick along the lane; and ${p.he} asks to take the lease home and read it.
 
 On Monday there are two loads of stone at ${p.his} gate.`; }},
-    {t:'Advertise the farm and take the best bidder.', note:() => '+' + fmt(five(1.13 * lettingValue(letting().f, S.year))) + ' a year, seven years, a new tenant', go:() => { const {f} = letting(), r = five(1.13 * lettingValue(f, S.year)), old = f.tenant, n = incomer();
+    {t:'Advertise the farm and take the best bidder.', note:() => rentNote(letting().f, five(1.13 * lettingValue(letting().f, S.year)), 'fixed for seven years, with a new tenant. −Goodwill'), go:() => { const {f} = letting(), r = five(1.13 * lettingValue(f, S.year)), old = f.tenant, n = incomer();
       if (old === 'Mrs Thorne') reg('thorne', -4, 'You advertised Long Barrow over her head'); if (old === 'Edmund') { reg('edmund', -3, 'You let Kennet Bottom over his head'); add({family:-6}); }
       f.tenant = n[0]; f.she = false; f.K = 0.3 * r; f.arrears = 0; f.since = S.year; sign(f, 'term', 7, 'rack', r); add({goodwill:-5});
       return `The notice being in the Mercury two Saturdays running, nine letters come; of which the best is from a ${n[0]} of ${n[1]}, who offers ${fmt(r)}, and has not seen the farm.
 
 ${old} leaves with two wagons and a crate of fowls, and ${n[0]} signs for seven years.`; }},
-    {t:'Fourteen years at a corn rent.', note:'The rent rises and falls with wheat at Wyvern', go:() => { const {f} = letting(); sign(f, 'corn', 14, 'fair');
-      f.rent = five(0.86 * f.base * farmF(f) * (0.5 * means(S.year - 1) + 0.5 * market(S.year))); add({goodwill:2});
+    {t:'Fourteen years at a corn rent.', note:() => rentNote(letting().f, cornNow(letting().f), 'this year, and after that as wheat sells at Wyvern. +Goodwill'), go:() => { const {f} = letting(); sign(f, 'corn', 14, 'fair');
+      f.rent = cornNow(f); add({goodwill:2});
       return `The rent of ${f.name} is fixed in wheat, and not in money; so that each rent day ${steward()} is to take the Wyvern price, and work the sum. He works it now, twice, and this year it comes to ${fmt(f.rent)}.
 
 ${f.tenant} asks to see the working, and signs.`; }}
@@ -9053,7 +9066,7 @@ const peaceTime = () => S.year === 1802 || (S.year === 1814 && S.season >= 2) ||
 
 ev({ id:'captainTakes', from:1797, to:1812, weight:3, title:'A Captain in Want of a House',
   cond:() => (S.year <= 1800 || S.year >= 1804) && S.t >= 4 && !F('captainIn') && !farm('grange') && S.farms.length < MAX_FARMS,
-  text:() => `Crabbe sends up from Wyvern a letter that has been round the town twice, being addressed to “The Proprietor of Hatherley Grange, near Newbury”.
+  text:() => `${steward()} sends up from Wyvern a letter that has been round the town twice, being addressed to “The Proprietor of Hatherley Grange, near Newbury”.
 
 Bath, Tuesday.
 
@@ -9063,20 +9076,20 @@ I will give ${fmt(capOffer(1.3))} a year for seven years, the first half-year pa
 
 I am, Sir, your obedient servant, Roper Lyle, Captain, R.N.
 
-Crabbe has pinned a slip to the foot.
+${steward()} has pinned a slip to the foot.
 
 “The Naval Chronicle puts his eighth at six thousand pounds, sir. The agents are Cooke and Weddell, of Craven Street. I do not know them. The house is worth ${fmt(lettingValue(landFor('grange'), S.year))} to a farmer.”`,
   choices:[
     {t:'Let him have it at his figure.', note:() => '+' + fmt(capOffer(1.3)) + ' a year, seven years', go:() => { const r = capOffer(1.3), f = addFarm('grange', {own:false, tenant:'Captain Lyle', rent:r, K:3 * r, flush:true, lease:{type:'term', ends:S.year + 7, years:7, level:'fair'}, since:S.year});
       fl('captainIn'); add({standing:2, money:Math.round(r / 2)});
-      return f ? `Crabbe writes to Bath that the house is the Captain’s from Midsummer, and the half-year comes by return, in a draft upon Child’s.
+      return f ? `${steward()} writes to Bath that the house is the Captain’s from Midsummer, and the half-year comes by return, in a draft upon Child’s.
 
 Four chaises arrive at the Grange upon a Thursday, the first being full of dishes, and the second having in it a ship’s bell, wrapped in a quilt. The bell is hung over the stable arch, and rung at eight, at noon, and at dusk; and the Wyvern carriers set their watches by it.` : `The house is let to somebody else before the letter is answered.`; }},
     {t:'Ask him for more. He has the Spaniard’s money.', note:() => '+' + fmt(capOffer(1.55)) + ' a year, seven years', go:() => { const r = capOffer(1.55), f = addFarm('grange', {own:false, tenant:'Captain Lyle', rent:r, K:3 * r, flush:true, lease:{type:'term', ends:S.year + 7, years:7, level:'fair'}, since:S.year});
       fl('captainIn'); add({standing:2, money:Math.round(r / 2)});
       return f ? `You write back ${fmt(r)}, and the answer is one line. “Agreed. R. L.”
 
-Crabbe, having read it over the rent book, says nothing, and enters the Grange at ${fmt(r)}; and the Captain’s wagon is at the door the week after, with a stuffed turtle upon the tail-board.` : `The house is let to somebody else before the letter is answered.`; }},
+${steward()}, having read it over the rent book, says nothing, and enters the Grange at ${fmt(r)}; and the Captain’s wagon is at the door the week after, with a stuffed turtle upon the tail-board.` : `The house is let to somebody else before the letter is answered.`; }},
     {t:'Refuse. A farmer would pay less and go on paying.', go:() => { add({goodwill:1});
       return `You send word that the Grange is promised to a tenant from the parish, though it is not; and Mr Skinner puts a board up at the gate. By Michaelmas a Reading maltster, having bought the house over the Captain’s head at Bath, writes to ask whose the pew is.`; }}
   ]});
@@ -9085,7 +9098,7 @@ Crabbe, having read it over the rent book, says nothing, and enters the Grange a
 ev({ id:'captainHalfPay', from:1802, to:1815, weight:60, title:'Half-Pay at the Grange',
   cond:() => peaceTime() && F('captainIn') && !F('captainPeace') && !!grange() && !!grange().flush,
   text:() => { const f = grange();
-    return `Crabbe lays the rent book upon the library table, and puts his finger upon a line.
+    return `${steward()} lays the rent book upon the library table, and puts his finger upon a line.
 
 “Lyle, at the Grange. The half-year was due Tuesday.”
 
@@ -9100,15 +9113,15 @@ He takes out of his coat a letter from Cooke and Weddell, of Craven Street, and 
 His hat is in both hands, and Mrs Lyle is waiting in the chaise at the lodge.`; },
   choices:[
     {t:'Strike off the half-year and bring the rent down.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. Rent to ' + fmt(five(0.85 * lettingValue(grange(), S.year))) + ' a year', go:() => { const f = grange(), a = f.rent / 2; f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.3 * f.rent; fl('captainPeace'); fl('captainPath', 'kept'); add({goodwill:3, standing:1}); later('captainAfter', S.year <= 1802 ? 6 : 3);
-      return `Crabbe draws his pen through ${fmt(a)}, and you write the new rent upon the margin of the lease, and put your initials to it.
+      return `${steward()} draws his pen through ${fmt(a)}, and you write the new rent upon the margin of the lease, and put your initials to it.
 
 The Captain, having read the figure, folds the paper in four.
 
 “I had a gunner once who kept a book of what he was owed,” he says. “It was a thin book.”
 
-He bows to Crabbe as well as to you, and goes out to the chaise.`; }},
+He bows to ${steward()} as well as to you, and goes out to the chaise.`; }},
     {t:'Lend him two hundred pounds on his bond, and let the arrears wait on the dividend.', note:() => '−£200. ' + fmt(Math.round(grange().rent / 2) + 200) + ' owed to you', if:() => S.money >= 200, go:() => { const f = grange(), a = f.rent / 2; S.capDebt = Math.round(a) + 200; S.capRepays = chance(0.6); f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.4 * f.rent; fl('captainPeace'); fl('captainPath', 'lent'); add({money:-200, goodwill:2}); later('captainAfter', S.year <= 1802 ? 8 : 4);
-      return `Crabbe draws a bond upon a half-sheet, and the Captain signs it standing, at the corner of the table, in the same round hand as his letters; by which he is bound to pay ${fmt(S.capDebt)} with interest at five per cent out of the first money to come from Craven Street.
+      return `${steward()} draws a bond upon a half-sheet, and the Captain signs it standing, at the corner of the table, in the same round hand as his letters; by which he is bound to pay ${fmt(S.capDebt)} with interest at five per cent out of the first money to come from Craven Street.
 
 You count out two hundred pounds, and he puts them in his coat without counting them again.`; }},
     {t:'Write to Lord Cullerne for a ship for him.', note:'Lord Cullerne must be your friend. A ship is not sure', if:() => S.chars.cullerne.r >= 0, go:() => { const f = grange(), war = S.year === 1802, p = war ? 0.7 : 0.45; reg('cullerne', -1, 'You asked him for a ship for a half-pay Captain'); f.flush = false; fl('captainPeace');
@@ -9125,7 +9138,7 @@ He rides over to say so, having put the lace back upon his coat. Mrs Lyle stays 
 
 You send the Captain the answer, and he sends back a note of thanks, and a second half-year’s rent with a gap where it should be.`; }},
     {t:'Give him notice at Michaelmas, and forgive what he owes.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. The house falls in hand', go:() => { const f = grange(), p = pro(f); fl('captainPeace'); fl('captainPath', 'left'); f.flush = false; f.arrears = 0; quit(f); add({goodwill:-1, standing:-1});
-      return `The notice is written by Crabbe, and delivered by hand; and the Captain reads it at the gate, with Mrs Lyle at his elbow.
+      return `The notice is written by ${steward()}, and delivered by hand; and the Captain reads it at the gate, with Mrs Lyle at his elbow.
 
 They are gone by Michaelmas to a small house at Dinan, in Brittany, where the Captain has heard that claret is fourpence the bottle. The ship’s bell is taken down from the stable arch, and the bracket left.`; }},
     {t:'Distrain for the rent.', note:() => 'About ' + fmt(Math.round(grange().rent / 2 / 5) * 5) + ' from the sale. The house falls in hand', go:() => { const f = grange(), got = Math.round(Math.min(f.rent / 2, 0.7 * f.rent) / 5) * 5; fl('captainPeace'); fl('captainPath', 'sold'); f.flush = false; add({money:got, goodwill:-7, standing:-3}); quit(f);
@@ -9158,7 +9171,7 @@ Your servant, R. Lyle.`;
     return war
       ? `Portsmouth, Friday.
 
-Sir, I am appointed to the Blanche, thirty-six, and am to sail upon the first fair wind. I take my plate to sea; but I leave Mrs Lyle and the girls at the Grange, and she will pay the rent from my Navy Office remittance, half-yearly, to Mr Crabbe.
+Sir, I am appointed to the Blanche, thirty-six, and am to sail upon the first fair wind. I take my plate to sea; but I leave Mrs Lyle and the girls at the Grange, and she will pay the rent from my Navy Office remittance, half-yearly, to Mr ${steward()}.
 
 I send by the carrier half a pipe of Madeira, taken by me off a Dutchman. I am obliged to you. I am not used to it.
 
@@ -9174,12 +9187,12 @@ I have put my name down at the Admiralty every Tuesday. I am told there are two 
 Your servant, R. Lyle.`; },
   choices:[
     {t:() => S.year >= 1803 && S.year <= 1813 ? 'Write him joy of the ship, and send a ham.' : 'Send him a brace of pheasants and your compliments.', note:'+2 Standing', if:() => S.flags.captainPath !== 'lent', go:() => { fl('captainEnded'); add({standing:2, goodwill:1});
-      return `The ham goes to Portsmouth by the coach, in a cloth, with a letter; and the Madeira being opened at Christmas, Crabbe is asked to take a glass, and drinks it standing.`; }},
+      return `The ham goes to Portsmouth by the coach, in a cloth, with a letter; and the Madeira being opened at Christmas, ${steward()} is asked to take a glass, and drinks it standing.`; }},
     {t:'Ask him to take Edmund for his Lieutenant.', note:'+Edmund’s regard, +Household', if:() => S.flags.captainPath !== 'lent' && at('navy') && !F('edmundDead'), go:() => { fl('captainEnded'); add({family:3, standing:1}); reg('edmund', 2, 'The Captain took him as First Lieutenant');
       return `The Captain answers by return of post. “I have a vacancy for a First Lieutenant. I should be glad of a Hatherley.” Edmund is appointed in a fortnight, and writes from the ship that he has a cabin the size of a hip-bath, and a Captain who talks to the barometer.`; }},
     {t:'Enter it in the book.', if:() => S.flags.captainPath === 'lent', go:() => { fl('captainEnded'); const back = S.capRepays ? Math.round(S.capDebt * 1.05) : Math.round(S.capDebt / 4);
       add({money:back, goodwill:1, standing:S.capRepays ? 1 : 0});
-      return `Crabbe writes ${fmt(back)} upon the credit side, and carries the rest, if any, to the page headed “Doubtful”. ${S.capRepays ? 'The bond is returned across the table, and Mr Tidmarsh tears it in two.' : 'The bond stays in the drawer.'}`; }}
+      return `${steward()} writes ${fmt(back)} upon the credit side, and carries the rest, if any, to the page headed “Doubtful”. ${S.capRepays ? 'The bond is returned across the table, and Mr Tidmarsh tears it in two.' : 'The bond stays in the drawer.'}`; }}
   ]});
 /* How the life ends. One ending is chosen from where the squire stands when the book is shut: by ruin, by a pistol ball, or at the
    close of 1815. Each has its own plate at art/endings/<id>, struck as the last of The Progress.
@@ -9503,11 +9516,25 @@ function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CA
   return CALLAT = hit(e.title) || (who && livesAt(who) !== 'hall' ? livesAt(who) : '') || hit(text.slice(0, 320)) || 'hall'; }
 
 /* ---------- which view is up ---------- */
-function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; return; }
+/* Pictures are sent for before they are wanted, and the last of them kept in hand, so that no frame is shown empty and the sheet is never bare. */
+const WARM = new Map();
+function warm(list){ for (const u of list) { if (!u || WARM.has(u)) continue; const i = new Image(); i.decoding = 'async'; i.src = u; if (i.decode) i.decode().catch(() => {}); WARM.set(u, i); }
+  while (WARM.size > 120) WARM.delete(WARM.keys().next().value); }
+const whenIdle = f => (window.requestIdleCallback || (g => setTimeout(g, 200)))(f);
+/* While the will is being read: the sheet for the season the game opens in (or was left in), with everything that may stand on it. */
+function warmIntro(){ let q = 0, first = 'events/speen'; try { const s = load(); if (s) { q = s.season; first = ''; } } catch (err) {}
+  warm([artURL('plan/' + q), artURL('arms/esquire'), artURL('plan/hand'), artURL('plan/wheel'), artURL('ui/book-leaf'), artURL('ui/seal'), artURL(first)]
+    .concat([...ART].filter(a => a.startsWith('plan/s/') || (a.startsWith('plan/f/') && a.includes('-' + q + '.')) || a.startsWith('icons/')).map(a => 'art/' + a))); }
+/* In the quarter: the view of every place on the sheet, the cut of whatever is waiting, and next quarter's sheet. */
+function warmQuarter(){ if (!S || S.phase === 'end') return; const q = (S.season + 1) % 4, e = S.phase === 'event' && S.pending && byId(S.pending);
+  const cut = e ? eventCut(e) : '';
+  warm([artURL(cut), artURL('ui/balloon')].concat(Object.keys(PLACES).filter(placeOn).map(id => artURL(PLACES[id].pic())), [artURL('plan/' + q)],
+    piecesOn().map(id => { for (const p of ['plan/f/' + id + '-' + q, 'plan/f/' + id, 'plan/' + id + '-' + q, 'plan/' + id.replace('hall-', '') + '-' + q]) { const u = artURL(p); if (u) return u; } return ''; }))); }
+function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; whenIdle(warmIntro); return; }
   if (!S.plates) S.plates = [];
   const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; PSTEP = k;
   VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
-  if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
+  if (PLATEUP || VIEW === 'book' || (SHEET === 'season' && S.phase !== 'undertake')) { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
 function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
@@ -9523,7 +9550,7 @@ function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('la
 const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
 const placeCut = at => { const p = PLACES[at]; return (p && p.pic && artURL(p.pic()) && p.pic()) || 'seasons/' + S.season; };
 /* An outcome is struck off once, with its number, and kept for the Progress. */
-function strike(){ const key = S.t + ':' + S.phase; if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
+function strike(){ const key = S.t + ':' + S.phase + (S.phase === 'undone' ? ':' + (S.rides || 0) : ''); if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
   const o = S.outcome, j = S.journal[0] || {}, under = S.phase === 'undone';
   const src = under ? (o.cut && artURL('undertakings/' + o.cut) ? 'undertakings/' + o.cut : placeCut('hall')) : (S.plateCut || placeCut('hall'));
   S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay(), say:sayOf(o.text)}); delete S.plateCut; save(); }
@@ -9534,9 +9561,16 @@ function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').rep
   return q.replace(/,$/, '.'); }
 /* The balloon issues from the speaker's mouth. SAY_AT holds where that is on each cut, in hundredths; a cut with nobody on it gets no balloon. */
 function balloonHTML(src, say){ const at = say && ART.has('ui/balloon.png') && typeof SAY_AT === 'object' ? SAY_AT[src] : null; if (!at) return '';
-  const [mx, my] = at, k = 497 / 900 * 1.5, w = Math.max(36, Math.min(42, (my - 3) / k)), h = w * k, flip = mx > 56;
+  const [mx, my] = at, k = 497 / 900 * 1.5, want = Math.max(30, Math.min(48, 26 + say.length * .24)), w = Math.max(25, Math.min(want, Math.max(38, (my - 3) / k))), h = w * k, flip = mx > 56;
   const left = flip ? Math.max(1, mx - 1.5 - w) : Math.min(99 - w, mx + 1.5), top = Math.max(1, my - 1.5 - h);
-  return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span>${esc(say)}</span></q>`; }
+  return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span><i>${esc(say)}</i></span></q>`; }
+/* The words are set in the largest size the balloon will hold. */
+function fitBalloons(){ for (const box of document.querySelectorAll('.balloon span')) { const t = box.firstElementChild, W = box.clientWidth, H = box.clientHeight; if (!t || !W) continue;
+    let lo = 5, hi = Math.max(6, H / 1.6); for (let n = 0; n < 9; n++) { const m = (lo + hi) / 2; t.style.fontSize = m + 'px'; if (t.offsetHeight <= H && t.scrollWidth <= W) lo = m; else hi = m; }
+    /* kept as a share of the balloon's breadth, so that it holds when the cut loads or the window is resized; and a little under the limit, since a line may break otherwise at another size */
+    t.style.fontSize = (.93 * lo / box.parentNode.clientWidth * 100).toFixed(2) + 'cqw'; } }
+addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the italic is fetched when first set, and is broader than what stood in for it */
+if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
 function plateViewHTML(){
   if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
@@ -9562,7 +9596,7 @@ function drawPlate(){ const el = $('plate'), up = S && (PROGRESS >= 0 || (VIEW =
   el.hidden = !up; document.body.classList.toggle('plateup', !!up); if (!up) { el.innerHTML = ''; return; }
   const key = PROGRESS >= 0 ? 'p' : PSTEP;
   el.className = PROGRESS >= 0 ? 'gallery' : S.phase === 'event' ? 'asks' : 'tells';
-  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`;
+  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`; fitBalloons();
   if (el.dataset.key !== key) { el.dataset.key = key; el.scrollTop = 0; const s = el.querySelector('.pside'); if (s) s.scrollTop = 0; const b = el.querySelector('.choice, .go'); if (b) b.focus({preventScroll:true}); } }
 
 /* ---------- the sheet of the plan ---------- */
@@ -9583,7 +9617,7 @@ const armsOf = () => isKept('baronet') ? 'baronet' : isKept('knight') ? 'knight'
 /* The sheet is laid in three layers, each redrawn only when its own contents change, so that the moving things do not start again at every touch. */
 const CALM = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function landArtHTML(){ const q = S.season;
-  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
+  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece p-${id}" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
   return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}`; }
 /* Stock and traffic. s: the drawing. at: where its feet stand. w: its breadth in hundredths of the sheet. f: faces right. go: how it moves. */
 const BEASTS = [
@@ -9614,7 +9648,7 @@ function landLblHTML(){
   const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
     if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
-    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
   return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
@@ -9668,15 +9702,21 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
 function turnHall(){ ROUND = true; if (!window.customElements || !customElements.get('model-viewer')) { const s = document.createElement('script'); s.type = 'module'; s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'; s.onerror = () => { ROUND = false; drawPlan(); }; document.head.appendChild(s); } drawPlan(); }
 
 let LANDKEY = '';
+/* A new sheet is laid over the old only when every picture on it is ready to be shown, so the plan is never seen bare between quarters. */
+function layArt(el, h){ if (!el.firstChild) { el.innerHTML = h; return; }
+  const d = document.createElement('div'), tok = el._tok = {}; d.innerHTML = h;
+  const lay = () => { if (el._tok !== tok) return; el._tok = null; el.replaceChildren(...d.childNodes); };
+  Promise.all([...d.querySelectorAll('img')].map(i => i.decode ? i.decode().catch(() => {}) : 0)).then(lay); setTimeout(lay, 4000); }
 function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.toggle('planview', on); $('plan').hidden = !on; drawPlate(); if (!on) { LANDKEY = ''; return; }
   const land = $('land'), sheet = $('sheet'), p = PLACES[SHEET];
   /* the sheet itself is redrawn only when what is on it changes, so the moving picture does not start again at every touch */
   const key = JSON.stringify([S.season, piecesOn(), armsOf(), S.phase, S.pending, PLATEUP, SHEET, Object.keys(PLACES).filter(placeOn)]);
   if (!$('landart')) land.innerHTML = '<div id="landart"></div><div id="landmot"></div><div id="landlbl"></div>';
-  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { el._h = h; el.innerHTML = h; } }
+  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { el._h = h; if (k === 'landart') layArt(el, h); else el.innerHTML = h; } }
   if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key;
     const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
   $('cart').innerHTML = cartHTML();
+  whenIdle(warmQuarter);
   const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
   sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
   sheet.innerHTML = SHEET ? sheetHTML() : ''; sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
@@ -9720,6 +9760,7 @@ function plateHTML(q, src, cap){ const i = platePic(src, cap); return `<figure c
 let STEP = '', LEAFUP = true;
 function render(){
   const stage = $('stage');
+  if (S && S.phase === 'event' && typeof pendingStands === 'function' && !pendingStands()) { S.pending = null; S.phase = 'undertake'; save(); }
   document.body.classList.toggle('intro', !S);
   if (typeof planSync === 'function') planSync();
   if (!S) { LEAF = -1; stage.classList.remove('turn');
@@ -9738,7 +9779,7 @@ function render(){
 /* the opening is sized to the window, so the will and the choosing are read without scrolling */
 function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; if (S || innerWidth <= 1080) return;
   const room = innerHeight - 34, wide = Math.min(1420, innerWidth - 32); let z = 1;
-  for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.7, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
+  for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.6, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
   document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);

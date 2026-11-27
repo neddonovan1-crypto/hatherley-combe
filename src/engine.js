@@ -772,8 +772,11 @@ function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
   S.outcome = {title:u.t, text, d:deltas(b), cut:LAST_CUT}; S.phase = 'undone'; save(); render(); }
 
+/* A paper waits from quarter day until it is answered, and the squire may sell the farm or clear the debt it speaks of in the meantime. A paper that has lost its occasion is withdrawn. */
+function pendingStands(){ const e = S.pending && byId(S.pending); if (!e) return false; if (e.follow && e.cond && !e.cond()) return false;
+  try { e.text(); e.choices.filter(c => !c.if || c.if()).forEach(c => { lab(c); if (typeof c.note === 'function') c.note(); }); } catch (err) { return false; } return true; }
 function next(){
-  if (S.phase === 'ledger') { if (S.dead) return finish(); S.phase = S.pending ? 'event' : 'undertake'; }
+  if (S.phase === 'ledger') { if (S.dead) return finish(); if (S.pending && !pendingStands()) S.pending = null; S.phase = S.pending ? 'event' : 'undertake'; }
   else if (S.phase === 'outcome') { if (S.dead) return finish(); S.phase = 'undertake'; }
   else if (S.phase === 'undone' && ridesLeft() > 0 && !S.dead) S.phase = 'undertake';
   else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }

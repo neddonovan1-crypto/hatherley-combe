@@ -87,7 +87,9 @@ function ladyDay(){ const y = S.year, st = steward(), up = [];
       if (f.level === 'rack' && f.cond > 0 && chance(0.12)) { f.cond--; S.notes.push(`${f.name} is going back. ${st} counted three fields in wheat after wheat.`); }
       else if (f.level !== 'rack' && f.cond < 2 && f.id !== 'kennet' && chance(0.2)) f.cond++; }
     const secure = f.lease.type !== 'will' && f.lease.ends - y >= 5 && f.lease.years >= 14;
-    if (secure && f.K > 1.4 * f.rent && f.cond >= 1 && f.cond < 4) { f.K -= 0.9 * f.rent; f.cond++;
+    const bound = !!f.lease.drain && f.cond < 4;   // an easy lease carries a covenant to drain and fence, and it is kept the first year
+    if (bound) delete f.lease.drain;
+    if (bound || (secure && f.K > 1.4 * f.rent && f.cond >= 1 && f.cond < 4)) { if (!bound) f.K -= 0.9 * f.rent; f.cond++;
       S.notes.push(`${f.tenant} has drained and fenced at ${f.name} at ${p.his} own cost. ${st} enters the farm as ${ORDER_W[f.cond].toLowerCase()}.`); } }
   if (up.length) S.notes.push('Rents from year to year, moved this Lady Day: ' + up.join('; ') + '.'); }
 
@@ -166,6 +168,11 @@ function offerLease(id){ const f = farm(id); if (!f || f.void || f.lease.type !=
 function letting(){ while (S.letQueue && S.letQueue.length){ const x = S.letQueue[0], f = farm(x.id); if (f && !f.void && f.lease.type === 'will') return {f, why:x.why}; S.letQueue.shift(); } return null; }
 function owing(){ while (S.payQueue && S.payQueue.length){ const f = farm(S.payQueue[0]); if (f && !f.void && f.arrears >= 1) return f; S.payQueue.shift(); } return null; }
 function sign(f, type, years, level, rent){ f.lease = type === 'will' ? {type:'will'} : {type, ends:S.year + years, years, level}; f.level = level; if (rent) f.rent = rent; if (!f.since) f.since = 1788; S.letQueue.shift(); }
+/* What a choice on the letting paper does to the rent now paid: the change, not the rent itself, which the squire has already. */
+const rentNote = (f, r, tail) => { const d = r - f.rent; return (d > 0 ? '+' + fmt(d) + ' a year' : d < 0 ? '−' + fmt(-d) + ' a year' : 'The rent as it stands') + ', ' + tail; };
+const willNext = f => { const v = lettingValue(f, S.year); return five(v > f.rent ? Math.min(v, f.rent * 1.12) : Math.max(v, f.rent * 0.9)); };
+const cornNow = f => five(0.86 * f.base * farmF(f) * (0.5 * means(S.year - 1) + 0.5 * market(S.year)));
+const LONG_LEASE = 0.96;   // fourteen years are bought with a twenty-fifth off the rent
 const covenants = `no two white straw crops together, no hay or straw sold off the farm, the hedges kept`;
 
 ev({ id:'leaseFalls', follow:true, cond:() => !!letting(),
@@ -183,25 +190,25 @@ ${st} has walked the farm, and brings his valuation upon a half sheet, by which 
 
 ${f.tenant} is in the hall, and has brought the old lease with ${p.him}.`; },
   choices:[
-    {t:() => letting().why === 'offer' ? 'Leave things as they are.' : `Let ${pro(letting().f).him} hold on from year to year.`, note:'The rent moves each Lady Day', go:() => { const {f} = letting(), p = pro(f); sign(f, 'will', 0, 'fair');
+    {t:() => letting().why === 'offer' ? 'Leave things as they are.' : `Let ${pro(letting().f).him} hold on from year to year.`, note:() => rentNote(letting().f, willNext(letting().f), 'and moved again each Lady Day'), go:() => { const {f} = letting(), p = pro(f); sign(f, 'will', 0, 'fair');
       return `Nothing is signed. ${f.tenant} pays the half-year, and asks whether the barn roof is ${p.his} to mend or yours; and ${steward()} enters ${f.name} in the book as held from year to year.`; }},
-    {t:'A lease of seven years.', note:() => '+' + fmt(lettingValue(letting().f, S.year)) + ' a year', go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 7, 'fair', r);
+    {t:'A lease of seven years.', note:() => rentNote(letting().f, lettingValue(letting().f, S.year), 'fixed for seven years'), go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 7, 'fair', r);
       return `The lease, being engrossed upon one skin at Wyvern, is read over in the steward’s room, and ${f.tenant} signs. The rent is ${fmt(r)} until Lady Day ${S.year + 7}.`; }},
-    {t:'A lease of fourteen years.', note:() => '+' + fmt(lettingValue(letting().f, S.year)) + ' a year', go:() => { const {f} = letting(), r = lettingValue(f, S.year); sign(f, 'term', 14, 'fair', r); add({goodwill:1});
+    {t:'A lease of fourteen years.', note:() => rentNote(letting().f, five(LONG_LEASE * lettingValue(letting().f, S.year)), 'fixed for fourteen years. +Goodwill; the tenant improves the farm in time'), go:() => { const {f} = letting(), r = five(LONG_LEASE * lettingValue(f, S.year)); sign(f, 'term', 14, 'fair', r); add({goodwill:2});
       return `Fourteen years being agreed upon, ${steward()} reads the covenants aloud: ${covenants}. ${f.tenant} signs below your name, and the rent is ${fmt(r)} until Lady Day ${S.year + 14}.`; }},
-    {t:'Fourteen years at an easy rent, the tenant to drain and fence.', note:() => fmt(five(0.88 * lettingValue(letting().f, S.year))) + ' a year', go:() => { const {f} = letting(), p = pro(f), r = five(0.88 * lettingValue(f, S.year)); sign(f, 'term', 14, 'easy', r); add({goodwill:3});
+    {t:'Fourteen years at an easy rent, the tenant to drain and fence.', note:() => rentNote(letting().f, five(0.88 * lettingValue(letting().f, S.year)), 'fixed for fourteen years. +Goodwill; the farm a step better by Lady Day'), go:() => { const {f} = letting(), p = pro(f), r = five(0.88 * lettingValue(f, S.year)); sign(f, 'term', 14, 'easy', r); f.lease.drain = true; add({goodwill:3});
       if (f.tenant === 'Mrs Thorne') reg('thorne', 1, 'You gave her fourteen years at a rent she could mend the farm on');
       return `The rent is set at ${fmt(r)} for fourteen years, ${f.tenant} covenanting to lay stone drains in the wet grounds, and to plant quick along the lane; and ${p.he} asks to take the lease home and read it.
 
 On Monday there are two loads of stone at ${p.his} gate.`; }},
-    {t:'Advertise the farm and take the best bidder.', note:() => '+' + fmt(five(1.13 * lettingValue(letting().f, S.year))) + ' a year, seven years, a new tenant', go:() => { const {f} = letting(), r = five(1.13 * lettingValue(f, S.year)), old = f.tenant, n = incomer();
+    {t:'Advertise the farm and take the best bidder.', note:() => rentNote(letting().f, five(1.13 * lettingValue(letting().f, S.year)), 'fixed for seven years, with a new tenant. −Goodwill'), go:() => { const {f} = letting(), r = five(1.13 * lettingValue(f, S.year)), old = f.tenant, n = incomer();
       if (old === 'Mrs Thorne') reg('thorne', -4, 'You advertised Long Barrow over her head'); if (old === 'Edmund') { reg('edmund', -3, 'You let Kennet Bottom over his head'); add({family:-6}); }
       f.tenant = n[0]; f.she = false; f.K = 0.3 * r; f.arrears = 0; f.since = S.year; sign(f, 'term', 7, 'rack', r); add({goodwill:-5});
       return `The notice being in the Mercury two Saturdays running, nine letters come; of which the best is from a ${n[0]} of ${n[1]}, who offers ${fmt(r)}, and has not seen the farm.
 
 ${old} leaves with two wagons and a crate of fowls, and ${n[0]} signs for seven years.`; }},
-    {t:'Fourteen years at a corn rent.', note:'The rent rises and falls with wheat at Wyvern', go:() => { const {f} = letting(); sign(f, 'corn', 14, 'fair');
-      f.rent = five(0.86 * f.base * farmF(f) * (0.5 * means(S.year - 1) + 0.5 * market(S.year))); add({goodwill:2});
+    {t:'Fourteen years at a corn rent.', note:() => rentNote(letting().f, cornNow(letting().f), 'this year, and after that as wheat sells at Wyvern. +Goodwill'), go:() => { const {f} = letting(); sign(f, 'corn', 14, 'fair');
+      f.rent = cornNow(f); add({goodwill:2});
       return `The rent of ${f.name} is fixed in wheat, and not in money; so that each rent day ${steward()} is to take the Wyvern price, and work the sum. He works it now, twice, and this year it comes to ${fmt(f.rent)}.
 
 ${f.tenant} asks to see the working, and signs.`; }}

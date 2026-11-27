@@ -37,6 +37,7 @@ function plateHTML(q, src, cap){ const i = platePic(src, cap); return `<figure c
 let STEP = '', LEAFUP = true;
 function render(){
   const stage = $('stage');
+  if (S && S.phase === 'event' && typeof pendingStands === 'function' && !pendingStands()) { S.pending = null; S.phase = 'undertake'; save(); }
   document.body.classList.toggle('intro', !S);
   if (typeof planSync === 'function') planSync();
   if (!S) { LEAF = -1; stage.classList.remove('turn');
@@ -55,7 +56,7 @@ function render(){
 /* the opening is sized to the window, so the will and the choosing are read without scrolling */
 function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; if (S || innerWidth <= 1080) return;
   const room = innerHeight - 34, wide = Math.min(1420, innerWidth - 32); let z = 1;
-  for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.7, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
+  for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.6, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
   document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
