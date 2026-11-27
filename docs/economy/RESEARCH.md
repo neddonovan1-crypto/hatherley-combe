@@ -42,7 +42,7 @@ The historians disagree about almost everything except who got the money.
 - A recent study puts wheat yields 45 per cent higher in inclosed parishes and the land-value Gini up by 0.22. It cites Turner for a total cost of "at least 12 pounds per acre" with roads and fencing. [checked] ([Heldring, Robinson and Vollmer](https://www.nber.org/system/files/working_papers/w29772/w29772.pdf).)
 - The public costs alone ran to "something over £2 an acre" before the wartime inflation, on J. M. Martin's figures as McCloskey reports them. This one rests on a summary of a paywalled page.
 
-The design takes about three pounds an acre for the Act and award over 460 acres, and a thousand pounds to fence and build on the new farm.
+The design takes about £1,400 for the Act and award, and a thousand pounds to fence and build on the new farm.
 
 ## Money
 

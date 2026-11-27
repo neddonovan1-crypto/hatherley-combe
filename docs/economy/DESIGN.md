@@ -40,19 +40,30 @@ Cash, the mortgage, rents, the home farm, works and the cost of cutting a figure
 
 ## 1. The rent roll
 
-Seven lines in the Steward's Book where there is now one. The total is the present £1,620, so nothing existing moves.
+Three farms in the Steward's Book where there is now one figure. They add up to the present £1,620, so nothing existing moves.
 
-| Holding | Acres | Tenant | 1795 rent | Held |
+| Farm | Acres | Tenant | 1795 rent | Held |
 |---|---|---|---|---|
-| Long Barrow, down and sheepwalk | 380 | Abigail Thorne | £300 | Lease, falls in 1802 |
-| Kennet Bottom, wet clay | 240 | Widow Harris | £170 | At will. Ruinous |
-| Starveall, flints | 250 | new | £180 | Lease, falls in 1803 |
-| Mill Farm and Hatherley Mill | 150 | Pocock | £290 | Lease, falls in 1799 |
-| Church Farm, strips in the open field | 260 | new | £210 | At will |
-| Coldharbour, good loam | 210 | new | £250 | Lease, falls in 1808 |
-| The small holdings | 160 | sundry | £220 | At will |
+| Long Barrow, down and sheepwalk | 600 | Abigail Thorne | £540 | Lease, falls in 1802 |
+| Kennet Bottom, wet clay, with the mill | 500 | Widow Harris | £470 | At will. Neglected |
+| Church Farm, strips in the open field | 550 | new | £610 | At will |
 
 That is 1,650 acres let at just under a pound an acre, which is where Mavor and the rent historians both put Berkshire. The home farm of 200 and 150 of wood and park make up the two thousand.
+
+Each farm is a different problem. Long Barrow is sound and under-rented, and nothing can be done about it for seven years. Kennet Bottom wants draining. Church Farm is good land in bad order, since nobody can farm a hundred scattered strips well, and it is the one inclosure would transform.
+
+### A fourth farm, and a fifth
+
+The estate can grow to five farms and no further. There are four ways in, and each rewards a different sort of squire.
+
+- **Inclose the common.** The award makes a new farm of 300 acres, Common Piece, for £2,400 all told. That is about twelve years' purchase where land sells at twenty-eight. It is the cheapest farm in Berkshire and the parish pays the difference.
+- **Starveall, at a forced sale.** A neighbour is sold up in a tight year, 1798 or again in 1803: 450 acres of flints in poor order at 21 years' purchase, about £5,400. Nobody will lend that year, so it goes to the man with money in the Funds or oak to fell. Thrift buys it.
+- **Coldharbour, with a bride.** Edmund may marry four hundred acres of good loam, if the family stands well enough to be looked at. The price is the young couple's allowance.
+- **Coldharbour, on the open market.** It comes up in 1807 and 1811 at the full 28 years' purchase, £13,500 and then £19,500, the seller leaving two-thirds on mortgage. Anyone with credit may have it. At those prices it yields three and a half per cent on money borrowed at five. Lord Darnley doubled his Kentish acreage in just this way between 1788 and 1820.
+
+Bought land has one great virtue. It lies outside the family settlement, so it is the squire's own to mortgage or sell, and it is the first thing to go when the bailiffs come.
+
+**A trait for the making of a squire.** *Your uncle bought Coldharbour*, two points: begin with four farms and a mortgage of £7,000 in place of £4,000. He regretted that as well.
 
 Behind the page sit two numbers for each year, both worked from the game's own wheat prices and printed in the table further down. The **letting value** is what a farm fetches if let this Lady Day. It creeps up, never falls while the war lasts, and peaks at 1.82 times the 1795 rent in 1813. The **tenant's means** is what the farm can pay this year. It leaps about: 2.28 in the dearth of 1801, 1.08 in 1804, 2.36 in 1812, 1.22 in 1815.
 
@@ -60,7 +71,7 @@ The gap between them is the game. A tenant whose rent is under his means lays mo
 
 ### When a lease falls in
 
-A paper arrives, perhaps one every second year. The squire chooses a tenure and a rent.
+A paper arrives, perhaps one every third year. The squire chooses a tenure and a rent.
 
 - **At will.** Year to year. The rent follows the letting value each Lady Day, an eighth at most. The tenant mends nothing, since he may be out by Michaelmas. Mavor likens him to the man who sat calmly through a storm that was pulling the house down because he was "only a lodger".
 - **Seven years.** The rent is fixed. He keeps the place up.
@@ -81,16 +92,16 @@ Each work now changes a named farm, and the return comes through the rent roll: 
 
 | Work | Cost | What it does | Return on 1795 values |
 |---|---|---|---|
-| Drain Kennet Bottom | £520 | Ruinous to fair order: £161 a year becomes £230 | 13% |
-| Float the meadows at Mill Farm | £300 | Letting value up 15% | 14% |
-| Rebuild the mill | £420 | Letting value up 12%; the parish pleased | 8% |
+| Drain Kennet Bottom | £520 | Neglected to fair order: £476 a year becomes £560 | 16% |
+| Float the meadows by the mill | £300 | Kennet Bottom's letting value up 8% | 15% |
+| Rebuild the mill | £420 | Letting value up 6%; the parish pleased | 8% |
 | Four-course on the home farm, with a flock | £460 | More corn off fewer acres; the land mends | about 30% |
-| Inclose the common and open field | £2,400 over three years | Church Farm up by half; a new farm of 200 acres; tithe gone | 10% |
+| Inclose the common and open field | £2,400 over three years | Church Farm up by three-tenths; Common Piece; tithe gone | 16% |
 | Yearly repairs | about £90 | Stops at-will farms sliding a grade | n/a |
 
-Every return rises with the letting value, so the drains that pay 13 per cent in 1795 pay 20 by 1805. All of them beat a five per cent mortgage. Borrowing to improve is therefore right, and that is the trap, because the debt is fixed and the rents are not.
+Every return rises with the letting value, so the drains that pay 16 per cent in 1795 pay 24 by 1805. All of them beat a five per cent mortgage. Borrowing to improve is therefore right, and that is the trap, because the debt is fixed and the rents are not.
 
-Inclosure deserves its own note. I have put it at £2,400 where the game says £1,200, since the Act and commissioners were the cheap part and Mavor reckons ten pounds an acre to bring waste into cultivation. It also voids every at-will tenancy it touches, which gives the squire one great re-letting. Its cost in goodwill stays as written.
+Inclosure deserves its own note. I have put it at £2,400 where the game says £1,200, since the Act and commissioners were the cheap part and Mavor reckons ten pounds an acre to bring waste into cultivation. It also voids the tenancy of Church Farm, which gives the squire one great re-letting. If he has five farms already the allotment is laid to Church Farm instead. Its cost in goodwill stays as written.
 
 The house works (the front, the pinery, the ice-house, the oaks, the cottages, the school, the road) keep their present prices. They buy regard, which section 5 makes worth having.
 
@@ -129,11 +140,11 @@ So the cheap money vanishes exactly when the squire is short, and the mortgage b
 
 1. **Living on bills.** As now.
 2. **The tradesmen stop.** Below about minus £1,500 the household is forced down a grade.
-3. **An execution in the house.** Starveall or Coldharbour is sold at 26 years' purchase. The debt clears. The rent is gone for good, and Lord Cullerne is the buyer.
-4. **A second farm.**
-5. **The Isle of Man.**
+3. **An execution in the house.** A farm is sold at 26 years' purchase: bought land first, since it is his to sell. Lord Cullerne is the buyer.
+4. **Long Barrow.** The settlement must be broken to do it, which wants Edmund.
+5. **Two farms left, and the Isle of Man.**
 
-In the model the squire who buys everything sells a farm in nearly every life and is sold up in one life in twenty. He ends with the best rent roll in the county and eleven thousand pounds of debt. That reads to me as a better fate than a coin toss for the auctioneer.
+So a squire can end with five farms or with two, and the road between is long enough to turn round on.
 
 ## 5. The cost of being somebody
 
@@ -162,13 +173,13 @@ Parliament should cost what it cost. The History of Parliament has Wallingford's
 
 **Kitty's portion** is a sum chosen: £1,000, £2,000, £3,000. It sets who will have her. It is raised, as it always was, on the mortgage.
 
-**Edmund's bride** runs the other way. Her portion comes in, against a jointure promised and a young couple's allowance.
+**Edmund's bride** runs the other way. Her portion comes in, in money or as Coldharbour, against a jointure promised and a young couple's allowance of £300 a year.
 
-**Land for sale.** Twice or three times a life a neighbouring farm comes up at 28 years' purchase of its current rent. Lord Darnley doubled his acreage this way between 1788 and 1820. Bought in 1798 it is the making of the estate. Bought in 1812 it yields three and a half per cent on borrowed money at five.
+
 
 ## 7. The reckoning
 
-The Mercury should value the estate at what its rents will bear in 1816, not what the leases say. A roll let at rack in 1812 is then marked down in the obituary, which is where it would have been marked down in life.
+The Mercury should speak as the county did, in pounds a year. "A man of two thousand a year" in 1795; of five thousand, or of nine hundred, in 1815. And it should count what the rents will bear once the peace has settled, not what the leases say. A roll let at rack in 1812 is then marked down in the obituary, which is where it would have been marked down in life.
 
 ## The numbers, played through
 
@@ -191,32 +202,38 @@ The Mercury should value the estate at what its rents will bear in 1816, not wha
 
 The letting value tracks Clark's Midland rent series within a few points (1.21, 1.42 and 1.69 for the three five-year spans after 1800, against 1.24 to 1.50, 1.51 and 1.61 to 1.82 here). 1804 is a small rehearsal for 1814, and the game should let the player feel it.
 
-Seven scripted squires, 2,000 lives each. Net worth is purse and Funds less debts, and every one of them starts £3,100 under water.
+Ten scripted squires, 2,000 lives each. The measure is **clear income**: what the estate will bring in a settled year after 1815, with rents marked down to what they will bear and the interest paid. Every squire starts on about £1,950 a year. Prices rose by half in the meantime, so £3,000 in 1815 is standing still.
 
-| Squire | What he does | Net, 1815 | Rent roll, 1815 | Sells land | Sold up |
+| Squire | What he does | Farms | Clear income | Debt, 1815 | Sold up |
 |---|---|---|---|---|---|
-| The Sitter | Plain living, renews every lease at fair, builds nothing | −£1,140 | £2,990 | never | never |
-| The Careful Man | Retrenches four years, corn rents, drains, pays down, buys Consols at 51 | +£7,260 | £2,390 | never | never |
-| The Improver | Everything for the land by 1802, on the mortgage; high wages | +£5,650 | £3,670 | never | never |
-| The Rack-Renter | At will, an eighth over, holds tenants to it | −£580 | £3,220 on paper | never | never |
-| The Figure | Handsome then Splendid, the front, London, a seat in 1807 | n/a | n/a | always | always, in 1806 or 1807 |
-| Buys Everything | Every work, two a year, Handsome | −£11,080 | £3,420 | 98% | 5% |
-| The Late Convert | Idles to 1808, then drains, incloses and lets at rack on the rents of 1809 | −£7,580 | £3,800 | never | never |
+| The Sitter | Plain living, renews every lease at fair, builds nothing | 3 | £3,040 | £3,500 | never |
+| The Sitter with the trait | The same, beginning with four farms | 4 | £4,100 | £5,000 | never |
+| The Careful Man | Retrenches four years, corn rents, drains, pays down | 3 | £3,220 | none | never |
+| The Improver | Everything for the land by 1802, inclosure included | 4 | £4,040 | £1,000 | never |
+| The Engrosser | Saves, takes Starveall at the forced sale, marries Edmund to Coldharbour, incloses, lives handsomely | 5 | £3,750 | £10,500 | never |
+| The Great Man | The trait, then the Improver's programme | 5 | £4,740 | £1,000 | never |
+| The Rack-Renter | At will, an eighth over, holds tenants to it | 3 | £2,990 | £3,000 | never |
+| The Late Convert | Idles to 1808, then drains, incloses, lets at rack and buys Coldharbour in 1811 | 5 | £2,900 | £24,700 | never |
+| Buys Everything | Every work, two a year, Handsome, and both farms on the market | 4 | £2,560 | £25,400 | never, but 9% lose a settled farm |
+| The Figure | Handsome then Splendid, the front, London, a seat in 1807 | n/a | n/a | n/a | always, in 1806 or 1807 |
 
-What I take from it. Doing nothing treads water, which is the right floor. Prudence and improvement both pay and neither dominates: the Careful Man ends richer, the Improver ends with half as much rent again and a parish that likes him. The Rack-Renter leads until 1813 and then watches his receipts drop from £3,500 to £2,200 in two years as tenants break; the £3,220 in the table is what his leases say, which is no longer what he is paid. The Late Convert has the grandest rent roll in the book and eight and a half thousand of debt against rents that have already begun to fall. The Figure cannot be afforded on two thousand acres, and Crabbe should say so by 1803.
+What I take from it. The range is now wide: from the auctioneer, through a man with five farms and less to spend than when he had three, up to five farms clear of debt and close on five thousand a year. Doing nothing treads water, which is the right floor. The three cheap ways to a fourth farm all pay, and the dear way does not, at least by 1815: the Late Convert holds the grandest rent roll in the book, £4,860 on paper, and owes twenty-five thousand against it. The Rack-Renter leads until 1813 and then sees his receipts fall by a third in two years as tenants break. Splendour on three farms is ruin by 1807. On five farms clear it can be afforded, so the Figure is a prize for getting rich and no way of doing it.
 
-The weak points, plainly. This is a model of the proposal and not the game. The hall's sixty events are one random sum of about £170 a year, the seven squires follow scripts, and steps are yearly where the game's are quarterly. The crash also bites late, because tenants with savings last out 1815. The same model run on to 1816 would hurt the rack-renters much more, which is one reason for section 7. All of it wants re-running inside `test/sim.js` once there is an engine to run.
+The weak points, plainly. This is a model of the proposal and not the game. The hall's sixty events are one random sum of about £170 a year, the squires follow scripts, and steps are yearly where the game's are quarterly. The crash bites late, because tenants with savings last out 1815. The top of the range is also lower than I should like: nobody in the model clears five thousand, and the game's events (a canal share that pays, a good match for Kitty, a lucky year holding wheat) ought to be what carries a squire over it. All of it wants re-running inside `test/sim.js` once there is an engine to run.
 
 ## How I would build it
 
 Three pull requests, each playable, after the ledger and character work have merged so nobody is editing the same file twice.
 
-1. **The rent roll.** Seven farms, the two indices, leases falling in, abatement. A Rent Roll tab in the Steward's Book. This is most of the value.
-2. **Credit and the household.** The six rungs, tight years, the Funds, staged ruin, the four establishments.
-3. **The home farm and the family.** Courses and heart, the woods, the settlement of 1797, portions, land for sale, the new reckoning.
+1. **The rent roll.** Three farms, the two indices, leases falling in, abatement. A Rent Roll tab in the Steward's Book. This is most of the value.
+2. **Credit, the household and the fourth farm.** The six rungs, tight years, the Funds, staged ruin, the four establishments, Starveall and Coldharbour, the trait.
+3. **The home farm and the family.** Courses and heart, the woods, the settlement of 1797, portions and the bride, the new reckoning.
 
-## What I need from Ned
+## Settled with Ned, 26 November
 
-- Whether seven named farms is the right grain, or whether four would do the same work with less to read.
+Three farms to begin, five at most. A trait may start a squire with four. He should be able to end greatly rich or a good deal poorer.
+
+## Still open
+
 - Whether ruin by stages is wanted. It is kinder, and some would say softer.
-- Whether the Figure should be possible at all on this estate, perhaps through an heiress, or whether "you cannot afford it" is the lesson.
+- Whether five thousand a year is rich enough for "greatly", or whether the ceiling should go higher.

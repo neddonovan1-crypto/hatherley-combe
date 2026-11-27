@@ -30,15 +30,18 @@ const COND = [0.70, 0.85, 1.0, 1.15, 1.30];                  // ruinous, neglect
 const LEVEL = {easy:0.88, fair:1.0, rack:1.13};
 
 function estate(){ return [
-  // base = the 1795 rent the farm would bear in fair order (cond 2)
-  {id:'longbarrow', name:'Long Barrow',   acres:380, base:330, cond:2, rent:300, lease:{type:'term', ends:1802}, K:420, common:false},
-  {id:'kennet',     name:'Kennet Bottom', acres:240, base:230, cond:0, rent:170, lease:{type:'will'}, K:60,  common:false},
-  {id:'starveall',  name:'Starveall',     acres:250, base:190, cond:2, rent:180, lease:{type:'term', ends:1803}, K:150, common:false},
-  {id:'mill',       name:'Mill Farm',     acres:150, base:285, cond:2, rent:290, lease:{type:'term', ends:1799}, K:300, common:false},
-  {id:'church',     name:'Church Farm',   acres:260, base:225, cond:2, rent:210, lease:{type:'will'}, K:200, common:true},
-  {id:'coldharbour',name:'Coldharbour',   acres:210, base:255, cond:2, rent:250, lease:{type:'term', ends:1808}, K:380, common:false},
-  {id:'small',      name:'The small holdings', acres:160, base:225, cond:2, rent:220, lease:{type:'will'}, K:120, common:false}
+  // base = the 1795 rent the farm would bear in fair order (cond 2). Three farms to begin; never more than five.
+  {id:'longbarrow', name:'Long Barrow',   acres:600, base:590, cond:2, rent:540, lease:{type:'term', ends:1802}, K:700, common:false},
+  {id:'kennet',     name:'Kennet Bottom', acres:500, base:560, cond:1, rent:470, lease:{type:'will'}, K:200, common:false},
+  {id:'church',     name:'Church Farm',   acres:550, base:610, cond:2, rent:610, lease:{type:'will'}, K:500, common:true}
 ]; }
+/* Farms that come to market. Bought land lies outside the settlement: it is the squire's own, to mortgage or sell. */
+const FOR_SALE = {
+  starveall:  {name:'Starveall',   acres:450, base:260, cond:1, years:[1798, 1803], yp:21},   // a neighbour sold up in a tight year: cheap, if you have the money
+  coldharbour:{name:'Coldharbour', acres:400, base:420, cond:2, years:[1807, 1811], yp:28}    // the open market, at the going price
+};
+const priceOf = (id, y) => Math.round(FOR_SALE[id].base * COND[FOR_SALE[id].cond] * market(y) * FOR_SALE[id].yp / 10) * 10;
+const SUSTAIN = 1.45;   // what rents will bear once the peace has settled, for valuing land at the reckoning
 
 let seed = 1; const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
 
@@ -53,6 +56,7 @@ function life(strategy, log){
   const S = {cash:900, mortgage:4000, annuities:0, funds:0, farms:estate(), standing:40, goodwill:50,
     heart:55, course:'old', done:{}, inHand:[], est:'plain', repairs:true, ruin:null, timberLeft:3, sold:[], crises:0, worst:900, mortCap:9000, enclosed:false};
   const P = strategy;
+  if (P.fourth) S.farms.push({id:'coldharbour', name:'Coldharbour', acres:400, base:420, cond:2, rent:400, lease:{type:'term', ends:1806}, K:500, common:false, own:true}), S.mortgage += 3000, S.mortCap += 3000;   // the trait, and the money the uncle borrowed to buy it: a fourth farm, bought by the uncle and outside the settlement
   for (let y = Y0; y <= Y1; y++){
     const st = P.plan(S, y) || {}; let inc = 0, out = 0; const L = {};
     if (st.est) S.est = st.est; if (st.course && (st.course !== 'four' || S.done.fourcourse)) S.course = st.course; if (st.repairs !== undefined) S.repairs = st.repairs;
@@ -60,7 +64,7 @@ function life(strategy, log){
     let rents = 0, arrearsNow = 0;
     for (const f of S.farms){
       if (S.sold.includes(f.id)) continue;
-      const condF = COND[f.cond] * (f.common && S.enclosed ? 1.5 : 1) * (f.id === 'mill' ? (S.done.mill ? 1.12 : 1) * (S.done.meadows ? 1.15 : 1) : 1);
+      const condF = COND[f.cond] * (f.common && S.enclosed ? (S.bigChurch ? 1.5 : 1.3) : 1) * (f.id === 'kennet' ? (S.done.mill ? 1.06 : 1) * (S.done.meadows ? 1.08 : 1) : 1);
       const able = cap(y) * condF * f.base * (0.94 + S.goodwill / 800);
       const mkt = market(y) * condF * f.base;
       if (f.void){ // in hand after a tenant broke: farmed badly by a bailiff, then re-let low
@@ -87,7 +91,7 @@ function life(strategy, log){
       if (f.lease.type === 'will' && S.repairs && f.cond < 2 && f.id !== 'kennet' && rnd() < 0.2) f.cond++;
       rents += got;
     }
-    { const live = S.farms.filter(f => !S.sold.includes(f.id)); const racked = live.filter(f => f.rent > 1.06 * market(y) * COND[f.cond] * f.base * (f.common && S.enclosed ? 1.5 : 1)).length / live.length, easy = live.filter(f => f.rent < 0.92 * market(y) * COND[f.cond] * f.base).length / live.length;
+    { const live = S.farms.filter(f => !S.sold.includes(f.id)); const racked = live.filter(f => f.rent > 1.06 * market(y) * COND[f.cond] * f.base * (f.common && S.enclosed ? 1.3 : 1)).length / live.length, easy = live.filter(f => f.rent < 0.92 * market(y) * COND[f.cond] * f.base).length / live.length;
       S.goodwill += -5 * racked + 2 * easy - (S.goodwill > 60 ? 1 : 0); S.goodwill = Math.max(0, Math.min(100, S.goodwill)); }
     L.rents = Math.round(rents); inc += rents; L.arrears = Math.round(arrearsNow);
     // ---- home farm, 200 acres
@@ -132,8 +136,15 @@ function life(strategy, log){
     for (const id of (st.works || [])){ if (S.done[id] || S.inHand.find(w => w.id === id)) continue; S.inHand.push({id, left:WORKS[id].yrs, per:WORKS[id].cost / WORKS[id].yrs}); }
     let wk = 0; for (const w of S.inHand.slice()){ wk += w.per; if (--w.left <= 0){ S.inHand.splice(S.inHand.indexOf(w), 1); S.done[w.id] = y; finish(S, w.id, y); } }
     out += wk; L.works = Math.round(wk);
+    if (st.bride && !S.farms.find(f => f.id === 'coldharbour') && S.standing >= 50 && S.farms.filter(f => !S.sold.includes(f.id)).length < 5){ const d = FOR_SALE.coldharbour;   // Edmund marries land
+      S.farms.push({id:'coldharbour', name:d.name, acres:d.acres, base:d.base, cond:2, rent:Math.round(d.base * market(y) * 0.9), lease:{type:'term', ends:y + 6}, K:d.base, common:false, own:true}); S.allowance = 300; L.bought = 'Coldharbour comes with the bride'; }
+    if (S.allowance) out += S.allowance * infl;
+    let bought = 0; if (st.buy && FOR_SALE[st.buy] && FOR_SALE[st.buy].years.includes(y) && !S.farms.find(f => f.id === st.buy) && S.farms.filter(f => !S.sold.includes(f.id)).length < 5){
+      const d = FOR_SALE[st.buy], price = priceOf(st.buy, y), left = Math.round(price * 2 / 3 / 500) * 500;   // the seller leaves two-thirds on the land at five per cent
+      S.farms.push({id:st.buy, name:d.name, acres:d.acres, base:d.base, cond:d.cond, rent:Math.round(d.base * COND[d.cond] * market(y)), lease:{type:'will', fresh:true}, K:0.5 * d.base, common:false, own:true, paid:price});
+      S.mortgage += left; S.mortCap += left; bought = price - left; L.bought = d.name + ' for ' + price; }
     // ---- money
-    S.cash += inc - out;
+    S.cash += inc - out - bought;
     if (st.redeemLT && !S.ltRedeemed && S.cash > 2100){ S.cash -= 110 * 1.1 / 0.03 * consolPrice(y) / 100; S.ltRedeemed = true; }
     if (st.buyFunds && S.cash > st.buyFunds.keep){ const spend = S.cash - st.buyFunds.keep; S.funds += spend / consolPrice(y) * 100; S.cash -= spend; }
     if (st.repay && S.cash > st.repay.keep && S.mortgage > 0){ const r = Math.min(S.mortgage, Math.floor((S.cash - st.repay.keep) / 500) * 500); S.mortgage -= r; S.cash -= r; }
@@ -152,33 +163,39 @@ function life(strategy, log){
       while (S.cash < -300 && S.annuities < 3600){ S.annuities += 720; S.cash += 720; }
       if (S.cash < 0){ out += -S.cash * 0.12; S.cash *= 1.12; S.standing -= 3; }
       if (S.cash < -1500){ // execution in the house: an outlying farm goes at 26 years' purchase, if one is left to go
-        const f = S.farms.find(f => !S.sold.includes(f.id) && (f.id === 'starveall' || f.id === 'coldharbour'));
-        if (f && S.sold.length < 2){ S.cash += f.rent * 26 * (moneyTight(y) ? 0.9 : 1); S.sold.push(f.id); S.standing -= 8; L.sold = f.name; }
+        const live = S.farms.filter(f => !S.sold.includes(f.id) && !f.void); const f = live.find(f => f.own) || (live.length > 2 ? live.find(f => f.id === 'longbarrow') || live[0] : null);
+        if (f){ S.cash += f.rent * 26 * (moneyTight(y) ? 0.9 : 1); S.sold.push(f.id); S.standing -= 8; L.sold = f.name; }
         else { S.ruin = y; break; } } }
     S.worst = Math.min(S.worst, S.cash);
     if (log) log(y, L, S, Math.round(inc), Math.round(out));
   }
-  const rental = S.farms.filter(f => !S.sold.includes(f.id)).reduce((a, f) => a + f.rent, 0);
-  return {ruin:S.ruin, net:Math.round(S.cash + S.funds * consolPrice(Math.min(Y1, S.ruin || Y1)) / 100 - S.mortgage - S.annuities), rental, sold:S.sold.length, crises:S.crises, standing:Math.round(S.standing), goodwill:Math.round(S.goodwill), debt:S.mortgage + S.annuities, worst:Math.round(S.worst)};
+  const liveF = S.farms.filter(f => !S.sold.includes(f.id)); const rental = liveF.reduce((a, f) => a + f.rent, 0);
+  const sustain = liveF.reduce((a, f) => a + Math.min(f.rent || 1e9, SUSTAIN * COND[f.cond] * f.base * (f.common && S.enclosed ? 1.3 : 1)), 0);
+  const lost = S.farms.filter(f => S.sold.includes(f.id) && !f.own).length;
+  const clear = Math.round(sustain + (S.letHome ? 190 * SUSTAIN : 450) + 150 + S.funds * 0.03 - S.mortgage * 0.05 - S.annuities * (100 / 720) + Math.max(0, S.cash) * 0.03);
+  return {farms:liveF.length, sustain:Math.round(sustain), lost, clear, ruin:S.ruin, net:Math.round(S.cash + S.funds * consolPrice(Math.min(Y1, S.ruin || Y1)) / 100 - S.mortgage - S.annuities), rental, sold:S.sold.length, crises:S.crises, standing:Math.round(S.standing), goodwill:Math.round(S.goodwill), debt:S.mortgage + S.annuities, worst:Math.round(S.worst)};
 }
 function finish(S, id, y){ const f = k => S.farms.find(x => x.id === k);
   if (id === 'drain'){ f('kennet').cond = 2; f('kennet').lease = {type:'will', fresh:true}; }
-  if (id === 'enclosure'){ S.enclosed = true; S.titheFree = true; S.goodwill -= S.done.cottages ? 8 : 16; S.farms.push({id:'common', name:'Common Piece', acres:200, base:150, cond:1, rent:0, lease:{type:'will', fresh:true}, K:80, common:false, void:2});
-    for (const x of S.farms) if (x.id === 'church' || x.id === 'small') x.lease = {type:'will', fresh:true}; }
+  if (id === 'enclosure'){ S.enclosed = true; S.titheFree = true; S.goodwill -= S.done.cottages ? 8 : 16;
+    if (S.farms.filter(x => !S.sold.includes(x.id)).length < 5) S.farms.push({id:'common', name:'Common Piece', acres:300, base:230, cond:1, rent:0, lease:{type:'will', fresh:true}, K:80, common:false, void:2, own:true}); else S.bigChurch = true;
+    f('church').lease = {type:'will', fresh:true}; }
   if (id === 'cottages') S.goodwill += 9; if (id === 'school') S.goodwill += 6; if (id === 'road'){ S.goodwill += 3; S.standing += 3; }
   if (id === 'front') S.standing += 9; if (id === 'pinery') S.standing += 4; if (id === 'oaks') S.standing += 2;
 }
 
-/* ---- seven squires ---- */
-const term = (years, level) => () => ({type:'term', years, level});
+/* ---- ten squires ---- */
 const SQUIRES = {
   'The Sitter':      {plan:(S, y) => ({est:'plain'}), let:(S, y, f) => ({type:'term', years:14, level:'fair'})},
+  'Sitter, four farms':{fourth:true, plan:(S, y) => ({est:'plain'}), let:(S, y, f) => ({type:'term', years:14, level:'fair'})},
   'The Careful Man': {audit:true, portion:1000, plan:(S, y) => ({est: y < 1799 ? 'retrenched' : 'plain', works: y === 1799 ? ['drain'] : y === 1802 ? ['fourcourse'] : [], course:'four', repay:{keep:500}, buyFunds: y === 1797 || y === 1798 ? {keep:300} : null}), let:(S, y, f) => ({type:'corn', level:'fair'})},
   'The Improver':    {audit:true, plan:(S, y) => ({est:'plain', course:'four', wages:'high', works: y === 1795 ? ['drain'] : y === 1796 ? ['fourcourse'] : y === 1797 ? ['flock'] : y === 1799 ? ['mill'] : y === 1800 ? ['meadows','cottages'] : y === 1802 ? ['enclosure'] : y === 1806 ? ['school'] : [], repay: y > 1806 ? {keep:600} : null}), let:(S, y, f) => ({type:'term', years:14, level:'fair'})},
+  'The Engrosser':   {audit:true, portion:2000, plan:(S, y) => ({est: y < 1798 ? 'retrenched' : y < 1803 ? 'plain' : 'handsome', course:'four', works: y === 1796 ? ['drain'] : y === 1799 ? ['fourcourse'] : y === 1801 ? ['flock','meadows'] : y === 1808 ? ['enclosure'] : [], buy: y === 1798 ? 'starveall' : null, bride: y === 1805, repay: y > 1801 ? {keep:600} : null}), let:(S, y, f) => y < 1808 ? {type:'term', years:14, level:'fair'} : {type:'corn', level:'fair'}},
+  'The Great Man':   {fourth:true, audit:true, plan:(S, y) => ({est: y < 1804 ? 'plain' : 'handsome', course:'four', wages:'high', works: y === 1795 ? ['drain'] : y === 1796 ? ['fourcourse'] : y === 1797 ? ['flock'] : y === 1799 ? ['meadows'] : y === 1800 ? ['cottages'] : y === 1801 ? ['enclosure'] : y === 1806 ? ['mill'] : [], repay: y > 1804 ? {keep:600} : null}), let:(S, y, f) => ({type:'term', years:14, level:'fair'})},
   'The Rack-Renter': {audit:true, plan:(S, y) => ({est:'plain', course:'corn', hold:true, buyFunds:{keep:500}}), let:(S, y, f) => ({type:'will', level:'rack'}), distress:() => 'hold'},
   'The Figure':      {plan:(S, y) => ({est: y < 1802 ? 'handsome' : 'splendid', works: y === 1796 ? ['icehouse'] : y === 1798 ? ['front'] : y === 1801 ? ['pinery'] : [], extra: (y % 3 === 0 ? 350 : 0) + (y === 1807 ? 3500 : 0)}), let:(S, y, f) => ({type:'will', level:'fair'})},
-  'Buys Everything': {plan:(S, y) => ({est:'handsome', course:'four', works:Object.keys(WORKS).slice((y - 1795) * 2, (y - 1795) * 2 + 2)}), let:(S, y, f) => ({type:'term', years:7, level:'fair'})},
-  'The Late Convert':{plan:(S, y) => ({est: y < 1808 ? 'plain' : 'handsome', course: y < 1808 ? 'old' : 'corn', works: y === 1808 ? ['drain','mill'] : y === 1809 ? ['enclosure'] : y === 1810 ? ['meadows','front'] : []}), let:(S, y, f) => y >= 1809 ? {type:'term', years:7, level:'rack', convert:true} : {type:'will', level:'fair'}, distress:() => 'hold'}
+  'Buys Everything': {plan:(S, y) => ({est:'handsome', course:'four', works:Object.keys(WORKS).slice((y - 1795) * 2, (y - 1795) * 2 + 2), buy: y === 1804 ? 'starveall' : y === 1811 ? 'coldharbour' : null}), let:(S, y, f) => ({type:'term', years:7, level:'fair'})},
+  'The Late Convert':{plan:(S, y) => ({est: y < 1808 ? 'plain' : 'handsome', course: y < 1808 ? 'old' : 'corn', works: y === 1808 ? ['drain','mill'] : y === 1809 ? ['enclosure'] : y === 1810 ? ['meadows','front'] : [], buy: y === 1811 ? 'coldharbour' : null}), let:(S, y, f) => y >= 1809 ? {type:'term', years:7, level:'rack', convert:true} : {type:'will', level:'fair'}, distress:() => 'hold'}
 };
 
 const args = process.argv.slice(2), N = +(args.find(a => /^\d+$/.test(a)) || 2000);
@@ -188,11 +205,11 @@ if (args.includes('--tables')){
 }
 const one = args.find(a => a.startsWith('--life='));
 if (one){ const nm = one.slice(7); seed = 7; console.log(nm); console.log('year  rents  home  wood | house intst taxes evnts works |   cash  mortg annty funds | notes');
-  life(SQUIRES[nm], (y, L, S, inc, out) => console.log(y, String(L.rents).padStart(6), String(L.home).padStart(5), String(L.wood + (L.timber || 0)).padStart(5), '|', String(L.house).padStart(5), String(L.interest).padStart(5), String(L.taxes).padStart(5), String(L.events).padStart(5), String(L.works).padStart(5), '|', String(Math.round(S.cash)).padStart(6), String(S.mortgage).padStart(6), String(S.annuities).padStart(5), String(Math.round(S.funds)).padStart(5), '|', [L.arrears ? 'arrears ' + L.arrears : '', L.broke ? L.broke + ' tenant broke' : '', L.called ? 'mortgage called' : '', L.outrage ? 'outrage ' + L.outrage : '', L.sold ? 'SOLD ' + L.sold : ''].filter(Boolean).join(', '))); }
+  life(SQUIRES[nm], (y, L, S, inc, out) => console.log(y, String(L.rents).padStart(6), String(L.home).padStart(5), String(L.wood + (L.timber || 0)).padStart(5), '|', String(L.house).padStart(5), String(L.interest).padStart(5), String(L.taxes).padStart(5), String(L.events).padStart(5), String(L.works).padStart(5), '|', String(Math.round(S.cash)).padStart(6), String(S.mortgage).padStart(6), String(S.annuities).padStart(5), String(Math.round(S.funds)).padStart(5), '|', [L.arrears ? 'arrears ' + L.arrears : '', L.broke ? L.broke + ' tenant broke' : '', L.called ? 'mortgage called' : '', L.outrage ? 'outrage ' + L.outrage : '', L.sold ? 'SOLD ' + L.sold : '', L.bought ? 'BOUGHT ' + L.bought : ''].filter(Boolean).join(', '))); }
 if (!one){
-  console.log(`\n${N} lives each. Net = purse + Funds - mortgage - annuities at Christmas 1815 (begins at -3,100).`);
-  console.log('squire'.padEnd(18), 'ruined  sold land  median net   10th..90th pct     rental 1815  debt 1815  years short  standing goodwill');
+  console.log(`\n${N} lives each. Clear income = what the estate will bring in a settled year after 1815, interest paid. He begins on about 1,950 a year with three farms.`);
+  console.log('squire'.padEnd(18), 'sold up  lost a farm  farms  clear income (10th..median..90th)   paper rents  debt 1815  goodwill');
   for (const nm in SQUIRES){ const R = []; for (let i = 0; i < N; i++){ seed = i * 7919 + 13; R.push(life(SQUIRES[nm])); }
     const alive = R.filter(r => !r.ruin), q = (k, p) => { const a = alive.map(r => r[k]).sort((a, b) => a - b); return a.length ? a[Math.floor(p * (a.length - 1))] : NaN; };
-    console.log(nm.padEnd(18), (100 * R.filter(r => r.ruin).length / N).toFixed(0).padStart(4) + '%', (100 * R.filter(r => r.sold).length / N).toFixed(0).padStart(8) + '%', String(q('net', .5)).padStart(11), (q('net', .1) + '..' + q('net', .9)).padStart(18), String(q('rental', .5)).padStart(13), String(q('debt', .5)).padStart(10), String(q('crises', .5)).padStart(10), String(q('standing', .5)).padStart(10), String(q('goodwill', .5)).padStart(8)); }
+    console.log(nm.padEnd(18), (100 * R.filter(r => r.ruin).length / N).toFixed(0).padStart(5) + '%', (100 * R.filter(r => r.lost || r.ruin).length / N).toFixed(0).padStart(10) + '%', String(q('farms', .5)).padStart(6), (q('clear', .1) + '..' + q('clear', .5) + '..' + q('clear', .9)).padStart(26), String(q('rental', .5)).padStart(19), String(q('debt', .5)).padStart(10), String(q('goodwill', .5)).padStart(9)); }
 }
