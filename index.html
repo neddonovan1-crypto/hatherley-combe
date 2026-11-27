@@ -1520,6 +1520,8 @@ function reckoning(){
     dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
     free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
   P.push(kl[k]);
+  if (F('privyChamber')) P.push(`He is a Gentleman of the Privy Chamber to the Prince Regent. There is no salary and no duty.`);
+  else if (F('princeLoan')) P.push(`The Prince Regent owes him a thousand pounds.`);
   if (F('crimcon')) P.push(`The case of ${S.sur} against the Earl of Cullerne is in the law reports. Mrs ${S.sur} lives at Hatherley. They dine together.`);
   if (S.flags.heir === 'kitty') P.push(`The land is settled on his daughter.`);
   if (S.flags.heir === 'cousin') P.push(`The heir is a button-maker of Birmingham. He has asked twice about the chimneys.`);
@@ -6606,6 +6608,173 @@ They strike noon one after another for four minutes.
 Mrs Bunce comes to the foot of the stairs to listen. She writes to Bath that night. She has the housemaid write it.`; }}]}
 ];
 pooled('gayStreet', GAYST, 'gay', {from:1796, to:1815, weight:9, repeatGap:2, cond:() => F('henriettaAway')});
+
+/* ---- The Royal Family ----
+   Windsor is in the county. royalStag wanders in early; the rest follow by the queue or by their year.
+   Flags: royalKnown (the King has your name), royalPlain (you told him the price of bread), princeLoan
+   (the Prince has a thousand of yours), privyChamber (what he gave for it). */
+ev({ id:'royalStag', from:1797, to:1803, weight:6, cond:() => !F('royalKnown'), title:'The King’s Hounds',
+  text:() => `The King’s stag-hounds met at Salt Hill at ten. The deer was uncarted and ran west for five hours.
+
+It is in your horse-pond, up to the neck. Forty couple of hounds are on the bank. Behind them come eleven gentlemen in blue coats with red collars, on beaten horses.
+
+The stout one in front gets down without help. He is sixty. He has a star on his coat.
+
+“Whose house? What? Whose house? ${S.sur}? Good. Good. Are those your turnips? Do you hoe ’em twice? What?”
+
+Mudge has taken off his hat and cannot find where to put it.`,
+  choices:[
+    {t:'Walk him round the farm.', go:() => { fl('royalKnown'); add({standing:6}); later('royalTerrace', 4);
+      return `You walk the King of England round the home farm in the rain.
+
+He looks into the pigsties. He lifts a turnip and smells it. He asks what you give for a ploughman and whether the wheat is dibbled or broadcast. He does not wait for the answers. He has the right ones himself.
+
+“I shall send you a ram. Spanish. Very fine wool. Don’t let ’em tell you they won’t stand the wet.”
+
+The stag is taken out of the pond with ropes and carted home to Windsor. The ram comes in March with a groom and a letter. It will not stand the wet.`; }},
+    {t:'Bring him into the Hall and send for the best Madeira.', note:'£30', go:() => { fl('royalKnown'); add({money:-30, standing:4, family:3}); reg('henrietta',2,'The King sat in her drawing-room'); later('royalTerrace', 4);
+      return `The King sits in the yellow drawing-room in his wet boots. Thirty pounds in Madeira, cold beef and oats for forty horses.
+
+He will take nothing but barley water. The eleven gentlemen take the rest. Henrietta is presented. She goes down so far that Mrs Bunce thinks she has fallen.
+
+“A good house. Old. Don’t pull it about. They all pull ’em about.”
+
+The chair he sat in is not sat in again. Henrietta ties a ribbon across the arms.`; }},
+    {t:'Tell him what bread costs in Hatherley.', go:() => { fl('royalKnown'); fl('royalPlain'); add({goodwill:4, standing:2}); later('royalTerrace', 4);
+      return `“The turnips are well enough, sir. It is the bread. The quartern loaf is ${wheatNow() >= 100 ? 'eighteen pence' : 'a shilling'} and a man has nine shillings a week.”
+
+The eleven gentlemen look at the sky. The King looks at you.
+
+“What? Nine? Not enough. Not enough. I give mine twelve at Windsor. Tell ’em the King gives twelve.”
+
+He takes out a purse and gives Mudge five guineas for the poor. Mudge carries it to the vestry in both hands.`; }}
+  ]});
+
+ev({ id:'royalTerrace', follow:true, cond:() => F('royalKnown') && S.year <= 1804, title:'The Terrace at Windsor',
+  text:() => `On Sunday evenings the Royal Family walks on the Terrace at Windsor. A militia band plays. Any person decently dressed may stand along the wall.
+
+A card has come from an equerry. Mr and Mrs ${S.sur} are desired to be upon the Terrace on Sunday.
+
+Henrietta has had the card nine times in her hand. A Court suit is a hundred and twenty pounds with the sword. The mantua-maker at Reading has never made a hoop that wide.`,
+  choices:[
+    {t:'Go in full dress.', note:'£120', go:() => { add({money:-120, standing:6, family:4}); reg('henrietta',2);
+      return `A hundred and twenty pounds. A plum-coloured coat with steel buttons, a bag-wig and a sword that will not hang straight.
+
+The King comes down the Terrace with the Queen on his arm and five Princesses behind. He stops.
+
+“${S.sur}! The turnips! How is my ram? Dead? What? They told me it would stand the wet.”
+
+It is heard by four hundred people. Lord Cullerne is one of them. He is standing further down the wall. The King has not stopped there.`; }},
+    {t:'Go in your Sunday coat.', go:() => { add({standing:2, goodwill:2, family:-2}); reg('henrietta',-1,'You went to Windsor in your brown coat');
+      return `You go in your brown coat and your own hair. Henrietta walks a yard from you.
+
+The King stops. He takes hold of your lapel and feels the cloth.
+
+“English wool. Good. Good. That’s a coat. Look at this man’s coat.” The equerries look at your coat.
+
+A lady in feathers asks Henrietta whether her husband is the King’s bailiff. Henrietta does not speak between Slough and Reading.`; }},
+    {t:'Send your duty and stay at home.', go:() => { add({standing:-2, family:-4}); reg('henrietta',-2,'You would not take her to Windsor');
+      return `You write to the equerry that the harvest forbids.
+
+The Tamworths go to Windsor on the Sunday and stand along the wall. The King does not stop. Mrs Tamworth says she saw the Princess Amelia’s shoe quite distinctly.
+
+Henrietta keeps the card in the frame of her glass. It is there every morning.`; }}
+  ]});
+
+ev({ id:'royalBond', from:1805, to:1809, weight:6, cond:() => F('royalKnown') && !F('bondAsked'), title:'A Gentleman from Carlton House',
+  text:() => `A Colonel McMahon has posted down from London. He is a small man with a red face. He is secretary to the Prince of Wales.
+
+“His Royal Highness knows his father’s friends in Berkshire, sir. He would wish to count them his own.”
+
+The Prince owes six hundred thousand pounds. He is building at Brighton. The Colonel has a paper in his hat. It is His Royal Highness’s bond for a thousand pounds at five per cent.${F('mp') ? `
+
+“And there is the vote on the Prince’s establishment in March. A Member who held the bond would know how to give it.”` : ''}
+
+He lays the bond on the table. It has a very large seal.`,
+  choices:[
+    {t:'Take the bond.', note:'£1,000', go:() => { fl('bondAsked'); fl('princeLoan'); add({money:-1000, standing:4});
+      return `A thousand pounds, by draft on Tidmarsh. The Colonel has it in his hat before the ink is dry.
+
+A card comes at Christmas. “The Prince of Wales to his friend Mr ${S.sur}.” The name has been written in by another hand.
+
+The interest is due at Lady Day. Lady Day passes. Mr Tidmarsh asks what security you hold. You show him the seal.`; }},
+    {t:'Fifty guineas, as a gift, and no bond.', note:'£52', go:() => { fl('bondAsked'); add({money:-52, standing:1});
+      return `“I do not lend, Colonel. I should be honoured if His Royal Highness would accept fifty guineas.”
+
+The Colonel looks at the purse for a moment. He accepts on His Royal Highness’s behalf.
+
+No card comes at Christmas. In the spring you hear that a horse named Fifty Guineas ran third at Brighton.`; }},
+    {t:'Say that you are the King’s man.', go:() => { fl('bondAsked'); fl('kingsMan'); add({standing:-1, goodwill:2});
+      return `“I have had the honour to show His Majesty my turnips, sir. I had rather keep to the one acquaintance.”
+
+The Colonel bows. He takes up the bond and blows the sand off it.
+
+“Kings do not live for ever, Mr ${S.sur}.” He goes on to the Tamworths. He is there two hours.`; }}
+  ]});
+
+ev({ id:'royalRegency', from:1811, to:1811, weight:40, cond:() => F('royalKnown') && !F('regencySeen') && S.season >= 1, title:'The Regent’s Fête',
+  text:() => `The King is shut up at Windsor. He is blind. He wears a purple dressing-gown and plays the harpsichord to people who are dead. The Prince of Wales is Regent.
+
+On the nineteenth of June the Regent gives a fête at Carlton House. Two thousand cards have gone out.
+
+${F('princeLoan') ? `One has come to Hatherley. It is addressed to “Mr ${S.sur}, of Wiltshire”. No interest has been paid on the thousand pounds.` : F('kingsMan') ? 'None has come to Hatherley. Mr Tamworth has one. He has shown it at the Bell, at church and to your gate-keeper.' : 'One has come to Hatherley. Nobody can say why. Henrietta says it is better not to ask.'}
+
+At Windsor the Terrace is shut. The band has been sent away.`,
+  choices:[
+    {t:'Go to Carlton House.', note:'£150', if:() => !F('kingsMan'), go:() => { fl('regencySeen'); add({money:-150, standing:7, family:3});
+      return `A hundred and fifty pounds in lace, feathers and a hired chariot. You are four hours in Pall Mall getting to the door.
+
+The supper table is two hundred feet long. A stream of real water runs down the middle of it between banks of moss. There are gold and silver fish in the stream. By two in the morning several are floating.
+
+The Regent sits at the head in a field-marshal’s coat. You see him through a glass at sixty yards. ${F('princeLoan') ? 'He does not see you. Colonel McMahon does. He goes behind a pillar.' : 'Henrietta has counted the diamonds on him. She gives it up at the sword.'}`; }},
+    {t:'Go, and ask McMahon for your thousand pounds.', if:() => F('princeLoan'), go:() => { fl('regencySeen'); fl('privyChamber'); add({standing:6}); reg('henrietta',1);
+      return `You find the Colonel behind a pillar and hold out the bond.
+
+“My dear sir. Not here. His Royal Highness never forgets a friend.”
+
+A letter comes in a fortnight. You are appointed a Gentleman of the Privy Chamber. There is no salary and no duty. The fees on the patent are thirty-one pounds.
+
+The bond is asked for, to be compared with the register. It does not come back.`; }},
+    {t:'Go to Windsor and pray for the King.', go:() => { fl('regencySeen'); add({goodwill:3, standing: F('kingsMan') ? 2 : -1});
+      return `You drive to Windsor on the Sunday. There is a prayer for His Majesty in St George’s. Forty people are in the chapel.
+
+Afterwards you walk under the north wall. A window is open high up. Somebody is playing Handel on a harpsichord, slowly, with the wrong notes put right.
+
+A page looks out and shuts the window. You stand a while with your hat off. So does a sentry.`; }},
+    {t:'Stay at home. It is hay time.', go:() => { fl('regencySeen'); add({family:-2});
+      return `The hay is carried on the nineteenth of June. It is a good crop.
+
+The Mercury gives the fête four columns. The fish have a paragraph to themselves.
+
+Henrietta reads all four columns aloud. She reads the names of the Berkshire company twice. There are nine.`; }}
+  ]});
+
+ev({ id:'royalPrincess', from:1813, to:1814, weight:8, cond:() => F('regencySeen') && !F('carolineSeen'), title:'An Address to the Princess',
+  text:() => `The Regent has forbidden the Princess of Wales to see her daughter more than once a fortnight. Her letter to him is in the Morning Chronicle. It is three columns. The whole kingdom has read it.
+
+The City of London has voted her an Address. Now there is one on the table at the Bell. “The dutiful and loyal Address of the Inhabitants of Wyvern to Her Royal Highness.” Two hundred have signed. Jem Pryor has made his mark.
+
+${F('mp') ? 'Mr Whitbread will move in the House on Friday. He has written to ask where the Member for Wyvern stands.' : 'The landlord has kept the top line clear. He says it wants a gentleman’s name to lead.'}${F('privyChamber') ? ' You are a Gentleman of the Regent’s Privy Chamber.' : ''}`,
+  choices:[
+    {t:() => F('mp') ? 'Vote with Mr Whitbread, and sign.' : 'Sign on the top line.', go:() => { fl('carolineSeen'); const pc = F('privyChamber'); if (pc) fl('privyChamber', false); add({goodwill:6, standing: pc ? -5 : -2}); reg('pryor',1); reg('cullerne',-1);
+      return `You write your name on the top line. The landlord sands it himself.
+
+The Address goes up to Kensington with four hundred and eleven names. The Princess receives it in a red wig. She thanks the people of Wyvern in a strong German voice.
+
+${pc ? 'A letter comes from the Lord Chamberlain. His Royal Highness has no further occasion for Mr ' + S.sur + ' in his Privy Chamber. The fees are not returned.' : 'Lord Cullerne dines with the Regent at Brighton that month. He is heard to say that Hatherley was always a Jacobin house.'}`; }},
+    {t:'Decline. It is between man and wife.', go:() => { fl('carolineSeen'); add({goodwill:-4, standing:3});
+      return `“It is between a man and his wife.”
+
+“Yes, sir,” says the landlord. “That is what she complains of.”
+
+The Address goes up without a gentleman’s name. The top line stays clear. Somebody has drawn a pair of whiskers on it.`; }},
+    {t:'Let Henrietta sign for the house.', go:() => { fl('carolineSeen'); add({goodwill:3, family:3}); reg('henrietta',2,'You let her sign for the Princess');
+      return `Henrietta walks into the Bell in her bonnet. No lady of the county has been inside it before. She signs on the top line. “Henrietta ${S.sur}, a Mother.”
+
+Forty women of Wyvern sign under her that afternoon.
+
+Mrs Tamworth says she never heard of such a thing. She signs on Thursday, with a veil down.`; }}
+  ]});
 /* What a man brings with him. One event for each choice made at the inheritance.
    Written in the Hatherley hand (docs/voice/VOICE.md): plain narrator, inside the year, the wit left to the people and the sums. */
 const first = () => S.name.split(' ')[0];

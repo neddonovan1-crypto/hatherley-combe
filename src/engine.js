@@ -835,6 +835,8 @@ function reckoning(){
     dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
     free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
   P.push(kl[k]);
+  if (F('privyChamber')) P.push(`He is a Gentleman of the Privy Chamber to the Prince Regent. There is no salary and no duty.`);
+  else if (F('princeLoan')) P.push(`The Prince Regent owes him a thousand pounds.`);
   if (F('crimcon')) P.push(`The case of ${S.sur} against the Earl of Cullerne is in the law reports. Mrs ${S.sur} lives at Hatherley. They dine together.`);
   if (S.flags.heir === 'kitty') P.push(`The land is settled on his daughter.`);
   if (S.flags.heir === 'cousin') P.push(`The heir is a button-maker of Birmingham. He has asked twice about the chimneys.`);
