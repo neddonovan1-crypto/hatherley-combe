@@ -190,6 +190,9 @@ const lab = c => typeof c.t === 'function' ? c.t() : c.t;
 const byId = id => EVENTS.find(e => e.id === id);
 
 function pickEvent(){
+  // A dated event keeps its date. Anything queued for the same season waits one.
+  const dated = (FIXED[S.year + '-' + S.season] || []).find(e => !e.cond || e.cond());
+  if (dated) { S.queue.forEach(x => { if (x.at <= S.t) x.at = S.t + 1; }); return dated.id; }
   const due = S.queue.filter(x => x.at <= S.t);
   for (const d of due){ S.queue.splice(S.queue.indexOf(d), 1); const e = byId(d.id); if (e && (!e.cond || e.cond())) { S.queue.forEach(x => { if (x.at <= S.t) x.at = S.t + 1; }); return e.id; } }
   const fx = FIXED[S.year + '-' + S.season];
