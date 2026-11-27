@@ -30,7 +30,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
 const MAX_WORKS = 2;
 const PROJECTS = {
   enclosure:{ name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
-    blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Rental up by a third',
+    blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
 
@@ -44,8 +44,8 @@ Jem Pryor stands up at the back. His family has turned a cow out there since Que
 
 “Have you that in writing?” says the clerk.`; }},
   drain:{ name:'Drain and marl the clay at Kennet Bottom', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
-    blurb:`Nine miles of stone drains under the low fields. They stand in water from November to May.`, gain:'Yields and rents up',
-    done:() => { S.improve += 2; return `The drains are in at Kennet Bottom. There are nine miles of them, laid with stone and blackthorn.
+    blurb:`Nine miles of stone drains under the low fields. They stand in water from November to May.`, gain:'Kennet Bottom in fair order',
+    done:() => { return `The drains are in at Kennet Bottom. There are nine miles of them, laid with stone and blackthorn.
 
 You walk the low fields from end to end. Your boots come home on your feet.`; }},
   fourcourse:{ name:'Put the home farm under the Norfolk four-course', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
@@ -58,8 +58,8 @@ The old carter stands at the gate of Twelve Acres.
 
 He shakes his head at it.`; }},
   mill:{ name:'Rebuild Hatherley Mill with an iron wheel', seasons:2, cost:() => 420,
-    blurb:`The present wheel is of elm. Your grandfather’s father put it in.`, gain:'Rental up; the parish pleased',
-    done:() => { fl('newMill'); S.rentAdj *= 1.04; add({goodwill:3}); return `The new wheel turns at Hatherley Mill. It is cast iron, from the foundry at Reading. Eighteen feet across. Painted red.
+    blurb:`The present wheel is of elm. Your grandfather’s father put it in.`, gain:'Kennet Bottom worth more; the parish pleased',
+    done:() => { fl('newMill'); add({goodwill:3}); return `The new wheel turns at Hatherley Mill. It is cast iron, from the foundry at Reading. Eighteen feet across. Painted red.
 
 It grinds before noon what the old wheel ground in a day. Pocock the miller walks round it twice with his hands behind him.
 
@@ -114,7 +114,7 @@ function startProject(id){ const p = PROJECTS[id]; S.works.push({id, left:p.seas
 function worksInHand(){ return S.works.map(w => ({id:w.id, name:PROJECTS[w.id].name, left:w.left, per:w.per})); }
 function worksDone(){ return Object.keys(PROJECTS).filter(id => S.projectsDone[id] === 'done').map(id => ({id, name:PROJECTS[id].name})); }
 function worksList(){ const busy = S.works.filter(w => !PROJECTS[w.id].hidden).length;
-  return Object.keys(PROJECTS).filter(id => !PROJECTS[id].hidden || S.projectsDone[id]).map(id => { const p = PROJECTS[id], cost = projCost(id), per = Math.round(cost / p.seasons);
+  return Object.keys(PROJECTS).filter(id => (!PROJECTS[id].hidden || S.projectsDone[id]) && (S.projectsDone[id] || !PROJECTS[id].if || PROJECTS[id].if())).map(id => { const p = PROJECTS[id], cost = projCost(id), per = Math.round(cost / p.seasons);
     const state = S.projectsDone[id] === 'done' ? 'done' : S.projectsDone[id] === 'begun' ? 'inHand' : 'open'; const w = S.works.find(x => x.id === id);
     let why = '';
     if (state === 'open') { if (S.phase === 'end' || S.dead) why = 'The books are closed.';
@@ -130,7 +130,7 @@ function newGame(first, sur, traits){
   S = { name:(first + ' ' + sur).trim(), sur, t:0, year:FIRST_YEAR, season:0, phase:'ledger',
     money:900, mortgage:4000, standing:40, goodwill:50, family:60,
     improve:0, rentPolicy:1, rentAdj:1, poorMult:1, game:3, canal:0, yearIncome:0,
-    flags:{}, chars:{}, queue:[], seen:{}, journal:[], works:[], projectsDone:{}, dead:null,
+    farms:startFarms(), letQueue:[], payQueue:[], flags:{}, chars:{}, queue:[], seen:{}, journal:[], works:[], projectsDone:{}, dead:null,
     ledger:[], notes:[], pending:null, vignette:null, outcome:null, priceSeen:[] };
   for (const id in PEOPLE) S.chars[id] = {r:PEOPLE[id].r, met:PEOPLE[id].met, notes:[]};
   S.traits = (traits || []).filter(id => traitById(id));
@@ -139,28 +139,20 @@ function newGame(first, sur, traits){
   beginSeason();
 }
 
-function halfRent(){ return 810 * S.rentPolicy * S.rentAdj * (1 + 0.05 * S.improve) * (F('enclosed') ? 1.3 : 1); }
+function halfRent(){ return rentalNow() / 2; }
 
 function beginSeason(){
   const y = S.year, q = S.season, P = PRICES[y], pi = P / 75;
   const L = []; S.notes = [];
   const line = (label, amt) => { amt = Math.round(amt); if (amt) { L.push([label, amt]); S.money += amt; } };
   if (q === 0) { S.yearIncome = 0; if (!S.priceSeen.includes(y)) S.priceSeen.push(y); }
-  if (q === 0 && [1800, 1805, 1810].includes(y)) { S.rentAdj *= 1.12; S.notes.push('Leases fallen in have been re-let at war prices. The rental rises by an eighth.'); }
-  if (q === 0 || q === 2) {
-    let a = (S.rentPolicy - 1) * 0.7 + Math.max(0, 0.95 - pi) * 0.5 + (45 - S.goodwill) / 350;
-    if (S.t >= 79 && !F('abated')) a += F('abatedHalf') ? 0.1 : 0.22;
-    a = clamp(a, 0, 0.5);
-    const due = halfRent(), got = due * (1 - a);
-    line(QUARTER[q] + ' rents received', got); S.yearIncome += got;
-    if (a > 0.04) S.notes.push('Rents in arrear this half-year: ' + fmt(due - got) + '.');
-    if (S.rentPolicy > 1) add({goodwill:-4}); else if (S.rentPolicy < 1) add({goodwill:2});
-  }
+  estateSync();
+  if (q === 0 || q === 2) rentDay(line);
   if (q === 1) { const w = 100 + (F('merino') ? (y < 1811 ? 110 : 15) : 0) + (F('merinoRam') ? 15 : 0); line('The wool clip', w); S.yearIncome += w;
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.022 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.027 * (y - 1795)) - (F('bricked') ? 3 : 0)));
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
@@ -184,10 +176,10 @@ function beginSeason(){
     if (dear && q === 3) S.notes.push('Bread at famine price. The parish looks at the Hall, and counts its chimneys.'); }
   S.ledger = L;
   S.news = NEWS[y + '-' + q] || null;
+  creditCheck();
   S.pending = pickEvent();
   S.vignette = S.pending ? null : pick(VIGNETTES[q]);
   S.phase = 'ledger';
-  if (S.money < -3000) { S.dead = 'ruin'; }
   save();
 }
 
@@ -323,8 +315,8 @@ function next(){
 }
 function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
 
-function setRent(v){ S.rentPolicy = v; save(); render(); }
-function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && S.mortgage < 9000) { S.mortgage += 500; S.money += 500; } save(); render(); }
+function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
+function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += 500; } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
