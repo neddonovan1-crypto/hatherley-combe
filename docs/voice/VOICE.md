@@ -51,7 +51,9 @@ Vary the pace by what is happening. A fire is short sentences. A woman reading e
 
 ## Five hands, not one
 
-The single largest change. Text reaches the player in one of five hands, and they should not sound alike.
+The narrator stays plain however much of the period you have been reading. Austen's and Cobbett's own narration is full of the hung clause, and to imitate it is to bring the fault back. The period goes into the other hands.
+
+Text reaches the player in one of five hands, and they should not sound alike.
 
 **The narrator.** Second person, present tense. See above.
 
@@ -59,7 +61,9 @@ The single largest change. Text reaches the player in one of five hands, and the
 
 **The public prints and the wall.** Handbills, the Mercury, notices of sale, a board in a wood. These have formulas and should keep them: WHEREAS, the capitals on the Nouns, "on Tuesday se'nnight", "none but principals will be treated with". A reward bill quoted whole does more than a paragraph telling the player a reward was offered. Capitalised nouns belong here and in the pocket-book only. In the narrator they are fancy dress.
 
-**The pocket-book.** The squire's own memoranda, for quiet seasons. The model is Parson Woodforde: what was paid, what was eaten, who called, the weather, with sums set out as he set them, `0. 2. 6`. No wit is attempted. The wit comes from what a man thinks worth writing down, and in what order.
+**The pocket-book.** The squire's own memoranda, for quiet seasons. Write these against the real Woodforde in the corpus, not from memory of him. He gives his Nouns capitals. He writes "this Morn'", "to day", "&c.", "rosted", "recd." He says what was for dinner and which way the wind sat. Money goes at the end of the sentence, ruled as he ruled it: "To a Fisherman for a Pike paid this Morn' 0. 1. 6." No wit is attempted. Once in a long while a feeling gets one flat line to itself: "Nancy I think ought not to be so to me."
+
+**Unlettered writing.** Jem Pryor's notes, a servant's letter. The model is Win Jenkins in *Humphry Clinker*, who writes "Heaving this importunity" for "having this opportunity". Spell by ear. Each mistake must be one a real ear would make.
 
 **Speech.** By rank, and each person with a habit. Lord Cullerne drops his g's and says "ain't", as a Whig earl of his generation did, and never explains himself. Dr Gall speaks in periods and quotes Scripture against people. Crabbe is all respect and subordinate clauses. Hartopp has caught his vocabulary from Arthur Young and cannot see a field without "capabilities". Jem Pryor says little, and what he says is Berkshire: "her" for she, "I be", "un" for him, a "z" now and then. One mark of dialect to a speech is enough. Mrs Bunce does not speak; things are reported of her. Keep that.
 
