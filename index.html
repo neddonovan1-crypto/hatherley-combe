@@ -360,7 +360,10 @@ table.acct tbody tr:not(.neg) td.n{color:var(--good)}
 @media (max-width:520px){ .bal.purse{flex-wrap:wrap} }
 .people small{white-space:normal;overflow:visible;text-overflow:clip}
 details.pick .opts button small i{display:block;font-style:normal;font-family:var(--display);font-size:.92rem;line-height:1.25} details.pick .opts button small i.pos{color:var(--good)} details.pick .opts button small i.neg{color:var(--bad)}
-details.pick .opts{max-height:min(24rem, 70vh)}
+/* advantages down the left, burdens down the right, so six are seen without scrolling */
+details.pick .opts{max-height:min(30rem, 80vh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);left:auto;width:min(35rem, calc(100vw - 60px))} details.pick .opts > button{grid-column:1/-1;border-bottom:1px solid var(--rule)!important}
+details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details.pick .opts > div + div{border-left:1px solid var(--rule)} details.pick .opts > div button:last-child{border-bottom:0}
+@media (max-width:1080px){ details.pick .opts{left:0;width:auto;grid-template-columns:minmax(0,1fr)} details.pick .opts > div + div{border-left:0;border-top:1px solid var(--rule)} }
 </style>
 <div class="desk">
   <div class="book">
@@ -9081,7 +9084,7 @@ function picksHTML(){ const left = pointsLeft(pickList());
     ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
       const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${t[0] === '+' ? 'pos' : 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
       return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
-        <div class="opts" role="listbox">${opt('', plain, 0, '')}${TRAITS.filter(t => t.group === g).map(t => opt(t.id, t.name, t.cost, t.fx)).join('')}</div></details>
+        <div class="opts" role="listbox">${opt('', plain, 0, '')}${[1, -1].map(sg => `<div>${TRAITS.filter(t => t.group === g && Math.sign(t.cost) === sg).map(t => opt(t.id, t.name, t.cost, t.fx)).join('')}</div>`).join('')}</div></details>
         <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
 function setPick(g, id){ PICKS[g] = id || null; if ($('picks')) { $('picks').innerHTML = picksHTML(); fitLeaf(); } }
 function syncTraits(){ if ($('picks')) $('picks').innerHTML = picksHTML(); }

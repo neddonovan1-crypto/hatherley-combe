@@ -356,4 +356,7 @@ table.acct tbody tr:not(.neg) td.n{color:var(--good)}
 @media (max-width:520px){ .bal.purse{flex-wrap:wrap} }
 .people small{white-space:normal;overflow:visible;text-overflow:clip}
 details.pick .opts button small i{display:block;font-style:normal;font-family:var(--display);font-size:.92rem;line-height:1.25} details.pick .opts button small i.pos{color:var(--good)} details.pick .opts button small i.neg{color:var(--bad)}
-details.pick .opts{max-height:min(24rem, 70vh)}
+/* advantages down the left, burdens down the right, so six are seen without scrolling */
+details.pick .opts{max-height:min(30rem, 80vh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);left:auto;width:min(35rem, calc(100vw - 60px))} details.pick .opts > button{grid-column:1/-1;border-bottom:1px solid var(--rule)!important}
+details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details.pick .opts > div + div{border-left:1px solid var(--rule)} details.pick .opts > div button:last-child{border-bottom:0}
+@media (max-width:1080px){ details.pick .opts{left:0;width:auto;grid-template-columns:minmax(0,1fr)} details.pick .opts > div + div{border-left:0;border-top:1px solid var(--rule)} }
