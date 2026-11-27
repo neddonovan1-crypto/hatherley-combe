@@ -29,7 +29,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
    They run alongside the seasons and do not use up the season's undertaking. */
 const MAX_WORKS = 2;
 const PROJECTS = {
-  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797,
+  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', line:'Parliament divides the open fields and the common among the owners. Each takes his share and hedges it.', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797,
     blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
@@ -43,12 +43,12 @@ To ${S.name}, Esquire, 400 acres. To the Earl of Cullerne, 190. To the Vicar in 
 Jem Pryor stands up at the back. His family has turned a cow out there since Queen Anne.
 
 “Have you that in writing?” says the clerk.`; }},
-  drain:{ fx:["+ Kennet Bottom up to fair order", "+ About a sixth more rent"], effects:`Kennet Bottom comes up from neglected to fair order: worth about a sixth more to let.`, name:'Drain and marl the clay at Kennet Bottom', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
+  drain:{ fx:["+ Kennet Bottom up to fair order", "+ About a sixth more rent"], effects:`Kennet Bottom comes up from neglected to fair order: worth about a sixth more to let.`, name:'Drain and marl the clay at Kennet Bottom', line:'Trenches cut a yard deep across the low fields carry the water to the brook. Marl from the pit is spread after.', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
     blurb:`Nine miles of stone drains under the low fields. They stand in water from November to May.`, gain:'Kennet Bottom in fair order',
     done:() => { return `The drains are in at Kennet Bottom. There are nine miles of them, laid with stone and blackthorn.
 
 You walk the low fields from end to end. Your boots come home on your feet.`; }},
-  fourcourse:{ fx:["+ Home farm wheat", "+ Every farm worth a little more"], effects:`Home farm wheat up by about a sixteenth. Every farm worth a fortieth more to let.`, name:'Put the home farm under the Norfolk four-course', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
+  fourcourse:{ fx:["+ Home farm wheat", "+ Every farm worth a little more"], effects:`Home farm wheat up by about a sixteenth. Every farm worth a fortieth more to let.`, name:'Put the home farm under the Norfolk four-course', line:'A rotation of crops from Mr Coke’s county. The sheep are folded on the turnips and dung the ground for barley.', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
     blurb:`Wheat, turnips, barley, clover. No field lies fallow.`, gain:'Yields and rents up',
     done:() => { S.improve += 1; reg('hartopp',1); return `Wheat, turnips, barley, clover. Then wheat again. There is no fallow on the home farm this year.
 
@@ -57,14 +57,14 @@ The old carter stands at the gate of Twelve Acres.
 “That ground ent had a rest since Lady Day twelvemonth, sir.”
 
 He shakes his head at it.`; }},
-  mill:{ fx:["+ Kennet Bottom worth a sixteenth more", "+ Goodwill"], effects:`Kennet Bottom worth a sixteenth more to let. Goodwill rises.`, name:'Rebuild Hatherley Mill with an iron wheel', seasons:2, cost:() => 420,
+  mill:{ fx:["+ Kennet Bottom worth a sixteenth more", "+ Goodwill"], effects:`Kennet Bottom worth a sixteenth more to let. Goodwill rises.`, name:'Rebuild Hatherley Mill with an iron wheel', line:'The corn mill on the Kennet grinds for the whole parish. Its elm wheel comes out and a cast one goes in.', seasons:2, cost:() => 420,
     blurb:`The present wheel is of elm. Your grandfather’s father put it in.`, gain:'Kennet Bottom worth more; the parish pleased',
     done:() => { fl('newMill'); add({goodwill:3}); return `The new wheel turns at Hatherley Mill. It is cast iron, from the foundry at Reading. Eighteen feet across. Painted red.
 
 It grinds before noon what the old wheel ground in a day. Pocock the miller walks round it twice with his hands behind him.
 
 “Her’ll never last,” he says.`; }},
-  cottages:{ fx:["+ Goodwill, a good deal"], effects:`Goodwill rises a good deal.`, name:'Build six brick cottages on the Kintbury lane', seasons:2, cost:() => 360,
+  cottages:{ fx:["+ Goodwill, a good deal"], effects:`Goodwill rises a good deal.`, name:'Build six brick cottages on the Kintbury lane', line:'Six dwellings of brick and tile for labouring families, each with a garden. The old ones are pulled down.', seasons:2, cost:() => 360,
     blurb:`Six on the lane are past mending. The ivy holds up two of them.`, gain:'Goodwill',
     done:() => { fl('cottages'); add({goodwill:9}); return `Six cottages stand on the Kintbury lane. Brick walls. Tiled roofs. Two bedrooms, a bread oven and a pigsty to each.
 
@@ -73,36 +73,36 @@ The six families walk through on Saturday. Nobody speaks. They put their hands o
 One woman stops at the foot of the stairs.
 
 “Is the upstairs ours and all, sir?”`; }},
-  school:{ fx:["+ Goodwill", "− Dr Gall"], effects:`Goodwill rises. Dr Gall cools.`, name:'Endow a dame school in the old tithe barn', seasons:1, cost:() => 160,
+  school:{ fx:["+ Goodwill", "− Dr Gall"], effects:`Goodwill rises. Dr Gall cools.`, name:'Endow a dame school in the old tithe barn', line:'A woman of the parish teaches the labourers’ children their letters. You find the room, the slates and her wages.', seasons:1, cost:() => 160,
     blurb:`Letters, the catechism and plain sewing for forty children.`, gain:'Goodwill',
     done:() => { fl('school'); add({goodwill:6}); if (!F('gallDead')) reg('gall',-1); return `The school opens in the tithe barn. Forty children. Twenty slates. Hannah Gurney’s niece has them for letters, the catechism and knitting.
 
 “Reading will only make them discontented,” says ${F('gallDead') ? 'old Dewey' : 'Dr Gall'}.
 
 On Friday there is a word chalked on ${F('gallDead') ? 'his yard gate' : 'the vicarage gate'}. It is spelt correctly.`; }},
-  road:{ fx:["+ Goodwill", "+ Standing"], effects:`Goodwill and standing both rise.`, name:'Mend the Kintbury road, and the bridge with it', seasons:1, cost:() => 240,
+  road:{ fx:["+ Goodwill", "+ Standing"], effects:`Goodwill and standing both rise.`, name:'Mend the Kintbury road, and the bridge with it', line:'Two miles of parish road to Kintbury are dug out and laid with broken flint. The bridge is rebuilt in brick.', seasons:1, cost:() => 240,
     blurb:`Last winter it took two carts and the curate’s pony. The parish has been bound to mend it since Queen Anne.`, gain:'Goodwill and standing',
     done:() => { fl('road'); add({goodwill:3, standing:3}); return `The Kintbury road is made. Flints broken small, rammed and cambered. A ditch on either side. The bridge has a parapet.
 
 The carrier calls twice a week now. On Tuesday a post-chaise goes through at a trot. The children run out to look at it.`; }},
-  front:{ fx:["+ Standing, a good deal", "+ Henrietta", "+ Household"], effects:`Standing rises a good deal. Henrietta and the household pleased.`, name:'New-front the Hall in Bath stone', seasons:3, cost:() => 900,
+  front:{ fx:["+ Standing, a good deal", "+ Henrietta", "+ Household"], effects:`Standing rises a good deal. Henrietta and the household pleased.`, name:'New-front the Hall in Bath stone', line:'Masons face the park side of the Hall in cut stone, over the old red brick. The sash windows stay where they are.', seasons:3, cost:() => 900,
     blurb:`A portico, a pediment and six columns across the park front.`, gain:'Standing; Henrietta',
     done:() => { fl('newFront'); add({standing:9, family:4}); reg('henrietta',2,'You gave the Hall a front she could ask people to'); return `The scaffolding comes down. The Hall has a front of Bath stone, six Ionic columns and a pediment with your arms cut in it. Behind it the old chimneys smoke as before.
 
 Henrietta has the Tamworths to dinner on Thursday. She receives them on the steps.`; }},
-  pinery:{ fx:["+ Standing", "+ Household"], effects:`Standing rises. The household pleased.`, name:'Build a pinery and raise pine-apples', seasons:1, cost:() => 200,
+  pinery:{ fx:["+ Standing", "+ Household"], effects:`Standing rises. The household pleased.`, name:'Build a pinery and raise pine-apples', line:'A heated glass house in the kitchen garden for growing pine-apples. The fruit goes to table at your own dinners.', seasons:1, cost:() => 200,
     blurb:`A glass house, a pit of tanner’s bark and a Scotch gardener. A pine-apple takes two years.`, gain:'Standing; the household',
     done:() => { fl('pinery'); add({standing:4, family:2}); return `The first pine-apple is cut. It has had two years, forty loads of bark and a Scotchman to itself.
 
 Nobody eats it. It stands in the middle of the table through eleven dinners. Then the Lovedays send to borrow it.`; }},
-  oaks:{ fx:["+ Standing"], effects:`Standing rises a little.`, name:'Plant forty acres of oak for the Navy', seasons:1, cost:() => 120,
+  oaks:{ fx:["+ Standing"], effects:`Standing rises a little.`, name:'Plant forty acres of oak for the Navy', line:'Acorns are set in rows on Gallows Piece and fenced against rabbits. The King’s dockyards buy such timber when it is grown.', seasons:1, cost:() => 120,
     blurb:`A seventy-four takes two thousand grown oaks.`, gain:'Standing; posterity',
     done:() => { fl('oaks'); add({standing:2}); return `Forty acres of acorns are dibbled in on Gallows Piece.
 
 The nurseryman from Newbury says they will make ship timber in a hundred and twenty years. You ask him to say it again.
 
 You ride home at a walk.`; }},
-  icehouse:{ fx:["+ Household", "+ Henrietta"], effects:`The household pleased. Henrietta warms.`, name:'Sink an ice-house in the north shrubbery', seasons:1, cost:() => 140,
+  icehouse:{ fx:["+ Household", "+ Henrietta"], effects:`The household pleased. Henrietta warms.`, name:'Sink an ice-house in the north shrubbery', line:'A deep brick chamber roofed with earth. Ice cut in winter lies there in straw until the cook wants it in August.', seasons:1, cost:() => 140,
     blurb:`A brick egg under ground, filled from the carp pond in a hard frost.`, gain:'The household',
     done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk in the north shrubbery. It is a brick egg under a mound of earth. The men are to fill it from the carp pond at the first hard frost.
 
@@ -121,7 +121,7 @@ function worksList(){ const busy = S.works.filter(w => !PROJECTS[w.id].hidden).l
       else if (S.phase === 'end' || S.dead) why = 'The books are closed.';
       else if (busy >= MAX_WORKS) why = 'Two works in hand already. There is one estate carpenter, and he is on both.';
       else if (S.money < per) why = 'The purse will not stand the first instalment of ' + fmt(per) + '.'; }
-    return {id, name:p.name, blurb:p.blurb, gain:p.gain, effects:p.effects || p.gain, fx:typeof p.fx === 'function' ? p.fx() : p.fx, cost, seasons:p.seasons, per,
+    return {id, name:p.name, blurb:p.blurb, line:p.line, gain:p.gain, effects:p.effects || p.gain, fx:typeof p.fx === 'function' ? p.fx() : p.fx, cost, seasons:p.seasons, per,
       note:fmt(cost) + (p.seasons > 1 ? ', in ' + p.seasons + ' quarterly instalments' : ''), state, off, left:w ? w.left : 0, can:state === 'open' && !why, why}; }); }
 function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || !w.can) return false;
   startProject(id); S.journal.unshift({when:stamp(), title:'Works', did:'Put in hand: ' + PROJECTS[id].name});
@@ -740,11 +740,11 @@ function outcome(kind){ let all = OUTCOMES[kind].filter(o => !o.w || o.w()); S.d
   const o = pick(bag); S.did[o.id] = S.t; LAST_CUT = o.id; return o.x(); }
 
 const UNDERTAKINGS = [
-  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([0, 1]) : 1}); return outcome('ride'); }},
-  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:1}); return outcome('dine'); }},
-  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 2 : 1, goodwill:g}); return outcome('sessions'); }},
-  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:2}); return outcome('home'); }},
-  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:2, family:2}); reg('henrietta',1); return outcome('town'); }},
+  { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { duty('ride'); add({goodwill: T('gout') && !F('goutEased') ? pick([1, 2]) : 2}); return outcome('ride'); }},
+  { id:'dine', t:'Dine the county', note:'£35', hint:'Standing', go:() => { duty('county'); add({money:-35, standing:2}); return outcome('dine'); }},
+  { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 3 : 2, goodwill:g}); return outcome('sessions'); }},
+  { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:3}); return outcome('home'); }},
+  { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:3, family:3}); reg('henrietta',1); return outcome('town'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -757,16 +757,16 @@ The pine-apples die within the week. Mrs Bunce puts a black ribbon in her cap.`,
 The rooks come over to the Hall roof. They are there each morning when you go out.`]); }}
 ];
 
-/* Three undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
-const RIDES = 3;
+/* Two undertakings to a quarter, no one of them twice. He may let the rest of a season go. */
+const RIDES = 2;
 function ridesLeft(){ return !S || S.phase === 'end' ? 0 : Math.max(0, RIDES - (S.rides || 0)); }
 function undertakingOptions(){ const rode = S.rode || [];
   const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && !rode.includes(u.id) && (!u.if || u.if())).map(u => ({id:u.id, t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
-  o.push({id:'rest', t:(S.rides || 0) ? 'Let the rest of the season go' : 'Let the season go', run:() => ''});
+  o.push({id:'rest', t:(S.rides || 0) ? 'Let the rest of the season go' : 'Let the season go', hint:'−Standing, −Goodwill, −Household', run:() => ''});
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
-  if (u.id === 'rest') { S.rides = RIDES; S.phase = 'undone'; return next(); }
+  if (u.id === 'rest') { add({standing:-1, goodwill:-1, family:-1}); S.rides = RIDES; S.phase = 'undone'; return next(); }
   const b = snapshot(); LAST_CUT = null; const text = u.run();
   S.rides = (S.rides || 0) + 1; S.rode = (S.rode || []).concat(u.id);
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
