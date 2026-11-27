@@ -109,7 +109,7 @@ function beginSeason(){
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.027 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  householdQuarter(line); homeFarmCosts(line);
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
@@ -129,7 +129,7 @@ function beginSeason(){
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
   // Nothing keeps without tending: regard, like a hedge, grows out.
   if (S.t > 0) { const dear = P >= 95 && !F('soup') && !F('wages');
-    add({standing: S.standing > 60 ? -2 : -1, goodwill: (S.goodwill > 60 ? -2 : -1) - (dear ? 1 : 0), family: S.family > 60 ? -2 : -1});
+    add({goodwill: (S.goodwill > 60 ? -2 : -1) - (dear ? 1 : 0), family: S.family > 60 ? -2 : -1});
     if (dear && q === 3) S.notes.push('Bread at famine price. The parish looks at the Hall, and counts its chimneys.'); }
   S.ledger = L;
   S.news = NEWS[y + '-' + q] || null;
@@ -209,7 +209,7 @@ const UNDERTAKINGS = [
 ];
 
 function undertakingOptions(){
-  const o = UNDERTAKINGS.filter(u => !u.if || u.if()).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }})).concat(estOptions());
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); const text = u.run();

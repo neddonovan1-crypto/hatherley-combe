@@ -551,7 +551,7 @@ function beginSeason(){
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.027 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  householdQuarter(line); homeFarmCosts(line);
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
@@ -571,7 +571,7 @@ function beginSeason(){
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
   // Nothing keeps without tending: regard, like a hedge, grows out.
   if (S.t > 0) { const dear = P >= 95 && !F('soup') && !F('wages');
-    add({standing: S.standing > 60 ? -2 : -1, goodwill: (S.goodwill > 60 ? -2 : -1) - (dear ? 1 : 0), family: S.family > 60 ? -2 : -1});
+    add({goodwill: (S.goodwill > 60 ? -2 : -1) - (dear ? 1 : 0), family: S.family > 60 ? -2 : -1});
     if (dear && q === 3) S.notes.push('Bread at famine price. The parish looks at the Hall, and counts its chimneys.'); }
   S.ledger = L;
   S.news = NEWS[y + '-' + q] || null;
@@ -651,7 +651,7 @@ const UNDERTAKINGS = [
 ];
 
 function undertakingOptions(){
-  const o = UNDERTAKINGS.filter(u => !u.if || u.if()).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
+  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }})).concat(estOptions());
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); const text = u.run();
@@ -2663,7 +2663,7 @@ Mrs Bunce has asked what she is to do about Sunday’s joint.`,
       return `Mr Tidmarsh finds ${fmt(a)} in a week at five per cent. ${steward()} drives into Wyvern with the notes and pays every name on the paper at his own door. The butcher’s boy is at the kitchen door before the gig is back.`; }},
     {t:'Fell the oaks in Hanger Wood.', note:() => '+' + fmt(Math.round(75 * (1 + 0.035 * (S.year - 1795))) * 10), if:() => (S.timber === undefined ? 3 : S.timber) > 0, go:() => { const t = Math.round(75 * (1 + 0.035 * (S.year - 1795))) * 10; S.timber = (S.timber === undefined ? 3 : S.timber) - 1; add({money:t, standing:-3});
       return `The timber merchant from Reading goes through Hanger Wood with a scribing iron and marks two hundred oaks. He pays ${fmt(t)} down. The sawyers dig their pit that week. The fall can be heard from the terrace.`; }},
-    {t:'Put down the carriage and shut up half the house.', note:'+£300', go:() => { add({money:300, standing:-6, family:-6}); reg('henrietta', -1, 'You put down her carriage');
+    {t:'Put down the carriage and shut up half the house.', note:() => '+£200, and ' + fmt(estCost(estIdx(), S.year) - estCost(estIdx() - 1, S.year)) + ' a year saved', if:() => estIdx() > 0, go:() => { stepEst(-1); add({money:200, standing:-2});
       return `The carriage horses go to Reading fair. Two footmen and the under-gardener are paid off at the month. The dining-room shutters are closed and the family dines in the breakfast parlour.
 
 The chandler is paid in part.`; }},
@@ -2763,6 +2763,45 @@ function ventureTick(line){ if (!S.vent) return; const y = S.year, q = S.season,
     else if (v.fate === 'dull') { earn('Hatherley Spa, the season', 90); if (k === 1) S.notes.push('The pump room at Hatherley Spa took £90 this season. Most of it came from Wyvern people on Sundays.'); }
     else { line('Hatherley Spa, the attendant and the fires', -60); if (k === 1) S.notes.push('Nine persons drank the waters at Hatherley Spa this season. One of them has written to the Mercury about the taste.'); } }
 }
+
+/* ---------- the establishment: what the Hall costs to keep, and what the county thinks of it ---------- */
+const EST = [
+  {id:'retrenched', name:'a retrenched household', cost:800, standing:25},
+  {id:'plain', name:'a plain establishment', cost:1100, standing:42},
+  {id:'handsome', name:'a handsome establishment', cost:1500, standing:60},
+  {id:'splendid', name:'a splendid establishment', cost:2100, standing:80}
+];
+const estIdx = () => Math.max(0, EST.findIndex(e => e.id === (S.est || 'plain')));
+const priceRise = y => 1 + 0.032 * (y - FIRST_YEAR);
+const estCost = (i, y) => Math.round(EST[i].cost * priceRise(y) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) / 10) * 10;
+function establishment(){ const i = estIdx(); return {id:EST[i].id, name:EST[i].name, cost:estCost(i, S.year), levels:EST.map((e, k) => ({id:e.id, name:e.name, cost:estCost(k, S.year), now:k === i}))}; }
+const EST_DOWN = [
+  `The carriage is sold and the horses with it. Three servants are paid off at the month. The family dines in the breakfast parlour on one course. Henrietta returns no calls that want a carriage.`,
+  `The second footman goes, and the under-gardener. The claret is kept for company. Henrietta goes through Mrs Bunce’s book line by line and strikes out the wax candles.`,
+  `The man cook is given his wages and his coach fare. The house in Brook Street is given up at Lady Day. There are still two footmen in the hall.`];
+const EST_UP = [null,
+  `The shutters are opened in the dining room. A footman is hired at Wyvern, and a pair of carriage horses bought at Reading fair for sixty guineas.`,
+  `A second footman is hired and put into livery. The carriage is new painted, with the arms on the door. Henrietta sends cards for a dinner of sixteen.`,
+  `A man cook comes down from London at eighty guineas a year. There are four horses to the carriage and a house taken in Brook Street for the season. The Mercury notices the family’s arrival in town.`];
+const EST_SETUP = [0, 150, 250, 400];
+function stepEst(d){ const i = estIdx() + d; S.est = EST[i].id;
+  if (d < 0) { add({standing:-4, family:i === 0 ? -6 : -4}); reg('henrietta', -1, i === 0 ? 'You sold her carriage' : undefined); return EST_DOWN[i]; }
+  add({money:-EST_SETUP[i], standing:3, family:4}); reg('henrietta', 1); return EST_UP[i]; }
+/* Altering the establishment takes the season. These join the season's undertakings. */
+function estOptions(){ const i = estIdx(), y = S.year, o = [];
+  if (i > 0) o.push({t:'Reduce to ' + EST[i - 1].name, note:'Saves ' + fmt(estCost(i, y) - estCost(i - 1, y)) + ' a year', hint:'Costs Standing and Household', run:() => stepEst(-1)});
+  if (i < EST.length - 1) o.push({t:'Set up ' + EST[i + 1].name, note:fmt(estCost(i + 1, y) - estCost(i, y)) + ' a year more, and ' + fmt(EST_SETUP[i + 1]) + ' down', hint:'Standing, Household', run:() => stepEst(1)});
+  return o; }
+/* The quarter's cost of the Hall, and the pull of the establishment on the county's opinion. */
+function householdQuarter(line){ const i = estIdx(), tgt = EST[i].standing;
+  line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
+  if (S.t > 0) { add({standing: S.standing > tgt + 15 ? -2 : S.standing > tgt ? -1 : S.standing < tgt - 8 ? 1 : 0});
+    if (i === 0 && S.season % 2 === 0) add({family:-1}); if (i === 3 && S.season === 0) add({family:1}); } }
+/* The home farm pays its men by the week, and the vicar his tenth. */
+const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
+function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
+  line('Home farm wages, nine men at ' + s + 's. the week', -(9 * s * 13 / 20) * (live('thresher') ? 0.94 : 1));
+  if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75); }
 const ART = new Set(['frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/persons.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png']);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
