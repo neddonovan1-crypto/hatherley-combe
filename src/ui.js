@@ -157,7 +157,7 @@ function versoHTML(){
   return head + `<h2 class="qtitle">${esc(QUARTER[S.season])} Quarter, ${S.year}</h2>
     ${accountHTML()}
     <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
-      ${over ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${S.mortgage < (typeof mortCap === 'function' ? mortCap() : 9000) ? '' : 'disabled'}>Borrow £500</button></div>`}</dl>
+      ${over ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}</dl>
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W)}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W)}
@@ -190,7 +190,10 @@ function farmsHTML(){ const live = typeof farmsList === 'function', list = live 
       ${live && f.canLevel ? `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}${f.canOffer ? `<button onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}</span>` : ''}</td><td class="n">${f.acres}</td><td class="n l">${f.rent}</td></tr>`).join('')}
     <tr class="total"><td>The rental</td><td class="n">${list.reduce((a, f) => a + f.acres, 0)}</td><td class="n l">${sum.toLocaleString('en-GB')}</td></tr></tbody></table>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function', list = live ? venturesList() : DRAFT_VENTURES;
-  return `<div class="lots">${list.map(v => `<details name="lot"><summary><b>${esc(v.name)}</b><span>${fmt(v.cost)}</span></summary><div><p>${esc(v.well)}</p><p class="terms">${esc(v.where)}.</p>${live && v.id ? `<button class="inkbtn" onclick="beginVenture('${v.id}')" ${v.can ? '' : 'disabled'}>Venture it</button>` : ''}</div></details>`).join('')}</div>`; }
+  const row = v => v.state === 'ended' ? `<div class="lot done"><b>${esc(v.name)}</b><span>${esc(v.note || 'Ended')}</span></div>`
+    : `<details name="lot"><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? 'In hand' : fmt(v.cost)}</span></summary><div><p>${esc(v.well)}${v.ill ? ' ' + esc(v.ill) : ''}</p><p class="terms">${esc([v.where, v.note].filter(Boolean).join('. '))}.${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
+      ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="endVenture('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${esc(v.endLabel)}</button>` : '') : `<button class="inkbtn" onclick="beginVenture('${v.id}')" ${v.can ? '' : 'disabled'}>Venture it</button>`}</div></details>`;
+  return `<div class="lots">${list.map(row).join('')}</div>`; }
 
 function peopleHTML(){
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id]; const note = c.notes[c.notes.length - 1];

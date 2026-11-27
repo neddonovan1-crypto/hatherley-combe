@@ -148,6 +148,7 @@ function beginSeason(){
   if (q === 0) { S.yearIncome = 0; if (!S.priceSeen.includes(y)) S.priceSeen.push(y); }
   estateSync();
   if (q === 0 || q === 2) rentDay(line);
+  ventureTick(line);
   if (q === 1) { const w = 100 + (F('merino') ? (y < 1811 ? 110 : 15) : 0) + (F('merinoRam') ? 15 : 0); line('The wool clip', w); S.yearIncome += w;
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }

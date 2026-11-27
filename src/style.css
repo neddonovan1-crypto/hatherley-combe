@@ -75,7 +75,7 @@ h3.orn::before{clip-path:polygon(0 50%, 100% 0, 100% 100%)} h3.orn::after{clip-p
 table.acct{width:100%;border-collapse:collapse;border-top:2px solid var(--ink);border-bottom:3px double var(--ink);font-variant-numeric:tabular-nums}
 table.acct th{font-family:var(--caps);font-weight:400;font-size:.8rem;letter-spacing:.1em;color:var(--muted);text-align:left;padding:5px 0;border-bottom:1px solid var(--ink)}
 table.acct td{padding:3px 0;border-bottom:1px solid var(--rule);vertical-align:bottom}
-table.acct td:first-child{font-family:var(--hand);font-size:clamp(1.2rem,1.62vw,1.65rem);line-height:1.2;padding-right:10px}
+table.acct td:first-child{font-family:var(--display);font-size:1.05rem;line-height:1.25;padding-top:5px;padding-bottom:4px;padding-right:10px}
 table.acct .n{width:3rem;text-align:right;padding:0 8px 5px;border-left:1px solid var(--redrule);font-family:var(--display);font-size:1.18rem;white-space:nowrap}
 table.acct .n.l{width:5rem;border-left:3px double var(--redrule)}
 table.acct th.n{padding:5px 8px;font-size:.8rem;font-family:var(--caps)}
@@ -254,7 +254,7 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
   .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1}
   .memo{gap:16px}
   .daybook li{grid-template-columns:minmax(0,1fr);gap:0}
-  table.acct td:first-child{font-size:1.4rem} table.acct .n{width:2.1rem;padding-inline:5px} table.acct .n.l{width:3.6rem}
+  table.acct .n{width:2.1rem;padding-inline:5px} table.acct .n.l{width:3.6rem}
   #tabs button{font-size:.72rem} #tabs button img{display:none}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
