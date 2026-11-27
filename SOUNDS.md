@@ -3,7 +3,7 @@
 Every recording in `sound/` comes from [Freesound](https://freesound.org) and every one was released by its maker under
 [Creative Commons 0](https://creativecommons.org/publicdomain/zero/1.0/), the public-domain dedication. No credit is owed. It is given here anyway.
 
-Licences were read off each sound's own page on 27 November 2026. All are real recordings; one machine-made quill was found and left out.
+Licences were read off each sound's own page on 27 November 2026. All are real recordings but the quill, which its uploader made with a machine and which the owner preferred to a hissy real one.
 
 | File | Heard when | Recording | By | Cut |
 |---|---|---|---|---|
@@ -11,7 +11,7 @@ Licences were read off each sound's own page on 27 November 2026. All are real r
 | `page1.mp3` | A leaf turned: new quarter, tabs, handbills | [Book Turn Page 1.wav](https://freesound.org/people/esperri/sounds/119126/) | esperri | whole |
 | `page2.mp3` | The same | [Book Turn Page 2.wav](https://freesound.org/people/esperri/sounds/119127/) | esperri | whole |
 | `page3.mp3` | The same | [Book Turn Page 3.wav](https://freesound.org/people/esperri/sounds/119128/) | esperri | whole |
-| `quill.mp3` | A choice written down | [fountain_pen_inkwell.aiff](https://freesound.org/people/aktivfilm/sounds/518477/) | aktivfilm | 20.0 to 24.5 s, rumble filtered out below 350 Hz |
+| `quill.mp3` | A choice written down | [Ink Quill Writing on Parchment ASMR](https://freesound.org/people/brktkrgll/sounds/856167/) | brktkrgll | first 4.4 s. Machine-generated (ElevenLabs), by the uploader's account |
 | `coins.mp3` | A choice that moves money | [change on table.mp3](https://freesound.org/people/rightpurdy/sounds/243517/) | rightpurdy | whole |
 | `bell.mp3` | Quarter day | [Church Clock Strikes 2.wav](https://freesound.org/people/JarredGibb/sounds/219051/) | JarredGibb | whole, tail faded |
 | `toll.mp3` | A death; a ruin | [St Peters Church, Kinver - Distant Tolling Bell](https://freesound.org/people/TicAshfield/sounds/824588/) | TicAshfield | first 9 s |
