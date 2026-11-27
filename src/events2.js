@@ -3923,3 +3923,465 @@ They strike noon one after another for four minutes.
 Mrs Bunce comes to the foot of the stairs to listen. She writes to Bath that night. She has the housemaid write it.`; }}]}
 ];
 pooled('gayStreet', GAYST, 'gay', {from:1796, to:1815, weight:9, repeatGap:2, cond:() => F('henriettaAway')});
+
+/* ---- The Royal Family ----
+   Windsor is in the county. royalStag wanders in early; the rest follow by the queue or by their year.
+   Flags: royalKnown (the King has your name), royalPlain (you told him the price of bread), princeLoan
+   (the Prince has a thousand of yours), privyChamber (what he gave for it). */
+ev({ id:'royalStag', from:1797, to:1803, weight:6, cond:() => !F('royalKnown'), title:'The King’s Hounds',
+  text:() => `The King’s stag-hounds met at Salt Hill at ten. The deer was uncarted and ran west for five hours.
+
+It is in your horse-pond, up to the neck. Forty couple of hounds are on the bank. Behind them come eleven gentlemen in blue coats with red collars, on beaten horses.
+
+The stout one in front gets down without help. He is sixty. He has a star on his coat.
+
+“Whose house? What? Whose house? ${S.sur}? Good. Good. Are those your turnips? Do you hoe ’em twice? What?”
+
+Mudge has taken off his hat and cannot find where to put it.`,
+  choices:[
+    {t:'Walk him round the farm.', go:() => { fl('royalKnown'); add({standing:6}); later('royalTerrace', 4);
+      return `You walk the King of England round the home farm in the rain.
+
+He looks into the pigsties. He lifts a turnip and smells it. He asks what you give for a ploughman and whether the wheat is dibbled or broadcast. He does not wait for the answers. He has the right ones himself.
+
+“I shall send you a ram. Spanish. Very fine wool. Don’t let ’em tell you they won’t stand the wet.”
+
+The stag is taken out of the pond with ropes and carted home to Windsor. The ram comes in March with a groom and a letter. It will not stand the wet.`; }},
+    {t:'Bring him into the Hall and send for the best Madeira.', note:'£30', go:() => { fl('royalKnown'); add({money:-30, standing:4, family:3}); reg('henrietta',2,'The King sat in her drawing-room'); later('royalTerrace', 4);
+      return `The King sits in the yellow drawing-room in his wet boots. Thirty pounds in Madeira, cold beef and oats for forty horses.
+
+He will take nothing but barley water. The eleven gentlemen take the rest. Henrietta is presented. She goes down so far that Mrs Bunce thinks she has fallen.
+
+“A good house. Old. Don’t pull it about. They all pull ’em about.”
+
+The chair he sat in is not sat in again. Henrietta ties a ribbon across the arms.`; }},
+    {t:'Tell him what bread costs in Hatherley.', go:() => { fl('royalKnown'); fl('royalPlain'); add({goodwill:4, standing:2}); later('royalTerrace', 4);
+      return `“The turnips are well enough, sir. It is the bread. The quartern loaf is ${wheatNow() >= 100 ? 'eighteen pence' : 'a shilling'} and a man has nine shillings a week.”
+
+The eleven gentlemen look at the sky. The King looks at you.
+
+“What? Nine? Not enough. Not enough. I give mine twelve at Windsor. Tell ’em the King gives twelve.”
+
+He takes out a purse and gives Mudge five guineas for the poor. Mudge carries it to the vestry in both hands.`; }}
+  ]});
+
+ev({ id:'royalTerrace', follow:true, cond:() => F('royalKnown') && S.year <= 1804, title:'The Terrace at Windsor',
+  text:() => `On Sunday evenings the Royal Family walks on the Terrace at Windsor. A militia band plays. Any person decently dressed may stand along the wall.
+
+A card has come from an equerry. Mr and Mrs ${S.sur} are desired to be upon the Terrace on Sunday.
+
+Henrietta has had the card nine times in her hand. A Court suit is a hundred and twenty pounds with the sword. The mantua-maker at Reading has never made a hoop that wide.`,
+  choices:[
+    {t:'Go in full dress.', note:'£120', go:() => { add({money:-120, standing:6, family:4}); reg('henrietta',2);
+      return `A hundred and twenty pounds. A plum-coloured coat with steel buttons, a bag-wig and a sword that will not hang straight.
+
+The King comes down the Terrace with the Queen on his arm and five Princesses behind. He stops.
+
+“${S.sur}! The turnips! How is my ram? Dead? What? They told me it would stand the wet.”
+
+It is heard by four hundred people. Lord Cullerne is one of them. He is standing further down the wall. The King has not stopped there.`; }},
+    {t:'Go in your Sunday coat.', go:() => { add({standing:2, goodwill:2, family:-2}); reg('henrietta',-1,'You went to Windsor in your brown coat');
+      return `You go in your brown coat and your own hair. Henrietta walks a yard from you.
+
+The King stops. He takes hold of your lapel and feels the cloth.
+
+“English wool. Good. Good. That’s a coat. Look at this man’s coat.” The equerries look at your coat.
+
+A lady in feathers asks Henrietta whether her husband is the King’s bailiff. Henrietta does not speak between Slough and Reading.`; }},
+    {t:'Send your duty and stay at home.', go:() => { add({standing:-2, family:-4}); reg('henrietta',-2,'You would not take her to Windsor');
+      return `You write to the equerry that the harvest forbids.
+
+The Tamworths go to Windsor on the Sunday and stand along the wall. The King does not stop. Mrs Tamworth says she saw the Princess Amelia’s shoe quite distinctly.
+
+Henrietta keeps the card in the frame of her glass. It is there every morning.`; }}
+  ]});
+
+ev({ id:'royalBond', from:1805, to:1809, weight:6, cond:() => F('royalKnown') && !F('bondAsked'), title:'A Gentleman from Carlton House',
+  text:() => `A Colonel McMahon has posted down from London. He is a small man with a red face. He is secretary to the Prince of Wales.
+
+“His Royal Highness knows his father’s friends in Berkshire, sir. He would wish to count them his own.”
+
+The Prince owes six hundred thousand pounds. He is building at Brighton. The Colonel has a paper in his hat. It is His Royal Highness’s bond for a thousand pounds at five per cent.${F('mp') ? `
+
+“And there is the vote on the Prince’s establishment in March. A Member who held the bond would know how to give it.”` : ''}
+
+He lays the bond on the table. It has a very large seal.`,
+  choices:[
+    {t:'Take the bond.', note:'£1,000', go:() => { fl('bondAsked'); fl('princeLoan'); add({money:-1000, standing:4});
+      return `A thousand pounds, by draft on Tidmarsh. The Colonel has it in his hat before the ink is dry.
+
+A card comes at Christmas. “The Prince of Wales to his friend Mr ${S.sur}.” The name has been written in by another hand.
+
+The interest is due at Lady Day. Lady Day passes. Mr Tidmarsh asks what security you hold. You show him the seal.`; }},
+    {t:'Fifty guineas, as a gift, and no bond.', note:'£52', go:() => { fl('bondAsked'); add({money:-52, standing:1});
+      return `“I do not lend, Colonel. I should be honoured if His Royal Highness would accept fifty guineas.”
+
+The Colonel looks at the purse for a moment. He accepts on His Royal Highness’s behalf.
+
+No card comes at Christmas. In the spring you hear that a horse named Fifty Guineas ran third at Brighton.`; }},
+    {t:'Say that you are the King’s man.', go:() => { fl('bondAsked'); fl('kingsMan'); add({standing:-1, goodwill:2});
+      return `“I have had the honour to show His Majesty my turnips, sir. I had rather keep to the one acquaintance.”
+
+The Colonel bows. He takes up the bond and blows the sand off it.
+
+“Kings do not live for ever, Mr ${S.sur}.” He goes on to the Tamworths. He is there two hours.`; }}
+  ]});
+
+ev({ id:'royalRegency', from:1811, to:1811, weight:40, cond:() => F('royalKnown') && !F('regencySeen') && S.season >= 1, title:'The Regent’s Fête',
+  text:() => `The King is shut up at Windsor. He is blind. He wears a purple dressing-gown and plays the harpsichord to people who are dead. The Prince of Wales is Regent.
+
+On the nineteenth of June the Regent gives a fête at Carlton House. Two thousand cards have gone out.
+
+${F('princeLoan') ? `One has come to Hatherley. It is addressed to “Mr ${S.sur}, of Wiltshire”. No interest has been paid on the thousand pounds.` : F('kingsMan') ? 'None has come to Hatherley. Mr Tamworth has one. He has shown it at the Bell, at church and to your gate-keeper.' : 'One has come to Hatherley. Nobody can say why. Henrietta says it is better not to ask.'}
+
+At Windsor the Terrace is shut. The band has been sent away.`,
+  choices:[
+    {t:'Go to Carlton House.', note:'£150', if:() => !F('kingsMan'), go:() => { fl('regencySeen'); add({money:-150, standing:7, family:3});
+      return `A hundred and fifty pounds in lace, feathers and a hired chariot. You are four hours in Pall Mall getting to the door.
+
+The supper table is two hundred feet long. A stream of real water runs down the middle of it between banks of moss. There are gold and silver fish in the stream. By two in the morning several are floating.
+
+The Regent sits at the head in a field-marshal’s coat. You see him through a glass at sixty yards. ${F('princeLoan') ? 'He does not see you. Colonel McMahon does. He goes behind a pillar.' : 'Henrietta has counted the diamonds on him. She gives it up at the sword.'}`; }},
+    {t:'Go, and ask McMahon for your thousand pounds.', if:() => F('princeLoan'), go:() => { fl('regencySeen'); fl('privyChamber'); add({standing:6}); reg('henrietta',1);
+      return `You find the Colonel behind a pillar and hold out the bond.
+
+“My dear sir. Not here. His Royal Highness never forgets a friend.”
+
+A letter comes in a fortnight. You are appointed a Gentleman of the Privy Chamber. There is no salary and no duty. The fees on the patent are thirty-one pounds.
+
+The bond is asked for, to be compared with the register. It does not come back.`; }},
+    {t:'Go to Windsor and pray for the King.', go:() => { fl('regencySeen'); add({goodwill:3, standing: F('kingsMan') ? 2 : -1});
+      return `You drive to Windsor on the Sunday. There is a prayer for His Majesty in St George’s. Forty people are in the chapel.
+
+Afterwards you walk under the north wall. A window is open high up. Somebody is playing Handel on a harpsichord, slowly, with the wrong notes put right.
+
+A page looks out and shuts the window. You stand a while with your hat off. So does a sentry.`; }},
+    {t:'Stay at home. It is hay time.', go:() => { fl('regencySeen'); add({family:-2});
+      return `The hay is carried on the nineteenth of June. It is a good crop.
+
+The Mercury gives the fête four columns. The fish have a paragraph to themselves.
+
+Henrietta reads all four columns aloud. She reads the names of the Berkshire company twice. There are nine.`; }}
+  ]});
+
+ev({ id:'royalPrincess', from:1813, to:1814, weight:8, cond:() => F('regencySeen') && !F('carolineSeen'), title:'An Address to the Princess',
+  text:() => `The Regent has forbidden the Princess of Wales to see her daughter more than once a fortnight. Her letter to him is in the Morning Chronicle. It is three columns. The whole kingdom has read it.
+
+The City of London has voted her an Address. Now there is one on the table at the Bell. “The dutiful and loyal Address of the Inhabitants of Wyvern to Her Royal Highness.” Two hundred have signed. Jem Pryor has made his mark.
+
+${F('mp') ? 'Mr Whitbread will move in the House on Friday. He has written to ask where the Member for Wyvern stands.' : 'The landlord has kept the top line clear. He says it wants a gentleman’s name to lead.'}${F('privyChamber') ? ' You are a Gentleman of the Regent’s Privy Chamber.' : ''}`,
+  choices:[
+    {t:() => F('mp') ? 'Vote with Mr Whitbread, and sign.' : 'Sign on the top line.', go:() => { fl('carolineSeen'); const pc = F('privyChamber'); if (pc) fl('privyChamber', false); add({goodwill:6, standing: pc ? -5 : -2}); reg('pryor',1); reg('cullerne',-1);
+      return `You write your name on the top line. The landlord sands it himself.
+
+The Address goes up to Kensington with four hundred and eleven names. The Princess receives it in a red wig. She thanks the people of Wyvern in a strong German voice.
+
+${pc ? 'A letter comes from the Lord Chamberlain. His Royal Highness has no further occasion for Mr ' + S.sur + ' in his Privy Chamber. The fees are not returned.' : 'Lord Cullerne dines with the Regent at Brighton that month. He is heard to say that Hatherley was always a Jacobin house.'}`; }},
+    {t:'Decline. It is between man and wife.', go:() => { fl('carolineSeen'); add({goodwill:-4, standing:3});
+      return `“It is between a man and his wife.”
+
+“Yes, sir,” says the landlord. “That is what she complains of.”
+
+The Address goes up without a gentleman’s name. The top line stays clear. Somebody has drawn a pair of whiskers on it.`; }},
+    {t:'Let Henrietta sign for the house.', go:() => { fl('carolineSeen'); add({goodwill:3, family:3}); reg('henrietta',2,'You let her sign for the Princess');
+      return `Henrietta walks into the Bell in her bonnet. No lady of the county has been inside it before. She signs on the top line. “Henrietta ${S.sur}, a Mother.”
+
+Forty women of Wyvern sign under her that afternoon.
+
+Mrs Tamworth says she never heard of such a thing. She signs on Thursday, with a veil down.`; }}
+  ]});
+
+/* ---- The clergy ----
+   Eleven papers, most of them taken from real cases of the years they are set in (see docs/SOURCES-clergy.md).
+   Dr Gall carries those marked gall; the Rector of Wyvern, Mr Twisleton, carries what would not sit on Mr Oakes. */
+const gallHere = () => !F('gallDead');
+const CLERGY = [
+  {id:'clergy-brothers', hot:true, once:true, title:'The Prince of the Hebrews', w:() => (S.year === 1795 && S.season >= 1) || S.year === 1796, x:() => `Mr Richard Brothers, late a lieutenant in the Navy, has announced that he is Prince of the Hebrews. London is to be swallowed by an earthquake on the King’s birthday. The King is then to hand him the crown. A Member of Parliament has moved that his prophecies be printed.
+
+The Privy Council has shut Mr Brothers up as a lunatic. His book is in its fourth edition.
+
+Mr Twisleton, the Rector of Wyvern, has read it. On Sunday he preached upon it for an hour and ten minutes. He named the day. Nine families in his parish have sold their pigs.`,
+    o:[{t:'Write to the Bishop.', go:() => { add({standing:1});
+      return `You write to the Bishop of Salisbury. His lordship’s chaplain answers. The Bishop is at Bath. A sermon upon prophecy is not in itself irregular.
+
+The King’s birthday is a fine day. The bells are rung. London stands.
+
+Mr Twisleton preaches the Sunday after. He has gone through the figures again. He had carried a one. It is to be 1798.`; }},
+    {t:'Go and hear him.', go:() => { add({goodwill:1});
+      return `You ride over and sit under him. He has the Book of Daniel open and a slate. He does the sum in the pulpit, aloud.
+
+It comes out to the fourth of June. He shows the congregation the slate.
+
+The clerk sits below with his own slate. He makes it the ninth of August. Nobody has asked him.`; }},
+    {t:'Buy the nine families’ pigs back for them.', note:'£14', go:() => { add({money:-14, goodwill:3});
+      return `Fourteen pounds to a dealer at Newbury. He had given nine. The pigs come home on the fifth of June. The city is still standing.
+
+Eight families take their pigs and thank you. The ninth will not.
+
+“We have sold up for Jerusalem, sir. It would not be right to go back on it for a pig.”`; }}]},
+
+  {id:'clergy-arms', hot:true, once:true, title:'The Church Militant', w:() => gallHere() && (S.year === 1798 || yr(1803, 1804)), x:() => `The French are expected. Hatherley has forty Volunteers, eleven muskets and a drum.
+
+Dr Gall has come to parade in a scarlet coat with black facings. He has a sword. It was his grandfather’s at Dettingen. He has given himself the rank of Captain-Chaplain.
+
+The Archbishop has written to every bishop. The clergy are not to take arms. It does not consist with their calling. Dr Gall has the letter in his hat.
+
+“It says arms. It does not say command.”
+
+He is near seventy. He has had the drum moved nearer to him.`,
+    o:[{t:'Let him command.', go:() => { add({goodwill:2}); reg('gall',2,'You let him drill the Volunteers');
+      return `Dr Gall drills the company on the Common every evening for a month.
+
+He gives the words of command out of the Prayer Book, to be sure of them. “Let us stand.” They stand. He cannot find one for the right wheel.
+
+The men like him. Nobody has ever let them out so early.`; }},
+    {t:'Show him the Archbishop’s letter again.', go:() => { add({standing:1}); reg('gall',-2,'You took his company from him');
+      return `You read him the Archbishop’s letter on the Common before the men.
+
+He takes off the sword. He gives it to the drummer to hold. He preaches on Sunday from the text “He that hath no sword, let him sell his garment and buy one.”
+
+The scarlet coat is seen again in November. It is on the Vicarage scarecrow.`; }},
+    {t:'Make him chaplain, and have him pray before drill.', go:() => { add({goodwill:-1}); reg('gall',1);
+      return `He is to be chaplain and to pray before drill.
+
+He prays for forty minutes. He prays against the French by name, from the Directory downward. It is dark when he says Amen.
+
+The company has not yet fixed bayonets this month. It has no bayonets.`; }}]},
+
+  {id:'clergy-tooke', hot:true, once:true, title:'A Doctor of Divinity for Wyvern', w:() => gallHere() && S.year === 1801, x:() => `Mr Horne Tooke has been returned to Parliament for Old Sarum. He is a clergyman. He has not worn the gown these thirty years. He was ordained, and nothing can undo it.
+
+The House is debating whether a priest may sit. Dr Gall has followed every word.
+
+“If a Jacobin in orders may sit for seven burgage plots, sir, I do not see why a sound divine should not sit for thirty-one.”
+
+He has had a card printed. “The Revd. Dr. GALL solicits the Favour of your Vote and Interest.” ${F('mp') ? 'It is your seat that he solicits.' : 'He asks whether your three plots are bespoke.'}`,
+    o:[{t:'Tell him to wait for the vote of the House.', go:() => { add({standing:1});
+      return `“Let us see what the House says, Doctor.”
+
+The House says that no person in holy orders shall sit in it. The Act passes in June.
+
+Dr Gall has two hundred cards. He writes the week’s texts on the backs. They last him four years.`; }},
+    {t:'Promise him your interest.', go:() => { add({standing:-2}); reg('gall',2,'You promised him your votes for Wyvern'); reg('cullerne',-1);
+      return `You promise him your interest. He canvasses Pig Lane in his bands. He tells each elector what his soul is worth and asks for his vote after.
+
+Lord Cullerne’s agent sends to know whether Mr ${S.sur} is quite well.
+
+The Act passes in June. No priest may sit. Dr Gall says he was within eleven votes. He has not counted them for anybody.`; }},
+    {t:'Ask who would take the duty at Hatherley.', go:() => { reg('gall',-1); meet('oakes'); reg('oakes',1);
+      return `“And who would take the duty here, Doctor, from November to July?”
+
+“Oakes takes it now.”
+
+It is the first time he has said so. Mr Oakes is at the other end of the room with a teacup. He looks into it.`; }}]},
+
+  {id:'clergy-informer', hot:true, once:true, title:'Ten Pounds a Month', w:() => gallHere() && yr(1800, 1803), x:() => `Dr Gall is also Rector of Fenny Sutterby, in Lincolnshire. He has held it since ’71. He has not seen it. A curate there has thirty pounds a year and sends the rest.
+
+An attorney’s clerk in Furnival’s Inn has found an Act of Henry the Eighth. A parson absent from his benefice forfeits ten pounds a month. Half goes to the King. Half goes to whoever informs.
+
+The clerk has informed against six hundred clergymen. Dr Gall’s writ is for eleven months. He has brought it up to the Hall in the gig.
+
+“A hundred and ten pounds, sir. To a clerk.”`,
+    o:[{t:'Lend him the hundred and ten.', note:'£110', go:() => { add({money:-110}); reg('gall',3,'You paid the informer for him');
+      return `A hundred and ten pounds. The clerk’s receipt is very civil.
+
+Parliament stops the suits the next session. A new Act lets a bishop license any parson to live away who can show cause. Dr Gall shows cause. The air of the Fens is bad for his chest.
+
+He repays you in tithe pigs, at his own valuation. There are a great many pigs.`; }},
+    {t:'Advise him to go and reside.', go:() => { reg('gall',-1); meet('oakes'); reg('oakes',1); add({goodwill:2});
+      return `He goes into Lincolnshire in November to reside. Mr Oakes has Hatherley. The sermons are twelve minutes. There is a fire in the vestry.
+
+Dr Gall is back at Candlemas with an ague. The parsonage at Fenny Sutterby has no roof on the east side. He read himself in to eleven people and a dog.
+
+“They did not know me,” he says. “They knew the dog.”`; }},
+    {t:'Fight it at the Assizes.', note:'£30', go:() => { add({money:-30, standing:1}); reg('gall',1);
+      return `Thirty pounds to counsel. The defence is that Dr Gall was all the while residing upon another cure of souls.
+
+The judge asks which of his two flocks the Doctor would say he had been feeding. Counsel says both, my lord, by deputy. The court laughs.
+
+Before judgment Parliament stops every such suit in the kingdom. The clerk in Furnival’s Inn is said to have cleared four thousand pounds first.`; }}]},
+
+  {id:'clergy-trusler', once:true, title:'The Same Sermon', w:() => gallHere(), x:() => `Dr Gall and the Rector of Wyvern have exchanged pulpits for the Sunday.
+
+Mr Twisleton preaches at Hatherley on the Unjust Steward. It is a good sermon. It is twenty-two minutes. He reads it from a manuscript in a clear round hand.
+
+At that hour Dr Gall is preaching at Wyvern. He preaches on the Unjust Steward. Mr Tamworth was at Wyvern in the morning and is at Hatherley for Evensong. He says it was the same sermon to the word.
+
+Dr Trusler of Bath sells sermons at a shilling. They are printed in a type cut to look like writing, so that the gallery may not know.`,
+    o:[{t:'Say nothing.', go:() => { reg('gall',1);
+      return `You say nothing. Mr Tamworth says it at eleven dinner-tables.
+
+The next Sunday Dr Gall preaches a sermon of his own. It is fifty minutes, upon the Hittites. He looks at the Hall pew at every heading.
+
+By the fourth heading Mr Tamworth is asleep.`; }},
+    {t:'Send to Bath for the whole set.', note:'£3', go:() => { add({money:-3, goodwill:1}); reg('gall',-2,'You followed his sermon in Trusler');
+      return `Three pounds for sixty sermons in a box. You take the box to church.
+
+Dr Gall gives out his text. You find the place. You follow him down the page with your finger. At the foot he looks up. He sees the finger.
+
+He turns two leaves at once. The Unjust Steward ends as the Prodigal Son.`; }},
+    {t:'Ask him which he thinks the best of them.', go:() => { reg('gall',2); add({standing:1});
+      return `You ask him over the port which of Dr Trusler’s he thinks the best.
+
+He is silent a minute.
+
+“Number nineteen. On Charity. I have preached it since ’84. I shall be sorry to lose it.”
+
+You tell him he need not. He preaches it at Christmas. Mr Tamworth is in the front pew with his lips moving.`; }}]},
+
+  {id:'clergy-tithe', title:'Tithe Turnips', w:() => gallHere(), x:() => `Dr Gall takes his tithe in kind. Every tenth sheaf, the tenth lamb, the tenth pail of milk.
+
+Mr Hartopp has sown forty acres of turnips. Dr Gall claims the tenth turnip. Hartopp has taken advice. The law says he must set the tithe out and give the parson notice of the hour.
+
+The notice is on your table for you to witness. “Mr Hartopp will draw turnips in the Forty Acres on Tuesday at two in the morning and on each morning following. He will draw twenty. The Revd. Dr Gall may attend for his two.”
+
+Both men are in your library. Neither has sat down.`,
+    o:[{t:'Witness the notice. It is the law.', go:() => { reg('hartopp',2,'You witnessed his turnip notice'); reg('gall',-2);
+      return `You sign.
+
+Dr Gall’s man is in the Forty Acres at two in the morning for nine nights with a lantern and a sack. He carries home eighteen turnips. On the tenth night he does not come.
+
+Hartopp draws four acres before breakfast. He is fined at the next visitation for brawling in the vestry. He says it was worth forty acres.`; }},
+    {t:'Have them compound for money.', go:() => { add({standing:2}); reg('gall',1); reg('hartopp',1);
+      return `You keep them in the library until five. Hartopp is to pay four shillings an acre and keep his turnips. Dr Gall is to stay out of the field.
+
+They shake hands on it. Each tells you privately that he has had the better of the other.
+
+The paper is in your hand. Both ask for the original. You have it copied twice and keep the original.`; }},
+    {t:'Tell Hartopp a parson must live.', go:() => { reg('gall',2,'You stood by his tithe'); reg('hartopp',-2); add({goodwill:-2});
+      return `“The tithe is his freehold, Hartopp. As the land is yours.”
+
+Hartopp sets out every tenth turnip in a row along the headland and sends for the tithe cart. The row is half a mile.
+
+They are the smallest turnips ever seen in Berkshire. He has been three days choosing them.`; }}]},
+
+  {id:'clergy-school', hot:true, once:true, title:'Methodism in the Schoolroom', w:() => gallHere() && yr(1800, 1803), x:() => { meet('oakes'); return `Mr Oakes keeps a Sunday school over the stable at the curate’s house. Forty children learn their letters out of the Catechism. In the evening their mothers come and he reads them a chapter.
+
+Dr Gall has a pamphlet from Somersetshire. A curate at Blagdon has charged Mrs Hannah More’s schools with Methodism. There have been twenty-three pamphlets since. Dr Gall has read nine.
+
+“Prayer without the book, sir. Women, after dark. It begins so. I shall have it shut.”
+
+Mr Oakes says he prays from the book. He says the women come after dark because they work until dark.`; },
+    o:[{t:'Stand by the school.', go:() => { add({goodwill:4}); reg('oakes',2,'You stood by his school'); reg('gall',-2,'You kept the curate’s school open against him');
+      return `“The room is over my stable, Doctor. I do not shut it.”
+
+Dr Gall writes a pamphlet. “A Letter to a Country Gentleman on the Danger of Unlicensed Instruction.” It sells eleven copies. He bought six.
+
+The school goes on. At Christmas forty children can read the pamphlet.`; }},
+    {t:'Go and sit at the back on Sunday evening.', go:() => { add({goodwill:2}); reg('oakes',1);
+      return `You sit at the back among the mothers. There are twenty-six. Mr Oakes reads the fifteenth of Luke. He reads it from the book and shuts the book.
+
+A carter’s wife asks why the elder son was not given a kid. Mr Oakes says he has often wondered. They talk of it for half an hour.
+
+You tell Dr Gall there was no praying without the book. You do not tell him about the kid.`; }},
+    {t:'Let the Vicar shut it. It is his parish.', go:() => { add({goodwill:-4}); reg('gall',2); reg('oakes',-2,'You let his school be shut');
+      return `The room over the stable is locked. Dr Gall keeps the key.
+
+On Sunday evening twenty-six women are in Dewey’s barn. A shoemaker from Hungerford is reading to them. He has no book at all.
+
+Mr Oakes walks past the barn with his hat pulled down. He does not go in. He walks past it again.`; }}]},
+
+  {id:'clergy-burial', hot:true, once:true, title:'A Child at the Lich-gate', w:() => yr(1809, 1810), x:() => `A child of two has died at Wyvern. Her father is a Baptist weaver. She was baptised in his meeting-house with water and the proper words.
+
+Mr Twisleton will not bury her. He says she was never baptised in the eye of the Church and is no Christian. He has locked the lich-gate.
+
+The coffin has been on two chairs in the road since ten o’clock. Forty people are standing by it. The father has his hat off. It has begun to rain.
+
+A rector in Rutland did the same last year. The Court of Arches has him before it now. You are the nearest magistrate.`,
+    o:[{t:'Tell Twisleton to open the gate.', go:() => { add({goodwill:4, standing:1});
+      return `“You will open that gate, sir. You will read the service. I shall stand here while you do it.”
+
+He opens the gate. He reads the service very fast, with his back to the father. He leaves out the word “sister”.
+
+In December the Court of Arches gives judgment against the Rutland rector. He is suspended three months. Mr Twisleton reads the report and has a cold for three Sundays.`; }},
+    {t:'Send for Mr Oakes to read it.', go:() => { meet('oakes'); add({goodwill:3}); reg('oakes',1,'He buried the Baptist’s child at Wyvern');
+      return `Mr Oakes comes over from Hatherley on foot, six miles, with his surplice in a bag.
+
+Mr Twisleton will not open the gate to another clergyman. Mr Oakes reads the whole service in the road, over the two chairs, in the rain. Then the sexton lifts the coffin over the wall. Nobody has told him not to.
+
+The Bishop writes to Mr Oakes. It is not a reprimand. It is not anything else.`; }},
+    {t:'It is a matter for the Church courts.', go:() => { add({goodwill:-4, standing:1});
+      return `“I have no power inside that gate.”
+
+The coffin is carried back up the street. She is buried on Thursday behind the meeting-house, between the wall and the dye-works.
+
+The weaver has the Rutland judgment printed at his own cost when it comes. He nails one to the lich-gate. It is taken down. He nails another.`; }}]},
+
+  {id:'clergy-bishop', once:true, title:'The Bishop at Wyvern', w:() => S.year >= 1798, x:() => `The Bishop of Salisbury confirms at Wyvern on Thursday. He has not been in this corner of the diocese for seven years.
+
+Four hundred and sixty candidates are come in from nineteen parishes. Some are twelve. One is a grandmother. The Bishop has to dine at Newbury at four.
+
+He will lay his hands on them at the rail in rows of twenty, and say the words once for each row.
+
+His lordship lies the night at Hatherley. His chaplain has sent the particulars. His lordship takes his port at blood heat. He does not eat veal.`,
+    o:[{t:'Give him a proper dinner.', note:'£25', go:() => { add({money:-25, standing:4}); reg('henrietta',1);
+      return `Twenty-five pounds. Turbot, a saddle of mutton, no veal. The port stands an hour before the kitchen fire.
+
+The Bishop confirms four hundred and sixty in fifty minutes. A boy from Kintbury goes up with two rows and is confirmed twice. He asks whether it counts double.
+
+His lordship tells Henrietta that he has not been so comfortable since Lambeth. He falls asleep at nine with his wig on the fire-screen.`; }},
+    {t:'Give him what the house has.', go:() => { add({standing:-1, goodwill:1});
+      return `Boiled mutton and a batter pudding. The port is as cold as the cellar.
+
+The Bishop eats very little. He asks the chaplain something in Latin. The chaplain looks at the port.
+
+At the church he does the four hundred and sixty in forty minutes. He is at Newbury by three.`; }},
+    {t:'Ask him for a living for Mr Oakes.', note:'£25', go:() => { meet('oakes'); add({money:-25, standing:2}); reg('oakes',2,'You spoke to the Bishop for him');
+      return `Twenty-five pounds in turbot and mutton. Over the port you name Mr Oakes. Forty pounds a year, the whole duty, twelve-minute sermons.
+
+“Twelve?” says the Bishop. He takes out a pocket-book. He writes “Oakes. 12 min.”
+
+Nothing comes of it that year. But the chaplain writes to Mr Oakes for a copy of a sermon.`; }}]},
+
+  {id:'clergy-hunting', title:'The Rector of Wyvern Takes a Funeral', x:() => `Mr Twisleton hunts three days a week with Lord Cullerne’s hounds. He keeps two horses on a living of four hundred.
+
+Old Mrs Gabb was to be buried at Wyvern on Tuesday at eleven. The hounds met at Hatherley Copse at half past ten. They found at once and ran straight through Wyvern churchyard.
+
+Mr Twisleton pulled up at the grave. He read the service from the saddle in eleven minutes. He was with the hounds again at the second check.
+
+The Gabbs are maltsters. They have come to you. They say there were spurs under the surplice the Sunday before.`,
+    o:[{t:'Write to the Bishop.', go:() => { add({goodwill:2}); reg('cullerne',-1);
+      return `You write to Salisbury. The answer is six weeks coming.
+
+His lordship has spoken to Mr Twisleton. Mr Twisleton has undertaken not to read the burial service on horseback.
+
+He keeps his word. At the next hunting funeral he gets down and gives a boy the reins.`; }},
+    {t:'Speak to him at the covert side.', go:() => { add({standing:1});
+      return `You ride up to him at the covert side on Thursday.
+
+“The Gabbs are hurt, Twisleton.”
+
+“I gave her every word, ${S.sur}. I left nothing out. Old Gabb hunted till he was seventy. He would have had me do it.” The hounds find. He is gone before you have answered.
+
+He sends the Gabbs a brace of pheasants. They are yours. He shot them on Tuesday week.`; }},
+    {t:'Tell the Gabbs she is buried either way.', go:() => { add({goodwill:-3});
+      return `“She is as well buried as any woman in Berkshire, Mr Gabb.”
+
+Mr Gabb puts on his hat in your hall.
+
+The Gabbs take a pew at the Independent chapel in Mill Lane. They take eleven maltsters’ families with them. Mr Twisleton says it leaves more room for the horses.`; }}]},
+
+  {id:'clergy-southcott', hot:true, once:true, title:'Shiloh', w:() => S.year === 1814, x:() => `Joanna Southcott of Devonshire is sixty-four. She has announced that she is with child by the Holy Ghost. The child is to be called Shiloh and will be born before Christmas. Nine physicians have examined her. Six say she is.
+
+Her followers are sealed. Each has a half-sheet of paper signed by Joanna and closed with red wax. A hundred thousand are said to be out. A crib of satinwood and gold has been made in Aldersgate Street for two hundred pounds.
+
+Mr Twisleton has been sealed. He has stopped hunting. He is collecting in Wyvern for a silver pap-spoon. Mrs Bunce has a seal in her tea-caddy. She had it of the pedlar for a shilling.`,
+    o:[{t:'Give a guinea to the pap-spoon.', note:'£1', go:() => { add({money:-1, goodwill:2});
+      return `A guinea. Mr Twisleton writes your name in the book between a duchess’s housekeeper and a tallow-chandler.
+
+Joanna dies on the twenty-seventh of December. The surgeons open her. There is no child.
+
+Mr Twisleton keeps the spoon. He says the birth was spiritual and the spoon may yet be wanted. He is hunting again by February. He says grace with his eyes open.`; }},
+    {t:'Take Mrs Bunce’s seal away.', go:() => { add({goodwill:-2, standing:1});
+      return `You have the seal out of the tea-caddy and put it on the kitchen fire.
+
+Mrs Bunce watches it burn. She says nothing. The dinner that day is cold mutton. So is the next.
+
+Joanna dies on the twenty-seventh of December. There is no child. Mrs Bunce says that she would have been saved the disappointment if she had been let keep the paper.`; }},
+    {t:'Ask Mrs Bunce what the seal says.', go:() => { add({goodwill:1, family:1});
+      return `She brings it up on a plate. “The Sealed of the Lord. The Elect, Precious. Man’s Redemption to inherit the Tree of Life.” Under it, “Joanna Southcott”, in a hand that slopes down the page.
+
+“I do not hold with it, sir. But it was only a shilling. One would look very foolish without.”
+
+Joanna dies on the twenty-seventh of December. There is no child. The seal stays in the caddy. Mrs Bunce says it keeps the tea dry.`; }}]}
+];
+pooled('clergy', CLERGY, 'clg', {from:1795, to:1815, weight:6, repeatGap:3});
