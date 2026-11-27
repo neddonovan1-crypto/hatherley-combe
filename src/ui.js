@@ -83,8 +83,8 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand, and will want ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. For the rest, one undertaking, and only one.' : 'One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner.'}</p></div>
-    <div class="choices">${o.map((c, i) => `<button class="choice${c.project ? ' work' : ''}" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
+    <div class="prose"><p>One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner. Works on the estate are another matter, and may be put in hand at any time.</p></div>
+    <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 
 function endHTML(){ const r = reckoning();
@@ -114,6 +114,7 @@ function sideHTML(){
       <p class="fine">Half-year rental due: ${fmt(halfRent())}. ${S.rentPolicy > 1 ? 'Rack-rents pay until they don’t.' : S.rentPolicy < 1 ? 'They drink your health at the audit.' : 'As your uncle left them.'}</p>
       ${S.traits && S.traits.length ? `<h4>The squire</h4><p class="fine born">${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}
     </section>
+    ${worksPanelHTML()}
     <section class="panel"><h3>Wheat at Wyvern Market</h3>${chartHTML()}</section>
     <section class="panel"><h3>Persons of Consequence</h3><ul class="people">${people}</ul></section>`; }
 

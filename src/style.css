@@ -111,3 +111,7 @@ dl.money dd{margin:0;font-family:var(--display);font-size:1.7rem;line-height:1.1
 @media (max-width:520px){ .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1} }
 .go:disabled{background:var(--muted);cursor:not-allowed}
 .born{line-height:1.45}
+.works details{margin-top:8px} .works summary{cursor:pointer;font-family:var(--caps);letter-spacing:.08em;font-size:.85rem;color:var(--muted)}
+.works details ul{margin-top:8px} .work button{flex:none;background:transparent;border:1px solid var(--ink);font-family:var(--caps);font-size:.78rem;letter-spacing:.08em;padding:2px 10px}
+.work button:hover:not(:disabled){background:var(--ink);color:var(--card)} .work button:disabled{opacity:.35;cursor:not-allowed}
+.work.done b{color:var(--muted)}
