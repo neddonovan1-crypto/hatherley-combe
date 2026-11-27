@@ -399,6 +399,11 @@ function estOptions(){ const i = estIdx(), y = S.year, o = [];
 function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing + societyMark() - 6 * (S.settledSold || 0), 5, 95);
   if (S.annuities) line(S.annuities > 1 ? 'Annuities on your life, ' + numWords(S.annuities) : 'Annuity on your life', -25 * S.annuities);
   line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
+  if (T('jointure')) line('Your uncle’s widow, her jointure', -30);
+  if (T('taste')) line('Milliners and mantua-makers', -30);
+  if (T('bottle')) line('The wine merchant', -10);
+  if (T('lawsuit') && S.season === 3) line('Costs in the matter of the pew', -40);
+  if (T('brother') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
   if (S.t > 0) societyQuarter(line); }
 /* The home farm pays its men by the week, and the vicar his tenth. */
 const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
