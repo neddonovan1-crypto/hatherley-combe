@@ -93,7 +93,13 @@ Use them in the old sense and the period arrives without being announced.
 - To ignore someone in public is to "cut" him. To inform is to "peach". To be dismissed is to be "turned off" or "turned away".
 - Travel: the mail, the stage, a post-chaise ("to post" is to travel by one), a gig, a curricle, a chariot, a tax-cart. Ostlers, post-boys, the turnpike. An inn has a "tap" for the lower sort and an "ordinary" at a fixed price.
 
-Grose's *Dictionary of the Vulgar Tongue* (1811) is the authority for the low words and will be in the corpus.
+Grose's *Dictionary of the Vulgar Tongue* (1811) is the authority for the low words. `tools/fetch-corpus.sh` brings it into `corpus/full/`. The list above was checked against it on 27 November 2026:
+
+- In Grose as given: blunt, the ready, rhino, dun, flat, sharper, foxed, disguised, cut (drunk), half seas over, bumper, heel-tap, fudge, humbug, peach, fiddlestick's end.
+- Grose has "blacklegs" whole, for a sharper on the turf or in the cockpit. The short "a leg" is a few years later. Before 1810 write "a blackleg".
+- Grose spells it "gamon" and gives it as a verb: to humbug, to tell lies. "What rum gamon" is thieves' talk. Keep it out of a gentleman's mouth.
+- To "cut" an acquaintance is marked a Cambridge word. Give it to the young and to those who copy them.
+- Boney, Mounseer, Johnny Crapaud and Prinny are not cant and are not in Grose. They belong to the print shops and the newspapers.
 
 ## Berkshire speech
 

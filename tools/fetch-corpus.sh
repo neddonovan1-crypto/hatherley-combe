@@ -17,3 +17,7 @@ get lettersofjaneaus01aust     austen-letters-vol1
 get expeditionofhump01smol     smollett-humphry-clinker
 get castlerackrent00edge       edgeworth-castle-rackrent
 get worksofjamesgill00wrig     wright-works-of-gillray
+# Grose 1811: the item holds one plain text file, served by the same stream route.
+curl -fsSL --max-time 180 "https://archive.org/stream/1811dictionaryof05402gut/dcvgr10.txt" \
+  | python3 -c "import sys,re,html; s=sys.stdin.read(); m=re.search(r'<pre>(.*?)</pre>',s,re.S); sys.stdout.write(html.unescape(m.group(1)) if m else '')" > full/grose-vulgar-tongue-1811.txt \
+  && printf '%-34s %s bytes\n' grose-vulgar-tongue-1811 "$(wc -c < full/grose-vulgar-tongue-1811.txt)" || echo "FAILED grose"
