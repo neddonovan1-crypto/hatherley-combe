@@ -130,7 +130,6 @@ table.acct tr.total .n{font-size:1.3rem}
 .sheet.clip p{margin:0;font-size:.93rem;text-align:justify;hyphens:auto}
 .note{margin:0;font-style:italic;font-size:.95rem} .note.bad{color:var(--bad)}
 .vignette{font-style:italic;color:var(--muted)}
-.narrow{display:none}
 
 /* answering */
 .choices{display:flex;flex-direction:column;gap:8px}
@@ -266,6 +265,9 @@ body:not(.intro) .desk{overflow:clip}
   #stage .choices{gap:5px} #stage .choice{padding-block:6px 5px;min-height:0} #stage .choice::before{top:3px}
   #stage .choice small{display:inline;padding:0 0 0 .7em}
   #stage{gap:9px}
+}
+/* the left page, set closer on anything under 960 lines so the whole account and the memoranda are seen together */
+@media (min-width:1081px) and (min-height:600px) and (max-height:960px){
   body:not(.intro) .page{padding-block:18px 16px} #verso{gap:9px} #verso .qtitle{font-size:2.3rem}
   #verso table.acct td{padding-block:1px} #verso table.acct td:first-child{padding-block:3px 2px;font-size:1rem} #verso table.acct .n{padding-bottom:3px}
   #verso .bal dd{font-size:2rem} #verso .memo{gap:5px} #verso .lots summary{padding-block:5px 4px}
@@ -279,29 +281,45 @@ html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#17
 .book ::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
 @supports not selector(::-webkit-scrollbar){ .book *{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} html{scrollbar-color:#8a6a3c #172018} }
 
-/* a phone: one page at a time, the paper in hand first */
+/* a phone: one page at a time, the tabs along the foot under the thumb */
+#tabs .phone{display:none}
 @media (max-width:1080px){
-  body{padding-block:14px 40px}
-  .desk{max-width:760px}
-  .book{grid-template-columns:minmax(0,1fr);border-width:16px clamp(26px,7vw,48px) 20px 9px;border-image:url(art/ui/book-leaf.jpg) 5.4% 20.5% 5.6% 2.5% fill stretch;clip-path:inset(0 round 0 12px 12px 0)}
-  .page{min-height:0;padding-inline:clamp(10px,3.4vw,30px)}
-  #stage{order:1} #tabs{order:2} #verso{order:3}
-  body.reading #verso{order:0}
+  body{padding:26px 6px calc(112px + env(safe-area-inset-bottom, 0px))}
+  body.intro{padding-bottom:30px}
+  body #hush{position:absolute;top:1px;right:8px;font-size:.68rem}
+  html{scroll-padding-bottom:120px}
+  /* no filter or clip here: either would pin the fixed tabs to the book instead of the glass */
+  .desk{max-width:760px;filter:none}
+  .book{grid-template-columns:minmax(0,1fr);border-width:12px clamp(16px,5vw,40px) 16px 7px;border-image:url(art/ui/book-leaf.jpg) 5.4% 20.5% 5.6% 2.5% fill stretch;clip-path:none;box-shadow:0 14px 24px rgba(0,0,0,.5)}
+  .page{min-height:0;padding:16px clamp(10px,3.4vw,30px) 20px;gap:11px}
+  body:not(.intro) .page{min-height:calc(100vh - 158px);min-height:calc(100svh - 158px)}
+  body:not(.intro).leafup:not(.reading) #verso{display:none}
+  body:not(.intro):not(.leafup) #stage{display:none}
+  body.reading.leafup .page{min-height:0} body.reading.leafup #verso{padding-bottom:4px} body.reading.leafup #stage{padding-top:4px}
+  body.reading.leafup #stage .runhead{display:none}
   body.intro #verso{order:0}
-  #tabs{position:static;width:auto;padding:0;flex-direction:row;flex-wrap:wrap;gap:0;border-block:3px double var(--ink)}
-  #tabs button, #tabs button[aria-pressed="true"], #tabs button:hover, #tabs button[aria-pressed="true"]:hover{flex:1 1 22%;width:auto;min-height:50px;border-radius:0;background:transparent;color:var(--ink);box-shadow:none}
-  #tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)} #tabs button[aria-pressed="true"] img{filter:invert(1);mix-blend-mode:screen}
-  .narrow{display:block}
+  #tabs:empty{display:none}
+  #tabs{position:fixed;z-index:20;left:0;right:0;top:auto;bottom:0;width:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;padding:1px 0 env(safe-area-inset-bottom, 0px);background:#2a1c10;box-shadow:0 -6px 16px rgba(0,0,0,.5)}
+  #tabs .phone{display:flex}
+  #tabs button, #tabs button:hover, #tabs button[aria-pressed="true"], #tabs button[aria-pressed="true"]:hover{flex-direction:row;gap:6px;width:auto;min-height:46px;padding:4px 3px;border-radius:0;font-size:.8rem;letter-spacing:.05em;background:var(--grain), #d9c9a3;color:#2a1c10;box-shadow:none}
+  #tabs button img{width:22px;height:22px}
+  body:not(.leafup) #tabs button[aria-pressed="true"]:not(.phone), body.leafup #tabs button.leaf{background:var(--ink);color:var(--paper);box-shadow:inset 0 3px 0 var(--gilt)}
+  body:not(.leafup) #tabs button[aria-pressed="true"]:not(.phone) img, body.leafup #tabs button.leaf img{filter:invert(1);mix-blend-mode:screen}
   .sheet, .sheet.bill, .sheet.clip{transform:none}
   .bal .mort{margin-left:0}
   #stage.turn{animation:inked .3s both}
+  .runhead span:nth-child(2):not(:last-child){display:none}
+  #verso .qtitle{font-size:2.1rem;margin-block:0}
+  #verso table.acct td{padding-block:2px} #verso table.acct td:first-child{font-size:1rem;line-height:1.25;padding-block:4px 3px}
+  .go{min-height:64px}
+  html::-webkit-scrollbar{width:0}
 }
 @media (max-width:520px){
   .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1}
-  .memo{gap:16px}
+  .memo{gap:12px}
   .daybook li{grid-template-columns:minmax(0,1fr);gap:0}
   table.acct .n{width:2.1rem;padding-inline:5px} table.acct .n.l{width:3.6rem}
-  #tabs button{font-size:.72rem} #tabs button img{display:none}
+  #tabs button{font-size:.74rem;gap:4px} #tabs button img{width:18px;height:18px}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 
@@ -328,7 +346,6 @@ details.meter > summary:hover span{text-decoration:underline;text-decoration-thi
 .meter s{position:absolute;bottom:-1px;width:0;height:11px;border-left:2px solid var(--madder);text-decoration:none} .meter span em{font-family:var(--caps);font-style:normal;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad);margin-left:9px}
 details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--display);font-size:.95rem;line-height:1.3;columns:2;column-gap:18px} details.meter .fx .pos{color:var(--good)} details.meter .fx .neg{color:var(--bad)} details.meter .fx li:first-child{color:var(--muted)}
 .digest{display:flex;flex-direction:column;gap:6px} .digest .bal dd .amt{font-size:inherit} .digest .daybook{margin:0}
-@media (max-width:1080px){ .digest{display:none} }
 .bal .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:flex-end;margin-left:auto}
 .bal .creditbox button{display:flex;justify-content:space-between;gap:12px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 10px;font-family:var(--display);font-size:1rem;line-height:1.3;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
 .bal .creditbox button:hover:not(:disabled), .bal .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)} .bal .creditbox button:active:not(:disabled){background:#e9dfbf;box-shadow:inset 0 1px 3px rgba(40,30,20,.35)}
@@ -338,3 +355,17 @@ table.acct tbody tr:not(.neg) td.n{color:var(--good)}
 .bal.purse{gap:8px 20px;flex-wrap:nowrap} .bal.purse dd{font-size:clamp(1.7rem,2.6vw,2.4rem);white-space:nowrap} .bal .creditbox button{font-size:.94rem;white-space:nowrap;padding:3px 8px}
 @media (max-width:520px){ .bal.purse{flex-wrap:wrap} }
 .people small{white-space:normal;overflow:visible;text-overflow:clip}
+details.pick .opts button small i{display:block;font-style:normal;font-family:var(--display);font-size:.92rem;line-height:1.25} details.pick .opts button small i.pos{color:var(--good)} details.pick .opts button small i.neg{color:var(--bad)}
+/* advantages down the left, burdens down the right, so six are seen without scrolling */
+details.pick .opts{max-height:min(30rem, 80vh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);left:auto;width:min(35rem, calc(100vw - 60px))} details.pick .opts > button{grid-column:1/-1;border-bottom:1px solid var(--rule)!important}
+details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details.pick .opts > div + div{border-left:1px solid var(--rule)} details.pick .opts > div button:last-child{border-bottom:0}
+@media (max-width:1080px){ details.pick .opts{left:0;width:auto;grid-template-columns:minmax(0,1fr)} details.pick .opts > div + div{border-left:0;border-top:1px solid var(--rule)} }
+.lots .rungs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-self:stretch}
+.lots .rung{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:6px 9px;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
+.lots .rung b{font-family:var(--caps);font-size:.82rem;letter-spacing:.08em} .lots .rung small{font-size:.8rem;line-height:1.25;color:var(--muted)} .lots .rung .fx{font-size:.9rem;line-height:1.25}
+.lots .rung:hover:not(:disabled), .lots .rung:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)}
+.lots .rung.now{background:var(--sheet);border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--madder);cursor:default} .lots .rung:disabled:not(.now){opacity:.5;cursor:not-allowed}
+.lots .rung.now b::before{content:"\261E\FE0E  ";color:var(--madder)}
+.lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
+@media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
+.favours #pts i{font-style:normal;color:var(--muted);opacity:.7}

@@ -75,6 +75,20 @@ All **[checked]** from the History of Parliament's 1790 to 1820 volumes.
 
 **The Sheriff's year.** That it cost several hundred pounds and could not be declined is a **[lead]**.
 
+## The household
+
+All **[checked]** against Samuel and Sarah Adams, *The Complete Servant* (1825), read at [archive.org](https://archive.org/details/b21530786). The book is ten years past the game's end, so its wages are a ceiling for the war years.
+
+**How an income divides.** A third on the household (the table), a quarter on servants and equipage, a quarter on clothes and extras, an eighth on rent and repairs, and four and a half per cent in reserve.
+
+**Servants by income.** £1,000 to £1,500: four women and three men. £1,500 to £2,000: six women and five men, namely cook, housekeeper, two housemaids, kitchen-maid, nursery-maid, coachman, groom, footman, gardener and a man for the garden and stable. £2,000 to £3,000: eight and eight, with a butler and valet.
+
+**Wages, in guineas a year.** Housekeeper 24. Lady's maid 20. Head nurse 20, nursery-maid 7. Upper housemaid 15, under 14. Kitchen-maid 14, scullion 9. Butler 50. Coachman 28 (25 to 36). Footman 24 (20 to 30). Groom 16 to 20. Gardener 40 with a house. A French man-cook 80. Board wages when the family is away: ten shillings a week for women, twelve for men.
+
+**Governess.** "Between 25l. and 120l. per annum" by qualifications and the number of pupils. The "Female Teacher" in the Adamses' model household has 30 guineas.
+
+The game's eleven servants at these rates come to about £240 a year in wages. The household page sets servants' pay a fifth under or a quarter over that, and the schoolroom at none, thirty guineas, or sixty with masters.
+
 ## What I could not reach
 
 The History of Parliament's survey of what seats cost, and so Curwen's Act of 1809. Any count of country banks. The cost of the shrievalty. Turner, Beckett and Afton's rent index, which is the standard one and sits behind a paywall. McCloskey's paper beyond its abstract.

@@ -2,36 +2,48 @@
    Loaded last: it wraps render, start, resume, choose, undertake, showTab and showWho, and alters nothing in them.
    The house is silent until Sound is turned on in the corner of the desk. The choice is remembered. */
 const Sound = (() => {
-  const DIR = 'sound/', VOL = .3, AIR = .32, LAP = 2.5, KEY = 'hatherley-quiet';
+  // Plain audio elements, one to a recording. Safari would not play the same files through the Web Audio API, and plays these.
+  const DIR = 'sound/', VOL = .6, AIR = .45, KEY = 'hatherley-quiet';
+  const NAMES = ['seal', 'page1', 'page2', 'page3', 'quill', 'coins', 'bell', 'toll', 'rook', 'rooks', 'rain', 'wind', 'fire', 'carriage', 'crowd', 'mob', 'shot', 'knocker', 'knock'];
   let muted = true; try { muted = localStorage.getItem(KEY) !== '0'; } catch (err) {}
-  let ctx = null, master = null, live = false, airName = '', airWant = '', airTok = 0, airBus = null, airTag = null;
-  const bufs = {};
-  const fetchBuf = name => bufs[name] || (bufs[name] = fetch(DIR + name + '.mp3').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(a => ctx.decodeAudioData(a)).catch(() => null));
-  // Where the page cannot fetch (opened from a folder), plain audio elements stand in.
-  const tag = (name, vol, delay, loop) => { const a = new Audio(DIR + name + '.mp3'); a.volume = Math.min(1, VOL * vol); a.loop = !!loop; setTimeout(() => { if (!muted) a.play().catch(() => {}); }, delay * 1000); return a; };
+  let blessed = false, airName = '', airWant = '', airEl = null;
+  const els = {}, tally = {ok:0, bad:0, err:''};
+  const el = name => els[name] || (els[name] = Object.assign(new Audio(DIR + name + '.mp3'), {preload:'auto'}));
+  const fail = (name, err) => { tally.bad++; tally.err = name + ': ' + (err && err.message || err); };
+  // An iPhone ignores the volume of an element and plays everything at full, so there the long airs are left out.
+  const fixed = (() => { try { const t = new Audio(); t.volume = .5; return t.volume !== .5; } catch (err) { return true; } })();
 
-  function play(name, vol = 1, delay = 0){ if (muted || !live) return;
-    fetchBuf(name).then(b => { if (muted) return; if (!b) return void tag(name, vol, delay);
-      const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = b; g.gain.value = vol; s.connect(g).connect(master); s.start(ctx.currentTime + delay); }); }
+  // A browser lets an element play unasked only after it has once been played inside a touch. So at the first touch
+  // with sound on, every element is played muted for an instant and stopped. After that they answer to the game.
+  function wake(){ if (muted) return; blessed = true;
+    for (const n of NAMES) { const a = el(n); if (a.ok || a.asking || a.live) continue; a.asking = true; a.muted = true;
+      const done = () => { a.ok = true; a.asking = false; if (!a.live) { a.pause(); try { a.currentTime = 0; } catch (err) {} } a.muted = false; };
+      const no = err => { a.asking = false; a.muted = false; fail(n, err); };
+      try { const p = a.play(); if (p && p.then) p.then(done, no); else done(); } catch (err) { no(err); } }
+    air(airWant); }
 
-  // The air of the place: one long recording at a time, lapped over itself so that the join is not heard.
-  function air(name){ airWant = name; if (!live || muted) name = ''; if (name === airName) return; airName = name; const tok = ++airTok;
-    if (airBus) { const g = airBus; g.gain.setTargetAtTime(0, ctx.currentTime, .7); setTimeout(() => g.disconnect(), 5000); airBus = null; }
-    if (airTag) { airTag.pause(); airTag = null; }
+  function play(name, vol = 1, delay = 0){ if (muted || !blessed) return;
+    const go = () => { if (muted) return; const a = el(name); a.live = true; a.muted = false; a.loop = false; a.volume = Math.min(1, VOL * vol); try { a.currentTime = 0; } catch (err) {}
+      try { const p = a.play(); if (p && p.then) p.then(() => { tally.ok++; a.ok = true; }, err => fail(name, err)); } catch (err) { fail(name, err); } };
+    if (delay) setTimeout(go, delay * 1000); else go(); }
+
+  // The air of the place: one long recording, looped, eased in and out.
+  const ease = (a, to, secs, then) => { clearInterval(a.fade); const from = a.volume, t0 = Date.now();
+    a.fade = setInterval(() => { const k = Math.min(1, (Date.now() - t0) / (secs * 1000)); a.volume = Math.max(0, Math.min(1, from + (to - from) * k)); if (k >= 1) { clearInterval(a.fade); if (then) then(); } }, 60); };
+  function air(name){ airWant = name; if (!blessed || muted || fixed) name = ''; if (name === airName) return; airName = name;
+    if (airEl) { const old = airEl; airEl = null; ease(old, 0, 1, () => old.pause()); }
     if (!name) return;
-    fetchBuf(name).then(b => { if (tok !== airTok) return; if (!b) { airTag = tag(name, AIR, 0, true); return; }
-      const bus = ctx.createGain(); bus.gain.value = 0; bus.gain.setTargetAtTime(AIR, ctx.currentTime, 1.2); bus.connect(master); airBus = bus;
-      const lap = at => { if (tok !== airTok) return; const s = ctx.createBufferSource(), g = ctx.createGain(), end = at + b.duration; s.buffer = b;
-        g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(1, at + LAP); g.gain.setValueAtTime(1, end - LAP); g.gain.linearRampToValueAtTime(0, end);
-        s.connect(g).connect(bus); s.start(at); setTimeout(() => lap(end - LAP), Math.max(0, (end - LAP - ctx.currentTime - 1) * 1000)); };
-      lap(ctx.currentTime); }); }
+    const a = el(name); a.live = true; a.muted = false; a.loop = true; a.volume = 0; airEl = a;
+    try { const p = a.play(); if (p && p.then) p.then(() => { tally.ok++; }, err => fail(name, err)); } catch (err) { fail(name, err); }
+    ease(a, VOL * AIR, 2); }
 
-  function wake(){ if (live) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
-    ctx = new AC(); master = ctx.createGain(); master.gain.value = muted ? 0 : VOL; master.connect(ctx.destination); live = true;
-    if (ctx.state === 'suspended') ctx.resume(); air(airWant); }
   function quiet(q){ muted = q; try { localStorage.setItem(KEY, q ? '1' : '0'); } catch (err) {}
-    if (master) master.gain.setTargetAtTime(q ? 0 : VOL, ctx.currentTime, .05); air(airWant); }
-  return {play, air, wake, quiet, get muted(){ return muted; }};
+    if (q) { air(''); for (const n in els) if (els[n] !== airEl) els[n].pause(); } else wake();
+    if (!q) air(airWant); }
+  // For when somebody hears nothing: shown when the pointer rests on the control.
+  const report = () => !blessed ? 'Sound not yet woken by a touch' : `Plain audio. ${tally.ok} played, ${tally.bad} refused${tally.err ? ' (' + tally.err + ')' : ''}. Air: ${airName || (fixed ? 'left out on this device' : 'none')}`;
+  const ring = () => play('bell', .6);
+  return {play, air, wake, quiet, report, ring, get muted(){ return muted; }};
 })();
 
 (() => {
@@ -67,13 +79,13 @@ const Sound = (() => {
   let purse = 0;
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.inkbtn, .lv button')) purse = S ? S.money : 0; }, true);
   document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.inkbtn, .lv button'); if (b && S) Sound.play(Math.abs(S.money - purse) >= 1 ? 'coins' : 'quill', .6); });
-  for (const ev of ['pointerdown', 'keydown']) document.addEventListener(ev, Sound.wake, true);
+  for (const ev of ['click', 'keydown', 'touchend']) document.addEventListener(ev, Sound.wake, true);
   document.addEventListener('visibilitychange', () => Sound.air(document.hidden ? '' : airNow()));
 
   // The one control: a word in the corner of the desk.
   const b = document.createElement('button'); b.id = 'hush'; b.type = 'button';
   const show = () => { b.textContent = Sound.muted ? 'Sound off' : 'Sound on'; b.setAttribute('aria-pressed', String(!Sound.muted)); };
-  b.onclick = () => { Sound.quiet(!Sound.muted); show(); }; show();
+  b.onclick = () => { Sound.quiet(!Sound.muted); show(); if (!Sound.muted) Sound.ring(); }; b.onpointerenter = () => { b.title = Sound.report(); }; show();
   const st = document.createElement('style');
   st.textContent = '#hush{position:fixed;top:6px;right:10px;z-index:5;background:none;border:0;padding:4px 6px;cursor:pointer;font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:#d9c9a3;opacity:.8}#hush:hover,#hush:focus-visible{opacity:1}#hush[aria-pressed="false"]{text-decoration:line-through}';
   document.head.appendChild(st); document.body.appendChild(b);

@@ -4,7 +4,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
-const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
+const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['household', 'Household'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
@@ -33,6 +33,7 @@ const platePic = (src, cap) => { const u = artURL(src); return u ? `<img src="${
 function plateHTML(q, src, cap){ const i = platePic(src, cap); return `<figure class="plate${i ? ' has' : ''}">${sceneSVG(q)}${i}</figure>`; }
 [0, 1, 2, 3].forEach(i => { const u = artURL('seasons/' + i); if (u) new Image().src = u; });
 
+let STEP = '', LEAFUP = true;
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
@@ -44,6 +45,7 @@ function render(){
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   if (S.phase === 'event') { if (PAPER !== S.t + ':' + S.pending) { PAPER = S.t + ':' + S.pending; TAB = 'paper'; } } else { PAPER = ''; if (TAB === 'paper') TAB = 'accounts'; }
+  { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
@@ -55,9 +57,11 @@ function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''
   for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.7, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
-  document.body.classList.toggle('reading', TAB === 'paper');
-  $('tabs').innerHTML = (S.phase === 'event' ? [['paper', 'The Paper']] : []).concat(TABS).map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
-function showTab(t){ TAB = t; WHO = ''; drawBook(); }
+  document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
+  const leaf = S.phase === 'event' ? ['paper', 'The Paper'] : ['leaf', S.phase === 'ledger' ? 'The Quarter' : S.phase === 'end' ? 'Finis' : 'The Season'];
+  $('tabs').innerHTML = [leaf].concat(TABS).map(([id, n]) => `<button class="${id === 'leaf' || id === 'paper' ? 'leaf' : ''}${id === 'leaf' ? ' phone' : ''}" aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
+/* On a phone one page shows at a time: LEAFUP is the paper in hand, otherwise the tab chosen. */
+function showTab(t){ LEAFUP = t === 'leaf' || t === 'paper'; if (t !== 'leaf') TAB = t; WHO = ''; drawBook(); if (innerWidth <= 1080) window.scrollTo({top:0}); }
 function showWho(id){ WHO = id; drawBook(); }
 
 function introHTML(){ const has = !!load();
@@ -86,11 +90,11 @@ const pickList = () => Object.values(PICKS).filter(Boolean);
 /* Favours: three to begin. An advantage spends one or two, a burden earns them back. Each row opens a list; what cannot be afforded is greyed. */
 const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
 function picksHTML(){ const left = pointsLeft(pickList());
-  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${left > 0 ? '●'.repeat(left) : 'none'}</b><small>An advantage spends them. A burden earns them back.</small></p>
+  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${'●'.repeat(Math.max(0, left))}<i>${'○'.repeat(Math.max(0, TRAIT_POINTS - Math.max(0, left)))}</i></b><small>An advantage spends them. A burden earns them back.</small></p>
     ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
-      const opt = (id, name, cost, effect) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${effect ? `<small>${esc(effect)}</small>` : ''}</button>`;
+      const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${t[0] === '+' ? 'pos' : 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
       return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
-        <div class="opts" role="listbox">${opt('', plain, 0, '')}${TRAITS.filter(t => t.group === g).map(t => opt(t.id, t.name, t.cost, t.effect)).join('')}</div></details>
+        <div class="opts" role="listbox">${opt('', plain, 0, '')}${[1, -1].map(sg => `<div>${TRAITS.filter(t => t.group === g && Math.sign(t.cost) === sg).map(t => opt(t.id, t.name, t.cost, t.fx)).join('')}</div>`).join('')}</div></details>
         <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
 function setPick(g, id){ PICKS[g] = id || null; if ($('picks')) { $('picks').innerHTML = picksHTML(); fitLeaf(); } }
 function syncTraits(){ if ($('picks')) $('picks').innerHTML = picksHTML(); }
@@ -123,8 +127,6 @@ function ledgerHTML(){
   return `${runhead('Papers received this quarter', 'Cr.')}
     ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
     <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
-    <div class="narrow"><p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
-    <h2>The Accounts</h2>${accountHTML()}</div>
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
@@ -177,6 +179,7 @@ function versoHTML(){
   if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll${typeof farmsList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + farmsHTML();
   if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">Money put out at hazard. Some of it comes home every year and some is never seen again.</p>` + venturesHTML();
   if (TAB === 'society') return head + `<h2 class="qtitle">Figure and Consequence${typeof societyList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">What the county sees of you. Most of it costs something every year to keep.</p>` + societyHTML();
+  if (TAB === 'household' && typeof householdList === 'function') return head + `<h2 class="qtitle">The Household</h2>` + householdHTML();
   if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2><p class="lede">Building and mending, paid for by the quarter. Two may be in hand at once.</p>` + worksHTML();
   if (TAB === 'persons') return head + `<h2 class="qtitle">Persons of Consequence</h2>` + peopleHTML();
   if (TAB === 'wheat') return head + `<h2 class="qtitle">Wheat at Wyvern Market</h2>` + chartHTML();
@@ -249,7 +252,20 @@ const DRAFT_SOCIETY = [
   {name: 'A pack of harriers', cost: 260, well: 'Forty gentlemen to breakfast twice a week.'},
   {name: 'A commission for Edmund', cost: 450, well: 'An ensigncy in a marching regiment.'},
   {name: 'The family plate', cost: 600, state: 'inHand', held: 'In the strong room', well: 'It would fetch about six hundred pounds at Rundell’s.'}];
-function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
+function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList().filter(r => !r.house || typeof householdList !== 'function') : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
+
+/* The Household: the footing the house is kept on, what its people are paid, and what is kept in it. */
+const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
+function householdHTML(){ const h = householdList();
+  const est = h.establishment.map(e => `<details name="lot"><summary><b>${esc(e.name)}</b><span>${e.now ? '<i class="tag">As now</i>' : ''}${amt(e.cost, -1)}</span></summary><div>${fxList(e.fx)}
+    ${e.now ? '' : `<p class="terms">${e.why ? `<em>${esc(e.why)}</em>` : ''}</p><button class="inkbtn" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}>${esc(e.verb)}</button>`}</div></details>`).join('');
+  const wages = h.wages.map(w => { const cur = w.levels.find(l => l.now);
+    return `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span><i class="tag">${esc(cur ? cur.label : '')}</i></span></summary><div><p class="terms">${esc(w.what)}.</p>
+      <div class="rungs">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>
+      ${(() => { const y = w.levels.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; })()}</div></details>`; }).join('');
+  return `<dl class="bal slim"><div><dt>The house, a year</dt><dd>${amt(h.cost, -1)}</dd></div></dl>
+    <div class="lots flat"><h3 class="orn">The footing of the house</h3>${est}<h3 class="orn">Wages and keep</h3>${wages}</div>
+    ${h.lots.length ? `<h3 class="orn">Kept in the house</h3>` + lotsHTML(h.lots, true, 'beginSociety', 'endSociety', 'Pay for it') : ''}`; }
 
 const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){

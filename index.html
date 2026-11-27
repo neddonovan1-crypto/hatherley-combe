@@ -134,7 +134,6 @@ table.acct tr.total .n{font-size:1.3rem}
 .sheet.clip p{margin:0;font-size:.93rem;text-align:justify;hyphens:auto}
 .note{margin:0;font-style:italic;font-size:.95rem} .note.bad{color:var(--bad)}
 .vignette{font-style:italic;color:var(--muted)}
-.narrow{display:none}
 
 /* answering */
 .choices{display:flex;flex-direction:column;gap:8px}
@@ -270,6 +269,9 @@ body:not(.intro) .desk{overflow:clip}
   #stage .choices{gap:5px} #stage .choice{padding-block:6px 5px;min-height:0} #stage .choice::before{top:3px}
   #stage .choice small{display:inline;padding:0 0 0 .7em}
   #stage{gap:9px}
+}
+/* the left page, set closer on anything under 960 lines so the whole account and the memoranda are seen together */
+@media (min-width:1081px) and (min-height:600px) and (max-height:960px){
   body:not(.intro) .page{padding-block:18px 16px} #verso{gap:9px} #verso .qtitle{font-size:2.3rem}
   #verso table.acct td{padding-block:1px} #verso table.acct td:first-child{padding-block:3px 2px;font-size:1rem} #verso table.acct .n{padding-bottom:3px}
   #verso .bal dd{font-size:2rem} #verso .memo{gap:5px} #verso .lots summary{padding-block:5px 4px}
@@ -283,29 +285,45 @@ html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#17
 .book ::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
 @supports not selector(::-webkit-scrollbar){ .book *{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} html{scrollbar-color:#8a6a3c #172018} }
 
-/* a phone: one page at a time, the paper in hand first */
+/* a phone: one page at a time, the tabs along the foot under the thumb */
+#tabs .phone{display:none}
 @media (max-width:1080px){
-  body{padding-block:14px 40px}
-  .desk{max-width:760px}
-  .book{grid-template-columns:minmax(0,1fr);border-width:16px clamp(26px,7vw,48px) 20px 9px;border-image:url(art/ui/book-leaf.jpg) 5.4% 20.5% 5.6% 2.5% fill stretch;clip-path:inset(0 round 0 12px 12px 0)}
-  .page{min-height:0;padding-inline:clamp(10px,3.4vw,30px)}
-  #stage{order:1} #tabs{order:2} #verso{order:3}
-  body.reading #verso{order:0}
+  body{padding:26px 6px calc(112px + env(safe-area-inset-bottom, 0px))}
+  body.intro{padding-bottom:30px}
+  body #hush{position:absolute;top:1px;right:8px;font-size:.68rem}
+  html{scroll-padding-bottom:120px}
+  /* no filter or clip here: either would pin the fixed tabs to the book instead of the glass */
+  .desk{max-width:760px;filter:none}
+  .book{grid-template-columns:minmax(0,1fr);border-width:12px clamp(16px,5vw,40px) 16px 7px;border-image:url(art/ui/book-leaf.jpg) 5.4% 20.5% 5.6% 2.5% fill stretch;clip-path:none;box-shadow:0 14px 24px rgba(0,0,0,.5)}
+  .page{min-height:0;padding:16px clamp(10px,3.4vw,30px) 20px;gap:11px}
+  body:not(.intro) .page{min-height:calc(100vh - 158px);min-height:calc(100svh - 158px)}
+  body:not(.intro).leafup:not(.reading) #verso{display:none}
+  body:not(.intro):not(.leafup) #stage{display:none}
+  body.reading.leafup .page{min-height:0} body.reading.leafup #verso{padding-bottom:4px} body.reading.leafup #stage{padding-top:4px}
+  body.reading.leafup #stage .runhead{display:none}
   body.intro #verso{order:0}
-  #tabs{position:static;width:auto;padding:0;flex-direction:row;flex-wrap:wrap;gap:0;border-block:3px double var(--ink)}
-  #tabs button, #tabs button[aria-pressed="true"], #tabs button:hover, #tabs button[aria-pressed="true"]:hover{flex:1 1 22%;width:auto;min-height:50px;border-radius:0;background:transparent;color:var(--ink);box-shadow:none}
-  #tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)} #tabs button[aria-pressed="true"] img{filter:invert(1);mix-blend-mode:screen}
-  .narrow{display:block}
+  #tabs:empty{display:none}
+  #tabs{position:fixed;z-index:20;left:0;right:0;top:auto;bottom:0;width:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;padding:1px 0 env(safe-area-inset-bottom, 0px);background:#2a1c10;box-shadow:0 -6px 16px rgba(0,0,0,.5)}
+  #tabs .phone{display:flex}
+  #tabs button, #tabs button:hover, #tabs button[aria-pressed="true"], #tabs button[aria-pressed="true"]:hover{flex-direction:row;gap:6px;width:auto;min-height:46px;padding:4px 3px;border-radius:0;font-size:.8rem;letter-spacing:.05em;background:var(--grain), #d9c9a3;color:#2a1c10;box-shadow:none}
+  #tabs button img{width:22px;height:22px}
+  body:not(.leafup) #tabs button[aria-pressed="true"]:not(.phone), body.leafup #tabs button.leaf{background:var(--ink);color:var(--paper);box-shadow:inset 0 3px 0 var(--gilt)}
+  body:not(.leafup) #tabs button[aria-pressed="true"]:not(.phone) img, body.leafup #tabs button.leaf img{filter:invert(1);mix-blend-mode:screen}
   .sheet, .sheet.bill, .sheet.clip{transform:none}
   .bal .mort{margin-left:0}
   #stage.turn{animation:inked .3s both}
+  .runhead span:nth-child(2):not(:last-child){display:none}
+  #verso .qtitle{font-size:2.1rem;margin-block:0}
+  #verso table.acct td{padding-block:2px} #verso table.acct td:first-child{font-size:1rem;line-height:1.25;padding-block:4px 3px}
+  .go{min-height:64px}
+  html::-webkit-scrollbar{width:0}
 }
 @media (max-width:520px){
   .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1}
-  .memo{gap:16px}
+  .memo{gap:12px}
   .daybook li{grid-template-columns:minmax(0,1fr);gap:0}
   table.acct .n{width:2.1rem;padding-inline:5px} table.acct .n.l{width:3.6rem}
-  #tabs button{font-size:.72rem} #tabs button img{display:none}
+  #tabs button{font-size:.74rem;gap:4px} #tabs button img{width:18px;height:18px}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 
@@ -332,7 +350,6 @@ details.meter > summary:hover span{text-decoration:underline;text-decoration-thi
 .meter s{position:absolute;bottom:-1px;width:0;height:11px;border-left:2px solid var(--madder);text-decoration:none} .meter span em{font-family:var(--caps);font-style:normal;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad);margin-left:9px}
 details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--display);font-size:.95rem;line-height:1.3;columns:2;column-gap:18px} details.meter .fx .pos{color:var(--good)} details.meter .fx .neg{color:var(--bad)} details.meter .fx li:first-child{color:var(--muted)}
 .digest{display:flex;flex-direction:column;gap:6px} .digest .bal dd .amt{font-size:inherit} .digest .daybook{margin:0}
-@media (max-width:1080px){ .digest{display:none} }
 .bal .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:flex-end;margin-left:auto}
 .bal .creditbox button{display:flex;justify-content:space-between;gap:12px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 10px;font-family:var(--display);font-size:1rem;line-height:1.3;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
 .bal .creditbox button:hover:not(:disabled), .bal .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)} .bal .creditbox button:active:not(:disabled){background:#e9dfbf;box-shadow:inset 0 1px 3px rgba(40,30,20,.35)}
@@ -342,6 +359,20 @@ table.acct tbody tr:not(.neg) td.n{color:var(--good)}
 .bal.purse{gap:8px 20px;flex-wrap:nowrap} .bal.purse dd{font-size:clamp(1.7rem,2.6vw,2.4rem);white-space:nowrap} .bal .creditbox button{font-size:.94rem;white-space:nowrap;padding:3px 8px}
 @media (max-width:520px){ .bal.purse{flex-wrap:wrap} }
 .people small{white-space:normal;overflow:visible;text-overflow:clip}
+details.pick .opts button small i{display:block;font-style:normal;font-family:var(--display);font-size:.92rem;line-height:1.25} details.pick .opts button small i.pos{color:var(--good)} details.pick .opts button small i.neg{color:var(--bad)}
+/* advantages down the left, burdens down the right, so six are seen without scrolling */
+details.pick .opts{max-height:min(30rem, 80vh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);left:auto;width:min(35rem, calc(100vw - 60px))} details.pick .opts > button{grid-column:1/-1;border-bottom:1px solid var(--rule)!important}
+details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details.pick .opts > div + div{border-left:1px solid var(--rule)} details.pick .opts > div button:last-child{border-bottom:0}
+@media (max-width:1080px){ details.pick .opts{left:0;width:auto;grid-template-columns:minmax(0,1fr)} details.pick .opts > div + div{border-left:0;border-top:1px solid var(--rule)} }
+.lots .rungs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-self:stretch}
+.lots .rung{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:6px 9px;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
+.lots .rung b{font-family:var(--caps);font-size:.82rem;letter-spacing:.08em} .lots .rung small{font-size:.8rem;line-height:1.25;color:var(--muted)} .lots .rung .fx{font-size:.9rem;line-height:1.25}
+.lots .rung:hover:not(:disabled), .lots .rung:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)}
+.lots .rung.now{background:var(--sheet);border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--madder);cursor:default} .lots .rung:disabled:not(.now){opacity:.5;cursor:not-allowed}
+.lots .rung.now b::before{content:"\261E\FE0E  ";color:var(--madder)}
+.lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
+@media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
+.favours #pts i{font-style:normal;color:var(--muted);opacity:.7}
 </style>
 <div class="desk">
   <div class="book">
@@ -634,74 +665,105 @@ function chance(p){ return Math.random() < p; }
 const TRAIT_POINTS = 3;
 const TRAITS = [
   // boons
-  { id:'soldier', group:'past', name:'Served in the American war', cost:1, effect:'Standing higher; Volunteers at half cost; no duel will kill you',
+  { id:'soldier', fx:['+5 Standing', '+1 in Edmund’s regard', '+Volunteers raised at half cost', '+A duel cannot kill you'], group:'past', name:'Served in the American war', cost:1, effect:'Standing higher; Volunteers at half cost; no duel will kill you',
     blurb:`You carried the colours of the 23rd at Guilford Court House in ’81. A ball went through your leg. You tell the story at dinner. There are Indians in it now.`,
     apply:() => { add({standing:5}); reg('edmund', 1, 'Brought up on your stories of the American war'); }},
-  { id:'captain', group:'past', name:'A post-captain, come ashore', cost:1, effect:'Prize money; your old crew run the house, cheaply and by the bell',
+  { id:'captain', fx:['+£350 prize money', '+4 Standing', '+The Hall costs 10% less while the crew stay', '+1 in Edmund’s regard', '−5 Peace of the household', '−1 in Henrietta’s regard'], group:'past', name:'A post-captain, come ashore', cost:1, effect:'Prize money; your old crew run the house, cheaply and by the bell',
     blurb:`Twenty-two years at sea. The last six you commanded the Dryad, thirty-six guns. When she paid off, eleven of her people followed you up the Bath road in a wagon. Your coxswain is butler. There are hammocks in the attics. The gallery is holystoned at five each morning. Henrietta’s bed is under the gallery.`,
     apply:() => { S.money += 350; add({standing:4, family:-5}); reg('henrietta', -1, 'Woken at five by eleven seamen scrubbing the gallery'); reg('edmund', 1, 'Brought up on the quarterdeck of your stories'); }},
-  { id:'court', group:'past', name:'Favour at Court', cost:2, effect:'Standing much higher; a sinecure of \u00a390 a year',
+  { id:'court', fx:['+£90 a year', '+12 Standing', '+1 in Lord Cullerne’s regard'], group:'past', name:'Favour at Court', cost:2, effect:'Standing much higher; a sinecure of \u00a390 a year',
     blurb:`You held the King’s horse at Windsor once. He talked to you for forty minutes about mangel-wurzels. He has asked after you twice since. You are Deputy Keeper of the Swans at ninety pounds a year. Nobody has shown you a swan.`,
     apply:() => { add({standing:12}); reg('cullerne', 1); }},
-  { id:'legacy', group:'fortune', name:'A legacy from an aunt in Bath', cost:2, effect:'Purse +£1,200',
+  { id:'legacy', fx:['+£1,200 in hand'], group:'fortune', name:'A legacy from an aunt in Bath', cost:2, effect:'Purse +£1,200',
     blurb:`An aunt in Bath left you twelve hundred pounds. You had admired her pug. You were looking at the cake behind it.`,
     apply:() => { S.money += 1200; }},
-  { id:'coldharbour', group:'fortune', name:'Your uncle bought Coldharbour', cost:2, effect:'A fourth farm; mortgage +£3,000',
+  { id:'coldharbour', fx:['+A fourth farm, £400 a year in rent', '−£3,000 on the mortgage'], group:'fortune', name:'Your uncle bought Coldharbour', cost:2, effect:'A fourth farm; mortgage +£3,000',
     blurb:`Four hundred acres beyond the turnpike. He gave five thousand for it in 1791 and borrowed three of them. Mr Buckeridge has it on a lease to 1806.`,
     apply:() => { S.mortgage += 3000; addFarm('coldharbour', {rent:400, K:500, lease:{type:'term', ends:1806, years:14}}); }},
-  { id:'clear', group:'fortune', name:'The mortgage half paid', cost:2, effect:'Mortgage £2,000 instead of £4,000',
+  { id:'clear', fx:['+£2,000 off the mortgage'], group:'fortune', name:'The mortgage half paid', cost:2, effect:'Mortgage £2,000 instead of £4,000',
     blurb:`In 1789 your uncle paid off half the mortgage. He spoke of it bitterly every Lady Day until he died.`,
-    apply:() => { S.mortgage = 2000; }},
-  { id:'bred', group:'past', name:'Bred to the land', cost:2, effect:'Better yields; works cost less',
+    apply:() => { S.mortgage -= 2000; }},
+  { id:'bred', fx:['+6% wheat off the home farm', '+2.5% yield on the let farms', '+Works cost 15% less', '+1 in Mr Hartopp’s regard'], group:'character', name:'Bred to the land', cost:2, effect:'Better yields; works cost less',
     blurb:`You can tell a ewe’s age by her mouth. You can tell a field by its weeds. You can tell when a bailiff is lying by where he puts his feet.`,
     apply:() => { S.improve += 1; reg('hartopp', 1); }},
-  { id:'beloved', group:'gift', name:'Known in the parish from a boy', cost:2, effect:'Goodwill much higher; Jem Pryor remembers',
+  { id:'beloved', fx:['+15 Goodwill of the parish', '+1 in Jem Pryor’s regard'], group:'name', name:'Known in the parish from a boy', cost:2, effect:'Goodwill much higher; Jem Pryor remembers',
     blurb:`You went bird’s-nesting with half of Hatherley. The other half thrashed you. Most of the parish saw you fall in the mill pond.`,
     apply:() => { add({goodwill:15}); reg('pryor', 1, 'You went bird’s-nesting together as boys'); }},
-  { id:'connexions', group:'gift', name:'Good connexions', cost:2, effect:'Standing much higher; Lord Cullerne civil',
+  { id:'connexions', fx:['+15 Standing', '+1 in Lord Cullerne’s regard'], group:'name', name:'Good connexions', cost:2, effect:'Standing much higher; Lord Cullerne civil',
     blurb:`Your mother was second cousin to a marquess. She said so at every dinner for forty years. The county has it by heart.`,
     apply:() => { add({standing:15}); reg('cullerne', 1); }},
-  { id:'silver', group:'gift', name:'A persuasive tongue', cost:1, effect:'Elections likelier won; the bench listens',
+  { id:'silver', fx:['+20% chance at an election', '+2 Standing each sitting on the bench'], group:'character', name:'A persuasive tongue', cost:1, effect:'Elections likelier won; the bench listens',
     blurb:`You once talked a turnpike keeper into paying you the toll.`,
     apply:() => {}},
-  { id:'lovematch', group:'marriage', name:'A love match', cost:1, effect:'Household happier; Henrietta fond',
+  { id:'lovematch', fx:['+12 Peace of the household', '+2 in Henrietta’s regard'], group:'marriage', name:'A love match', cost:1, effect:'Household happier; Henrietta fond',
     blurb:`Her mother wanted a baronet for her. She met you at the Newbury assembly and danced with you four times. Her mother counted.`,
     apply:() => { add({family:12}); reg('henrietta', 2, 'She married you for love, against advice'); }},
-  { id:'figures', group:'gift', name:'A head for figures', cost:1, effect:'Household runs cheaper; nobody skims',
+  { id:'figures', fx:['+The Hall costs 10% less', '+Mr Crabbe cannot skim £45 a quarter', '−1 in Mr Crabbe’s regard'], group:'character', name:'A head for figures', cost:1, effect:'Household runs cheaper; nobody skims',
     blurb:`You add a column twice. The second time you add it upwards. Crabbe has watched you do it.`,
     apply:() => { reg('crabbe', -1); }},
   // encumbrances
-  { id:'debts', group:'fortune', name:'Your uncle’s debts of honour', cost:-2, effect:'Purse −£700',
+  { id:'debts', fx:['−£700 in hand'], group:'fortune', name:'Your uncle’s debts of honour', cost:-2, effect:'Purse −£700',
     blurb:`Your uncle lost seven hundred pounds at Brooks’s. The gentleman waited for the funeral. He came to it.`,
     apply:() => { S.money -= 700; }},
-  { id:'second', group:'fortune', name:'A second mortgage', cost:-2, effect:'Mortgage £6,000',
+  { id:'second', fx:['−£2,000 on the mortgage'], group:'fortune', name:'A second mortgage', cost:-2, effect:'Mortgage £6,000',
     blurb:`The attorneys found it in a tin box behind a stuffed pike. Two thousand pounds more, at five per cent.`,
-    apply:() => { S.mortgage = 6000; }},
-  { id:'play', group:'failing', name:'A gambling man', cost:-2, effect:'Losses at cards every winter',
+    apply:() => { S.mortgage += 2000; }},
+  { id:'play', fx:['−£70 to £180 at cards every winter'], group:'character', name:'A gambling man', cost:-2, effect:'Losses at cards every winter',
     blurb:`You do not call yourself a gambler. The luck is about to turn. You have known it since 1783.`,
     apply:() => {}},
-  { id:'enemy', group:'failing', name:'An enemy at the Castle', cost:-2, effect:'Lord Cullerne hostile from the first',
+  { id:'enemy', fx:['−4 in Lord Cullerne’s regard', '−3 Standing'], group:'name', name:'An enemy at the Castle', cost:-2, effect:'Lord Cullerne hostile from the first',
     blurb:`At nineteen you shot Lord Cullerne’s favourite pointer. It was a mistake. His lordship was standing beside her. Her name was Duchess.`,
     apply:() => { reg('cullerne', -4, 'You shot his pointer in 1768'); add({standing:-3}); }},
-  { id:'stranger', group:'past', name:'A stranger to the country', cost:-1, effect:'Goodwill lower',
+  { id:'stranger', fx:['−12 Goodwill of the parish'], group:'past', name:'A stranger to the country', cost:-1, effect:'Goodwill lower',
     blurb:`You were brought up in Marylebone. You know wheat when it is bread. You know barley when it is beer.`,
     apply:() => { add({goodwill:-12}); }},
-  { id:'whig', group:'failing', name:'A Whig among Tories', cost:-1, effect:'Standing lower; Hartopp approves',
+  { id:'whig', fx:['−10 Standing', '−1 in Lord Cullerne’s regard', '+1 in Mr Hartopp’s regard'], group:'name', name:'A Whig among Tories', cost:-1, effect:'Standing lower; Hartopp approves',
     blurb:`You said at the Tamworths’ table that Mr Fox had a point. Three gentlemen put down their glasses.`,
     apply:() => { add({standing:-10}); reg('cullerne', -1); reg('hartopp', 1); }},
-  { id:'portion', group:'marriage', name:'Married for her portion', cost:-1, effect:'Household colder; Henrietta cool',
-    blurb:`She brought eight thousand pounds. It went on the roof. She has never spoken of it. When it rains she looks up.`,
-    apply:() => { add({family:-12}); reg('henrietta', -2, 'Knows you married her eight thousand pounds'); }},
-  { id:'gout', group:'failing', name:'Gout', cost:-1, effect:'Riding the estate does less; winters are worse',
+  { id:'portion', fx:['+£1,500 off the mortgage', '−12 Peace of the household', '−2 in Henrietta’s regard'], group:'marriage', name:'Married for her portion', cost:1, effect:'Mortgage £1,500 less; household colder; Henrietta cool',
+    blurb:`Her father put eight thousand pounds on the table. His lawyers tied up all but fifteen hundred. That went to the mortgagee the week after the wedding. Henrietta has the receipt.`,
+    apply:() => { S.mortgage = Math.max(0, S.mortgage - 1500); add({family:-12}); reg('henrietta', -2, 'Knows you married her eight thousand pounds'); }},
+  { id:'gout', fx:['−3 Peace of the household every winter', '−Riding the tenancies earns 2 Goodwill, not 4'], group:'character', name:'Gout', cost:-1, effect:'Riding the estate does less; winters are worse',
     blurb:`It is in the left foot. Your father had it there. The surgeon calls it “a very fine gout”.`,
-    apply:() => {}}
+    apply:() => {}},
+  // added so that each heading offers three advantages and three burdens
+  { id:'dean', fx:['+6 Standing', '+2 in Dr Gall’s regard'], group:'marriage', name:'Her uncle is Dean of Wells', cost:1, effect:'Standing higher; Dr Gall civil',
+    blurb:`The Dean dines at the Hall each August and stays three weeks. He brings his own sherry. Dr Gall calls on the second day in clean bands.`,
+    apply:() => { add({standing:6}); reg('gall', 2, 'Henrietta’s uncle is a Dean'); }},
+  { id:'hunt', fx:['+7 Standing', '−3 Goodwill of the parish'], group:'name', name:'Rides straight to hounds', cost:1, effect:'Standing higher; goodwill a little lower',
+    blurb:`You took the Kennet in flood at Marsh Benham on a horse called Parson. The hunt drank your health for a week. Mr Buckeridge walked his wheat next morning with a notebook.`,
+    apply:() => { add({standing:7, goodwill:-3}); }},
+  { id:'trade', fx:['+£300 in hand', '−12 Standing'], group:'past', name:'Your father was in sugar', cost:-1, effect:'Purse +£300; standing lower',
+    blurb:`He had a warehouse on the Welsh Back at Bristol and a share in nine ships. He left you three hundred pounds and his ledgers. The county knows what he gave for each ship.`,
+    apply:() => { S.money += 300; add({standing:-12}); }},
+  { id:'oxford', fx:['−2 in Dr Gall’s regard', '−4 Standing'], group:'past', name:'Left Oxford without a degree', cost:-1, effect:'Dr Gall cold; standing a little lower',
+    blurb:`You were to have had the living of Hatherley. In your second year at Oriel a pig was found in the Provost’s lodging. Dr Gall has the living.`,
+    apply:() => { reg('gall', -2, 'Holds the living you were meant for'); add({standing:-4}); }},
+  { id:'jointure', fx:['−£120 a year'], group:'fortune', name:'Your uncle’s widow has her jointure', cost:-2, effect:'£120 a year charged on the estate',
+    blurb:`A hundred and twenty pounds a year for her life, charged on the estate. She is fifty-one. She lives at Cheltenham and walks four miles before breakfast.`,
+    apply:() => {}},
+  { id:'mother', fx:['−10 Peace of the household'], group:'marriage', name:'Her mother lives at the Hall', cost:-1, effect:'Household colder',
+    blurb:`She came for Edmund’s christening. Her trunks went up to the yellow room. On Sundays she carves.`,
+    apply:() => { add({family:-10}); }},
+  { id:'taste', fx:['−£120 a year in milliners’ bills'], group:'marriage', name:'A wife with a taste for town', cost:-2, effect:'£120 a year in bills',
+    blurb:`Henrietta has her gowns from Bond Street and her hats from a Frenchwoman at Bath. The bills come in at Christmas. Crabbe has not been shown them.`,
+    apply:() => {}},
+  { id:'brother', fx:['−£40 to £150 every spring'], group:'marriage', name:'Her brother borrows', cost:-1, effect:'A loan to her brother every spring',
+    blurb:`Her brother Frederick is in the Militia. He writes each spring from a different town. The sum is on the second sheet.`,
+    apply:() => {}},
+  { id:'lawsuit', fx:['−£40 a year in law', '−4 Standing'], group:'name', name:'A lawsuit with the Tamworths', cost:-1, effect:'£40 a year in law; standing a little lower',
+    blurb:`It is about a pew. Your grandfather began it in 1761. The papers fill two deed boxes at the attorney’s in Wyvern.`,
+    apply:() => { add({standing:-4}); }},
+  { id:'bottle', fx:['−£40 a year in wine', '−6 Peace of the household'], group:'character', name:'Three bottles a day', cost:-1, effect:'£40 a year in wine; household colder',
+    blurb:`Port after dinner. Your uncle laid down forty dozen of the ’75. There are nine dozen left.`,
+    apply:() => { add({family:-6}); }}
 ];
 const TRAIT_GROUPS = [
   ['past', 'His past', 'Nothing to speak of'],
   ['fortune', 'His fortune', 'As your uncle left it'],
   ['marriage', 'His marriage', 'A sensible match'],
-  ['gift', 'His advantage', 'None in particular'],
-  ['failing', 'His failing', 'None he will admit to']
+  ['name', 'His name in the county', 'Neither loved nor hated'],
+  ['character', 'His character', 'Nothing remarked on']
 ];
 const traitById = id => TRAITS.find(t => t.id === id);
 const pointsLeft = ids => TRAIT_POINTS - ids.reduce((a, id) => a + traitById(id).cost, 0);
@@ -860,7 +922,7 @@ function beginSeason(){
   ventureTick(line);
   if (q === 1) { const w = 100 + (F('merino') ? (y < 1811 ? 110 : 15) : 0) + (F('merinoRam') ? 15 : 0); line('The wool clip', w); S.yearIncome += w;
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
-  if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
+  if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve) * (1 + houseOf('labour').wheat)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
   householdQuarter(line); homeFarmCosts(line);
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
@@ -882,7 +944,7 @@ function beginSeason(){
   }
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
   // Nothing keeps without tending: regard, like a hedge, grows out.
-  if (S.t > 0) { const dear = P >= 95 && !F('soup') && !F('wages');
+  if (S.t > 0) { const dear = P >= 95 && !F('soup') && !F('wages') && house('labour') !== 'high';
     regardQuarter(line);
     if (dear && q === 3) S.notes.push('Bread at famine price. The parish looks at the Hall, and counts its chimneys.'); }
   S.ledger = L;
@@ -1496,7 +1558,7 @@ The rooks come over to the Hall roof. They are there each morning when you go ou
 ];
 
 function undertakingOptions(){
-  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }})).concat(estOptions());
+  const o = UNDERTAKINGS.filter(u => u.id !== 'retrench' && (!u.if || u.if())).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); LAST_CUT = null; const text = u.run();
@@ -8493,11 +8555,18 @@ function estOptions(){ const i = estIdx(), y = S.year, o = [];
 function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing + societyMark() - 6 * (S.settledSold || 0), 5, 95);
   if (S.annuities) line(S.annuities > 1 ? 'Annuities on your life, ' + numWords(S.annuities) : 'Annuity on your life', -25 * S.annuities);
   line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
+  if (T('jointure')) line('Your uncle’s widow, her jointure', -30);
+  if (T('taste')) line('Milliners and mantua-makers', -30);
+  if (T('bottle')) line('The wine merchant', -10);
+  if (T('lawsuit') && S.season === 3) line('Costs in the matter of the pew', -40);
+  if (T('brother') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
+  { const sc = houseCost('schoolroom'); if (sc) line(sc > 0 ? 'The schoolroom: governess and masters' : 'Saved by sending the governess away', -sc / 4); }
+  { const sv = houseCost('servants'), sb = houseCost('stables'); if (sv) line(sv > 0 ? 'Servants’ wages above the county rate' : 'Saved on servants’ wages', -sv / 4); if (sb) line(sb > 0 ? 'The stables: corn, a second groom, the farrier' : 'Saved in the stables', -sb / 4); }
   if (S.t > 0) societyQuarter(line); }
 /* The home farm pays its men by the week, and the vicar his tenth. */
 const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
 function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
-  line('Home farm wages, nine men at ' + s + 's. the week', -(9 * s * 13 / 20) * (live('thresher') ? 0.94 : 1));
+  const paid = s + houseOf('labour').shillings; line('Home farm wages, nine men at ' + paid + 's. the week', -(9 * paid * 13 / 20) * (live('thresher') ? 0.94 : 1));
   if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75); }
 
 /* ---------- the land market: buy at any time, sell any farm ---------- */
@@ -8657,7 +8726,7 @@ function societyList(){ const open = S.phase !== 'end' && !S.dead;
   return Object.keys(SOCIETY).map(id => { const d = SOCIETY[id], state = ended(id) ? 'ended' : held(id) ? 'inHand' : 'open', keep = socKeep(id);
     const why = state !== 'open' ? '' : !open ? 'The books are closed.' : d.if && !d.if() ? d.ifWhy : S.money < d.cost ? 'The purse will not stand ' + fmt(d.cost) + '.' : '';
     const canEnd = open && state === 'inHand' && !!d.end;
-    return {id, name:d.name, where:d.where, cost:d.cost || 0, keep, sell:d.sell || 0, well:d.well, ill:d.ill, effects:d.effects, fx:societyFx(id), state, can:state === 'open' && !why, why, verb:d.verb || 'Pay for it',
+    return {id, house:!!d.house, name:d.name, where:d.where, cost:d.cost || 0, keep, sell:d.sell || 0, well:d.well, ill:d.ill, effects:d.effects, fx:societyFx(id), state, can:state === 'open' && !why, why, verb:d.verb || 'Pay for it',
       held:state === 'inHand' ? d.held : '', note:state === 'inHand' ? (keep ? 'Costs ' + fmt(keep) + ' a year to keep' : d.heir ? 'Came with the house' : 'Since ' + soc(id).year) : state === 'ended' ? (d.sell ? 'Sold' : 'Given up') + ', ' + soc(id).ended : keep ? fmt(keep) + ' a year to keep' : '',
       canEnd, endLabel:state === 'inHand' && d.end ? d.endLabel + (d.sell ? ', ' + fmt(d.sell) : '') : '', endWhy:''}; }); }
 function beginSociety(id){ const x = societyList().find(r => r.id === id); if (!x || !x.can) return false; const d = SOCIETY[id];
@@ -8902,12 +8971,19 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   g += put('goodwill', F('cottages') ? 4 : 0, 'The cottages'); g += put('goodwill', F('school') ? 3 : 0, 'The school'); g += put('goodwill', F('wages') ? 5 : 0, 'Wages by the loaf'); g += put('goodwill', F('soup') ? 2 : 0, 'The soup kitchen');
   g += put('goodwill', F('enclosed') ? (F('allotments') ? -3 : -9) : 0, 'The common inclosed'); g += put('goodwill', vent('thresher') && !vent('thresher').ended ? -5 : 0, 'The threshing machine');
   g += put('goodwill', held('harriers') ? -2 : 0, 'Harriers over the wheat'); g += put('goodwill', i === 3 ? -4 : i === 0 ? 2 : 0, i === 3 ? 'A splendid house in a hungry parish' : 'A plain table');
-  g += put('goodwill', PRICES[S.year] >= 95 && !F('soup') && !F('wages') ? -8 : 0, 'Bread at famine price');
+  g += put('goodwill', PRICES[S.year] >= 95 && !F('soup') && !F('wages') && house('labour') !== 'high' ? -8 : 0, 'Bread at famine price');
   let fm = 45; why.family.push('45 The house as you found it'); fm += put('family', idle('home', 4) ? -6 : 0, 'You have not kept at home this twelvemonth');
   fm += put('family', 3 * S.chars.henrietta.r, 'Henrietta’s regard'); fm += put('family', F('edmundDead') ? 0 : S.chars.edmund.r, 'Edmund’s regard');
   fm += put('family', [-8, 0, 4, 7][i], cap1(EST[i].name)); fm += put('family', F('newFront') ? 3 : 0, 'The new front'); fm += put('family', F('icehouse') ? 2 : 0, 'The ice-house');
   fm += put('family', S.money < 0 ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
-  return {standing:clamp(st, 5, 95), goodwill:clamp(g, 5, 95), family:clamp(fm, 5, 95), why}; }
+  for (const dial in HOUSE) { const h = houseOf(dial), nm = HOUSE[dial].name + ', ' + h.label.toLowerCase(); st += put('standing', h.standing || 0, nm); g += put('goodwill', h.goodwill || 0, nm); fm += put('family', h.family || 0, nm); }
+  // what the squire was born or married to stays with him: each choice at the start moves its mark for good by what its card says
+  const born = {standing:st, goodwill:g, family:fm}; for (const k in TRAIT_MARK) for (const id in TRAIT_MARK[k]) if (T(id) && !(id === 'court' && (F('courtLost') || F('courtSold'))) && !(id === 'captain' && k === 'family' && F('crewGone'))) born[k] += put(k, TRAIT_MARK[k][id], traitById(id).name);
+  return {standing:clamp(born.standing, 5, 95), goodwill:clamp(born.goodwill, 5, 95), family:clamp(born.family, 5, 95), why}; }
+const TRAIT_MARK = {
+  standing:{soldier:5, captain:4, court:12, connexions:15, enemy:-3, whig:-10, dean:6, hunt:7, trade:-12, oxford:-4, lawsuit:-4},
+  goodwill:{beloved:15, stranger:-12, hunt:-3},
+  family:{captain:-5, lovematch:12, portion:-12, mother:-10, bottle:-6} };
 const SINK = 5;   // a figure loses a point a season for every five it stands above its mark
 /* The three duties: the tenancies, the county, the family. Each goes stale if the squire lets it lie. */
 const idle = (k, seasons) => S.t - ((S.duty && S.duty[k]) || 0) >= seasons;
@@ -8929,14 +9005,70 @@ function regardQuarter(line){ const m = marks(), q = S.season, d = {};
   if (S.family < 35 && !F('henriettaAway')) { fl('henriettaAway'); reg('henrietta', -1, 'Went to Bath sooner than stay in the house'); S.notes.push(`Henrietta has her trunks brought down. She has taken lodgings in Gay Street, Bath. She does not say for how long.`); }
   else if (S.family >= 46 && F('henriettaAway')) { fl('henriettaAway', false); S.notes.push(`A chaise from Bath sets Henrietta down at the door. Mrs Bunce has had the fire lit in the blue room since Tuesday.`); }
   if (F('henriettaAway')) line('Lodgings in Gay Street, Bath, and a chair', -55); }
-const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/cobbett.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/hartoppShearing.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jubilee.jpg','events/kittyBotany.jpg','events/ludd.jpg','events/manTraps.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/farms.jpg','icons/persons.jpg','icons/society.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-haunch.jpg','undertakings/dine-lamb.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-partridge.jpg','undertakings/dine-snow.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-fish.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/ride-arrears.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-dear.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-rooks.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
+
+/* ---------- the household page ----------
+   The establishment, three rates of pay, and the things that came with the house. Each rate is low, standard or high.
+   A rate moves a mark for as long as it stands, costs or saves money every quarter, and stings or pleases once on the day it is changed. */
+const HOUSE = {
+  servants:{name:'Servants’ wages', what:'The indoor people: butler, cook, footmen, maids',
+    low:{label:'Low', name:'A fifth under the county rate', cost:-50, family:-5, once:{family:-3}},
+    standard:{label:'Standard', name:'The county rate: a cook at fourteen guineas, a footman at twenty-four'},
+    high:{label:'High', name:'A quarter over, with tea and beer money', cost:65, family:4, once:{family:2}}},
+  labour:{name:'Labourers’ wages', what:'Nine men on the home farm',
+    low:{label:'Low', name:'Two shillings under the going rate', shillings:-2, goodwill:-6, wheat:-0.04, once:{goodwill:-3}},
+    standard:{label:'Standard', name:'The going rate', shillings:0, wheat:0},
+    high:{label:'High', name:'Two shillings over the going rate', shillings:2, goodwill:5, standing:-2, wheat:0.03, once:{goodwill:2}}},
+  stables:{name:'The stables', what:'Coach horses, hacks, grooms and corn',
+    low:{label:'Low', name:'One groom, and hay', cost:-50, standing:-3, once:{standing:-2}},
+    standard:{label:'Standard', name:'As your uncle kept them'},
+    high:{label:'High', name:'A second groom, oats and new harness', cost:70, standing:4, once:{standing:2}}},
+  schoolroom:{name:'The schoolroom', what:'Kitty’s education, while she is at home', if:() => kittyHome(), gone:'Kitty has left the schoolroom.',
+    low:{label:'Low', name:'No governess. Henrietta hears her lessons', cost:-32, family:-4, once:{family:-2}, kitty:-1},
+    standard:{label:'Standard', name:'A governess at thirty guineas'},
+    high:{label:'High', name:'A governess at sixty, and masters from Reading for music and drawing', cost:75, family:3, standing:2, once:{family:2}, kitty:1}} };
+const houseOn = dial => !HOUSE[dial].if || HOUSE[dial].if();
+const house = dial => (houseOn(dial) && S.house && S.house[dial]) || 'standard';
+const houseOf = dial => Object.assign({cost:0, shillings:0, wheat:0}, HOUSE[dial][house(dial)]);
+const houseCost = dial => Math.round((houseOf(dial).cost || 0) * priceRise(S.year) / 20) * 20;   // a year, at this year's prices
+const signed = (n, t) => (n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t;
+const METER = {standing:'Standing', goodwill:'Goodwill of the parish', family:'Peace of the household'};
+function houseFx(dial, lvl){ const h = HOUSE[dial][lvl], out = [], y = S.year;
+  if (h.cost) { const c = Math.round(h.cost * priceRise(y) / 20) * 20; out.push((c > 0 ? MINUS : '+') + fmt(Math.abs(c)) + ' a year'); }
+  if (h.shillings) { const c = Math.round(9 * Math.abs(h.shillings) * 52 / 20 / 5) * 5; out.push((h.shillings > 0 ? MINUS : '+') + fmt(c) + ' a year, nine men at ' + (weekWage(y) + h.shillings) + 's. the week'); }
+  for (const k in METER) if (h[k]) out.push(signed(h[k], METER[k])); if (h.kitty) out.push(signed(h.kitty, 'in Kitty’s regard'));
+  if (h.wheat) out.push(signed(Math.round(h.wheat * 100), '% home farm wheat').replace(' %', '%'));
+  return out.length ? out : ['No change']; }
+function setHousehold(dial, lvl){ const row = householdList().wages.find(w => w.id === dial), o = row && row.levels.find(l => l.id === lvl); if (!o || !o.can) return false;
+  const order = ['low', 'standard', 'high'], up = order.indexOf(lvl) > order.indexOf(house(dial)), h = HOUSE[dial];
+  S.house = S.house || {}; S.houseT = S.houseT || {}; const was = house(dial); S.house[dial] = lvl; S.houseT[dial] = S.t;
+  // the day's sting or pleasure: going down hurts by the lower rung's figure, going up pleases by the higher one's
+  const once = up ? (h[lvl].once || h[was].once && Object.fromEntries(Object.entries(h[was].once).map(([k, v]) => [k, Math.ceil(-v / 2)]))) : (h[lvl].once || h[was].once && Object.fromEntries(Object.entries(h[was].once).map(([k, v]) => [k, -v])));
+  if (once) add(once); if (h[lvl].kitty) reg('kitty', h[lvl].kitty, h[lvl].kitty > 0 ? 'You gave her masters for music and drawing' : 'You sent her governess away');
+  S.journal.unshift({when:stamp(), title:'Household', did:h.name + ': ' + h[lvl].name.charAt(0).toLowerCase() + h[lvl].name.slice(1)}); save(); render(); return true; }
+function setEstablishment(id){ const row = householdList().establishment.find(e => e.id === id); if (!row || !row.can) return false;
+  const text = stepEst(EST.findIndex(e => e.id === id) - estIdx()); S.estT = S.t; S.notes.push(text);
+  S.journal.unshift({when:stamp(), title:'Household', did:(row.verb === 'Set up' ? 'Set up ' : 'Reduced to ') + row.name}); save(); render(); return true; }
+function householdList(){ const open = S.phase !== 'end' && !S.dead, i = estIdx(), y = S.year, shut = open ? '' : 'The books are closed.';
+  const FAM = [-8, 0, 4, 7], GW = [2, 0, 0, -4];
+  const establishment = EST.map((e, k) => { const d = k - i, dc = estCost(k, y) - estCost(i, y), fx = [];
+    if (d) { fx.push((dc > 0 ? MINUS : '+') + fmt(Math.abs(dc)) + ' a year'); if (d > 0) fx.push(MINUS + fmt(EST_SETUP[k]) + ' to set up');
+      fx.push(signed(e.standing - EST[i].standing, 'Standing')); if (FAM[k] - FAM[i]) fx.push(signed(FAM[k] - FAM[i], METER.family)); if (GW[k] - GW[i]) fx.push(signed(GW[k] - GW[i], METER.goodwill)); }
+    const why = !d ? '' : shut || (Math.abs(d) > 1 ? 'One step at a time.' : S.estT === S.t ? 'The house has been turned over once this season.' : d > 0 && S.money < EST_SETUP[k] ? 'The purse will not stand ' + fmt(EST_SETUP[k]) + ' down.' : '');
+    return {id:e.id, name:cap1(e.name), cost:estCost(k, y), now:!d, verb:d > 0 ? 'Set up' : d < 0 ? 'Reduce' : '', can:!!d && !why, why, fx:d ? fx : [MINUS + fmt(estCost(k, y)) + ' a year']}; });
+  const wages = Object.keys(HOUSE).map(dial => ({id:dial, name:HOUSE[dial].name, what:HOUSE[dial].what, now:house(dial), off:!houseOn(dial),
+    levels:['low', 'standard', 'high'].map(lvl => { const now = house(dial) === lvl, why = now ? '' : shut || (!houseOn(dial) ? HOUSE[dial].gone : '') || ((S.houseT || {})[dial] === S.t ? 'Changed once this season already.' : '');
+      return {id:lvl, label:HOUSE[dial][lvl].label, name:HOUSE[dial][lvl].name, now, can:!now && !why, why, fx:houseFx(dial, lvl)}; })}));
+  const lots = societyList().filter(r => SOCIETY[r.id].house);
+  return {establishment, wages, lots, cost:estCost(i, y) + houseCost('servants') + houseCost('stables') + houseCost('schoolroom')}; }
+for (const id of ['plate', 'cellar', 'hunters', 'library']) SOCIETY[id].house = true;
+const ART = new Set(['events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/badajoz.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath-1.jpg','events/bath-2.jpg','events/bath-3.jpg','events/bath-go.jpg','events/bath-letter.jpg','events/bath-selina.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bubbleCall.jpg','events/bubbleRise.jpg','events/bubbleTip.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/clergy-arms.jpg','events/clergy-bishop.jpg','events/clergy-brothers.jpg','events/clergy-burial.jpg','events/clergy-hunting.jpg','events/clergy-informer.jpg','events/clergy-school.jpg','events/clergy-southcott.jpg','events/clergy-tithe.jpg','events/clergy-tooke.jpg','events/clergy-trusler.jpg','events/cobbett.jpg','events/cold-bench.jpg','events/cold-card.jpg','events/cold-cullerne.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/county-balloon.jpg','events/county-band.jpg','events/county-barclay.jpg','events/county-bounds.jpg','events/county-coat.jpg','events/county-crapper.jpg','events/county-elephant.jpg','events/county-fight.jpg','events/county-flood.jpg','events/county-forbury.jpg','events/county-goldcup.jpg','events/county-hen.jpg','events/county-hocktide.jpg','events/county-hot.jpg','events/county-lottery.jpg','events/county-quack.jpg','events/county-scouring.jpg','events/county-wife.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmund-aboukir.jpg','events/edmund-agent.jpg','events/edmund-badajoz.jpg','events/edmund-beacon.jpg','events/edmund-berth.jpg','events/edmund-burials.jpg','events/edmund-busaco.jpg','events/edmund-cantonments.jpg','events/edmund-chancel.jpg','events/edmund-chelmsford.jpg','events/edmund-christening.jpg','events/edmund-cold-letter.jpg','events/edmund-cold-room.jpg','events/edmund-colour.jpg','events/edmund-copenhagen.jpg','events/edmund-corunna.jpg','events/edmund-curacy.jpg','events/edmund-disembodied.jpg','events/edmund-dover.jpg','events/edmund-drains.jpg','events/edmund-ferrol.jpg','events/edmund-flushing.jpg','events/edmund-gazette.jpg','events/edmund-guardroom.jpg','events/edmund-gun.jpg','events/edmund-hounds.jpg','events/edmund-huddersfield.jpg','events/edmund-hunter.jpg','events/edmund-hythe.jpg','events/edmund-ipswich.jpg','events/edmund-java.jpg','events/edmund-kit.jpg','events/edmund-machine.jpg','events/edmund-mess.jpg','events/edmund-middlewatch.jpg','events/edmund-miss-army.jpg','events/edmund-miss-church.jpg','events/edmund-miss-home.jpg','events/edmund-miss-militia.jpg','events/edmund-miss-navy.jpg','events/edmund-normancross.jpg','events/edmund-ordained.jpg','events/edmund-oriel.jpg','events/edmund-outfit.jpg','events/edmund-paidoff.jpg','events/edmund-plate.jpg','events/edmund-pony.jpg','events/edmund-pressed.jpg','events/edmund-prize.jpg','events/edmund-pyrenees.jpg','events/edmund-ram.jpg','events/edmund-reduced.jpg','events/edmund-rent.jpg','events/edmund-rentbook.jpg','events/edmund-rodrigo.jpg','events/edmund-sandyhook.jpg','events/edmund-sermon.jpg','events/edmund-settle-letter.jpg','events/edmund-settle-room.jpg','events/edmund-settle-stiff.jpg','events/edmund-shannon.jpg','events/edmund-shorncliffe.jpg','events/edmund-skaw.jpg','events/edmund-swedes.jpg','events/edmund-tetuan.jpg','events/edmund-thirty.jpg','events/edmund-tithe.jpg','events/edmund-tithepig.jpg','events/edmund-toulon.jpg','events/edmund-toulouse.jpg','events/edmund-ushant.jpg','events/edmund-vestry.jpg','events/edmund-vimeiro.jpg','events/edmund-vitoria.jpg','events/edmund-volunteering.jpg','events/edmund-waiting.jpg','events/edmund-zealand.jpg','events/edmundDuel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election-1802-member.jpg','events/election-1802.jpg','events/election-1806-member.jpg','events/election-1806.jpg','events/election-1807-member.jpg','events/election-1807.jpg','events/election-1812-member.jpg','events/election-1812.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/farmOffered.jpg','events/fate-badajoz-alive.jpg','events/fate-badajoz-dead.jpg','events/fate-duel-alive.jpg','events/fate-duel-dead.jpg','events/fate-duel-kept.jpg','events/fate-fever-alive.jpg','events/fate-fever-dead.jpg','events/fate-fever-kept.jpg','events/fate-walcheren-alive.jpg','events/fate-walcheren-dead.jpg','events/fate-walcheren-kept.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/georgeMeeting.jpg','events/hammer.jpg','events/hartoppShearing.jpg','events/heir.jpg','events/henPorch.jpg','events/henRichmond.jpg','events/henSongs.jpg','events/henrietta-bunce.jpg','events/henrietta-carpet.jpg','events/henrietta-chariot.jpg','events/henrietta-gowns.jpg','events/henrietta-housemaid.jpg','events/henrietta-margravine.jpg','events/henrietta-mother.jpg','events/henrietta-mourning.jpg','events/henrietta-pianoforte.jpg','events/henrietta-portrait.jpg','events/henrietta-preacher.jpg','events/henrietta-tea.jpg','events/henrietta.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jamaica.jpg','events/jubilee.jpg','events/kitty-assembly.jpg','events/kitty-clifton-black.jpg','events/kitty-clifton.jpg','events/kitty-danes.jpg','events/kitty-latin.jpg','events/kitty-library.jpg','events/kitty-manumit.jpg','events/kitty-northampton.jpg','events/kitty-oakes-mangle.jpg','events/kitty-oakes-pew.jpg','events/kitty-reading-parole.jpg','events/kitty-stmalo.jpg','events/kitty-telescope.jpg','events/kitty-vane-bailiff.jpg','events/kitty-vane-child.jpg','events/kitty-vane-march.jpg','events/kitty-walks.jpg','events/kitty-widow.jpg','events/kitty-wyvern.jpg','events/kittyBotany.jpg','events/kittyDoor.jpg','events/ludd.jpg','events/manTraps.jpg','events/member-bellamy.jpg','events/member-bellingham.jpg','events/member-bull.jpg','events/member-burdett.jpg','events/member-committee.jpg','events/member-curwen.jpg','events/member-flogging.jpg','events/member-franks.jpg','events/member-gas.jpg','events/member-maiden.jpg','events/member-melville.jpg','events/member-petition.jpg','events/member-place.jpg','events/member-register.jpg','events/member-schools.jpg','events/member-whip.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/parish-audit.jpg','events/parish-harvest.jpg','events/parish-letter.jpg','events/parish-pryor.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/royalBond.jpg','events/royalPrincess.jpg','events/royalRegency.jpg','events/royalStag.jpg','events/royalTerrace.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/walcheren.jpg','events/war-abbe.jpg','events/war-contribution.jpg','events/war-corunna.jpg','events/war-deserter.jpg','events/war-guineas.jpg','events/war-prisoner.jpg','events/war-remount.jpg','events/war-smart.jpg','events/war-wives.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/farms.jpg','icons/household.jpg','icons/persons.jpg','icons/society.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-guilford.jpg','undertakings/dine-haunch.jpg','undertakings/dine-ice.jpg','undertakings/dine-lamb.jpg','undertakings/dine-lobscouse.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-onefootman.jpg','undertakings/dine-partridge.jpg','undertakings/dine-pitt.jpg','undertakings/dine-regrets.jpg','undertakings/dine-snow.jpg','undertakings/dine-swans.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/dine-whist.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-barleybread.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-coverley.jpg','undertakings/home-drip.jpg','undertakings/home-fish.jpg','undertakings/home-flannel.jpg','undertakings/home-flea.jpg','undertakings/home-indians.jpg','undertakings/home-linen.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/home-sextant.jpg','undertakings/home-stocking.jpg','undertakings/home-swing.jpg','undertakings/ride-arrears.jpg','undertakings/ride-barley.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-cottages.jpg','undertakings/ride-coxswain.jpg','undertakings/ride-dear.jpg','undertakings/ride-edmund.jpg','undertakings/ride-ewes.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-gout.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-house.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-pond.jpg','undertakings/ride-quickset.jpg','undertakings/ride-rooks.jpg','undertakings/ride-school.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-drum.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-hassock.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rate.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-admiralty.jpg','undertakings/town-brooks.jpg','undertakings/town-burdett.jpg','undertakings/town-candles.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-levee.jpg','undertakings/town-partners.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
-const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
+const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['household', 'Household'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
@@ -8965,6 +9097,7 @@ const platePic = (src, cap) => { const u = artURL(src); return u ? `<img src="${
 function plateHTML(q, src, cap){ const i = platePic(src, cap); return `<figure class="plate${i ? ' has' : ''}">${sceneSVG(q)}${i}</figure>`; }
 [0, 1, 2, 3].forEach(i => { const u = artURL('seasons/' + i); if (u) new Image().src = u; });
 
+let STEP = '', LEAFUP = true;
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
@@ -8976,6 +9109,7 @@ function render(){
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   if (S.phase === 'event') { if (PAPER !== S.t + ':' + S.pending) { PAPER = S.t + ':' + S.pending; TAB = 'paper'; } } else { PAPER = ''; if (TAB === 'paper') TAB = 'accounts'; }
+  { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
@@ -8987,9 +9121,11 @@ function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''
   for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.7, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
-  document.body.classList.toggle('reading', TAB === 'paper');
-  $('tabs').innerHTML = (S.phase === 'event' ? [['paper', 'The Paper']] : []).concat(TABS).map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
-function showTab(t){ TAB = t; WHO = ''; drawBook(); }
+  document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
+  const leaf = S.phase === 'event' ? ['paper', 'The Paper'] : ['leaf', S.phase === 'ledger' ? 'The Quarter' : S.phase === 'end' ? 'Finis' : 'The Season'];
+  $('tabs').innerHTML = [leaf].concat(TABS).map(([id, n]) => `<button class="${id === 'leaf' || id === 'paper' ? 'leaf' : ''}${id === 'leaf' ? ' phone' : ''}" aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
+/* On a phone one page shows at a time: LEAFUP is the paper in hand, otherwise the tab chosen. */
+function showTab(t){ LEAFUP = t === 'leaf' || t === 'paper'; if (t !== 'leaf') TAB = t; WHO = ''; drawBook(); if (innerWidth <= 1080) window.scrollTo({top:0}); }
 function showWho(id){ WHO = id; drawBook(); }
 
 function introHTML(){ const has = !!load();
@@ -9018,11 +9154,11 @@ const pickList = () => Object.values(PICKS).filter(Boolean);
 /* Favours: three to begin. An advantage spends one or two, a burden earns them back. Each row opens a list; what cannot be afforded is greyed. */
 const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
 function picksHTML(){ const left = pointsLeft(pickList());
-  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${left > 0 ? '●'.repeat(left) : 'none'}</b><small>An advantage spends them. A burden earns them back.</small></p>
+  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${'●'.repeat(Math.max(0, left))}<i>${'○'.repeat(Math.max(0, TRAIT_POINTS - Math.max(0, left)))}</i></b><small>An advantage spends them. A burden earns them back.</small></p>
     ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
-      const opt = (id, name, cost, effect) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${effect ? `<small>${esc(effect)}</small>` : ''}</button>`;
+      const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${t[0] === '+' ? 'pos' : 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
       return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
-        <div class="opts" role="listbox">${opt('', plain, 0, '')}${TRAITS.filter(t => t.group === g).map(t => opt(t.id, t.name, t.cost, t.effect)).join('')}</div></details>
+        <div class="opts" role="listbox">${opt('', plain, 0, '')}${[1, -1].map(sg => `<div>${TRAITS.filter(t => t.group === g && Math.sign(t.cost) === sg).map(t => opt(t.id, t.name, t.cost, t.fx)).join('')}</div>`).join('')}</div></details>
         <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
 function setPick(g, id){ PICKS[g] = id || null; if ($('picks')) { $('picks').innerHTML = picksHTML(); fitLeaf(); } }
 function syncTraits(){ if ($('picks')) $('picks').innerHTML = picksHTML(); }
@@ -9055,8 +9191,6 @@ function ledgerHTML(){
   return `${runhead('Papers received this quarter', 'Cr.')}
     ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
     <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
-    <div class="narrow"><p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
-    <h2>The Accounts</h2>${accountHTML()}</div>
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
@@ -9109,6 +9243,7 @@ function versoHTML(){
   if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll${typeof farmsList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + farmsHTML();
   if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">Money put out at hazard. Some of it comes home every year and some is never seen again.</p>` + venturesHTML();
   if (TAB === 'society') return head + `<h2 class="qtitle">Figure and Consequence${typeof societyList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">What the county sees of you. Most of it costs something every year to keep.</p>` + societyHTML();
+  if (TAB === 'household' && typeof householdList === 'function') return head + `<h2 class="qtitle">The Household</h2>` + householdHTML();
   if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2><p class="lede">Building and mending, paid for by the quarter. Two may be in hand at once.</p>` + worksHTML();
   if (TAB === 'persons') return head + `<h2 class="qtitle">Persons of Consequence</h2>` + peopleHTML();
   if (TAB === 'wheat') return head + `<h2 class="qtitle">Wheat at Wyvern Market</h2>` + chartHTML();
@@ -9181,7 +9316,20 @@ const DRAFT_SOCIETY = [
   {name: 'A pack of harriers', cost: 260, well: 'Forty gentlemen to breakfast twice a week.'},
   {name: 'A commission for Edmund', cost: 450, well: 'An ensigncy in a marching regiment.'},
   {name: 'The family plate', cost: 600, state: 'inHand', held: 'In the strong room', well: 'It would fetch about six hundred pounds at Rundell’s.'}];
-function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
+function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList().filter(r => !r.house || typeof householdList !== 'function') : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
+
+/* The Household: the footing the house is kept on, what its people are paid, and what is kept in it. */
+const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
+function householdHTML(){ const h = householdList();
+  const est = h.establishment.map(e => `<details name="lot"><summary><b>${esc(e.name)}</b><span>${e.now ? '<i class="tag">As now</i>' : ''}${amt(e.cost, -1)}</span></summary><div>${fxList(e.fx)}
+    ${e.now ? '' : `<p class="terms">${e.why ? `<em>${esc(e.why)}</em>` : ''}</p><button class="inkbtn" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}>${esc(e.verb)}</button>`}</div></details>`).join('');
+  const wages = h.wages.map(w => { const cur = w.levels.find(l => l.now);
+    return `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span><i class="tag">${esc(cur ? cur.label : '')}</i></span></summary><div><p class="terms">${esc(w.what)}.</p>
+      <div class="rungs">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>
+      ${(() => { const y = w.levels.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; })()}</div></details>`; }).join('');
+  return `<dl class="bal slim"><div><dt>The house, a year</dt><dd>${amt(h.cost, -1)}</dd></div></dl>
+    <div class="lots flat"><h3 class="orn">The footing of the house</h3>${est}<h3 class="orn">Wages and keep</h3>${wages}</div>
+    ${h.lots.length ? `<h3 class="orn">Kept in the house</h3>` + lotsHTML(h.lots, true, 'beginSociety', 'endSociety', 'Pay for it') : ''}`; }
 
 const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){
@@ -9216,36 +9364,48 @@ if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude
    Loaded last: it wraps render, start, resume, choose, undertake, showTab and showWho, and alters nothing in them.
    The house is silent until Sound is turned on in the corner of the desk. The choice is remembered. */
 const Sound = (() => {
-  const DIR = 'sound/', VOL = .3, AIR = .32, LAP = 2.5, KEY = 'hatherley-quiet';
+  // Plain audio elements, one to a recording. Safari would not play the same files through the Web Audio API, and plays these.
+  const DIR = 'sound/', VOL = .6, AIR = .45, KEY = 'hatherley-quiet';
+  const NAMES = ['seal', 'page1', 'page2', 'page3', 'quill', 'coins', 'bell', 'toll', 'rook', 'rooks', 'rain', 'wind', 'fire', 'carriage', 'crowd', 'mob', 'shot', 'knocker', 'knock'];
   let muted = true; try { muted = localStorage.getItem(KEY) !== '0'; } catch (err) {}
-  let ctx = null, master = null, live = false, airName = '', airWant = '', airTok = 0, airBus = null, airTag = null;
-  const bufs = {};
-  const fetchBuf = name => bufs[name] || (bufs[name] = fetch(DIR + name + '.mp3').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(a => ctx.decodeAudioData(a)).catch(() => null));
-  // Where the page cannot fetch (opened from a folder), plain audio elements stand in.
-  const tag = (name, vol, delay, loop) => { const a = new Audio(DIR + name + '.mp3'); a.volume = Math.min(1, VOL * vol); a.loop = !!loop; setTimeout(() => { if (!muted) a.play().catch(() => {}); }, delay * 1000); return a; };
+  let blessed = false, airName = '', airWant = '', airEl = null;
+  const els = {}, tally = {ok:0, bad:0, err:''};
+  const el = name => els[name] || (els[name] = Object.assign(new Audio(DIR + name + '.mp3'), {preload:'auto'}));
+  const fail = (name, err) => { tally.bad++; tally.err = name + ': ' + (err && err.message || err); };
+  // An iPhone ignores the volume of an element and plays everything at full, so there the long airs are left out.
+  const fixed = (() => { try { const t = new Audio(); t.volume = .5; return t.volume !== .5; } catch (err) { return true; } })();
 
-  function play(name, vol = 1, delay = 0){ if (muted || !live) return;
-    fetchBuf(name).then(b => { if (muted) return; if (!b) return void tag(name, vol, delay);
-      const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = b; g.gain.value = vol; s.connect(g).connect(master); s.start(ctx.currentTime + delay); }); }
+  // A browser lets an element play unasked only after it has once been played inside a touch. So at the first touch
+  // with sound on, every element is played muted for an instant and stopped. After that they answer to the game.
+  function wake(){ if (muted) return; blessed = true;
+    for (const n of NAMES) { const a = el(n); if (a.ok || a.asking || a.live) continue; a.asking = true; a.muted = true;
+      const done = () => { a.ok = true; a.asking = false; if (!a.live) { a.pause(); try { a.currentTime = 0; } catch (err) {} } a.muted = false; };
+      const no = err => { a.asking = false; a.muted = false; fail(n, err); };
+      try { const p = a.play(); if (p && p.then) p.then(done, no); else done(); } catch (err) { no(err); } }
+    air(airWant); }
 
-  // The air of the place: one long recording at a time, lapped over itself so that the join is not heard.
-  function air(name){ airWant = name; if (!live || muted) name = ''; if (name === airName) return; airName = name; const tok = ++airTok;
-    if (airBus) { const g = airBus; g.gain.setTargetAtTime(0, ctx.currentTime, .7); setTimeout(() => g.disconnect(), 5000); airBus = null; }
-    if (airTag) { airTag.pause(); airTag = null; }
+  function play(name, vol = 1, delay = 0){ if (muted || !blessed) return;
+    const go = () => { if (muted) return; const a = el(name); a.live = true; a.muted = false; a.loop = false; a.volume = Math.min(1, VOL * vol); try { a.currentTime = 0; } catch (err) {}
+      try { const p = a.play(); if (p && p.then) p.then(() => { tally.ok++; a.ok = true; }, err => fail(name, err)); } catch (err) { fail(name, err); } };
+    if (delay) setTimeout(go, delay * 1000); else go(); }
+
+  // The air of the place: one long recording, looped, eased in and out.
+  const ease = (a, to, secs, then) => { clearInterval(a.fade); const from = a.volume, t0 = Date.now();
+    a.fade = setInterval(() => { const k = Math.min(1, (Date.now() - t0) / (secs * 1000)); a.volume = Math.max(0, Math.min(1, from + (to - from) * k)); if (k >= 1) { clearInterval(a.fade); if (then) then(); } }, 60); };
+  function air(name){ airWant = name; if (!blessed || muted || fixed) name = ''; if (name === airName) return; airName = name;
+    if (airEl) { const old = airEl; airEl = null; ease(old, 0, 1, () => old.pause()); }
     if (!name) return;
-    fetchBuf(name).then(b => { if (tok !== airTok) return; if (!b) { airTag = tag(name, AIR, 0, true); return; }
-      const bus = ctx.createGain(); bus.gain.value = 0; bus.gain.setTargetAtTime(AIR, ctx.currentTime, 1.2); bus.connect(master); airBus = bus;
-      const lap = at => { if (tok !== airTok) return; const s = ctx.createBufferSource(), g = ctx.createGain(), end = at + b.duration; s.buffer = b;
-        g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(1, at + LAP); g.gain.setValueAtTime(1, end - LAP); g.gain.linearRampToValueAtTime(0, end);
-        s.connect(g).connect(bus); s.start(at); setTimeout(() => lap(end - LAP), Math.max(0, (end - LAP - ctx.currentTime - 1) * 1000)); };
-      lap(ctx.currentTime); }); }
+    const a = el(name); a.live = true; a.muted = false; a.loop = true; a.volume = 0; airEl = a;
+    try { const p = a.play(); if (p && p.then) p.then(() => { tally.ok++; }, err => fail(name, err)); } catch (err) { fail(name, err); }
+    ease(a, VOL * AIR, 2); }
 
-  function wake(){ if (live) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
-    ctx = new AC(); master = ctx.createGain(); master.gain.value = muted ? 0 : VOL; master.connect(ctx.destination); live = true;
-    if (ctx.state === 'suspended') ctx.resume(); air(airWant); }
   function quiet(q){ muted = q; try { localStorage.setItem(KEY, q ? '1' : '0'); } catch (err) {}
-    if (master) master.gain.setTargetAtTime(q ? 0 : VOL, ctx.currentTime, .05); air(airWant); }
-  return {play, air, wake, quiet, get muted(){ return muted; }};
+    if (q) { air(''); for (const n in els) if (els[n] !== airEl) els[n].pause(); } else wake();
+    if (!q) air(airWant); }
+  // For when somebody hears nothing: shown when the pointer rests on the control.
+  const report = () => !blessed ? 'Sound not yet woken by a touch' : `Plain audio. ${tally.ok} played, ${tally.bad} refused${tally.err ? ' (' + tally.err + ')' : ''}. Air: ${airName || (fixed ? 'left out on this device' : 'none')}`;
+  const ring = () => play('bell', .6);
+  return {play, air, wake, quiet, report, ring, get muted(){ return muted; }};
 })();
 
 (() => {
@@ -9281,13 +9441,13 @@ const Sound = (() => {
   let purse = 0;
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.inkbtn, .lv button')) purse = S ? S.money : 0; }, true);
   document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.inkbtn, .lv button'); if (b && S) Sound.play(Math.abs(S.money - purse) >= 1 ? 'coins' : 'quill', .6); });
-  for (const ev of ['pointerdown', 'keydown']) document.addEventListener(ev, Sound.wake, true);
+  for (const ev of ['click', 'keydown', 'touchend']) document.addEventListener(ev, Sound.wake, true);
   document.addEventListener('visibilitychange', () => Sound.air(document.hidden ? '' : airNow()));
 
   // The one control: a word in the corner of the desk.
   const b = document.createElement('button'); b.id = 'hush'; b.type = 'button';
   const show = () => { b.textContent = Sound.muted ? 'Sound off' : 'Sound on'; b.setAttribute('aria-pressed', String(!Sound.muted)); };
-  b.onclick = () => { Sound.quiet(!Sound.muted); show(); }; show();
+  b.onclick = () => { Sound.quiet(!Sound.muted); show(); if (!Sound.muted) Sound.ring(); }; b.onpointerenter = () => { b.title = Sound.report(); }; show();
   const st = document.createElement('style');
   st.textContent = '#hush{position:fixed;top:6px;right:10px;z-index:5;background:none;border:0;padding:4px 6px;cursor:pointer;font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:#d9c9a3;opacity:.8}#hush:hover,#hush:focus-visible{opacity:1}#hush[aria-pressed="false"]{text-decoration:line-through}';
   document.head.appendChild(st); document.body.appendChild(b);

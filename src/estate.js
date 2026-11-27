@@ -399,11 +399,18 @@ function estOptions(){ const i = estIdx(), y = S.year, o = [];
 function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing + societyMark() - 6 * (S.settledSold || 0), 5, 95);
   if (S.annuities) line(S.annuities > 1 ? 'Annuities on your life, ' + numWords(S.annuities) : 'Annuity on your life', -25 * S.annuities);
   line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
+  if (T('jointure')) line('Your uncle’s widow, her jointure', -30);
+  if (T('taste')) line('Milliners and mantua-makers', -30);
+  if (T('bottle')) line('The wine merchant', -10);
+  if (T('lawsuit') && S.season === 3) line('Costs in the matter of the pew', -40);
+  if (T('brother') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
+  { const sc = houseCost('schoolroom'); if (sc) line(sc > 0 ? 'The schoolroom: governess and masters' : 'Saved by sending the governess away', -sc / 4); }
+  { const sv = houseCost('servants'), sb = houseCost('stables'); if (sv) line(sv > 0 ? 'Servants’ wages above the county rate' : 'Saved on servants’ wages', -sv / 4); if (sb) line(sb > 0 ? 'The stables: corn, a second groom, the farrier' : 'Saved in the stables', -sb / 4); }
   if (S.t > 0) societyQuarter(line); }
 /* The home farm pays its men by the week, and the vicar his tenth. */
 const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
 function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
-  line('Home farm wages, nine men at ' + s + 's. the week', -(9 * s * 13 / 20) * (live('thresher') ? 0.94 : 1));
+  const paid = s + houseOf('labour').shillings; line('Home farm wages, nine men at ' + paid + 's. the week', -(9 * paid * 13 / 20) * (live('thresher') ? 0.94 : 1));
   if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75); }
 
 /* ---------- the land market: buy at any time, sell any farm ---------- */
@@ -563,7 +570,7 @@ function societyList(){ const open = S.phase !== 'end' && !S.dead;
   return Object.keys(SOCIETY).map(id => { const d = SOCIETY[id], state = ended(id) ? 'ended' : held(id) ? 'inHand' : 'open', keep = socKeep(id);
     const why = state !== 'open' ? '' : !open ? 'The books are closed.' : d.if && !d.if() ? d.ifWhy : S.money < d.cost ? 'The purse will not stand ' + fmt(d.cost) + '.' : '';
     const canEnd = open && state === 'inHand' && !!d.end;
-    return {id, name:d.name, where:d.where, cost:d.cost || 0, keep, sell:d.sell || 0, well:d.well, ill:d.ill, effects:d.effects, fx:societyFx(id), state, can:state === 'open' && !why, why, verb:d.verb || 'Pay for it',
+    return {id, house:!!d.house, name:d.name, where:d.where, cost:d.cost || 0, keep, sell:d.sell || 0, well:d.well, ill:d.ill, effects:d.effects, fx:societyFx(id), state, can:state === 'open' && !why, why, verb:d.verb || 'Pay for it',
       held:state === 'inHand' ? d.held : '', note:state === 'inHand' ? (keep ? 'Costs ' + fmt(keep) + ' a year to keep' : d.heir ? 'Came with the house' : 'Since ' + soc(id).year) : state === 'ended' ? (d.sell ? 'Sold' : 'Given up') + ', ' + soc(id).ended : keep ? fmt(keep) + ' a year to keep' : '',
       canEnd, endLabel:state === 'inHand' && d.end ? d.endLabel + (d.sell ? ', ' + fmt(d.sell) : '') : '', endWhy:''}; }); }
 function beginSociety(id){ const x = societyList().find(r => r.id === id); if (!x || !x.can) return false; const d = SOCIETY[id];
@@ -808,12 +815,19 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   g += put('goodwill', F('cottages') ? 4 : 0, 'The cottages'); g += put('goodwill', F('school') ? 3 : 0, 'The school'); g += put('goodwill', F('wages') ? 5 : 0, 'Wages by the loaf'); g += put('goodwill', F('soup') ? 2 : 0, 'The soup kitchen');
   g += put('goodwill', F('enclosed') ? (F('allotments') ? -3 : -9) : 0, 'The common inclosed'); g += put('goodwill', vent('thresher') && !vent('thresher').ended ? -5 : 0, 'The threshing machine');
   g += put('goodwill', held('harriers') ? -2 : 0, 'Harriers over the wheat'); g += put('goodwill', i === 3 ? -4 : i === 0 ? 2 : 0, i === 3 ? 'A splendid house in a hungry parish' : 'A plain table');
-  g += put('goodwill', PRICES[S.year] >= 95 && !F('soup') && !F('wages') ? -8 : 0, 'Bread at famine price');
+  g += put('goodwill', PRICES[S.year] >= 95 && !F('soup') && !F('wages') && house('labour') !== 'high' ? -8 : 0, 'Bread at famine price');
   let fm = 45; why.family.push('45 The house as you found it'); fm += put('family', idle('home', 4) ? -6 : 0, 'You have not kept at home this twelvemonth');
   fm += put('family', 3 * S.chars.henrietta.r, 'Henrietta’s regard'); fm += put('family', F('edmundDead') ? 0 : S.chars.edmund.r, 'Edmund’s regard');
   fm += put('family', [-8, 0, 4, 7][i], cap1(EST[i].name)); fm += put('family', F('newFront') ? 3 : 0, 'The new front'); fm += put('family', F('icehouse') ? 2 : 0, 'The ice-house');
   fm += put('family', S.money < 0 ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
-  return {standing:clamp(st, 5, 95), goodwill:clamp(g, 5, 95), family:clamp(fm, 5, 95), why}; }
+  for (const dial in HOUSE) { const h = houseOf(dial), nm = HOUSE[dial].name + ', ' + h.label.toLowerCase(); st += put('standing', h.standing || 0, nm); g += put('goodwill', h.goodwill || 0, nm); fm += put('family', h.family || 0, nm); }
+  // what the squire was born or married to stays with him: each choice at the start moves its mark for good by what its card says
+  const born = {standing:st, goodwill:g, family:fm}; for (const k in TRAIT_MARK) for (const id in TRAIT_MARK[k]) if (T(id) && !(id === 'court' && (F('courtLost') || F('courtSold'))) && !(id === 'captain' && k === 'family' && F('crewGone'))) born[k] += put(k, TRAIT_MARK[k][id], traitById(id).name);
+  return {standing:clamp(born.standing, 5, 95), goodwill:clamp(born.goodwill, 5, 95), family:clamp(born.family, 5, 95), why}; }
+const TRAIT_MARK = {
+  standing:{soldier:5, captain:4, court:12, connexions:15, enemy:-3, whig:-10, dean:6, hunt:7, trade:-12, oxford:-4, lawsuit:-4},
+  goodwill:{beloved:15, stranger:-12, hunt:-3},
+  family:{captain:-5, lovematch:12, portion:-12, mother:-10, bottle:-6} };
 const SINK = 5;   // a figure loses a point a season for every five it stands above its mark
 /* The three duties: the tenancies, the county, the family. Each goes stale if the squire lets it lie. */
 const idle = (k, seasons) => S.t - ((S.duty && S.duty[k]) || 0) >= seasons;
@@ -835,3 +849,59 @@ function regardQuarter(line){ const m = marks(), q = S.season, d = {};
   if (S.family < 35 && !F('henriettaAway')) { fl('henriettaAway'); reg('henrietta', -1, 'Went to Bath sooner than stay in the house'); S.notes.push(`Henrietta has her trunks brought down. She has taken lodgings in Gay Street, Bath. She does not say for how long.`); }
   else if (S.family >= 46 && F('henriettaAway')) { fl('henriettaAway', false); S.notes.push(`A chaise from Bath sets Henrietta down at the door. Mrs Bunce has had the fire lit in the blue room since Tuesday.`); }
   if (F('henriettaAway')) line('Lodgings in Gay Street, Bath, and a chair', -55); }
+
+/* ---------- the household page ----------
+   The establishment, three rates of pay, and the things that came with the house. Each rate is low, standard or high.
+   A rate moves a mark for as long as it stands, costs or saves money every quarter, and stings or pleases once on the day it is changed. */
+const HOUSE = {
+  servants:{name:'Servants’ wages', what:'The indoor people: butler, cook, footmen, maids',
+    low:{label:'Low', name:'A fifth under the county rate', cost:-50, family:-5, once:{family:-3}},
+    standard:{label:'Standard', name:'The county rate: a cook at fourteen guineas, a footman at twenty-four'},
+    high:{label:'High', name:'A quarter over, with tea and beer money', cost:65, family:4, once:{family:2}}},
+  labour:{name:'Labourers’ wages', what:'Nine men on the home farm',
+    low:{label:'Low', name:'Two shillings under the going rate', shillings:-2, goodwill:-6, wheat:-0.04, once:{goodwill:-3}},
+    standard:{label:'Standard', name:'The going rate', shillings:0, wheat:0},
+    high:{label:'High', name:'Two shillings over the going rate', shillings:2, goodwill:5, standing:-2, wheat:0.03, once:{goodwill:2}}},
+  stables:{name:'The stables', what:'Coach horses, hacks, grooms and corn',
+    low:{label:'Low', name:'One groom, and hay', cost:-50, standing:-3, once:{standing:-2}},
+    standard:{label:'Standard', name:'As your uncle kept them'},
+    high:{label:'High', name:'A second groom, oats and new harness', cost:70, standing:4, once:{standing:2}}},
+  schoolroom:{name:'The schoolroom', what:'Kitty’s education, while she is at home', if:() => kittyHome(), gone:'Kitty has left the schoolroom.',
+    low:{label:'Low', name:'No governess. Henrietta hears her lessons', cost:-32, family:-4, once:{family:-2}, kitty:-1},
+    standard:{label:'Standard', name:'A governess at thirty guineas'},
+    high:{label:'High', name:'A governess at sixty, and masters from Reading for music and drawing', cost:75, family:3, standing:2, once:{family:2}, kitty:1}} };
+const houseOn = dial => !HOUSE[dial].if || HOUSE[dial].if();
+const house = dial => (houseOn(dial) && S.house && S.house[dial]) || 'standard';
+const houseOf = dial => Object.assign({cost:0, shillings:0, wheat:0}, HOUSE[dial][house(dial)]);
+const houseCost = dial => Math.round((houseOf(dial).cost || 0) * priceRise(S.year) / 20) * 20;   // a year, at this year's prices
+const signed = (n, t) => (n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t;
+const METER = {standing:'Standing', goodwill:'Goodwill of the parish', family:'Peace of the household'};
+function houseFx(dial, lvl){ const h = HOUSE[dial][lvl], out = [], y = S.year;
+  if (h.cost) { const c = Math.round(h.cost * priceRise(y) / 20) * 20; out.push((c > 0 ? MINUS : '+') + fmt(Math.abs(c)) + ' a year'); }
+  if (h.shillings) { const c = Math.round(9 * Math.abs(h.shillings) * 52 / 20 / 5) * 5; out.push((h.shillings > 0 ? MINUS : '+') + fmt(c) + ' a year, nine men at ' + (weekWage(y) + h.shillings) + 's. the week'); }
+  for (const k in METER) if (h[k]) out.push(signed(h[k], METER[k])); if (h.kitty) out.push(signed(h.kitty, 'in Kitty’s regard'));
+  if (h.wheat) out.push(signed(Math.round(h.wheat * 100), '% home farm wheat').replace(' %', '%'));
+  return out.length ? out : ['No change']; }
+function setHousehold(dial, lvl){ const row = householdList().wages.find(w => w.id === dial), o = row && row.levels.find(l => l.id === lvl); if (!o || !o.can) return false;
+  const order = ['low', 'standard', 'high'], up = order.indexOf(lvl) > order.indexOf(house(dial)), h = HOUSE[dial];
+  S.house = S.house || {}; S.houseT = S.houseT || {}; const was = house(dial); S.house[dial] = lvl; S.houseT[dial] = S.t;
+  // the day's sting or pleasure: going down hurts by the lower rung's figure, going up pleases by the higher one's
+  const once = up ? (h[lvl].once || h[was].once && Object.fromEntries(Object.entries(h[was].once).map(([k, v]) => [k, Math.ceil(-v / 2)]))) : (h[lvl].once || h[was].once && Object.fromEntries(Object.entries(h[was].once).map(([k, v]) => [k, -v])));
+  if (once) add(once); if (h[lvl].kitty) reg('kitty', h[lvl].kitty, h[lvl].kitty > 0 ? 'You gave her masters for music and drawing' : 'You sent her governess away');
+  S.journal.unshift({when:stamp(), title:'Household', did:h.name + ': ' + h[lvl].name.charAt(0).toLowerCase() + h[lvl].name.slice(1)}); save(); render(); return true; }
+function setEstablishment(id){ const row = householdList().establishment.find(e => e.id === id); if (!row || !row.can) return false;
+  const text = stepEst(EST.findIndex(e => e.id === id) - estIdx()); S.estT = S.t; S.notes.push(text);
+  S.journal.unshift({when:stamp(), title:'Household', did:(row.verb === 'Set up' ? 'Set up ' : 'Reduced to ') + row.name}); save(); render(); return true; }
+function householdList(){ const open = S.phase !== 'end' && !S.dead, i = estIdx(), y = S.year, shut = open ? '' : 'The books are closed.';
+  const FAM = [-8, 0, 4, 7], GW = [2, 0, 0, -4];
+  const establishment = EST.map((e, k) => { const d = k - i, dc = estCost(k, y) - estCost(i, y), fx = [];
+    if (d) { fx.push((dc > 0 ? MINUS : '+') + fmt(Math.abs(dc)) + ' a year'); if (d > 0) fx.push(MINUS + fmt(EST_SETUP[k]) + ' to set up');
+      fx.push(signed(e.standing - EST[i].standing, 'Standing')); if (FAM[k] - FAM[i]) fx.push(signed(FAM[k] - FAM[i], METER.family)); if (GW[k] - GW[i]) fx.push(signed(GW[k] - GW[i], METER.goodwill)); }
+    const why = !d ? '' : shut || (Math.abs(d) > 1 ? 'One step at a time.' : S.estT === S.t ? 'The house has been turned over once this season.' : d > 0 && S.money < EST_SETUP[k] ? 'The purse will not stand ' + fmt(EST_SETUP[k]) + ' down.' : '');
+    return {id:e.id, name:cap1(e.name), cost:estCost(k, y), now:!d, verb:d > 0 ? 'Set up' : d < 0 ? 'Reduce' : '', can:!!d && !why, why, fx:d ? fx : [MINUS + fmt(estCost(k, y)) + ' a year']}; });
+  const wages = Object.keys(HOUSE).map(dial => ({id:dial, name:HOUSE[dial].name, what:HOUSE[dial].what, now:house(dial), off:!houseOn(dial),
+    levels:['low', 'standard', 'high'].map(lvl => { const now = house(dial) === lvl, why = now ? '' : shut || (!houseOn(dial) ? HOUSE[dial].gone : '') || ((S.houseT || {})[dial] === S.t ? 'Changed once this season already.' : '');
+      return {id:lvl, label:HOUSE[dial][lvl].label, name:HOUSE[dial][lvl].name, now, can:!now && !why, why, fx:houseFx(dial, lvl)}; })}));
+  const lots = societyList().filter(r => SOCIETY[r.id].house);
+  return {establishment, wages, lots, cost:estCost(i, y) + houseCost('servants') + houseCost('stables') + houseCost('schoolroom')}; }
+for (const id of ['plate', 'cellar', 'hunters', 'library']) SOCIETY[id].house = true;
