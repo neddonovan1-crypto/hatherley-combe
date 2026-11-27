@@ -1,6 +1,6 @@
 // Plays many random lives straight through the engine, to shake out runtime errors.
 const fs = require('fs'), vm = require('vm'), path = require('path');
-const src = ['data','traits','engine','events1','events2','events3','estate'].map(f => fs.readFileSync(path.join(__dirname,'../src',f+'.js'),'utf8')).join('\n');
+const src = ['data','traits','engine','events1','events2','events3','estate','endings'].map(f => fs.readFileSync(path.join(__dirname,'../src',f+'.js'),'utf8')).join('\n');
 const ctx = {console, Math, JSON, localStorage:{setItem(){},getItem(){return null},removeItem(){}}, window:{scrollTo(){}}};
 ctx.render = () => {}; vm.createContext(ctx);
 vm.runInContext(src + '\nindexEvents(); this.api={setS(x){S=x},householdList,setHousehold,setEstablishment,trustFund,creditList,takeCredit,societyList,beginSociety,endSociety,ownLandValue,farmsForSale,buyFarm,sellFarm,establishment,venturesList,beginVenture,endVenture,farmsList,evictTenant,evictCost,ridesLeft,rentRoll,setLevel,offerLease,worksList,beginWork,worksInHand,worksDone,TRAITS,TRAIT_GROUPS,pointsLeft,newGame,next,choose,undertake,undertakingOptions,byId,reckoning,get S(){return S},EVENTS};', ctx);
@@ -22,7 +22,7 @@ for (let i = 0; i < runs; i++){
     else { if (S.season === 0 && S.phase !== 'end') { const t = trk[S.year] = trk[S.year] || {s:0, g:0, f:0, n:0}; t.s += S.standing; t.g += S.goodwill; t.f += S.family; t.n++; } low.n++; for (const k of ['standing','goodwill','family']) if (S[k] < 30) low[k]++; for (const k of ['sullen','cut','henriettaAway']) if (S.flags[k]) (trouble[k] = trouble[k] || new Set()).add(i); A.next(); if (/undefined|NaN|\[object/.test(JSON.stringify(A.S.notes)+JSON.stringify(A.S.ledger))) throw new Error('bad quarter '+JSON.stringify(A.S.notes)+JSON.stringify(A.S.ledger)); }
   }
   est[A.establishment().id]=(est[A.establishment().id]||0)+1; { const f=A.S.flags; bubs[f.bubbleMade?'made':f.bubbleBurnt?'burnt':f.bubbleOut?'sold out':'other']=(bubs[f.bubbleMade?'made':f.bubbleBurnt?'burnt':f.bubbleOut?'sold out':'other']||0)+1; } const r = A.reckoning(); if (/undefined|NaN/.test(JSON.stringify(A.S.notes)+JSON.stringify(A.S.journal.slice(0,40)))) throw new Error('bad note '+JSON.stringify(A.S.notes)); if (/undefined|NaN|\[object/.test(r.P.join(' '))) throw new Error('bad reckoning: '+r.P.join(' '));
-  ends[r.title] = (ends[r.title]||0)+1; cash.push(Math.round(A.S.money)); stand.push(A.S.standing); if (r.score !== null){ stats.money += A.S.money - A.S.mortgage + A.ownLandValue(); stats.sc += r.score; stats.n++; }
+  ends[r.end.id] = (ends[r.end.id]||0)+1; if (/undefined|NaN|\[object/.test(r.end.text + r.end.news)) throw new Error('bad ending '+r.end.id); cash.push(Math.round(A.S.money)); stand.push(A.S.standing); if (r.score !== null){ stats.money += A.S.money - A.S.mortgage + A.ownLandValue(); stats.sc += r.score; stats.n++; }
 }
 console.log('endings', ends); const fin=A.S;  console.log('avg net', Math.round(stats.money/stats.n), 'avg score', Math.round(stats.sc/stats.n));
 console.log('sales by order', seen.hammer||0, '| meetings at the George', seen.georgeMeeting||0, 'in', runs, 'lives');

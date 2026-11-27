@@ -809,21 +809,21 @@ function next(){
   else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
   save(); render(); window.scrollTo({top:0, behavior:'smooth'});
 }
-function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
+function finish(){ S.phase = 'end'; if (typeof strikeEnding === 'function') strikeEnding(); save(); render(); window.scrollTo({top:0}); }
 
 function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
 function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
-  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
+  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = []; const end = ending();
   if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
-    return {title:'Shot at Dawn', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
-    P.push(`${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`);
+    P.push(end.news);
     P.push(`The Earl of Cullerne is expected to bid.`);
-    return {title:'Sold Up', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
   if (T('captain')) P.push(F('crewGone') ? `He was a sea officer. He still goes down a staircase backwards. His old Dryads are afloat again. He follows their ships in the Navy List.` : `Dinner at the Hall is announced by a boatswain’s pipe. A guest who comes late is entered in the log.`);
@@ -875,15 +875,9 @@ function reckoning(){
 
   let score = Math.round(S.standing * 0.25 + S.goodwill * 0.4 + S.family * 0.35 + clamp(net / 400, -12, 12));
   score = clamp(score, 0, 100);
-  let title = 'A Tolerable Squire';
-  if (S.goodwill >= 68 && S.family >= 55) title = 'The Good Squire of Hatherley';
-  else if (net > 8000 && S.goodwill < 36) title = 'The Rack-Renter';
-  else if (S.standing >= 72 && S.goodwill < 50) title = 'A Coming Man';
-  else if (S.goodwill < 30) title = 'The Man in the Song';
-  else if (S.family < 30) title = 'Master of an Empty House';
-  else if (S.goodwill >= 60) title = 'A Fair Man';
+  const title = end.title;
   P.push(`He is ${S.year - 1795 + 46}, and in tolerable health. He has been heard to say that the next twenty years cannot be as troublesome as the last.`);
-  return {title, P, score};
+  return {title, P, score, end};
 }
 
 /* ---------- saving ---------- */

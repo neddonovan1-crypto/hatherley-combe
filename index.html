@@ -500,6 +500,11 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* what is said, in a balloon over the cut */
 .cutwrap{position:relative} .balloon{position:absolute;left:2%;top:2%;width:min(47%, 19rem);aspect-ratio:1271/702;background:url(art/ui/balloon.png) center/100% 100% no-repeat;display:grid;place-items:center;padding:6% 9% 15% 11%;quotes:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
 .balloon span{font-family:var(--display);font-style:italic;font-size:clamp(.62rem, 6.6cqw, 1.05rem);line-height:1.15;text-align:center;color:#2b1d10;text-wrap:balance}
+/* The last plate, held up over the book when the life ends. It borrows the card, print and side sheet of the other plates (plan.css). */
+#lastplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.86);overflow:auto;animation:heldup .25s ease-out}
+#lastplate[hidden]{display:none}
+.lastlink{margin:0 0 4px;text-align:center}
+@media (max-width:1080px){ #lastplate{place-items:start center;padding:10px} }
 </style>
 <div class="desk">
   <div class="book">
@@ -1712,21 +1717,21 @@ function next(){
   else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }
   save(); render(); window.scrollTo({top:0, behavior:'smooth'});
 }
-function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
+function finish(){ S.phase = 'end'; if (typeof strikeEnding === 'function') strikeEnding(); save(); render(); window.scrollTo({top:0}); }
 
 function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
 function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
-  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
+  const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = []; const end = ending();
   if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
-    return {title:'Shot at Dawn', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
-    P.push(`${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`);
+    P.push(end.news);
     P.push(`The Earl of Cullerne is expected to bid.`);
-    return {title:'Sold Up', P, score:null}; }
+    return {title:end.title, P, score:null, end}; }
 
   P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
   if (T('captain')) P.push(F('crewGone') ? `He was a sea officer. He still goes down a staircase backwards. His old Dryads are afloat again. He follows their ships in the Navy List.` : `Dinner at the Hall is announced by a boatswain’s pipe. A guest who comes late is entered in the log.`);
@@ -1778,15 +1783,9 @@ function reckoning(){
 
   let score = Math.round(S.standing * 0.25 + S.goodwill * 0.4 + S.family * 0.35 + clamp(net / 400, -12, 12));
   score = clamp(score, 0, 100);
-  let title = 'A Tolerable Squire';
-  if (S.goodwill >= 68 && S.family >= 55) title = 'The Good Squire of Hatherley';
-  else if (net > 8000 && S.goodwill < 36) title = 'The Rack-Renter';
-  else if (S.standing >= 72 && S.goodwill < 50) title = 'A Coming Man';
-  else if (S.goodwill < 30) title = 'The Man in the Song';
-  else if (S.family < 30) title = 'Master of an Empty House';
-  else if (S.goodwill >= 60) title = 'A Fair Man';
+  const title = end.title;
   P.push(`He is ${S.year - 1795 + 46}, and in tolerable health. He has been heard to say that the next twenty years cannot be as troublesome as the last.`);
-  return {title, P, score};
+  return {title, P, score, end};
 }
 
 /* ---------- saving ---------- */
@@ -9246,6 +9245,224 @@ function householdList(){ const open = S.phase !== 'end' && !S.dead, i = estIdx(
   const lots = societyList().filter(r => SOCIETY[r.id].house);
   return {establishment, wages, lots, cost:estCost(i, y) + houseCost('servants') + houseCost('stables') + houseCost('schoolroom')}; }
 for (const id of ['plate', 'cellar', 'hunters', 'library']) SOCIETY[id].house = true;
+/* How the life ends. One ending is chosen from where the squire stands when the book is shut: by ruin, by a pistol ball, or at the
+   close of 1815. Each has its own plate at art/endings/<id>, struck as the last of The Progress.
+   The table is read from the top and the first ending whose test holds is taken, so the order is the order of precedence.
+   The book reads ending(); the page shows endPlateHTML() above the cutting from the Mercury. */
+const endNet = () => S.money - S.mortgage + (typeof ownLandValue === 'function' ? ownLandValue() : 0);
+const endHas = id => typeof held === 'function' && typeof SOCIETY !== 'undefined' && SOCIETY[id] && !SOCIETY[id].heir && held(id);
+const endTitled = () => endHas('baronet') || endHas('knight');
+const endFront = () => !!(F('newFront') || (S.projectsDone && S.projectsDone.front === 'done'));
+const endWorks = () => Object.keys(S.projectsDone || {}).filter(id => S.projectsDone[id] === 'done').length;
+const endGrand = () => endTitled() || S.standing >= 68 || (S.est === 'splendid');
+const endFirst = () => S.name.split(' ')[0];
+const endSir = () => 'Sir ' + endFirst();
+const endVicar = () => F('edmundVicar') ? 'Edmund' : F('oakesVicar') ? 'Mr Oakes' : F('gallDead') ? 'The vicar' : 'Dr Gall';
+const endCount = n => ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][n] || String(n);
+const endAway = () => !!F('henriettaAway');
+
+const ENDINGS = [
+  /* ---------- by a pistol ball ---------- */
+  { id:'duel', title:'Shot at Dawn', did:'Met Captain Vane on Hatherley Down.', if:() => S.dead === 'duel',
+    text:() => `The surgeon has a green baize bag. He sets it down in the wet grass and does not open it.
+
+The lieutenant with the clean gloves picks up both pistols. He wipes them and lays them in their case. Captain Vane is already in the chaise.
+
+A shepherd comes over the Down with forty ewes. He takes off his hat. The ewes go round you on both sides.` },
+
+  /* ---------- sold up: four ways out of the Hall ---------- */
+  { id:'tenant', title:'A Tenant on His Own Land', did:'Sold up, and stayed in the parish.', if:() => S.dead === 'ruin' && S.goodwill >= 58,
+    news:() => `${S.name}, Esquire, late of that place, has taken the bailiff’s house at Church Farm, at a rent of twenty pounds.`,
+    text:() => `Three wagons are at the door on the morning of the sale. Nobody sent for them. The tenants load what Mr Skinner has left and carry it to the bailiff’s house at Church Farm.
+
+The rent of the house is twenty pounds a year. The purchaser’s agent takes it at Lady Day and writes you a receipt.
+
+On Sunday you walk to church. The Hall pew has a new lock on the door. The blacksmith moves along his bench.
+
+“There’s room here, sir.”` },
+  { id:'bath', title:'The Second Floor in Gay Street', did:'Sold up, and went to Bath on Henrietta’s money.', if:() => S.dead === 'ruin' && S.family >= 52 && !endAway(),
+    news:() => `${S.name}, Esquire, late of that place, has removed with his lady to Bath.`,
+    text:() => `Mrs Tamworth has the first floor in Gay Street. You have the second. There are forty-one stairs and she has counted them for you.
+
+Henrietta’s settlement brings two hundred a year. The creditors cannot touch it. She has told the landlady so, and the butcher.
+
+You drink the waters at eight in the morning, when the Pump Room is empty. In the evening Henrietta does the accounts on the tea table. She allows you sixpence a week for the newspaper room.
+
+“We shall do,” she says.` },
+  { id:'bench', title:'A Room in the King’s Bench', did:'Sold up, and taken for debt.', if:() => S.dead === 'ruin' && S.standing < 42 && S.goodwill < 45,
+    news:() => `${S.name}, Esquire, late of that place, is lodged in the King’s Bench Prison, at the suit of nine tradesmen of Wyvern and a coachmaker of Long Acre.`,
+    text:() => `The turnkey at the King’s Bench wants half a crown for the room and a shilling for the key of it.
+
+There are two beds. The other is a hop factor’s from the Borough. He has been here since the Peace of Amiens. He shows you the racket court, the pump, and the window where the beer is passed in.
+
+“You’ll want a chair,” he says. “I can let you have a chair at fourpence a week.”
+
+Mr Spurling writes on Tuesday. The sale is made up. The creditors are to have fourteen shillings in the pound.` },
+  { id:'soldup', title:'Sold Up', did:'Sold up, and crossed to the Isle of Man.', if:() => S.dead === 'ruin',
+    news:() => `${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`,
+    text:() => `The Liverpool packet lands you at Douglas with nine trunks. One of them holds the rent books.
+
+There are forty English gentlemen in the town. They meet on the pier at ten. Each of them asks what you owed. You tell them. Two of them bow lower the next morning.
+
+The lodging is fourteen shillings a week with fish. From the window you can see England on a clear day. There have been three clear days since Michaelmas.` },
+
+  /* ---------- the close of 1815 ---------- */
+  { id:'hollow', title:'Splendour on Credit', did:'Kept a great figure on borrowed money.', if:() => endGrand() && endNet() < -2500,
+    text:() => `Forty sit down at the Hall on Twelfth Night. There are two courses and a dessert. The pineapple is hired from a fruiterer in Reading at half a guinea. It goes back on Thursday.
+
+Lord Cullerne has the chair on your right. The footmen are in new liveries. The tailor who made them is in the servants’ hall with his bill. The wine merchant sits beside him. Mrs Bunce has given them both cold beef.
+
+Mr Tidmarsh is among the company. He counts the candles.` },
+  { id:'baronet', title:'The Bloody Hand over the Door', did:'A baronet, behind six columns.', if:() => endHas('baronet') && endFront(),
+    text:() => `A mason is on a ladder over the great door with a mallet. He has the red hand of Ulster to cut into the shield on the pediment. He has chalked it in backwards and rubs it out with his sleeve.
+
+The six columns are of Bath stone, the colour of a new loaf. The rooks left the elms the week the scaffolding came. They have not been back.
+
+Mrs Bunce has the servants out on the steps in a row.
+
+“Good morning, ${endSir()}.”
+
+“Good morning, ${endSir()}.”
+
+The boot boy says it wrong and is sent to the end of the row.` },
+  { id:'rackrent', title:'The Rack-Renter', did:'Grew rich, and was not thanked for it.', if:() => endNet() > 8000 && S.goodwill < 40,
+    text:() => `Rent day. ${steward()} has the table set across the door of the estate office. The tenants come up to it one at a time.
+
+Every farm on the roll pays to the day. The sum is entered and ruled off before noon. There is no audit dinner this year. Each man has a glass of beer in the yard and drinks it standing.
+
+In the afternoon you ride down the lane. A woman at the pump turns her back. Her three children turn theirs.
+
+The purse stands at ${fmt(S.money)}.` },
+  { id:'good', title:'The Good Squire of Hatherley', did:'Held Hatherley one-and-twenty years, and was liked.', if:() => S.goodwill >= 68 && S.family >= 55,
+    text:() => `Snow in the night. By nine the lane is dug out from the village to the Hall door. Nobody was sent for.
+
+Eleven men stand at the back door with spades. Mrs Bunce gives them beer. They will not take the shilling.
+
+The ringers have had the bells up since seven. They ring one-and-twenty rounds. It is a round for every year you have had the place. The treble is cracked and you paid for the rope.
+
+${endAway() ? 'You stand at the window and count them.' : 'Henrietta counts on her fingers and makes it twenty-two.'}` },
+  { id:'knight', title:'The Loyal Address', did:'Rose a Sir.', if:() => endTitled(),
+    text:() => `The Wyvern carrier brings a letter directed to ${endSir()} ${S.sur}, ${endHas('baronet') ? 'Baronet' : 'Knight'}. He asks ninepence for it. He has always asked eightpence.
+
+The engraver has sent two hundred cards with Lady ${S.sur} on them in the copperplate hand. ${endAway() ? 'They lie on the hall table. Henrietta is in Gay Street.' : 'Henrietta leaves them at thirteen houses in one morning. At four of those houses she was not at home to anybody last year.'}
+
+In church ${endVicar() === 'The vicar' ? 'the vicar' : endVicar()} prays for the King, the Prince Regent and all the nobility. He looks at the Hall pew when he comes to it.` },
+  { id:'member', title:'The Member for Wyvern', did:'Sat for the borough.', if:() => !!F('mp'),
+    text:() => `Fourteen people are in the hall before breakfast. Each has a letter in his hand. A Member may frank ten in a day. You write your name across ten corners. The other four are told to come tomorrow.
+
+At noon a clerk rides over with a paper. It sets out how the Member for Wyvern will vote upon the Property Tax. You had not been asked.
+
+The London coach leaves the George at six. Your place is taken inside. The borough has paid for it.` },
+  { id:'acres', title:'From the Down to the River', did:'Added farm to farm.', if:() => S.farms.length >= 6,
+    text:() => `The surveyor from Reading unrolls the new plan on the dining table. It hangs over both ends. He asks for two chairs.
+
+There are ${endCount(S.farms.length)} farms on it, each in its own colour. Your uncle’s plan showed three. It is still on the office wall, under the almanack.
+
+You set out at eight to ride the boundary. At four the light goes. You are at the far hedge and the Hall is six miles off. The tenant’s wife gives you a bed. She has had it aired since Tuesday.` },
+  { id:'empty', title:'Master of an Empty House', did:'Kept the house and lost the household.', if:() => S.family < 30 || endAway(),
+    text:() => `Dinner is laid for one at the end of the long table. The other eleven chairs stand against the wall in holland covers.
+
+${endAway() ? 'Henrietta is in Gay Street. She writes on the first of the month. The letter is about the linen.' : 'Henrietta dines upstairs on a tray. She sends down to ask whether the fire in the blue room may be lit.'}
+
+The butler brings the port and stays by the door. You ask him the news of the servants’ hall.
+
+“The kitchen cat has kittened, sir.”
+
+The clock in the hall strikes nine. You count it.` },
+  { id:'song', title:'The Man in the Song', did:'Was sung about at the Bell.', if:() => S.goodwill < 30,
+    text:() => `You come through Hatherley at dusk on the cob. They are singing in the Bell. The window is open an inch.
+
+You know the tune. It is “The Vicar of Bray”. The words are new. There are nine verses and your name ends every one.
+
+The singing stops when the cob’s shoes strike the bridge. A boy on the churchyard wall goes on alone for two lines. Somebody takes him down by the leg.
+
+At the lodge gate you find you are humming it.` },
+  { id:'cut', title:'Not at Home', did:'Was dropped by the county.', if:() => S.standing < 33,
+    text:() => `The chaise is out four mornings in the first week of the year. You leave a card at nine houses. At each the footman looks at the card and then at the horses. His lady is not at home. At Cullerne Castle there is a face at the morning-room window.
+
+No card comes back. The silver tray in the hall has one letter on it. It is from a hatter at Reading.
+
+The Wyvern assembly is held on the nineteenth. You read of it in the Mercury on the twenty-second.` },
+  { id:'debts', title:'Mr Tidmarsh’s Tin Box', did:'Kept the land, and owed for all of it.', if:() => endNet() < -1500,
+    text:() => `Mr Tidmarsh comes out from Wyvern on the first Monday of the quarter. He does not send his clerk. He walks through the house with his hands behind him. He stops at the damp in the east passage.
+
+The interest is ${fmt(Math.round(S.mortgage / 20))} a year. It leaves on quarter day before the butcher is paid.
+
+“A fine property,” says Mr Tidmarsh on the steps. He says it to the roof.
+
+You have kept the land. The deeds are at the Bank, in a tin box with your name on the lid.` },
+  { id:'warm', title:'A Warm Man', did:'Left the estate richer than he found it.', if:() => endNet() > 9000,
+    text:() => `Three gentlemen call in one week. Each admires the dogs. Each stays to dinner. Over the port each asks for the loan of five hundred pounds until harvest.
+
+At the Bank Mr Tidmarsh gives you the chair by the fire and shuts the door himself. He asks your opinion of Exchequer bills.
+
+${steward()} casts the year. Clear of every charge, there is ${fmt(Math.round(endNet() / 100) * 100)} to the good. He writes the sum, blots it, and writes it again larger.` },
+  { id:'improver', title:'The Improver', did:'Drained, built and mended.', if:() => endWorks() >= 5,
+    text:() => `Mr Hartopp brings nine gentlemen of the Bath and West Society in two chaises. They walk the estate from ten until three. Mr Hartopp goes before them backwards and talks.
+
+One gentleman measures a turnip with a tape. Another puts a stone from the mended road in his pocket.
+
+At dinner they vote you the Society’s silver medal. It may be had of the secretary on payment of the engraver.
+
+The old carter watches the chaises go down the drive.
+
+“They never asked what un cost,” he says.` },
+  { id:'dynasty', title:'Three Generations at Table', did:'Saw his grandchildren at the Hall.', if:() => !F('edmundDead') && (S.flags.edmund === 'farmer' || F('edmundMarried')) && S.family >= 55,
+    text:() => `Fourteen sit down on Twelfth Night. Five of them are under ten years old.
+
+Edmund carves. You carved last year. Nobody has remarked on it.
+
+The smallest grandchild is put in your uncle’s chair on two volumes of the county history. He bites the footman who brings the pudding.
+
+After dinner ${endAway() ? 'Kitty' : 'Henrietta'} has the family Bible down. There is half a page left under your name. She rules a line across it for the next.` },
+  { id:'funds', title:'A Gentleman in the Funds', did:'Sold the farms and lived on the dividends.', if:() => S.farms.length <= 1,
+    text:() => `The dividends are paid at the Bank of England on the fifth of January. The trustees send a draft by Tuesday’s mail. ${steward()} has nothing else to enter this quarter. He enters it slowly.
+
+After breakfast you walk to the park pale. It takes eleven minutes. The wheat on the far side is a Reading brewer’s. His man touches his hat and goes on hedging.
+
+Three per cent. Consols are at sixty. In the Mercury you look for the price of them before you look for the deaths.` },
+  { id:'button', title:'The Button-Maker’s Expectations', did:'Kept it all for a cousin in Birmingham.', if:() => S.flags.heir === 'cousin',
+    text:() => `Your cousin comes from Birmingham by the coach, outside. He has a two-foot rule in his coat.
+
+He measures the dining room. He counts the chimneys from the lawn and writes the number on his cuff. He asks Mrs Bunce what the coals come to.
+
+At dinner he asks after your health. He asks again at breakfast.
+
+“You look uncommon well, cousin.”
+
+He takes the outside place home. It is four shillings cheaper.` },
+  { id:'tolerable', title:'A Tolerable Squire', did:'Held Hatherley one-and-twenty years.', if:() => true,
+    text:() => `Rain on quarter day. The rents are in by four. Two of them are a pound short.
+
+You dine at three on a boiled fowl. Afterwards you sleep in the chair with the Mercury over your face. The news in it is nine days old.
+
+${steward()} casts the one-and-twenty years on a single sheet. Received, so much. Laid out, so much. The difference would buy a good horse.
+
+At six the dogs are let in.` }
+];
+
+/* The ending as things stand: {id, title, did, text, news, plate}. */
+function ending(){ const e = ENDINGS.find(x => x.if()) || ENDINGS[ENDINGS.length - 1];
+  return {id:e.id, title:e.title, did:e.did, text:e.text(), news:e.news ? e.news() : '', plate:'endings/' + e.id}; }
+
+/* Struck once, when the book is shut for good, so that the ending is the last plate of The Progress. It is then held up over the book. */
+function strikeEnding(){ if (!S) return; if (!S.plates) S.plates = [];
+  if (!S.plates.some(p => p.key === 'end')) { const e = ending(), src = typeof artURL === 'function' && !artURL(e.plate) ? 'frontispiece' : e.plate;
+    S.plates.push({key:'end', title:e.title, src, did:e.did, pub:S.dead ? SEASONS[S.season] + ' ' + S.year : 'January 1816', say:''}); }
+  showLastPlate(); }
+
+/* The last plate is held up in its own frame, laid out as the other plates are: the print, and beside it what is seen that day. */
+function showLastPlate(){ if (typeof document === 'undefined' || !S || S.phase !== 'end') return;
+  let el = document.getElementById('lastplate'); if (!el) { el = document.createElement('div'); el.id = 'lastplate'; document.body.appendChild(el); }
+  const e = ending(), u = artURL(e.plate) || artURL('frontispiece'), n = (S.plates || []).length, when = S.dead ? stamp() : 'January 1816';
+  el.innerHTML = `<div class="pcard"><figure class="print"><div class="mark"><span class="pn">${n ? 'Plate ' + n + ', and the last' : 'The last plate'}</span><div class="cutwrap">${u ? `<img src="${u}" alt="${esc(e.title)}">` : ''}</div><figcaption><b>${esc(e.title)}</b><small>Publish’d as the Act directs, ${esc(when)}</small></figcaption></div></figure>
+    <div class="pside"><article class="sheet came"><p class="kicker">${esc(when)}</p><div class="prose lead">${paras(e.text)}</div></article>
+    <div class="answer"><div class="row"><button class="go" onclick="shutLastPlate()"><span>Read the Mercury</span></button></div></div></div></div>`;
+  el.hidden = false; document.body.classList.add('plateup'); el.scrollTop = 0; const b = el.querySelector('.go'); if (b) b.focus({preventScroll:true}); }
+function shutLastPlate(){ const el = document.getElementById('lastplate'); if (el) { el.hidden = true; el.innerHTML = ''; } document.body.classList.remove('plateup'); }
+
+/* On the last leaf of the book, the way back to the plate. */
+function endPlateHTML(){ return `<p class="lastlink"><button class="quiet" onclick="showLastPlate()">${esc(ending().title)}: the last plate</button></p>`; }
 /* Where each drawn piece sits on the plan: left, top, width, height, in hundredths of the sheet. The pieces are art/plan/f/<id>-<season>.webp.
    The order here is the order they are laid down, so the Hall covers the park and the carriage stands before the Hall. */
 const PLAN_BOX = {
@@ -9284,7 +9501,7 @@ const PLAN_BOX = {
   'rooks':[37.346, 39.352, 11.111, 10.185],
   'smoke':[47.531, 35.648, 9.63, 11.111]
 };
-const ART = new Set(['arms/baronet.webp','arms/esquire.webp','arms/knight.webp','events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/badajoz.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath-1.jpg','events/bath-2.jpg','events/bath-3.jpg','events/bath-go.jpg','events/bath-letter.jpg','events/bath-selina.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bubbleCall.jpg','events/bubbleRise.jpg','events/bubbleTip.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/clergy-arms.jpg','events/clergy-bishop.jpg','events/clergy-brothers.jpg','events/clergy-burial.jpg','events/clergy-hunting.jpg','events/clergy-informer.jpg','events/clergy-school.jpg','events/clergy-southcott.jpg','events/clergy-tithe.jpg','events/clergy-tooke.jpg','events/clergy-trusler.jpg','events/cobbett.jpg','events/cold-bench.jpg','events/cold-card.jpg','events/cold-cullerne.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/county-balloon.jpg','events/county-band.jpg','events/county-barclay.jpg','events/county-bounds.jpg','events/county-coat.jpg','events/county-crapper.jpg','events/county-elephant.jpg','events/county-fight.jpg','events/county-flood.jpg','events/county-forbury.jpg','events/county-goldcup.jpg','events/county-hen.jpg','events/county-hocktide.jpg','events/county-hot.jpg','events/county-lottery.jpg','events/county-quack.jpg','events/county-scouring.jpg','events/county-wife.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmund-aboukir.jpg','events/edmund-agent.jpg','events/edmund-badajoz.jpg','events/edmund-beacon.jpg','events/edmund-berth.jpg','events/edmund-burials.jpg','events/edmund-busaco.jpg','events/edmund-cantonments.jpg','events/edmund-chancel.jpg','events/edmund-chelmsford.jpg','events/edmund-christening.jpg','events/edmund-cold-letter.jpg','events/edmund-cold-room.jpg','events/edmund-colour.jpg','events/edmund-copenhagen.jpg','events/edmund-corunna.jpg','events/edmund-curacy.jpg','events/edmund-disembodied.jpg','events/edmund-dover.jpg','events/edmund-drains.jpg','events/edmund-ferrol.jpg','events/edmund-flushing.jpg','events/edmund-gazette.jpg','events/edmund-guardroom.jpg','events/edmund-gun.jpg','events/edmund-hounds.jpg','events/edmund-huddersfield.jpg','events/edmund-hunter.jpg','events/edmund-hythe.jpg','events/edmund-ipswich.jpg','events/edmund-java.jpg','events/edmund-kit.jpg','events/edmund-machine.jpg','events/edmund-mess.jpg','events/edmund-middlewatch.jpg','events/edmund-miss-army.jpg','events/edmund-miss-church.jpg','events/edmund-miss-home.jpg','events/edmund-miss-militia.jpg','events/edmund-miss-navy.jpg','events/edmund-normancross.jpg','events/edmund-ordained.jpg','events/edmund-oriel.jpg','events/edmund-outfit.jpg','events/edmund-paidoff.jpg','events/edmund-plate.jpg','events/edmund-pony.jpg','events/edmund-pressed.jpg','events/edmund-prize.jpg','events/edmund-pyrenees.jpg','events/edmund-ram.jpg','events/edmund-reduced.jpg','events/edmund-rent.jpg','events/edmund-rentbook.jpg','events/edmund-rodrigo.jpg','events/edmund-sandyhook.jpg','events/edmund-sermon.jpg','events/edmund-settle-letter.jpg','events/edmund-settle-room.jpg','events/edmund-settle-stiff.jpg','events/edmund-shannon.jpg','events/edmund-shorncliffe.jpg','events/edmund-skaw.jpg','events/edmund-swedes.jpg','events/edmund-tetuan.jpg','events/edmund-thirty.jpg','events/edmund-tithe.jpg','events/edmund-tithepig.jpg','events/edmund-toulon.jpg','events/edmund-toulouse.jpg','events/edmund-ushant.jpg','events/edmund-vestry.jpg','events/edmund-vimeiro.jpg','events/edmund-vitoria.jpg','events/edmund-volunteering.jpg','events/edmund-waiting.jpg','events/edmund-zealand.jpg','events/edmundDuel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election-1802-member.jpg','events/election-1802.jpg','events/election-1806-member.jpg','events/election-1806.jpg','events/election-1807-member.jpg','events/election-1807.jpg','events/election-1812-member.jpg','events/election-1812.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/farmOffered.jpg','events/fate-badajoz-alive.jpg','events/fate-badajoz-dead.jpg','events/fate-duel-alive.jpg','events/fate-duel-dead.jpg','events/fate-duel-kept.jpg','events/fate-fever-alive.jpg','events/fate-fever-dead.jpg','events/fate-fever-kept.jpg','events/fate-walcheren-alive.jpg','events/fate-walcheren-dead.jpg','events/fate-walcheren-kept.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/georgeMeeting.jpg','events/hammer.jpg','events/hartoppShearing.jpg','events/heir.jpg','events/henPorch.jpg','events/henRichmond.jpg','events/henSongs.jpg','events/henrietta-bunce.jpg','events/henrietta-carpet.jpg','events/henrietta-chariot.jpg','events/henrietta-gowns.jpg','events/henrietta-housemaid.jpg','events/henrietta-margravine.jpg','events/henrietta-mother.jpg','events/henrietta-mourning.jpg','events/henrietta-pianoforte.jpg','events/henrietta-portrait.jpg','events/henrietta-preacher.jpg','events/henrietta-tea.jpg','events/henrietta.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jamaica.jpg','events/jubilee.jpg','events/kitty-assembly.jpg','events/kitty-clifton-black.jpg','events/kitty-clifton.jpg','events/kitty-danes.jpg','events/kitty-latin.jpg','events/kitty-library.jpg','events/kitty-manumit.jpg','events/kitty-northampton.jpg','events/kitty-oakes-mangle.jpg','events/kitty-oakes-pew.jpg','events/kitty-reading-parole.jpg','events/kitty-stmalo.jpg','events/kitty-telescope.jpg','events/kitty-vane-bailiff.jpg','events/kitty-vane-child.jpg','events/kitty-vane-march.jpg','events/kitty-walks.jpg','events/kitty-widow.jpg','events/kitty-wyvern.jpg','events/kittyBotany.jpg','events/kittyDoor.jpg','events/ludd.jpg','events/manTraps.jpg','events/member-bellamy.jpg','events/member-bellingham.jpg','events/member-bull.jpg','events/member-burdett.jpg','events/member-committee.jpg','events/member-curwen.jpg','events/member-flogging.jpg','events/member-franks.jpg','events/member-gas.jpg','events/member-maiden.jpg','events/member-melville.jpg','events/member-petition.jpg','events/member-place.jpg','events/member-register.jpg','events/member-schools.jpg','events/member-whip.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/parish-audit.jpg','events/parish-harvest.jpg','events/parish-letter.jpg','events/parish-pryor.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/royalBond.jpg','events/royalPrincess.jpg','events/royalRegency.jpg','events/royalStag.jpg','events/royalTerrace.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/walcheren.jpg','events/war-abbe.jpg','events/war-contribution.jpg','events/war-corunna.jpg','events/war-deserter.jpg','events/war-guineas.jpg','events/war-prisoner.jpg','events/war-remount.jpg','events/war-smart.jpg','events/war-wives.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','hall/hall-front.glb','hall/hall-old.glb','icons/accounts.jpg','icons/christmas.jpg','icons/daybook.jpg','icons/farms.jpg','icons/goodwill.jpg','icons/hand.jpg','icons/household.jpg','icons/lady-day.jpg','icons/michaelmas.jpg','icons/midsummer.jpg','icons/parchments.jpg','icons/persons.jpg','icons/purse.jpg','icons/regard-1.jpg','icons/regard-2.jpg','icons/regard-3.jpg','icons/regard-4.jpg','icons/regard-5.jpg','icons/rentroll.jpg','icons/ride.jpg','icons/society.jpg','icons/standing.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','places/assembly-rooms.jpg','places/bank-parlour.jpg','places/bath.jpg','places/canal-locks.jpg','places/church-and-vestry.jpg','places/clifton.jpg','places/coldharbour-farm.jpg','places/common-enclosed.jpg','places/common-piece.jpg','places/common.jpg','places/cuckoo-copse.jpg','places/cullerne-castle.jpg','places/dining-room.jpg','places/down-beacon.jpg','places/down-duel.jpg','places/drawing-room.jpg','places/east-wing.jpg','places/estate-office.jpg','places/frigate-nore.jpg','places/gallows-piece.jpg','places/hall-new-front.jpg','places/ice-house.jpg','places/kennet-bottom-drained.jpg','places/kennet-bottom-flood.jpg','places/kintbury-lane-mended.jpg','places/kintbury-lane.jpg','places/kitchen.jpg','places/ladder-window.jpg','places/library.jpg','places/london-season.jpg','places/london-westminster.jpg','places/long-barrow-farm.jpg','places/maddle-farm.jpg','places/mail-coach-laurel.jpg','places/market-place.jpg','places/milestone.jpg','places/mill-new.jpg','places/mill-old.jpg','places/newbury.jpg','places/paris-1802.jpg','places/pelican-speen.jpg','places/pinery.jpg','places/rooksnest-farm.jpg','places/shire-hall-reading.jpg','places/stackyard-fire.jpg','places/starveall.jpg','places/the-bell.jpg','places/the-george.jpg','places/tithe-barn.jpg','places/town-hall-hustings.jpg','places/twelve-acres.jpg','places/vicarage-gate.jpg','places/withy-mead.jpg','plan/0.jpg','plan/1.jpg','plan/2.jpg','plan/3.jpg','plan/common-0.webp','plan/common-1.webp','plan/common-2.webp','plan/common-3.webp','plan/f/barns-0.webp','plan/f/barns-1.webp','plan/f/barns-2.webp','plan/f/barns-3.webp','plan/f/brickkiln-0.webp','plan/f/brickkiln-1.webp','plan/f/brickkiln-2.webp','plan/f/brickkiln-3.webp','plan/f/butts-0.webp','plan/f/butts-1.webp','plan/f/butts-2.webp','plan/f/butts-3.webp','plan/f/camp-0.webp','plan/f/camp-1.webp','plan/f/camp-2.webp','plan/f/camp-3.webp','plan/f/carriage-0.webp','plan/f/carriage-1.webp','plan/f/carriage-2.webp','plan/f/carriage-3.webp','plan/f/chalk-0.webp','plan/f/chalk-1.webp','plan/f/chalk-2.webp','plan/f/chalk-3.webp','plan/f/cottages-0.webp','plan/f/cottages-1.webp','plan/f/cottages-2.webp','plan/f/cottages-3.webp','plan/f/drain-0.webp','plan/f/drain-1.webp','plan/f/drain-2.webp','plan/f/drain-3.webp','plan/f/fourcourse-0.webp','plan/f/fourcourse-1.webp','plan/f/fourcourse-2.webp','plan/f/fourcourse-3.webp','plan/f/hall-front-0.webp','plan/f/hall-front-1.webp','plan/f/hall-front-2.webp','plan/f/hall-front-3.webp','plan/f/hall-old-0.webp','plan/f/hall-old-1.webp','plan/f/hall-old-2.webp','plan/f/hall-old-3.webp','plan/f/icehouse-0.webp','plan/f/icehouse-1.webp','plan/f/icehouse-2.webp','plan/f/icehouse-3.webp','plan/f/kennels-0.webp','plan/f/kennels-1.webp','plan/f/kennels-2.webp','plan/f/kennels-3.webp','plan/f/malthouse-0.webp','plan/f/malthouse-1.webp','plan/f/malthouse-2.webp','plan/f/malthouse-3.webp','plan/f/meadows-0.webp','plan/f/meadows-1.webp','plan/f/meadows-2.webp','plan/f/meadows-3.webp','plan/f/merino-0.webp','plan/f/merino-1.webp','plan/f/merino-2.webp','plan/f/merino-3.webp','plan/f/mill-0.webp','plan/f/mill-1.webp','plan/f/mill-2.webp','plan/f/mill-3.webp','plan/f/oaks-0.webp','plan/f/oaks-1.webp','plan/f/oaks-2.webp','plan/f/oaks-3.webp','plan/f/paddock-0.webp','plan/f/paddock-1.webp','plan/f/paddock-2.webp','plan/f/paddock-3.webp','plan/f/parterre-0.webp','plan/f/parterre-1.webp','plan/f/parterre-2.webp','plan/f/parterre-3.webp','plan/f/peat-0.webp','plan/f/peat-1.webp','plan/f/peat-2.webp','plan/f/peat-3.webp','plan/f/pinery-0.webp','plan/f/pinery-1.webp','plan/f/pinery-2.webp','plan/f/pinery-3.webp','plan/f/plough-0.webp','plan/f/plough-1.webp','plan/f/plough-2.webp','plan/f/plough-3.webp','plan/f/racecourse-0.webp','plan/f/racecourse-1.webp','plan/f/racecourse-2.webp','plan/f/racecourse-3.webp','plan/f/road-0.webp','plan/f/road-1.webp','plan/f/road-2.webp','plan/f/road-3.webp','plan/f/school-0.webp','plan/f/school-1.webp','plan/f/school-2.webp','plan/f/school-3.webp','plan/f/sheepwalk-0.webp','plan/f/sheepwalk-1.webp','plan/f/sheepwalk-2.webp','plan/f/sheepwalk-3.webp','plan/f/spa-0.webp','plan/f/spa-1.webp','plan/f/spa-2.webp','plan/f/spa-3.webp','plan/f/telegraph-0.webp','plan/f/telegraph-1.webp','plan/f/telegraph-2.webp','plan/f/telegraph-3.webp','plan/f/thresher-0.webp','plan/f/thresher-1.webp','plan/f/thresher-2.webp','plan/f/thresher-3.webp','plan/f/turnpike-0.webp','plan/f/turnpike-1.webp','plan/f/turnpike-2.webp','plan/f/turnpike-3.webp','plan/rooks.mp4','plan/smoke.mp4','plan/wheel.webp','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/balloon.png','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-guilford.jpg','undertakings/dine-haunch.jpg','undertakings/dine-ice.jpg','undertakings/dine-lamb.jpg','undertakings/dine-lobscouse.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-onefootman.jpg','undertakings/dine-partridge.jpg','undertakings/dine-pitt.jpg','undertakings/dine-regrets.jpg','undertakings/dine-snow.jpg','undertakings/dine-swans.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/dine-whist.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-barleybread.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-coverley.jpg','undertakings/home-drip.jpg','undertakings/home-fish.jpg','undertakings/home-flannel.jpg','undertakings/home-flea.jpg','undertakings/home-indians.jpg','undertakings/home-linen.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/home-sextant.jpg','undertakings/home-stocking.jpg','undertakings/home-swing.jpg','undertakings/ride-arrears.jpg','undertakings/ride-barley.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-cottages.jpg','undertakings/ride-coxswain.jpg','undertakings/ride-dear.jpg','undertakings/ride-edmund.jpg','undertakings/ride-ewes.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-gout.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-house.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-pond.jpg','undertakings/ride-quickset.jpg','undertakings/ride-rooks.jpg','undertakings/ride-school.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-drum.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-hassock.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rate.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-admiralty.jpg','undertakings/town-brooks.jpg','undertakings/town-burdett.jpg','undertakings/town-candles.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-levee.jpg','undertakings/town-partners.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
+const ART = new Set(['arms/baronet.webp','arms/esquire.webp','arms/knight.webp','endings/acres.jpg','endings/baronet.jpg','endings/bath.jpg','endings/bench.jpg','endings/button.jpg','endings/cut.jpg','endings/debts.jpg','endings/duel.jpg','endings/dynasty.jpg','endings/empty.jpg','endings/funds.jpg','endings/good.jpg','endings/hollow.jpg','endings/improver.jpg','endings/knight.jpg','endings/member.jpg','endings/rackrent.jpg','endings/soldup.jpg','endings/song.jpg','endings/tenant.jpg','endings/tolerable.jpg','endings/warm.jpg','events/abatement.jpg','events/abolition.jpg','events/allotments.jpg','events/badajoz.jpg','events/ballot.jpg','events/bank.jpg','events/bankFate.jpg','events/bath-1.jpg','events/bath-2.jpg','events/bath-3.jpg','events/bath-go.jpg','events/bath-letter.jpg','events/bath-selina.jpg','events/bath.jpg','events/battue.jpg','events/beacon.jpg','events/boulogne.jpg','events/bubbleCall.jpg','events/bubbleRise.jpg','events/bubbleTip.jpg','events/bumper.jpg','events/canal.jpg','events/census.jpg','events/chinese.jpg','events/clarke.jpg','events/clergy-arms.jpg','events/clergy-bishop.jpg','events/clergy-brothers.jpg','events/clergy-burial.jpg','events/clergy-hunting.jpg','events/clergy-informer.jpg','events/clergy-school.jpg','events/clergy-southcott.jpg','events/clergy-tithe.jpg','events/clergy-tooke.jpg','events/clergy-trusler.jpg','events/cobbett.jpg','events/cold-bench.jpg','events/cold-card.jpg','events/cold-cullerne.jpg','events/commonRiot.jpg','events/cornLaw.jpg','events/county-balloon.jpg','events/county-band.jpg','events/county-barclay.jpg','events/county-bounds.jpg','events/county-coat.jpg','events/county-crapper.jpg','events/county-elephant.jpg','events/county-fight.jpg','events/county-flood.jpg','events/county-forbury.jpg','events/county-goldcup.jpg','events/county-hen.jpg','events/county-hocktide.jpg','events/county-hot.jpg','events/county-lottery.jpg','events/county-quack.jpg','events/county-scouring.jpg','events/county-wife.jpg','events/crabbeList.jpg','events/crabbeSums.jpg','events/crew.jpg','events/dearth.jpg','events/defence.jpg','events/dubreuil.jpg','events/dubreuilAsks.jpg','events/dubreuilReturns.jpg','events/duel.jpg','events/edmund-aboukir.jpg','events/edmund-agent.jpg','events/edmund-badajoz.jpg','events/edmund-beacon.jpg','events/edmund-berth.jpg','events/edmund-burials.jpg','events/edmund-busaco.jpg','events/edmund-cantonments.jpg','events/edmund-chancel.jpg','events/edmund-chelmsford.jpg','events/edmund-christening.jpg','events/edmund-cold-letter.jpg','events/edmund-cold-room.jpg','events/edmund-colour.jpg','events/edmund-copenhagen.jpg','events/edmund-corunna.jpg','events/edmund-curacy.jpg','events/edmund-disembodied.jpg','events/edmund-dover.jpg','events/edmund-drains.jpg','events/edmund-ferrol.jpg','events/edmund-flushing.jpg','events/edmund-gazette.jpg','events/edmund-guardroom.jpg','events/edmund-gun.jpg','events/edmund-hounds.jpg','events/edmund-huddersfield.jpg','events/edmund-hunter.jpg','events/edmund-hythe.jpg','events/edmund-ipswich.jpg','events/edmund-java.jpg','events/edmund-kit.jpg','events/edmund-machine.jpg','events/edmund-mess.jpg','events/edmund-middlewatch.jpg','events/edmund-miss-army.jpg','events/edmund-miss-church.jpg','events/edmund-miss-home.jpg','events/edmund-miss-militia.jpg','events/edmund-miss-navy.jpg','events/edmund-normancross.jpg','events/edmund-ordained.jpg','events/edmund-oriel.jpg','events/edmund-outfit.jpg','events/edmund-paidoff.jpg','events/edmund-plate.jpg','events/edmund-pony.jpg','events/edmund-pressed.jpg','events/edmund-prize.jpg','events/edmund-pyrenees.jpg','events/edmund-ram.jpg','events/edmund-reduced.jpg','events/edmund-rent.jpg','events/edmund-rentbook.jpg','events/edmund-rodrigo.jpg','events/edmund-sandyhook.jpg','events/edmund-sermon.jpg','events/edmund-settle-letter.jpg','events/edmund-settle-room.jpg','events/edmund-settle-stiff.jpg','events/edmund-shannon.jpg','events/edmund-shorncliffe.jpg','events/edmund-skaw.jpg','events/edmund-swedes.jpg','events/edmund-tetuan.jpg','events/edmund-thirty.jpg','events/edmund-tithe.jpg','events/edmund-tithepig.jpg','events/edmund-toulon.jpg','events/edmund-toulouse.jpg','events/edmund-ushant.jpg','events/edmund-vestry.jpg','events/edmund-vimeiro.jpg','events/edmund-vitoria.jpg','events/edmund-volunteering.jpg','events/edmund-waiting.jpg','events/edmund-zealand.jpg','events/edmundDuel.jpg','events/edmundFuture.jpg','events/edmundHome.jpg','events/edmundLetter.jpg','events/election-1802-member.jpg','events/election-1802.jpg','events/election-1806-member.jpg','events/election-1806.jpg','events/election-1807-member.jpg','events/election-1807.jpg','events/election-1812-member.jpg','events/election-1812.jpg','events/election.jpg','events/election96.jpg','events/elope.jpg','events/enclosure.jpg','events/farmOffered.jpg','events/fate-badajoz-alive.jpg','events/fate-badajoz-dead.jpg','events/fate-duel-alive.jpg','events/fate-duel-dead.jpg','events/fate-duel-kept.jpg','events/fate-fever-alive.jpg','events/fate-fever-dead.jpg','events/fate-fever-kept.jpg','events/fate-walcheren-alive.jpg','events/fate-walcheren-dead.jpg','events/fate-walcheren-kept.jpg','events/fenn.jpg','events/flour.jpg','events/gallDies.jpg','events/georgeMeeting.jpg','events/hammer.jpg','events/hartoppShearing.jpg','events/heir.jpg','events/henPorch.jpg','events/henRichmond.jpg','events/henSongs.jpg','events/henrietta-bunce.jpg','events/henrietta-carpet.jpg','events/henrietta-chariot.jpg','events/henrietta-gowns.jpg','events/henrietta-housemaid.jpg','events/henrietta-margravine.jpg','events/henrietta-mother.jpg','events/henrietta-mourning.jpg','events/henrietta-pianoforte.jpg','events/henrietta-portrait.jpg','events/henrietta-preacher.jpg','events/henrietta-tea.jpg','events/henrietta.jpg','events/hunt.jpg','events/incomeTax.jpg','events/jamaica.jpg','events/jubilee.jpg','events/kitty-assembly.jpg','events/kitty-clifton-black.jpg','events/kitty-clifton.jpg','events/kitty-danes.jpg','events/kitty-latin.jpg','events/kitty-library.jpg','events/kitty-manumit.jpg','events/kitty-northampton.jpg','events/kitty-oakes-mangle.jpg','events/kitty-oakes-pew.jpg','events/kitty-reading-parole.jpg','events/kitty-stmalo.jpg','events/kitty-telescope.jpg','events/kitty-vane-bailiff.jpg','events/kitty-vane-child.jpg','events/kitty-vane-march.jpg','events/kitty-walks.jpg','events/kitty-widow.jpg','events/kitty-wyvern.jpg','events/kittyBotany.jpg','events/kittyDoor.jpg','events/ludd.jpg','events/manTraps.jpg','events/member-bellamy.jpg','events/member-bellingham.jpg','events/member-bull.jpg','events/member-burdett.jpg','events/member-committee.jpg','events/member-curwen.jpg','events/member-flogging.jpg','events/member-franks.jpg','events/member-gas.jpg','events/member-maiden.jpg','events/member-melville.jpg','events/member-petition.jpg','events/member-place.jpg','events/member-register.jpg','events/member-schools.jpg','events/member-whip.jpg','events/merino.jpg','events/nore.jpg','events/oakes.jpg','events/overseer.jpg','events/paris.jpg','events/parish-audit.jpg','events/parish-harvest.jpg','events/parish-letter.jpg','events/parish-pryor.jpg','events/peace.jpg','events/pinchDies.jpg','events/pinchSuit.jpg','events/poacher.jpg','events/powder.jpg','events/press.jpg','events/pryorFriend.jpg','events/rickFire.jpg','events/royalBond.jpg','events/royalPrincess.jpg','events/royalRegency.jpg','events/royalStag.jpg','events/royalTerrace.jpg','events/smugglers.jpg','events/speen.jpg','events/tBeloved.jpg','events/tBred.jpg','events/tClear.jpg','events/tConnexions.jpg','events/tCourt.jpg','events/tDebts.jpg','events/tEnemy.jpg','events/tFigures.jpg','events/tGout.jpg','events/tLegacy.jpg','events/tLove.jpg','events/tPlay.jpg','events/tPortion.jpg','events/tSecond.jpg','events/tSilver.jpg','events/tSoldier.jpg','events/tStranger.jpg','events/tWhig.jpg','events/taxCaught.jpg','events/thorneLease.jpg','events/threshHire.jpg','events/trafalgar.jpg','events/trapCatch.jpg','events/vaccine.jpg','events/vaneBall.jpg','events/vaneDines.jpg','events/vaneDowry.jpg','events/walcheren.jpg','events/war-abbe.jpg','events/war-contribution.jpg','events/war-corunna.jpg','events/war-deserter.jpg','events/war-guineas.jpg','events/war-prisoner.jpg','events/war-remount.jpg','events/war-smart.jpg','events/war-wives.jpg','events/waterloo.jpg','events/windows.jpg','frontispiece.jpg','hall/hall-front.glb','hall/hall-old.glb','icons/accounts.jpg','icons/christmas.jpg','icons/daybook.jpg','icons/farms.jpg','icons/goodwill.jpg','icons/hand.jpg','icons/household.jpg','icons/lady-day.jpg','icons/michaelmas.jpg','icons/midsummer.jpg','icons/parchments.jpg','icons/persons.jpg','icons/purse.jpg','icons/regard-1.jpg','icons/regard-2.jpg','icons/regard-3.jpg','icons/regard-4.jpg','icons/regard-5.jpg','icons/rentroll.jpg','icons/ride.jpg','icons/society.jpg','icons/standing.jpg','icons/ventures.jpg','icons/wheat.jpg','icons/works.jpg','places/assembly-rooms.jpg','places/bank-parlour.jpg','places/bath.jpg','places/canal-locks.jpg','places/church-and-vestry.jpg','places/clifton.jpg','places/coldharbour-farm.jpg','places/common-enclosed.jpg','places/common-piece.jpg','places/common.jpg','places/cuckoo-copse.jpg','places/cullerne-castle.jpg','places/dining-room.jpg','places/down-beacon.jpg','places/down-duel.jpg','places/drawing-room.jpg','places/east-wing.jpg','places/estate-office.jpg','places/frigate-nore.jpg','places/gallows-piece.jpg','places/hall-new-front.jpg','places/ice-house.jpg','places/kennet-bottom-drained.jpg','places/kennet-bottom-flood.jpg','places/kintbury-lane-mended.jpg','places/kintbury-lane.jpg','places/kitchen.jpg','places/ladder-window.jpg','places/library.jpg','places/london-season.jpg','places/london-westminster.jpg','places/long-barrow-farm.jpg','places/maddle-farm.jpg','places/mail-coach-laurel.jpg','places/market-place.jpg','places/milestone.jpg','places/mill-new.jpg','places/mill-old.jpg','places/newbury.jpg','places/paris-1802.jpg','places/pelican-speen.jpg','places/pinery.jpg','places/rooksnest-farm.jpg','places/shire-hall-reading.jpg','places/stackyard-fire.jpg','places/starveall.jpg','places/the-bell.jpg','places/the-george.jpg','places/tithe-barn.jpg','places/town-hall-hustings.jpg','places/twelve-acres.jpg','places/vicarage-gate.jpg','places/withy-mead.jpg','plan/0.jpg','plan/1.jpg','plan/2.jpg','plan/3.jpg','plan/common-0.webp','plan/common-1.webp','plan/common-2.webp','plan/common-3.webp','plan/f/barns-0.webp','plan/f/barns-1.webp','plan/f/barns-2.webp','plan/f/barns-3.webp','plan/f/brickkiln-0.webp','plan/f/brickkiln-1.webp','plan/f/brickkiln-2.webp','plan/f/brickkiln-3.webp','plan/f/butts-0.webp','plan/f/butts-1.webp','plan/f/butts-2.webp','plan/f/butts-3.webp','plan/f/camp-0.webp','plan/f/camp-1.webp','plan/f/camp-2.webp','plan/f/camp-3.webp','plan/f/carriage-0.webp','plan/f/carriage-1.webp','plan/f/carriage-2.webp','plan/f/carriage-3.webp','plan/f/chalk-0.webp','plan/f/chalk-1.webp','plan/f/chalk-2.webp','plan/f/chalk-3.webp','plan/f/cottages-0.webp','plan/f/cottages-1.webp','plan/f/cottages-2.webp','plan/f/cottages-3.webp','plan/f/drain-0.webp','plan/f/drain-1.webp','plan/f/drain-2.webp','plan/f/drain-3.webp','plan/f/fourcourse-0.webp','plan/f/fourcourse-1.webp','plan/f/fourcourse-2.webp','plan/f/fourcourse-3.webp','plan/f/hall-front-0.webp','plan/f/hall-front-1.webp','plan/f/hall-front-2.webp','plan/f/hall-front-3.webp','plan/f/hall-old-0.webp','plan/f/hall-old-1.webp','plan/f/hall-old-2.webp','plan/f/hall-old-3.webp','plan/f/icehouse-0.webp','plan/f/icehouse-1.webp','plan/f/icehouse-2.webp','plan/f/icehouse-3.webp','plan/f/kennels-0.webp','plan/f/kennels-1.webp','plan/f/kennels-2.webp','plan/f/kennels-3.webp','plan/f/malthouse-0.webp','plan/f/malthouse-1.webp','plan/f/malthouse-2.webp','plan/f/malthouse-3.webp','plan/f/meadows-0.webp','plan/f/meadows-1.webp','plan/f/meadows-2.webp','plan/f/meadows-3.webp','plan/f/merino-0.webp','plan/f/merino-1.webp','plan/f/merino-2.webp','plan/f/merino-3.webp','plan/f/mill-0.webp','plan/f/mill-1.webp','plan/f/mill-2.webp','plan/f/mill-3.webp','plan/f/oaks-0.webp','plan/f/oaks-1.webp','plan/f/oaks-2.webp','plan/f/oaks-3.webp','plan/f/paddock-0.webp','plan/f/paddock-1.webp','plan/f/paddock-2.webp','plan/f/paddock-3.webp','plan/f/parterre-0.webp','plan/f/parterre-1.webp','plan/f/parterre-2.webp','plan/f/parterre-3.webp','plan/f/peat-0.webp','plan/f/peat-1.webp','plan/f/peat-2.webp','plan/f/peat-3.webp','plan/f/pinery-0.webp','plan/f/pinery-1.webp','plan/f/pinery-2.webp','plan/f/pinery-3.webp','plan/f/plough-0.webp','plan/f/plough-1.webp','plan/f/plough-2.webp','plan/f/plough-3.webp','plan/f/racecourse-0.webp','plan/f/racecourse-1.webp','plan/f/racecourse-2.webp','plan/f/racecourse-3.webp','plan/f/road-0.webp','plan/f/road-1.webp','plan/f/road-2.webp','plan/f/road-3.webp','plan/f/school-0.webp','plan/f/school-1.webp','plan/f/school-2.webp','plan/f/school-3.webp','plan/f/sheepwalk-0.webp','plan/f/sheepwalk-1.webp','plan/f/sheepwalk-2.webp','plan/f/sheepwalk-3.webp','plan/f/spa-0.webp','plan/f/spa-1.webp','plan/f/spa-2.webp','plan/f/spa-3.webp','plan/f/telegraph-0.webp','plan/f/telegraph-1.webp','plan/f/telegraph-2.webp','plan/f/telegraph-3.webp','plan/f/thresher-0.webp','plan/f/thresher-1.webp','plan/f/thresher-2.webp','plan/f/thresher-3.webp','plan/f/turnpike-0.webp','plan/f/turnpike-1.webp','plan/f/turnpike-2.webp','plan/f/turnpike-3.webp','plan/rooks.mp4','plan/smoke.mp4','plan/wheel.webp','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/balloon.png','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png','undertakings/dine-ball.jpg','undertakings/dine-earl.jpg','undertakings/dine-grace.jpg','undertakings/dine-guilford.jpg','undertakings/dine-haunch.jpg','undertakings/dine-ice.jpg','undertakings/dine-lamb.jpg','undertakings/dine-lobscouse.jpg','undertakings/dine-magistrates.jpg','undertakings/dine-nopastry.jpg','undertakings/dine-onefootman.jpg','undertakings/dine-partridge.jpg','undertakings/dine-pitt.jpg','undertakings/dine-regrets.jpg','undertakings/dine-snow.jpg','undertakings/dine-swans.jpg','undertakings/dine-turbot.jpg','undertakings/dine-walnuts.jpg','undertakings/dine-wasps.jpg','undertakings/dine-whist.jpg','undertakings/home-alphabet.jpg','undertakings/home-backgammon.jpg','undertakings/home-barleybread.jpg','undertakings/home-brewing.jpg','undertakings/home-carpets.jpg','undertakings/home-cedar.jpg','undertakings/home-coverley.jpg','undertakings/home-drip.jpg','undertakings/home-fish.jpg','undertakings/home-flannel.jpg','undertakings/home-flea.jpg','undertakings/home-indians.jpg','undertakings/home-linen.jpg','undertakings/home-nutting.jpg','undertakings/home-pin.jpg','undertakings/home-pocketbook.jpg','undertakings/home-rabbits.jpg','undertakings/home-radcliffe.jpg','undertakings/home-sextant.jpg','undertakings/home-stocking.jpg','undertakings/home-swing.jpg','undertakings/ride-arrears.jpg','undertakings/ride-barley.jpg','undertakings/ride-cheap.jpg','undertakings/ride-cider.jpg','undertakings/ride-cottages.jpg','undertakings/ride-coxswain.jpg','undertakings/ride-dear.jpg','undertakings/ride-edmund.jpg','undertakings/ride-ewes.jpg','undertakings/ride-frost.jpg','undertakings/ride-gates.jpg','undertakings/ride-geese.jpg','undertakings/ride-gout.jpg','undertakings/ride-harvest.jpg','undertakings/ride-hay.jpg','undertakings/ride-highorder.jpg','undertakings/ride-house.jpg','undertakings/ride-lambing.jpg','undertakings/ride-michaelmas.jpg','undertakings/ride-names.jpg','undertakings/ride-neglect.jpg','undertakings/ride-pond.jpg','undertakings/ride-quickset.jpg','undertakings/ride-rooks.jpg','undertakings/ride-school.jpg','undertakings/ride-shearing.jpg','undertakings/ride-thatch.jpg','undertakings/ride-threshing.jpg','undertakings/sessions-bread.jpg','undertakings/sessions-bridge.jpg','undertakings/sessions-drum.jpg','undertakings/sessions-goose.jpg','undertakings/sessions-hassock.jpg','undertakings/sessions-horse.jpg','undertakings/sessions-leg.jpg','undertakings/sessions-loaf.jpg','undertakings/sessions-rate.jpg','undertakings/sessions-rue.jpg','undertakings/sessions-snares.jpg','undertakings/sessions-substitute.jpg','undertakings/sessions-sweep.jpg','undertakings/sessions-three.jpg','undertakings/sessions-wagon.jpg','undertakings/sessions-weights.jpg','undertakings/sessions-words.jpg','undertakings/town-admiralty.jpg','undertakings/town-brooks.jpg','undertakings/town-burdett.jpg','undertakings/town-candles.jpg','undertakings/town-coat.jpg','undertakings/town-duke.jpg','undertakings/town-levee.jpg','undertakings/town-partners.jpg','undertakings/town-prices.jpg','undertakings/town-siddons.jpg','undertakings/town-staircase.jpg','undertakings/town-turner.jpg','undertakings/town-vauxhall.jpg']);
 /* The plan of the estate. Between quarter days the squire is out of the book and on his land: the places on the plan are the menu,
    and whatever happens to him is struck off as a numbered plate. The book (ui.js) is opened on quarter day and at the end. */
 let VIEW = 'book', SHEET = '', PLATEUP = false, PROGRESS = -1, PSTEP = '', SEC = '', ROUND = false, CALLKEY = '', CALLAT = '';
@@ -9653,6 +9870,7 @@ function undertakeHTML(){ const o = undertakingOptions();
 
 function endHTML(){ const r = reckoning();
   return `${runhead('Pasted inside the back board', 'Finis')}
+    ${typeof endPlateHTML === 'function' ? endPlateHTML() : ''}
     <article class="sheet bill ending">
       <p class="kicker">From the Reading Mercury and Oxford Gazette, ${S.dead ? esc(stamp()) : 'January 1816'}</p>
       <h2>${esc(r.title)}</h2>

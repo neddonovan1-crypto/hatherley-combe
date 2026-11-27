@@ -160,6 +160,7 @@ function undertakeHTML(){ const o = undertakingOptions();
 
 function endHTML(){ const r = reckoning();
   return `${runhead('Pasted inside the back board', 'Finis')}
+    ${typeof endPlateHTML === 'function' ? endPlateHTML() : ''}
     <article class="sheet bill ending">
       <p class="kicker">From the Reading Mercury and Oxford Gazette, ${S.dead ? esc(stamp()) : 'January 1816'}</p>
       <h2>${esc(r.title)}</h2>
