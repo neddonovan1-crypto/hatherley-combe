@@ -1006,104 +1006,257 @@ Forty gentlemen sit their horses round the hole. Nobody says a name.`; }}
   ]});
 
 ev({ id:'overseer', from:1801, to:1814, weight:2, repeatGap:24, title:'The Overseer’s Accounts',
-  text:() => `Mr Nokes the overseer has brought the parish books. The poor rate has trebled since the war began, ${F('speen') ? 'the bread scale having done just what any child could have foretold, ' : ''}and the farmers who pay it are muttering.
+  text:() => `Mr Nokes the overseer brings the parish books up to the Hall. He lays them open at two pages.
 
-He has two remedies. One is the roundsman system: unemployed men are sent round the farms in turn, each farmer to find them work at sixpence a day, and the parish to add the rest. The other is a House of Industry: all relief to be given inside a workhouse, husbands on one side and wives on the other. “It reduces applications wonderfully,” says Nokes.`,
+Poor rate, 1793: two shillings in the pound. Poor rate, this year: six.
+
+${F('speen') ? 'The bread scale is pinned inside the cover. Every man with three children is on it.\n\n' : ''}“The farmers say they won’t pay seven, sir.”
+
+He has two plans.
+
+The first is roundsmen. The men without work go round the farms in turn. The farmer finds sixpence a day and the parish makes it up.
+
+The second is a House of Industry. No relief is given outside it. Husbands sleep on one side and wives on the other.
+
+“It brings the applications down wonderful, sir.”`,
   choices:[
     {t:'Build the House of Industry.', note:'£400', go:() => { fl('workhouse'); S.poorMult *= 0.6; add({money:-400, goodwill:-10, standing:1}); reg('pryor',-1);
-      return `It is built of brick at the end of the Kintbury lane, with high windows, so the inmates may have light and not a view. Applications fall by two thirds within the quarter, as Nokes promised. People will bear a great deal sooner than go in. That is the whole secret of the system, and they call it economy.`; }},
+      return `It is built of brick at the end of the Kintbury lane. The windows are set seven feet from the floor.
+
+Last quarter Nokes relieved sixty-one. This quarter he relieves twenty-three. Eleven of them are in the House.
+
+“And the rest, Mr Nokes?”
+
+“Haven’t applied, sir.”
+
+He enters the difference under Savings.`; }},
     {t:'Try the roundsmen.', go:() => { fl('roundsmen'); S.poorMult *= 0.85; add({goodwill:-5});
-      return `Each morning the men without work stand by the pound, and the farmers look them over and take their pick, as at a sale of horses. A roundsman works slowly, since he is paid the same whatever he does; and the farmer wastes him, since he costs sixpence. It is cheaper than before, and it makes every man concerned in it a little worse.`; }},
+      return `At six each morning the men without work stand by the pound. The farmers walk down the row. Hartopp feels a man’s arm before he takes him.
+
+A roundsman has the same money if he digs one rod or five. He digs one. The farmer has him for sixpence. He sets him to scare rooks.
+
+The rate comes down fivepence in the pound.`; }},
     {t:'Leave the rates alone, and find winter work on the estate.', note:'£120', go:() => { add({money:-120, goodwill:6});
-      return `You set twenty men to scouring ditches, mending the park pale and digging a ha-ha you do not need. It costs a hundred and twenty pounds and saves the rates perhaps eighty. Nokes regards it as bad arithmetic. The ha-ha is a great success; a cow falls into it the first week.`; }}
+      return `You set twenty men to scour the ditches and mend the park pale. When that is done you have them dig a ha-ha. The lawn has never wanted one.
+
+Wages, £120. Nokes reckons the saving to the rates at £80. He writes the two figures side by side and turns the book towards you.
+
+The ha-ha is finished. A cow falls into it the first week.`; }}
   ]});
 
 ev({ id:'edmundLetter', from:1798, to:1814, weight:3, repeatGap:10, cond:() => (E() === 'army' || E() === 'navy') && !F('edmundDead'), title:'A Letter from Edmund',
   text:() => { const y = S.year; let body;
     if (E() === 'army') {
-      if (y <= 1800) body = `“We are in barracks at Chelmsford, where it rains, and have been reviewed four times by generals who all said the same thing. I have learnt to shave in cold water and to sleep on parade. Tamworth of ours has a tame jackdaw that says ‘Damn the French’, and one other thing, which I shall not write down for my mother.”`;
-      else if (y <= 1802) body = `“We landed through the surf at Aboukir under such a fire as I hope never to see again, and beat them at Alexandria, where poor Sir Ralph got his death. I have seen the Pyramids, at a distance. They are large. I have also had the ophthalmia, like half the army, and for three weeks saw nothing whatever, which I am told is the same view at less expense.”`;
-      else if (y <= 1807) body = `“Shorncliffe Camp. Sir John Moore drills us from dawn in a new manner: we are to skirmish in pairs, think for ourselves, and not flog the men except for cause. The old officers say the army is going to the dogs. I have never been so tired or so happy. From the cliff, on a clear day, one sees the French tents at Boulogne quite plain, and their washing.”`;
-      else if (y <= 1809) body = `“I write this from Plymouth, alive, which is more than I looked for a month since. We marched two hundred and fifty miles through the snow to Corunna with the French at our heels. I saw men sell their boots for rum and lie down in the road. Sir John is dead; we buried him in his cloak on the ramparts by lantern light. I have no stockings and have eaten a mule.”`;
-      else if (y <= 1812) body = `“Lord Wellington has us before Badajoz, in mud to the knee. He is a cold, long-nosed man who dresses like a banker and is never wrong, and the men would follow him anywhere, out of curiosity. My Portuguese servant has stolen a pig. I have reprimanded him, and we dine on it Thursday.”`;
-      else body = `“We are over the Pyrenees and into France, where to our astonishment the peasants sell us eggs and call us deliverers. Lord Wellington hangs any man who plunders, so that the French prefer our army to their own. I am grown quite brown, and I have forgotten how to sleep in a bed. Pray tell my mother I wear the flannel.”`;
+      if (y <= 1800) body = `“Chelmsford Barracks. My dear Father, It has rained here nineteen days. We have been reviewed four times since we came. Each General told us we were a fine body of men and rode away to his dinner. I can shave in cold water now. Tamworth of ours keeps a jackdaw. It says Damn the French very distinctly. It says one thing more. Pray do not let my mother ask what.”`;
+      else if (y <= 1802) body = `“Camp before Alexandria. My dear Father, We came ashore at Aboukir in the flat boats. The French had guns on the sandhills and gave us grape all the way in. The man on the next thwart was killed. We beat them again here on the 21st. Sir Ralph had a ball in the thigh and is dead of it. I have seen the Pyramids from nine miles off. Then I took the ophthalmia with half the regiment and saw nothing at all for three weeks. I am mended. I can tell a camel from a field officer at forty yards.”`;
+      else if (y <= 1807) body = `“Shorncliffe Camp. My dear Father, Sir John Moore has us out at five. We are to fight in pairs, one man loading while the other fires. The men are to be told the reason of an order. Nobody is to be flogged without cause. Major Pott says the service is ruined. I was never so tired in my life and I would not be anywhere else. On a clear day we see the French camp at Boulogne from the cliff. On Monday they had their washing out.”`;
+      else if (y <= 1809) body = `“Plymouth. My dear Father, I am alive and have both my feet. We marched to Corunna in the snow, two hundred and fifty miles, with Marshal Soult a day behind. At Bembibre men sold their shoes for rum and lay down in the road. We left them. Sir John was struck by a round shot on the 16th. They buried him on the rampart in his cloak before it was light. I have no stockings. I have eaten part of a mule. My mother need not hear of the mule.”`;
+      else if (y <= 1812) body = `“Camp before Badajoz. My dear Father, We are in the trenches and the trenches are full of water. Lord Wellington rode by on Tuesday in a grey frock and a plain hat. He looked at our parallel for one minute and said it would do. The men speak of it still. My servant Pedro has stolen a pig from the Spaniards. I reprimanded him before the company. We dine on it Thursday.”`;
+      else body = `“St Jean de Luz. My dear Father, We are in France. The country people bring us eggs and fowls and take dollars for them. His Lordship hanged two men last week for plundering a farm. A woman here told my serjeant she would sooner quarter us than her own army. I am as brown as a saddle. On Sunday I slept in a bed and did not like it. Tell my mother I wear the flannel.”`;
     } else {
-      if (y <= 1799) body = `“We have been off Brest eleven weeks, standing in and out, looking at the French fleet, which lies in harbour looking at us. Nothing has occurred, save that the purser’s goat ate the Captain’s copy of the signal book and was in consequence the only creature aboard who knew the private signals. I am rated master’s mate, and can take a noon sight without disgracing myself.”`;
-      else if (y <= 1802) body = `“We were at Copenhagen under Lord Nelson, who when signalled to leave off put the glass to his blind eye, and said he really did not see it. I had charge of three guns on the main deck. The noise is beyond anything; one hears it afterwards for days, like the sea in a shell. I have passed for lieutenant. Captain Holloway said, ‘I suppose you will do,’ which the gunroom assures me is rapture.”`;
-      else if (y <= 1805) body = `“Two years this month on the blockade of Toulon, and I have not set foot ashore in fourteen months. We live upon salt beef as old as I am and lemons from Sardinia. Lord Nelson knows the name of every lieutenant in the fleet and has asked after my father’s turnips. I had mentioned them once, at his table, for want of anything else to say.”`;
-      else if (y <= 1810) body = `“Since Trafalgar there are no French at sea for us to fight, and we convoy merchantmen from the Baltic at four knots, like dogs set to mind geese. The most considerable event in the last quarter was the loss of the wardroom cheese overboard in a gale off the Skaw. I am first lieutenant now, Holloway being too gouty to interfere, and I find that I can command a ship. It is a strange thing to discover at sea level.”`;
-      else body = `“We are on the American station, chasing Yankee frigates that are bigger than ours and sail two feet to our one. They took the Guerriere and the Java, and all England is in a pet about it. For my part I think a Navy that has had no one to fight for seven years may be the better for a beating. I am made Commander, into a sloop of eighteen guns. She leaks, and I love her.”`;
+      if (y <= 1799) body = `“Off Ushant. My dear Father, We have been eleven weeks on this station. Each morning we stand in and count the French in Brest Water. They count us. Then we stand out again. The purser’s goat has eaten the Captain’s signal book, private signals and all. The Captain wished her shot. The surgeon reminded him that she gives milk. I am rated master’s mate. I took the noon sight yesterday and put the ship within four miles of where she was.”`;
+      else if (y <= 1802) body = `“Yarmouth Roads. My dear Father, We were at Copenhagen on the 2nd under Lord Nelson. Sir Hyde made the signal to leave off. They say his Lordship put the glass to his blind eye and declared he could not see it. I had three guns on the main deck. I heard nothing for two days after and there is a singing in my head still. I have passed for Lieutenant. Captain Holloway said, ‘I suppose you will do.’ The gunroom tells me he never said so much to any man before.”`;
+      else if (y <= 1805) body = `“Off Toulon. My dear Father, We are two years on this station this month. I have not been ashore in fourteen. The beef cask we opened on Monday was branded 1789. We have lemons from Sardinia. I dined in the Victory last week. I could think of nothing to say and spoke of your turnips. On Thursday Lord Nelson hailed our boat. He asked how the turnips did.”`;
+      else if (y <= 1810) body = `“Off the Skaw. My dear Father, There are no French at sea. We bring two hundred merchantmen down from the Baltic at four knots and fire a gun at any that straggle. The event of the quarter was the wardroom cheese. It went overboard in a gale on the 9th. Captain Holloway has the gout and keeps his cabin. I am First Lieutenant and I work the ship. I find that I can.”`;
+      else if (y <= 1812) body = `“Halifax. My dear Father, We are sent to the American station. Their frigates carry twenty-four pounders and are built like seventy-fours. We met one off Sandy Hook. She looked at us and we looked at her. Our orders are to give no offence. Captain Holloway has gone home with his gout. I am made Commander into the Sparrow sloop, 18 guns. She makes fourteen inches of water in a watch. I would not change her for a three-decker.”`;
+      else body = `“Halifax. My dear Father, The American frigates carry twenty-four pounders and sail two feet to our one. They have taken the Guerriere and the Java. The London papers reach us six weeks old and very angry. We have had nobody to fight these seven years and our gunnery shows it. I am made Commander into the Sparrow sloop, 18 guns. She makes fourteen inches of water in a watch. I would not change her for a three-decker.”`;
     }
-    return `A letter from Edmund, much crossed, and franked by somebody else’s uncle.\n\n${body}`; },
+    return `The post-boy brings a letter from Edmund. There is one and a penny to pay on it. He has crossed it to save a second sheet.\n\n${body}`; },
   choices:[
     {t:'Send him fifty pounds.', note:'£50', go:() => { add({money:-50, family:2}); reg('edmund',1,'You sent money when he was on service');
-      return `The draft goes off by the next packet. He will spend it, you gather from the reply some months later, on a ${E() === 'army' ? 'horse, a boat-cloak, and a dinner for his company' : 'sextant, a sea-cloak, and a dinner for the gunroom'}; in what proportions he does not say.`; }},
+      return `You send a draft for fifty pounds on Tidmarsh’s.
+
+His answer is eleven lines. He has bought ${E() === 'army' ? 'a horse, a boat-cloak and a dinner for his company' : 'a sextant, a sea-cloak and a dinner for the gunroom'}. He does not say what each cost.`; }},
     {t:'Write him four sides about the estate.', go:() => { add({family:3}); reg('edmund',1);
-      return `You write of the wheat, the lambing, who is dead, who is married, and what the bay mare has done to the coach-house door. It is, you suspect, dull stuff. You do not learn until much later that he reads these letters aloud, to ${E() === 'army' ? 'his mess' : 'the gunroom'}, and that there are ${E() === 'army' ? 'officers in the Peninsula' : 'lieutenants on the Brest blockade'} who follow the affairs of Hatherley as other men follow a novel in parts.`; }},
+      return `You write four sides. The wheat. The lambing. Who is dead and who is married. What the bay mare did to the coach-house door.
+
+You read it over. It is dull. You seal it.
+
+His next letter has a postscript.
+
+“${E() === 'army' ? 'Tamworth asks whether the bay mare is sold. The mess has money on it.' : 'Mr Pascoe asks whether the bay mare is sold. The gunroom has money on it.'}”`; }},
     {t:'Let Henrietta answer. She has knitted him something.', go:() => { add({family:1}); reg('henrietta',1);
-      return `Henrietta sends eleven sides, two flannel waistcoats, a plum cake, and a receipt against the flux. The cake arrives, by his account, in a condition “of the greatest interest to the surgeon”.`; }}
+      return `Henrietta writes eleven sides. She packs two flannel waistcoats, a plum cake and a receipt against the flux.
+
+His answer comes addressed to her. She reads you one line of it.
+
+“The cake was of the greatest interest to the surgeon.”
+
+She folds the letter and puts it in her work-box.`; }}
   ]});
 
 ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home', title:'Edmund and the Volunteers',
-  text:() => `Edmund is rising thirty, knows the estate better than you do, and has been restless ever since the war began again. Half the young men he was at school with are at sea or in Sicily. He has been offered a captaincy in the Berkshire Militia, which would take him from home for the length of the war.
+  text:() => `Edmund is rising thirty. He knows every field on the estate and what it let for in 1790.
 
-Or he might stay, he says, not looking at you, and you might give him Kennet Bottom to farm on his own account, and the hand of nobody in particular, though he has lately been a good deal at the Lovedays’.`,
+The war has begun again. Two of his schoolfellows are at sea. One is at Malta. Edmund reads the Gazette at breakfast and leaves his egg.
+
+He comes to the book-room after dinner. He has the offer of a company in the Berkshire Militia. It would take him from home until the peace.
+
+“Or I might stay, sir.” He looks at the fire. “If I had Kennet Bottom to farm for myself.”
+
+He has dined at the Lovedays’ four times this month.`,
   choices:[
     {t:'Let him take the militia captaincy.', go:() => { fl('edmund','militia'); add({family:-2, standing:2}); reg('edmund',2,'You let him go for a soldier at last');
-      return `He marches the Berkshires to Ipswich, then Dover, then Dublin, guarding coasts on which nobody lands. It is not Italy. But he comes home on leave with a straight back and a habit of command, and the sulking in the gun room is over for good.`; }},
+      return `He marches with the Berkshires in a new red coat. His letters come from Ipswich, then Dover, then Hythe. No Frenchman lands at any of them.
+
+He is home on leave at Christmas. He stands straighter. He tells the groom how the harness is to be kept. The groom does it.`; }},
     {t:'Give him Kennet Bottom, and your blessing on Miss Loveday.', note:'£300', go:() => { fl('edmund','farmer'); fl('edmundMarried'); S.improve += 1; add({money:-300, family:8}); reg('edmund',3,'You gave him a farm of his own and a wife'); reg('henrietta',2);
-      return `He marries Sophia Loveday in the spring: a brisk, freckled girl who can judge a heifer and is not afraid of Henrietta. He drains Kennet Bottom, puts it down to Swedes, and within three years is getting more off it than the last tenant thought possible. There is a grandson by 1806, who is named after your uncle, and bites.`; }},
+      return `You give him Kennet Bottom and three hundred pounds to stock it.
+
+He marries Sophia Loveday in Hatherley church. She is brisk and freckled. At the wedding breakfast Henrietta tells her how butter is made at the Hall.
+
+“Yes, ma’am,” says Sophia. “We make ours the other way.”
+
+Edmund begins the drains on the Monday. The Bottom goes down to Swedes.`; }},
     {t:'Tell him his duty is here, as your son.', go:() => { add({family:-5}); reg('edmund',-3,'You kept him at home a second time');
-      return `He says, “Yes, sir.” He goes on being your steward in all but name, exact, obliging and shut like a box. In the evenings he reads the Gazette to himself, with his finger under the names.`; }}
+      return `“Your duty is here.”
+
+“Yes, sir.”
+
+He keeps the rent book as before. Every figure in it is right. He answers when he is spoken to.
+
+In the evenings he reads the Gazette by himself. He keeps one finger under the names.`; }}
   ]});
 
 ev({ id:'kittyBotany', from:1806, to:1812, weight:2, cond:() => K() === 'free' && !F('dubreuilWaits'), title:'Miss Kitty and the Orchids',
-  text:() => `Kitty is ${kittyAge()} and has refused four men, including a rural dean. She has taken to botany. She has found on Hatherley Down a small green orchid which is in no book, has drawn it with great exactness, and wishes to send the drawing and a dried specimen to Sir Joseph Banks at the Royal Society.
+  text:() => `Kitty is ${kittyAge()}. She has refused four men. The last was a rural dean.
 
-Henrietta says that a woman who writes to learned societies will never be asked for again. Kitty says that this had occurred to her.`,
+She walks on Hatherley Down every morning with a tin box. She has found a small green orchid there. It is not in Withering. It is not in Hudson. She has drawn it at four times the size of life and dried a specimen.
+
+She wishes to send both to Sir Joseph Banks.
+
+“A woman who writes to the Royal Society will never be asked for again,” says Henrietta.
+
+“I had thought of that, Mamma.”`,
   choices:[
-    {t:'Frank the letter yourself, and buy her a proper microscope.', note:'£40', go:() => { fl('kittyBotanist'); add({money:-40, family:3}); reg('kitty',3,'You bought her a microscope and sent her orchid to Sir Joseph Banks'); reg('henrietta',-1);
-      return `Sir Joseph replies in his own hand, three sides. The orchid is new. It is to be figured in Sowerby’s English Botany, and “your daughter, sir, draws better than half my correspondents and observes better than the rest”. Kitty reads this standing in the hall, twice, and then goes out on to the Down without a bonnet, in the rain.`; }},
+    {t:'Send it under your own cover, and buy her a proper microscope.', note:'£40', go:() => { fl('kittyBotanist'); add({money:-40, family:3}); reg('kitty',3,'You bought her a microscope and sent her orchid to Sir Joseph Banks'); reg('henrietta',-1);
+      return `The microscope comes from Dollond’s in a mahogany case. Forty pounds.
+
+Sir Joseph answers in his own hand, three sides.
+
+“The plant is new to me. Mr Sowerby shall figure it for English Botany. Your daughter, Sir, draws better than half my correspondents. She observes better than the other half.”
+
+Kitty reads it standing in the hall. She reads it again. Then she goes out on the Down without a bonnet. It is raining.`; }},
     {t:'Let her send it, under a gentleman’s initials.', go:() => { add({family:-1}); reg('kitty',-1,'You made her sign her orchid with a man’s initials');
-      return `The orchid goes to London as the discovery of “K. ${S.sur[0]}., Esq.” Sir Joseph replies to that gentleman with the highest compliments and an invitation to dine at Soho Square, which that gentleman is obliged to decline, on the ground that she does not exist.`; }},
+      return `The parcel goes to Soho Square from “K. ${S.sur[0]}., Esq.”
+
+Sir Joseph answers that gentleman by return. He sends his compliments. He hopes Mr ${S.sur[0]}. will dine in Soho Square on Thursday se’nnight.
+
+Kitty writes back that Mr ${S.sur[0]}. is prevented by indisposition. She signs it with the two initials. She presses the wafer down with her thumb for some time.`; }},
     {t:'Forbid it, and ask the rural dean to dinner again.', go:() => { add({family:-5}); reg('kitty',-3,'You stopped her orchid and sent for the rural dean'); reg('henrietta',1);
-      return `The rural dean comes, and talks for two hours about the tithe on hops. Kitty is perfectly civil to him. The orchid is described six years later by a clergyman from Dorking, who names it after himself.`; }}
+      return `The rural dean comes on Thursday. He talks for two hours about the tithe on hops. Kitty passes him the sauce. She asks after his sister.
+
+The drawing goes into the drawer of the hall table. The orchid is pressed in the second volume of Fordyce’s Sermons.
+
+Nobody at Hatherley opens Fordyce.`; }}
   ]});
 
 ev({ id:'smugglers', from:1805, to:1813, weight:1, title:'Brandy for the Bench',
-  text:() => `Since Bonaparte closed the ports of Europe, French brandy has become a rarity, a patriotic sacrifice, and four pounds a dozen. This morning Mudge found two half-ankers of it under the straw in your own cart shed, with a chalk mark on the lid.
+  text:() => `Mudge is at the back door before breakfast. He will not come in.
 
-It is, he explains to your boots, “the gentleman’s share”. The free traders run it up from Christchurch by night through six parishes, and a tub is left for every magistrate along the road, as it was for your uncle, by way of thanking him for his sound sleep.`,
+There are two half-ankers of brandy under the straw in the cart shed. Each has a chalk cross on the head. French brandy is four pounds the dozen in Reading this year, when Reading has any.
+
+“That’s the gentleman’s share, sir.” Mudge speaks to your boots. “They runs it up from Christchurch by night. There’s a tub left for every justice on the road. Your uncle had his regular.”
+
+“And what did my uncle do for it?”
+
+“Slept, sir.”`,
   choices:[
     {t:'Sleep soundly.', go:() => { fl('brandy'); add({family:2, standing:1});
-      return `The brandy is superb. You give a dinner on it. The Chairman of Quarter Sessions holds his glass to the candle, observes that it reminds him strongly of his own, and nothing further is said by anybody, that evening or afterwards.`; }},
+      return `The tubs are carried down to the cellar. You give a dinner.
+
+The Chairman of Quarter Sessions holds his glass to the candle.
+
+“I have the fellow of this at home,” he says.
+
+Nobody asks him where he had it. Nobody asks you.`; }},
     {t:'Hand the tubs to the Excise.', go:() => { add({standing:2, goodwill:-5});
-      return `The Riding Officer comes for the tubs with an escort of dragoons, and stares at you as at a prodigy of nature. That winter the carrier’s cart no longer calls at Hatherley, the Wyvern grocer cannot oblige you with tea, and your gates, which were never left open in your uncle’s day, are left open nightly, with great care.`; }},
+      return `The Supervisor of Excise rides over from Newbury with four dragoons. He writes you a receipt for eight gallons. He looks at you a good while before he mounts.
+
+On Thursday the carrier’s cart goes past the lodge without stopping. The grocer at Wyvern has no tea for the Hall this week. He has none next week.
+
+Each morning the park gates are found standing open. Nothing is broken. Somebody has propped them with a stone.`; }},
     {t:'Have Mudge leave them where he found them, untouched.', go:() => { add({goodwill:1});
-      return `The tubs stay three nights under the straw and on the fourth are gone, with the chalk mark neatly rubbed out. You have refused the bribe and declined to inform. It is an awkward position, morally, and you occupy it with your usual dignity.`; }}
+      return `“Leave them where they lie, Mudge. You found nothing.”
+
+“No, sir.”
+
+The tubs lie three nights under the straw. On the fourth morning they are gone. The straw has been raked level.
+
+Mudge touches his hat to you twice that day.`; }}
   ]});
 
 ev({ id:'threshHire', from:1806, to:1811, weight:1, cond:() => !F('thresher'), title:'Mr Hartopp’s Engine',
-  text:() => `Hartopp has set up a threshing machine, on the Scotch plan, worked by four horses walking in a circle. It beats out forty quarters of wheat in a day. Twelve men with flails would be a week about it.
+  text:() => `Hartopp has a threshing machine in his barn. It is on the Scotch plan. Four horses walk it round.
 
-He will have his millwright build you one for a hundred and fifty pounds. “The flail,” says Hartopp, “is a stick tied to another stick. We are in the nineteenth century, sir.” His labourers, standing round the engine with their hands hanging, look at it as people look at a new grave.`,
+He takes you over to see it go.
+
+“Forty quarters of wheat in a day, sir. Twelve men with flails want a week for that.”
+
+His millwright will build you the same for a hundred and fifty pounds.
+
+“A flail is a stick tied to a stick,” says Hartopp. “We are in the nineteenth century.”
+
+His labourers stand along the barn wall. Their hands hang down. None of them is looking at Hartopp.`,
   choices:[
     {t:'Order one.', note:'£150', go:() => { fl('thresher'); S.improve += 1; add({money:-150, goodwill:-7}); reg('hartopp',2,'You set up a threshing machine on his plan'); reg('pryor',-1);
-      return `It arrives in three wagons and is put together in the great barn. When the horses start, the whole building hums like a hive. Your wheat is at market in October instead of March. Threshing was the one sure employment of a Hatherley winter, from Martinmas to Candlemas, by the light of a lantern. The lanterns stay on their hooks this year.`; }},
+      return `It comes in three wagons. The millwright is nine days putting it up in the great barn. When the horses start, the tiles hum.
+
+Your wheat is all at Newbury market before October is out.
+
+Other years the threshing lasted from Martinmas to Candlemas. Twelve men had it, two to a floor, by lantern. This winter the lanterns hang on their hooks.
+
+On the first Monday in December nine of the twelve are at the vestry door.`; }},
     {t:'Stay with the flail.', go:() => { add({goodwill:3}); reg('hartopp',-1);
-      return `You keep your stick tied to another stick. All winter the sound comes from the barn, two men to a floor, turn and turn about, as it has since the Conquest. Hartopp says you are farming in the reign of Henry the Second. Twelve families are aware of it, and grateful.`; }}
+      return `“I shall keep my sticks, Mr Hartopp.”
+
+“Then you farm under Henry the Second, sir.”
+
+From Martinmas the sound comes out of the great barn all day. Two men to a floor. Stroke and stroke. It stops at Candlemas.
+
+Twelve families have had ten shillings a week through the winter.`; }}
   ]});
 
 ev({ id:'cobbett', from:1805, to:1814, weight:1, title:'A Man on a Grey Cob',
-  text:() => `A burly, red-faced man on a grey cob has ridden through Hatherley, stopped at every cottage, asked what the labourers earn and what they eat, and written the answers in a book. He turns out to be Mr William Cobbett, of the Political Register.
+  text:() => `A big red-faced man on a grey cob has been in the village since nine. He stops at each cottage door. He asks what the man earns. He asks what was in the pot on Sunday. He writes the answers in a book.
 
-He has asked at the Bell whose estate this is. He dines there tonight. Whatever he decides about you will be read on Saturday by forty thousand people, at a shilling and a halfpenny the copy.`,
+The landlord of the Bell sends up his name. It is Mr William Cobbett, of the Political Register.
+
+He has asked whose estate this is. He dines at the Bell tonight. The Register is printed on Saturday.`,
   choices:[
     {t:'Ask him to dine at the Hall.', go:() => { const good = S.goodwill >= 55;
-      if (good) { add({standing:4, goodwill:2}); return `He eats like a ploughman and talks like a thunderstorm, of paper money, sinecures, tea, potatoes and Scotch economists, all of which he detests. On Saturday the Register describes Hatherley as “one parish in Berkshire where I saw a labourer with bacon in his chimney and not a workhouse in his eye; and for this the landlord, a plain sensible man, is entitled to the thanks of every Englishman.” Henrietta has it by heart.`; }
-      add({standing:-5, goodwill:1}); return `He eats your mutton, praises it, and asks across the table what your labourers had for dinner. On Saturday the Register devotes two columns to Hatherley, beginning: “I dined with the Squire off a saddle of mutton. I had previously looked into eleven of his cottages, and in not one of them did I see so much as would bait a mousetrap.” Lord Cullerne tells you not to mind it. He has it by heart.`; }},
-    {t:'Let him form his own opinion.', go:() => { if (S.goodwill >= 55) { add({standing:2}); return `The Register says of Hatherley only that the people “have not the look of being hunted”. From Cobbett, it is a testimonial.`; }
-      add({standing:-3}); return `The Register gives Hatherley a paragraph. It contains the phrase “skin and grief”. You are not named. Everybody in Berkshire can supply the name.`; }},
+      if (good) { add({standing:4, goodwill:2}); return `He eats two helpings of the mutton and talks through both. Paper money. Sinecures. Tea. Potatoes. Scotch economists. He is against them all.
+
+On Saturday the Register has this.
+
+“HATHERLEY, Berks. Here I saw bacon in a labourer’s chimney. I had not seen that sight for thirty miles. The landlord is a plain sensible man. I told him so at his own table and he bore it very well.”
+
+Henrietta cuts it out. She has it by heart on Sunday.`; }
+      add({standing:-5, goodwill:1}); return `He eats your mutton. He says it is good mutton.
+
+“And what did your labourers dine on today, sir?”
+
+You do not know.
+
+On Saturday the Register has two columns.
+
+“I dined with the Squire off a saddle of mutton. I had been that morning into eleven of his cottages. There was not in the eleven as much meat as would bait a mouse-trap.”
+
+Lord Cullerne tells you not to mind it. He can repeat it word for word.`; }},
+    {t:'Let him form his own opinion.', go:() => { if (S.goodwill >= 55) { add({standing:2}); return `Saturday’s Register gives Hatherley one line.
+
+“The people here have not the look of being hunted.”
+
+The landlord of the Bell nails it up in the tap-room.`; }
+      add({standing:-3}); return `Saturday’s Register gives Hatherley a paragraph. The labourers are “skin and grief”. The landlord is not named.
+
+At Newbury market on Thursday three gentlemen ask after your health. A fourth asks after your cottages.`; }},
     {t:'Have the constable move him on as a vagrant.', go:() => { add({standing:-6, goodwill:-3});
-      return `It is, perhaps, the least wise act of your magistracy. Mr Cobbett owns a newspaper. For three successive Saturdays, forty thousand readers are entertained with the history of the Squire of Hatherley, his constable, his cottages, and his uncle.`; }}
+      return `The constable finds him at the Bell with a chop before him. He asks to see his pass.
+
+Mr Cobbett gives his name. He gives the name of his newspaper. He finishes the chop.
+
+Then he rides to the parish bounds at a walk. The constable goes at his stirrup.
+
+The Register has Hatherley on three Saturdays running. The first piece is headed “A BERKSHIRE JUSTICE”. The second is about your cottages. The third is about your uncle.`; }}
   ]});
