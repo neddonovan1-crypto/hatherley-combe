@@ -68,13 +68,12 @@ function introHTML(){ const has = !!load();
   return `<article class="card opening">
     <p class="kicker">Berkshire, Lady Day 1795</p>
     <h2>An Inheritance</h2>
-    <p>Your uncle Barnaby died at his own table on Michaelmas Day. He was seventy-one. The Bishop was on his right. The syllabub had just come in.</p>
-    <p>Mr Spurling the attorney read the will in the library a week later. It took four minutes. Everything comes to you.</p>
-    <p>Hatherley Combe. Two thousand one hundred acres of chalk and clay. Three farms let to tenants. A water mill. A common where forty cottagers keep a cow apiece. A house with fifty-four windows and eleven chimneys. Nine of the chimneys smoke. A mortgage of four thousand pounds at five per cent.</p>
-    <p>The steward met your carriage at the lodge this morning. His name is Crabbe. He had the keys in one hand and the rent book in the other. He gave you the keys.</p>
-    <p>Henrietta is upstairs counting bedrooms. She had hoped you would be a baronet by now. Kitty is seventeen and has found the library. Edmund is nineteen. He has found your uncle’s sword over the hall chimney-piece and is trying to get it out of the scabbard.</p>
-    <p>England has been at war with France for two years. The quartern loaf was sevenpence when it began. It is elevenpence today.</p>
-    <p>You have twenty-one years. They come one season at a time.</p>
+    <p>Your uncle Barnaby died at his own table upon Michaelmas Day, aged seventy-one, with the Bishop upon his right, and the syllabub just come in; and Mr Spurling the attorney, reading the will in the library a week afterwards, was four minutes about it. Everything comes to you.</p>
+    <p>It is Hatherley Combe: two thousand one hundred acres of chalk and clay, in three farms let to tenants, with a water mill, and a common upon which forty cottagers keep a cow apiece; a house of fifty-four windows and eleven chimneys, nine of which smoke; and a mortgage of four thousand pounds, at five per cent.</p>
+    <p>The steward, whose name is Crabbe, met your carriage at the lodge this morning, with the keys in one hand and the rent book in the other; and he gave you the keys.</p>
+    <p>Henrietta, who had hoped that you would be a baronet by now, is upstairs counting bedrooms. Kitty is seventeen, and has found the library; and Edmund, who is nineteen, having found your uncle’s sword over the hall chimney-piece, is trying to get it out of the scabbard.</p>
+    <p>England has been two years at war with France; and the quartern loaf, which was sevenpence when the war began, is elevenpence today.</p>
+    <p>You have twenty-one years, and they come one season at a time.</p>
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">

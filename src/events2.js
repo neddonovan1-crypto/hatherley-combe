@@ -739,74 +739,74 @@ The fencers come back on the eleventh. Nobody has been hurt, and nobody has been
 /* Henrietta's health. Three complaints, taken in turn; it comes round once in six years at most. */
 const BATH = [
   {title:'Henrietta’s Rheumatism', home:'A mustard plaster, at home.',
-   x:`The Tamworths went to Bath on Monday. On Tuesday Henrietta has rheumatism in both shoulders.
+   x:`The Tamworths went to Bath on Monday; and on Tuesday Henrietta has rheumatism in both shoulders.
 
-Mr Ferris the surgeon is sent for. He looks at her tongue. He looks at you.
+Mr Ferris the surgeon is sent for, who looks first at her tongue, and then at you.
 
 “The Bath waters, sir. Six weeks. Taken warm, in company.”
 
-Lodgings in Pulteney Street are four guineas a week this season. Ferris has tasted the water. “A blacksmith has cooled his irons in it. That is the virtue.”`,
-   a:`Three glasses a day in the Pump Room, with a band playing. A chair to the Assembly every evening. Three hundred and fifty pounds.
+Lodgings in Pulteney Street are this season four guineas a week. Ferris, who has tasted the water, gives it as his opinion that a blacksmith has cooled his irons in it, and that the virtue lies there.`,
+   a:`It is three glasses a day in the Pump Room, with a band playing, and a chair to the Assembly every evening; and it comes to three hundred and fifty pounds.
 
 The rheumatism is gone by the second Tuesday.
 
-You lose eleven pounds at whist to a clergyman. You meet the Tamworths nine times in six weeks. Each time, everybody is surprised.`,
-   b:`Cheltenham. A hundred and fifty pounds. The King took these waters in ’88. He went out of his mind in the autumn.
+You lose eleven pounds at whist to a clergyman; and you meet the Tamworths nine times in six weeks, upon every one of which occasions everybody is surprised.`,
+   b:`You go to Cheltenham, for a hundred and fifty pounds; the King having taken these waters in ’88, and gone out of his mind in the autumn.
 
-The water is salt. It acts within the hour. You do not stray far from the lodgings.
+The water is salt, and acts within the hour; so that you do not stray far from the lodgings.
 
-Henrietta says she is much better. She does not ask to go again.`,
-   c:`A mustard plaster, morning and night. She bears it for six weeks. She can be heard bearing it from the library.
+Henrietta says that she is much better, and does not ask to go again.`,
+   c:`She has a mustard plaster, morning and night, and bears it for six weeks; and she may be heard bearing it from the library.
 
-The Tamworths write from Bath on Tuesdays and Fridays. Henrietta reads each letter aloud at breakfast, from “My dearest Henrietta” to the postscript.`,
+The Tamworths write from Bath on Tuesdays and Fridays, and Henrietta reads each letter aloud at breakfast, from “My dearest Henrietta” to the postscript.`,
    why:'You prescribed mustard when she wanted Bath'},
   {title:'Henrietta’s Nerves', home:'Valerian drops, at home.',
-   x:`Mrs Loveday is gone to Bath for her nerves. By Thursday Henrietta cannot bear the stable clock.
+   x:`Mrs Loveday is gone to Bath for her nerves; and by Thursday Henrietta cannot bear the stable clock.
 
-The clock is stopped. Mr Ferris comes. He holds her wrist and looks at his watch for a full minute.
+The clock is stopped, and Mr Ferris comes, and holds her wrist, and looks at his watch for a full minute.
 
 “I find the pulse hurried, ma’am. I should try Bath.”
 
-He says it again to you in the hall. He has a brother there who lets lodgings in Gay Street.`,
-   a:`Six weeks in Gay Street, at the brother’s. Three hundred and fifty pounds.
+He says it again to you in the hall; and it appears that he has a brother there, who lets lodgings in Gay Street.`,
+   a:`You are six weeks in Gay Street, at the brother’s, for three hundred and fifty pounds.
 
-Henrietta is carried to the Pump Room at eight in a chair. She is at the Upper Rooms by seven in the evening. There are four hundred people there and two bands.
+Henrietta is carried to the Pump Room at eight, in a chair, and is at the Upper Rooms by seven in the evening, among four hundred people and two bands.
 
-The stable clock is set going the day you come home. She does not remark it.`,
-   b:`A fortnight at Cheltenham. A hundred and fifty pounds.
+The stable clock is set going upon the day you come home, and she does not remark it.`,
+   b:`You are a fortnight at Cheltenham, for a hundred and fifty pounds.
 
-There is a walk under elms to the well. The whole town walks it at seven in the morning with a glass. Nobody speaks.
+There is a walk under elms to the well, which the whole town walks at seven in the morning, with a glass, and without speaking.
 
-Henrietta’s nerves are better for it. Yours are not. The lady in the next lodging keeps a harp.`,
-   c:`Ferris sends valerian. Twenty drops in water at bedtime.
+Henrietta’s nerves are the better for it. Yours are not, the lady in the next lodging keeping a harp.`,
+   c:`Ferris sends valerian, of which she is to take twenty drops in water at bedtime.
 
-It smells of tom-cat. The kitchen cat comes up the back stairs and sits at her door all night.
+It smells of tom-cat; and the kitchen cat, coming up the back stairs, sits all night at her door.
 
-The clock stays stopped six weeks. Mudge rings the yard bell for the men’s dinner. He rings it under her window.`,
+The clock stays stopped six weeks, and Mudge rings the yard bell for the men’s dinner; and he rings it under her window.`,
    why:'You gave her valerian when she wanted Bath'},
   {title:'Henrietta’s Cough', home:'Horehound and honey, at home.',
-   x:`Henrietta has coughed since Michaelmas. On Sunday she coughed through the Litany and the first lesson.
+   x:`Henrietta has coughed since Michaelmas, and on Sunday she coughed through the Litany and the first lesson.
 
-Mr Ferris lays a napkin on her back and puts his ear to it.
+Mr Ferris lays a napkin upon her back, and puts his ear to it.
 
 “I should not winter her here, sir. The hot well, or the sea.”
 
-Mrs Tamworth writes from the Circus. She has heard of the cough. She has mentioned it in the Pump Room.`,
-   a:`Bath, for six weeks. Three hundred and fifty pounds.
+Mrs Tamworth writes from the Circus, that she has heard of the cough, and has mentioned it in the Pump Room.`,
+   a:`You go to Bath for six weeks, at three hundred and fifty pounds.
 
-Henrietta coughs in the Pump Room. Eleven ladies recommend eleven remedies. She tries nine.
+Henrietta coughs in the Pump Room; upon which eleven ladies recommend eleven remedies, and she tries nine.
 
-The cough goes in the fourth week. Nobody can say which of the nine did it. She brings all nine home in the carriage.`,
-   b:`Cheltenham in November. A hundred and fifty pounds.
+The cough goes in the fourth week; and as nobody can say which of the nine it was that cured it, she brings all nine home in the carriage.`,
+   b:`You go to Cheltenham in November, for a hundred and fifty pounds.
 
-Half the lodgings are shut. The band is a fiddle and a boy with a triangle. Henrietta takes her glass at the well under an umbrella.
+Half the lodgings are shut, and the band is a fiddle and a boy with a triangle; and Henrietta takes her glass at the well under an umbrella.
 
-By the tenth day she has stopped coughing. She says the dullness drove it out.`,
-   c:`Mrs Bunce boils horehound with honey. A spoonful every two hours.
+By the tenth day she has left off coughing, and says that the dullness drove it out.`,
+   c:`Mrs Bunce boils horehound with honey, of which a spoonful is to be taken every two hours.
 
-Henrietta coughs until Candlemas. She coughs at you across the breakfast table. Then one morning she does not.
+Henrietta coughs until Candlemas, and coughs at you across the breakfast table; and then one morning she does not.
 
-Mrs Bunce has the credit. She makes a quart of it for you against the spring.`,
+Mrs Bunce has the credit of it, and makes a quart for you against the spring.`,
    why:'You kept her at home with a cough'}
 ];
 const bathNow = () => BATH[(S.bathN || 0) % BATH.length];

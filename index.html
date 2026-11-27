@@ -666,96 +666,96 @@ const TRAIT_POINTS = 3;
 const TRAITS = [
   // boons
   { id:'soldier', fx:['+5 Standing', '+1 in Edmund’s regard', '+Volunteers raised at half cost', '+A duel cannot kill you'], group:'past', name:'Served in the American war', cost:1, effect:'Standing higher; Volunteers at half cost; no duel will kill you',
-    blurb:`You carried the colours of the 23rd at Guilford Court House in ’81. A ball went through your leg. You tell the story at dinner. There are Indians in it now.`,
+    blurb:`You carried the colours of the 23rd at Guilford Court House in ’81, where a ball went through your leg; and you tell the story at dinner, with Indians in it now.`,
     apply:() => { add({standing:5}); reg('edmund', 1, 'Brought up on your stories of the American war'); }},
   { id:'captain', fx:['+£350 prize money', '+4 Standing', '+The Hall costs 10% less while the crew stay', '+1 in Edmund’s regard', '−5 Peace of the household', '−1 in Henrietta’s regard'], group:'past', name:'A post-captain, come ashore', cost:1, effect:'Prize money; your old crew run the house, cheaply and by the bell',
-    blurb:`Twenty-two years at sea. The last six you commanded the Dryad, thirty-six guns. When she paid off, eleven of her people followed you up the Bath road in a wagon. Your coxswain is butler. There are hammocks in the attics. The gallery is holystoned at five each morning. Henrietta’s bed is under the gallery.`,
+    blurb:`You were twenty-two years at sea, and for the last six commanded the Dryad, of thirty-six guns; and when she paid off, eleven of her people followed you up the Bath road in a wagon. Your coxswain is butler, there are hammocks in the attics, and the gallery over Henrietta’s bed is holystoned at five each morning.`,
     apply:() => { S.money += 350; add({standing:4, family:-5}); reg('henrietta', -1, 'Woken at five by eleven seamen scrubbing the gallery'); reg('edmund', 1, 'Brought up on the quarterdeck of your stories'); }},
   { id:'court', fx:['+£90 a year', '+12 Standing', '+1 in Lord Cullerne’s regard'], group:'past', name:'Favour at Court', cost:2, effect:'Standing much higher; a sinecure of \u00a390 a year',
-    blurb:`You held the King’s horse at Windsor once. He talked to you for forty minutes about mangel-wurzels. He has asked after you twice since. You are Deputy Keeper of the Swans at ninety pounds a year. Nobody has shown you a swan.`,
+    blurb:`You once held the King’s horse at Windsor, while he talked to you for forty minutes about mangel-wurzels; and he has asked after you twice since. You are Deputy Keeper of the Swans, at ninety pounds a year, and nobody has yet shown you a swan.`,
     apply:() => { add({standing:12}); reg('cullerne', 1); }},
   { id:'legacy', fx:['+£1,200 in hand'], group:'fortune', name:'A legacy from an aunt in Bath', cost:2, effect:'Purse +£1,200',
-    blurb:`An aunt in Bath left you twelve hundred pounds. You had admired her pug. You were looking at the cake behind it.`,
+    blurb:`An aunt in Bath, whose pug you had admired while you were looking at the cake behind it, left you twelve hundred pounds.`,
     apply:() => { S.money += 1200; }},
   { id:'coldharbour', fx:['+A fourth farm, £400 a year in rent', '−£3,000 on the mortgage'], group:'fortune', name:'Your uncle bought Coldharbour', cost:2, effect:'A fourth farm; mortgage +£3,000',
-    blurb:`Four hundred acres beyond the turnpike. He gave five thousand for it in 1791 and borrowed three of them. Mr Buckeridge has it on a lease to 1806.`,
+    blurb:`It is four hundred acres beyond the turnpike, for which he gave five thousand pounds in 1791, having borrowed three of them; and Mr Buckeridge has it upon a lease to 1806.`,
     apply:() => { S.mortgage += 3000; addFarm('coldharbour', {rent:400, K:500, lease:{type:'term', ends:1806, years:14}}); }},
   { id:'clear', fx:['+£2,000 off the mortgage'], group:'fortune', name:'The mortgage half paid', cost:2, effect:'Mortgage £2,000 instead of £4,000',
-    blurb:`In 1789 your uncle paid off half the mortgage. He spoke of it bitterly every Lady Day until he died.`,
+    blurb:`In 1789 your uncle paid off half the mortgage; and he spoke of it bitterly every Lady Day until he died.`,
     apply:() => { S.mortgage -= 2000; }},
   { id:'bred', fx:['+6% wheat off the home farm', '+2.5% yield on the let farms', '+Works cost 15% less', '+1 in Mr Hartopp’s regard'], group:'character', name:'Bred to the land', cost:2, effect:'Better yields; works cost less',
-    blurb:`You can tell a ewe’s age by her mouth. You can tell a field by its weeds. You can tell when a bailiff is lying by where he puts his feet.`,
+    blurb:`You can tell a ewe’s age by her mouth, and a field by its weeds; and when a bailiff is lying, you can tell it by where he puts his feet.`,
     apply:() => { S.improve += 1; reg('hartopp', 1); }},
   { id:'beloved', fx:['+15 Goodwill of the parish', '+1 in Jem Pryor’s regard'], group:'name', name:'Known in the parish from a boy', cost:2, effect:'Goodwill much higher; Jem Pryor remembers',
-    blurb:`You went bird’s-nesting with half of Hatherley. The other half thrashed you. Most of the parish saw you fall in the mill pond.`,
+    blurb:`You went bird’s-nesting with one half of Hatherley, and were thrashed by the other; and most of the parish saw you fall into the mill pond.`,
     apply:() => { add({goodwill:15}); reg('pryor', 1, 'You went bird’s-nesting together as boys'); }},
   { id:'connexions', fx:['+15 Standing', '+1 in Lord Cullerne’s regard'], group:'name', name:'Good connexions', cost:2, effect:'Standing much higher; Lord Cullerne civil',
-    blurb:`Your mother was second cousin to a marquess. She said so at every dinner for forty years. The county has it by heart.`,
+    blurb:`Your mother was second cousin to a marquess, and having said so at every dinner for forty years, she left the county with it by heart.`,
     apply:() => { add({standing:15}); reg('cullerne', 1); }},
   { id:'silver', fx:['+20% chance at an election', '+2 Standing each sitting on the bench'], group:'character', name:'A persuasive tongue', cost:1, effect:'Elections likelier won; the bench listens',
     blurb:`You once talked a turnpike keeper into paying you the toll.`,
     apply:() => {}},
   { id:'lovematch', fx:['+12 Peace of the household', '+2 in Henrietta’s regard'], group:'marriage', name:'A love match', cost:1, effect:'Household happier; Henrietta fond',
-    blurb:`Her mother wanted a baronet for her. She met you at the Newbury assembly and danced with you four times. Her mother counted.`,
+    blurb:`Her mother wanted a baronet for her. But she met you at the Newbury assembly, and danced with you four times; and her mother counted.`,
     apply:() => { add({family:12}); reg('henrietta', 2, 'She married you for love, against advice'); }},
   { id:'figures', fx:['+The Hall costs 10% less', '+Mr Crabbe cannot skim £45 a quarter', '−1 in Mr Crabbe’s regard'], group:'character', name:'A head for figures', cost:1, effect:'Household runs cheaper; nobody skims',
-    blurb:`You add a column twice. The second time you add it upwards. Crabbe has watched you do it.`,
+    blurb:`You add a column twice, and the second time you add it upwards; and Crabbe has watched you do it.`,
     apply:() => { reg('crabbe', -1); }},
   // encumbrances
   { id:'debts', fx:['−£700 in hand'], group:'fortune', name:'Your uncle’s debts of honour', cost:-2, effect:'Purse −£700',
-    blurb:`Your uncle lost seven hundred pounds at Brooks’s. The gentleman waited for the funeral. He came to it.`,
+    blurb:`Your uncle lost seven hundred pounds at Brooks’s; and the gentleman to whom he lost it, having waited for the funeral, came to it.`,
     apply:() => { S.money -= 700; }},
   { id:'second', fx:['−£2,000 on the mortgage'], group:'fortune', name:'A second mortgage', cost:-2, effect:'Mortgage £6,000',
-    blurb:`The attorneys found it in a tin box behind a stuffed pike. Two thousand pounds more, at five per cent.`,
+    blurb:`The attorneys found it in a tin box, behind a stuffed pike: two thousand pounds more, at five per cent.`,
     apply:() => { S.mortgage += 2000; }},
   { id:'play', fx:['−£70 to £180 at cards every winter'], group:'character', name:'A gambling man', cost:-2, effect:'Losses at cards every winter',
-    blurb:`You do not call yourself a gambler. The luck is about to turn. You have known it since 1783.`,
+    blurb:`You do not call yourself a gambler. The luck is about to turn; and you have known that it was about to turn since 1783.`,
     apply:() => {}},
   { id:'enemy', fx:['−4 in Lord Cullerne’s regard', '−3 Standing'], group:'name', name:'An enemy at the Castle', cost:-2, effect:'Lord Cullerne hostile from the first',
-    blurb:`At nineteen you shot Lord Cullerne’s favourite pointer. It was a mistake. His lordship was standing beside her. Her name was Duchess.`,
+    blurb:`At nineteen you shot, by mistake, Lord Cullerne’s favourite pointer, whose name was Duchess; and his lordship was standing beside her.`,
     apply:() => { reg('cullerne', -4, 'You shot his pointer in 1768'); add({standing:-3}); }},
   { id:'stranger', fx:['−12 Goodwill of the parish'], group:'past', name:'A stranger to the country', cost:-1, effect:'Goodwill lower',
-    blurb:`You were brought up in Marylebone. You know wheat when it is bread. You know barley when it is beer.`,
+    blurb:`You were brought up in Marylebone, and know wheat when it is bread, and barley when it is beer.`,
     apply:() => { add({goodwill:-12}); }},
   { id:'whig', fx:['−10 Standing', '−1 in Lord Cullerne’s regard', '+1 in Mr Hartopp’s regard'], group:'name', name:'A Whig among Tories', cost:-1, effect:'Standing lower; Hartopp approves',
-    blurb:`You said at the Tamworths’ table that Mr Fox had a point. Three gentlemen put down their glasses.`,
+    blurb:`You said at the Tamworths’ table that Mr Fox had a point; upon which three gentlemen put down their glasses.`,
     apply:() => { add({standing:-10}); reg('cullerne', -1); reg('hartopp', 1); }},
   { id:'portion', fx:['+£1,500 off the mortgage', '−12 Peace of the household', '−2 in Henrietta’s regard'], group:'marriage', name:'Married for her portion', cost:1, effect:'Mortgage £1,500 less; household colder; Henrietta cool',
-    blurb:`Her father put eight thousand pounds on the table. His lawyers tied up all but fifteen hundred. That went to the mortgagee the week after the wedding. Henrietta has the receipt.`,
+    blurb:`Her father put eight thousand pounds upon the table, and his lawyers tied up all but fifteen hundred; and that went to the mortgagee the week after the wedding. Henrietta has the receipt.`,
     apply:() => { S.mortgage = Math.max(0, S.mortgage - 1500); add({family:-12}); reg('henrietta', -2, 'Knows you married her eight thousand pounds'); }},
   { id:'gout', fx:['−3 Peace of the household every winter', '−Riding the tenancies earns 2 Goodwill, not 4'], group:'character', name:'Gout', cost:-1, effect:'Riding the estate does less; winters are worse',
-    blurb:`It is in the left foot. Your father had it there. The surgeon calls it “a very fine gout”.`,
+    blurb:`It is in the left foot, where your father had it; and the surgeon calls it “a very fine gout”.`,
     apply:() => {}},
   // added so that each heading offers three advantages and three burdens
   { id:'dean', fx:['+6 Standing', '+2 in Dr Gall’s regard'], group:'marriage', name:'Her uncle is Dean of Wells', cost:1, effect:'Standing higher; Dr Gall civil',
-    blurb:`The Dean dines at the Hall each August and stays three weeks. He brings his own sherry. Dr Gall calls on the second day in clean bands.`,
+    blurb:`The Dean dines at the Hall each August, and stays three weeks, and brings his own sherry; and on the second day Dr Gall calls, in clean bands.`,
     apply:() => { add({standing:6}); reg('gall', 2, 'Henrietta’s uncle is a Dean'); }},
   { id:'hunt', fx:['+7 Standing', '−3 Goodwill of the parish'], group:'name', name:'Rides straight to hounds', cost:1, effect:'Standing higher; goodwill a little lower',
-    blurb:`You took the Kennet in flood at Marsh Benham on a horse called Parson. The hunt drank your health for a week. Mr Buckeridge walked his wheat next morning with a notebook.`,
+    blurb:`You took the Kennet in flood at Marsh Benham, upon a horse called Parson, and the hunt drank your health for a week; and Mr Buckeridge walked his wheat next morning with a notebook.`,
     apply:() => { add({standing:7, goodwill:-3}); }},
   { id:'trade', fx:['+£300 in hand', '−12 Standing'], group:'past', name:'Your father was in sugar', cost:-1, effect:'Purse +£300; standing lower',
-    blurb:`He had a warehouse on the Welsh Back at Bristol and a share in nine ships. He left you three hundred pounds and his ledgers. The county knows what he gave for each ship.`,
+    blurb:`He had a warehouse on the Welsh Back at Bristol, and a share in nine ships, and left you three hundred pounds and his ledgers; and the county knows what he gave for each ship.`,
     apply:() => { S.money += 300; add({standing:-12}); }},
   { id:'oxford', fx:['−2 in Dr Gall’s regard', '−4 Standing'], group:'past', name:'Left Oxford without a degree', cost:-1, effect:'Dr Gall cold; standing a little lower',
-    blurb:`You were to have had the living of Hatherley. In your second year at Oriel a pig was found in the Provost’s lodging. Dr Gall has the living.`,
+    blurb:`You were to have had the living of Hatherley; but in your second year at Oriel a pig was found in the Provost’s lodging, and Dr Gall has the living.`,
     apply:() => { reg('gall', -2, 'Holds the living you were meant for'); add({standing:-4}); }},
   { id:'jointure', fx:['−£120 a year'], group:'fortune', name:'Your uncle’s widow has her jointure', cost:-2, effect:'£120 a year charged on the estate',
-    blurb:`A hundred and twenty pounds a year for her life, charged on the estate. She is fifty-one. She lives at Cheltenham and walks four miles before breakfast.`,
+    blurb:`She has a hundred and twenty pounds a year for her life, charged upon the estate; and she is fifty-one, and lives at Cheltenham, and walks four miles before breakfast.`,
     apply:() => {}},
   { id:'mother', fx:['−10 Peace of the household'], group:'marriage', name:'Her mother lives at the Hall', cost:-1, effect:'Household colder',
-    blurb:`She came for Edmund’s christening. Her trunks went up to the yellow room. On Sundays she carves.`,
+    blurb:`She came for Edmund’s christening, when her trunks went up to the yellow room; and on Sundays she carves.`,
     apply:() => { add({family:-10}); }},
   { id:'taste', fx:['−£120 a year in milliners’ bills'], group:'marriage', name:'A wife with a taste for town', cost:-2, effect:'£120 a year in bills',
-    blurb:`Henrietta has her gowns from Bond Street and her hats from a Frenchwoman at Bath. The bills come in at Christmas. Crabbe has not been shown them.`,
+    blurb:`Henrietta has her gowns from Bond Street, and her hats from a Frenchwoman at Bath; and the bills, which come in at Christmas, have not been shown to Crabbe.`,
     apply:() => {}},
   { id:'brother', fx:['−£40 to £150 every spring'], group:'marriage', name:'Her brother borrows', cost:-1, effect:'A loan to her brother every spring',
-    blurb:`Her brother Frederick is in the Militia. He writes each spring from a different town. The sum is on the second sheet.`,
+    blurb:`Her brother Frederick is in the Militia, and writes each spring from a different town; and the sum is upon the second sheet.`,
     apply:() => {}},
   { id:'lawsuit', fx:['−£40 a year in law', '−4 Standing'], group:'name', name:'A lawsuit with the Tamworths', cost:-1, effect:'£40 a year in law; standing a little lower',
-    blurb:`It is about a pew. Your grandfather began it in 1761. The papers fill two deed boxes at the attorney’s in Wyvern.`,
+    blurb:`It is about a pew, and was begun by your grandfather in 1761; and the papers fill two deed boxes at the attorney’s in Wyvern.`,
     apply:() => { add({standing:-4}); }},
   { id:'bottle', fx:['−£40 a year in wine', '−6 Peace of the household'], group:'character', name:'Three bottles a day', cost:-1, effect:'£40 a year in wine; household colder',
-    blurb:`Port after dinner. Your uncle laid down forty dozen of the ’75. There are nine dozen left.`,
+    blurb:`It is port, after dinner. Your uncle laid down forty dozen of the ’75, and there are nine dozen left.`,
     apply:() => { add({family:-6}); }}
 ];
 const TRAIT_GROUPS = [
@@ -3520,74 +3520,74 @@ The fencers come back on the eleventh. Nobody has been hurt, and nobody has been
 /* Henrietta's health. Three complaints, taken in turn; it comes round once in six years at most. */
 const BATH = [
   {title:'Henrietta’s Rheumatism', home:'A mustard plaster, at home.',
-   x:`The Tamworths went to Bath on Monday. On Tuesday Henrietta has rheumatism in both shoulders.
+   x:`The Tamworths went to Bath on Monday; and on Tuesday Henrietta has rheumatism in both shoulders.
 
-Mr Ferris the surgeon is sent for. He looks at her tongue. He looks at you.
+Mr Ferris the surgeon is sent for, who looks first at her tongue, and then at you.
 
 “The Bath waters, sir. Six weeks. Taken warm, in company.”
 
-Lodgings in Pulteney Street are four guineas a week this season. Ferris has tasted the water. “A blacksmith has cooled his irons in it. That is the virtue.”`,
-   a:`Three glasses a day in the Pump Room, with a band playing. A chair to the Assembly every evening. Three hundred and fifty pounds.
+Lodgings in Pulteney Street are this season four guineas a week. Ferris, who has tasted the water, gives it as his opinion that a blacksmith has cooled his irons in it, and that the virtue lies there.`,
+   a:`It is three glasses a day in the Pump Room, with a band playing, and a chair to the Assembly every evening; and it comes to three hundred and fifty pounds.
 
 The rheumatism is gone by the second Tuesday.
 
-You lose eleven pounds at whist to a clergyman. You meet the Tamworths nine times in six weeks. Each time, everybody is surprised.`,
-   b:`Cheltenham. A hundred and fifty pounds. The King took these waters in ’88. He went out of his mind in the autumn.
+You lose eleven pounds at whist to a clergyman; and you meet the Tamworths nine times in six weeks, upon every one of which occasions everybody is surprised.`,
+   b:`You go to Cheltenham, for a hundred and fifty pounds; the King having taken these waters in ’88, and gone out of his mind in the autumn.
 
-The water is salt. It acts within the hour. You do not stray far from the lodgings.
+The water is salt, and acts within the hour; so that you do not stray far from the lodgings.
 
-Henrietta says she is much better. She does not ask to go again.`,
-   c:`A mustard plaster, morning and night. She bears it for six weeks. She can be heard bearing it from the library.
+Henrietta says that she is much better, and does not ask to go again.`,
+   c:`She has a mustard plaster, morning and night, and bears it for six weeks; and she may be heard bearing it from the library.
 
-The Tamworths write from Bath on Tuesdays and Fridays. Henrietta reads each letter aloud at breakfast, from “My dearest Henrietta” to the postscript.`,
+The Tamworths write from Bath on Tuesdays and Fridays, and Henrietta reads each letter aloud at breakfast, from “My dearest Henrietta” to the postscript.`,
    why:'You prescribed mustard when she wanted Bath'},
   {title:'Henrietta’s Nerves', home:'Valerian drops, at home.',
-   x:`Mrs Loveday is gone to Bath for her nerves. By Thursday Henrietta cannot bear the stable clock.
+   x:`Mrs Loveday is gone to Bath for her nerves; and by Thursday Henrietta cannot bear the stable clock.
 
-The clock is stopped. Mr Ferris comes. He holds her wrist and looks at his watch for a full minute.
+The clock is stopped, and Mr Ferris comes, and holds her wrist, and looks at his watch for a full minute.
 
 “I find the pulse hurried, ma’am. I should try Bath.”
 
-He says it again to you in the hall. He has a brother there who lets lodgings in Gay Street.`,
-   a:`Six weeks in Gay Street, at the brother’s. Three hundred and fifty pounds.
+He says it again to you in the hall; and it appears that he has a brother there, who lets lodgings in Gay Street.`,
+   a:`You are six weeks in Gay Street, at the brother’s, for three hundred and fifty pounds.
 
-Henrietta is carried to the Pump Room at eight in a chair. She is at the Upper Rooms by seven in the evening. There are four hundred people there and two bands.
+Henrietta is carried to the Pump Room at eight, in a chair, and is at the Upper Rooms by seven in the evening, among four hundred people and two bands.
 
-The stable clock is set going the day you come home. She does not remark it.`,
-   b:`A fortnight at Cheltenham. A hundred and fifty pounds.
+The stable clock is set going upon the day you come home, and she does not remark it.`,
+   b:`You are a fortnight at Cheltenham, for a hundred and fifty pounds.
 
-There is a walk under elms to the well. The whole town walks it at seven in the morning with a glass. Nobody speaks.
+There is a walk under elms to the well, which the whole town walks at seven in the morning, with a glass, and without speaking.
 
-Henrietta’s nerves are better for it. Yours are not. The lady in the next lodging keeps a harp.`,
-   c:`Ferris sends valerian. Twenty drops in water at bedtime.
+Henrietta’s nerves are the better for it. Yours are not, the lady in the next lodging keeping a harp.`,
+   c:`Ferris sends valerian, of which she is to take twenty drops in water at bedtime.
 
-It smells of tom-cat. The kitchen cat comes up the back stairs and sits at her door all night.
+It smells of tom-cat; and the kitchen cat, coming up the back stairs, sits all night at her door.
 
-The clock stays stopped six weeks. Mudge rings the yard bell for the men’s dinner. He rings it under her window.`,
+The clock stays stopped six weeks, and Mudge rings the yard bell for the men’s dinner; and he rings it under her window.`,
    why:'You gave her valerian when she wanted Bath'},
   {title:'Henrietta’s Cough', home:'Horehound and honey, at home.',
-   x:`Henrietta has coughed since Michaelmas. On Sunday she coughed through the Litany and the first lesson.
+   x:`Henrietta has coughed since Michaelmas, and on Sunday she coughed through the Litany and the first lesson.
 
-Mr Ferris lays a napkin on her back and puts his ear to it.
+Mr Ferris lays a napkin upon her back, and puts his ear to it.
 
 “I should not winter her here, sir. The hot well, or the sea.”
 
-Mrs Tamworth writes from the Circus. She has heard of the cough. She has mentioned it in the Pump Room.`,
-   a:`Bath, for six weeks. Three hundred and fifty pounds.
+Mrs Tamworth writes from the Circus, that she has heard of the cough, and has mentioned it in the Pump Room.`,
+   a:`You go to Bath for six weeks, at three hundred and fifty pounds.
 
-Henrietta coughs in the Pump Room. Eleven ladies recommend eleven remedies. She tries nine.
+Henrietta coughs in the Pump Room; upon which eleven ladies recommend eleven remedies, and she tries nine.
 
-The cough goes in the fourth week. Nobody can say which of the nine did it. She brings all nine home in the carriage.`,
-   b:`Cheltenham in November. A hundred and fifty pounds.
+The cough goes in the fourth week; and as nobody can say which of the nine it was that cured it, she brings all nine home in the carriage.`,
+   b:`You go to Cheltenham in November, for a hundred and fifty pounds.
 
-Half the lodgings are shut. The band is a fiddle and a boy with a triangle. Henrietta takes her glass at the well under an umbrella.
+Half the lodgings are shut, and the band is a fiddle and a boy with a triangle; and Henrietta takes her glass at the well under an umbrella.
 
-By the tenth day she has stopped coughing. She says the dullness drove it out.`,
-   c:`Mrs Bunce boils horehound with honey. A spoonful every two hours.
+By the tenth day she has left off coughing, and says that the dullness drove it out.`,
+   c:`Mrs Bunce boils horehound with honey, of which a spoonful is to be taken every two hours.
 
-Henrietta coughs until Candlemas. She coughs at you across the breakfast table. Then one morning she does not.
+Henrietta coughs until Candlemas, and coughs at you across the breakfast table; and then one morning she does not.
 
-Mrs Bunce has the credit. She makes a quart of it for you against the spring.`,
+Mrs Bunce has the credit of it, and makes a quart for you against the spring.`,
    why:'You kept her at home with a cough'}
 ];
 const bathNow = () => BATH[(S.bathN || 0) % BATH.length];
@@ -9056,13 +9056,12 @@ function introHTML(){ const has = !!load();
   return `<article class="card opening">
     <p class="kicker">Berkshire, Lady Day 1795</p>
     <h2>An Inheritance</h2>
-    <p>Your uncle Barnaby died at his own table on Michaelmas Day. He was seventy-one. The Bishop was on his right. The syllabub had just come in.</p>
-    <p>Mr Spurling the attorney read the will in the library a week later. It took four minutes. Everything comes to you.</p>
-    <p>Hatherley Combe. Two thousand one hundred acres of chalk and clay. Three farms let to tenants. A water mill. A common where forty cottagers keep a cow apiece. A house with fifty-four windows and eleven chimneys. Nine of the chimneys smoke. A mortgage of four thousand pounds at five per cent.</p>
-    <p>The steward met your carriage at the lodge this morning. His name is Crabbe. He had the keys in one hand and the rent book in the other. He gave you the keys.</p>
-    <p>Henrietta is upstairs counting bedrooms. She had hoped you would be a baronet by now. Kitty is seventeen and has found the library. Edmund is nineteen. He has found your uncle’s sword over the hall chimney-piece and is trying to get it out of the scabbard.</p>
-    <p>England has been at war with France for two years. The quartern loaf was sevenpence when it began. It is elevenpence today.</p>
-    <p>You have twenty-one years. They come one season at a time.</p>
+    <p>Your uncle Barnaby died at his own table upon Michaelmas Day, aged seventy-one, with the Bishop upon his right, and the syllabub just come in; and Mr Spurling the attorney, reading the will in the library a week afterwards, was four minutes about it. Everything comes to you.</p>
+    <p>It is Hatherley Combe: two thousand one hundred acres of chalk and clay, in three farms let to tenants, with a water mill, and a common upon which forty cottagers keep a cow apiece; a house of fifty-four windows and eleven chimneys, nine of which smoke; and a mortgage of four thousand pounds, at five per cent.</p>
+    <p>The steward, whose name is Crabbe, met your carriage at the lodge this morning, with the keys in one hand and the rent book in the other; and he gave you the keys.</p>
+    <p>Henrietta, who had hoped that you would be a baronet by now, is upstairs counting bedrooms. Kitty is seventeen, and has found the library; and Edmund, who is nineteen, having found your uncle’s sword over the hall chimney-piece, is trying to get it out of the scabbard.</p>
+    <p>England has been two years at war with France; and the quartern loaf, which was sevenpence when the war began, is elevenpence today.</p>
+    <p>You have twenty-one years, and they come one season at a time.</p>
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
