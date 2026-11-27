@@ -108,7 +108,7 @@ function beginSeason(){
     if (F('merino') && y === 1811) S.notes.push('The merino mania has burst. Rams bought at forty guineas go to the butcher at forty shillings.'); }
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
-  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.032 * (y - 1795)) - (F('bricked') ? 3 : 0)));
+  line('Household, stables and servants', -((280 + S.standing * 1.6) * (T('figures') ? 0.9 : 1) * (T('captain') && !F('crewGone') ? 0.9 : 1) * (1 + 0.027 * (y - 1795)) - (F('bricked') ? 3 : 0)));
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
@@ -223,7 +223,7 @@ function next(){
 }
 function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
 
-function setRent(v){ S.rentPolicy = v; save(); render(); }
+function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
 function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && S.mortgage < mortCap()) { S.mortgage += 500; S.money += 500; } save(); render(); }
 
 /* ---------- the reckoning ---------- */
