@@ -3647,7 +3647,7 @@ He walks you to your horse, and holds the stirrup, having first looked round to 
     {t:'Put the card back in the case.', go:() => { add({family:1});
       return `You put it back in the case, it being a good card, and having cost twopence.
 
-No carriage turns in at the lodge that month; and the gravel, which is raked on Saturday, is found upon the next Saturday as the rake left it.`; }}]},
+No carriage turns in at the lodge that month; and the gravel, raked on Saturday, is found upon the next Saturday as the rake left it.`; }}]},
   {id:'cold-bench', title:'The Chair at Sessions', x:() => `It is Quarter Sessions at Reading, where the justices sit in a row of eleven chairs under the King’s arms; and the fourth from the left, which you have had for nine years, has Lord Cullerne’s chaplain in it, who was put in the Commission at Easter.
 
 There is no twelfth chair. The Chairman is reading a paper very closely; and the Clerk of the Peace, having dropped his pen, is a long time under the table.`,
@@ -3689,7 +3689,7 @@ The whole market hears it; and being obliged to stop, he touches his hat with on
 
 It is two words, but forty people have heard him say them; and Mr Tamworth says good morning as well, a little late.`; }},
     {t:'Look at the clock yourself.', go:() => { add({goodwill:1});
-      return `You turn, and look up at the Town Hall clock, which is ten minutes slow, and has been ten minutes slow since your uncle’s time.
+      return `You turn, and look up at the Town Hall clock. It is ten minutes slow, as it has been since your uncle’s time.
 
 When you turn round again, the carriage is at the end of the street. A carter beside you, who has been looking at the clock too, asks what you both saw.`; }}]}
 ];
@@ -4060,7 +4060,7 @@ He is silent a minute.
 
 You tell him that he need not; and he preaches it at Christmas, with Mr Tamworth in the front pew, moving his lips.`; }}]},
 
-  {id:'clergy-tithe', title:'Tithe Turnips', w:() => gallHere(), x:() => `Dr Gall takes his tithe in kind, which is every tenth sheaf, the tenth lamb, and the tenth pail of milk; and Mr Hartopp having sown forty acres of turnips, Dr Gall claims the tenth turnip.
+  {id:'clergy-tithe', title:'Tithe Turnips', w:() => gallHere(), x:() => `Dr Gall takes his tithe in kind, that is to say every tenth sheaf, the tenth lamb, and the tenth pail of milk; and Mr Hartopp having sown forty acres of turnips, Dr Gall claims the tenth turnip.
 
 Hartopp has taken advice. The law says that he must set the tithe out, and give the parson notice of the hour; and the notice is upon your table, for you to witness.
 
