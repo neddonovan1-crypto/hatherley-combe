@@ -86,7 +86,9 @@ const VIGNETTES = [
     `Lambing on the Down. The shepherd has slept three weeks in the hut on wheels. You ask him how many twins.
 
 “Coom on then, coom on,” he says. Then he begs your pardon.`,
-    `The rent audit dinner. Eleven farmers finish a round of beef. When the cloth is drawn each one takes you aside. Each is the only man at the table being ruined.`,
+    `The rent audit dinner. The tenants finish a round of beef between them.
+
+When the cloth is drawn each one takes you aside. Each is the only farmer in Berkshire being ruined.`,
     `In your pocket-book: “April 14. Heard the Cuckoo in the Copse about 7 this Morn’. To the Mole-catcher for his Quarter paid 0. 10. 6. He shewed me 41 Tails. Dinner to day, a Couple of Rabbits smothered with Onions, a Gooseberry Tart &c.”`
   ],
   [ // summer
@@ -127,6 +129,118 @@ In the morning the ice is cut all over. Both footmen yawn through breakfast.`,
 You send out half a crown.`
   ]
 ];
+
+/* More leaves for the quiet seasons. A plain string may come in any year; {w, x} only when w() holds. */
+VIGNETTES[0].push(
+  `The sweep’s boy comes down the wrong chimney. He stands on the hearth in Henrietta’s dressing-room with his brush in his hand.
+
+She gives him a shilling to go back up.`,
+  `In your pocket-book: “March 25. Lady Day. Paid my Servants their Wages. To my Cook Mrs. Bunce 12. 0. 0. To the Footman 8. 0. 0. To the Knife Boy 2. 2. 0 and a Pair of Shoes. The Boy asked might he have the Money for the Shoes instead. Told him No.”`,
+  `Mothering Sunday. The kitchen-maid walks nine miles home to Aldbourne with a simnel cake in a cloth.
+
+She is back by dark. She has the cloth.`,
+  `Mudge has nailed the winter’s vermin to the kennel door. Eleven stoats, four hawks and a cat. The cat has a collar on.
+
+Mrs Tamworth’s tabby has been missing since Tuesday.`,
+  `In your pocket-book: “Sowed Peas in the Garden to day. Mr. Hartopp called and stayed 3 Hours talking of the Swedish Turnip. He drew one on the Table Cloth with a Fork. Dinner to day, a Calf’s Head boiled, Pork and Greens &c. Mr. H. eat very hearty.”`,
+  {w:() => S.year <= 1814, x:`A recruiting party is at the Bell with a fife and a drum. The serjeant has ribbons in his hat and a purse of the King’s shillings.
+
+Three ploughboys go in to hear the music. Two come out.`},
+  `The rooks are building in the Hall elms. Henrietta counts forty nests from her window.
+
+Your uncle held that rooks leave a house before a death. He counted them every March for thirty years. They were all there the spring he died.`,
+  `In your pocket-book: “Easter Monday. To the Ringers 0. 5. 0. To a poor Sailor with one Leg 0. 1. 0. To another with one Leg at the Stable Gate 0. 1. 0. I believe it was the same Sailor.”`,
+  {w:() => S.year === 1814, x:`The frost held eleven weeks. They roasted a sheep on the Thames at Blackfriars and charged a shilling to look at it. The Kennet bore a loaded wagon at Newbury.
+
+The thaw came on Tuesday. It brought down the stable gutter and forty feet of the kitchen garden wall.`},
+  {w:() => S.year === 1801, x:`By Act of Parliament no baker may sell a loaf less than a day out of the oven. A stale loaf is thought to go further.
+
+The Wyvern baker bakes on Monday and sells on Tuesday. On Tuesday he bakes for Wednesday. Nobody in the town can find what the Act has altered.`}
+);
+VIGNETTES[1].push(
+  `Shearing supper in the great barn. The captain of the shearers gives a song of nineteen verses. At the eleventh he loses the words and begins again from the first.
+
+Nobody stops him.`,
+  `In your pocket-book: “June 4. The King’s Birth Day. Gave my People a Barrel of Beer. The Bells rang from 6 in the Morn’ till 9 at Night. To the Ringers 0. 5. 0. Would have given 0. 10. 0 to have them leave off at Noon.”`,
+  `A swarm hangs on the pear tree by the laundry. Mrs Bunce goes out to it with a straw hive and a warming-pan.
+
+She beats the pan. She tells the bees what has happened in the house since Easter. They go in.`,
+  `Strawberries. Henrietta sends a basket to the Castle and a basket to the Tamworths.
+
+The Castle sends back a pine-apple. The Tamworths send back the basket.`,
+  `In your pocket-book: “Very hot. Bathed my Feet in the Pond before Breakfast. Mr. Hartopp’s Bull got into the Church Yard during Morning Service and looked in at the Chancel Door. The Parson did not leave off.”`,
+  `The mail guard throws down the London paper at the lodge without stopping. Today it goes into the horse-pond.
+
+It is dried before the kitchen fire. Mrs Bunce irons it. Half the Gazette comes off on the iron.`,
+  {w:() => wheatNow() >= 100, x:() => `Wheat is at ${wheatNow()} shillings. The Wyvern baker has a board in his window with the price of the quartern loaf in chalk.
+
+He has rubbed it out so often that the board is white.`},
+  `Cherry Fair at Wyvern. A man eats a hundred cherries in a minute for a wager. He swallows the stones.
+
+The surgeon is fetched. He takes out his watch and says they must wait.`,
+  `In your pocket-book: “July 15. St. Swithin. Rain at 4 in the Afternoon, a few Drops only. Mudge says that is 40 Days of it. Laid him 0. 2. 6 that it is not. Dinner to day, a Couple of Ducks rosted and Peas.”`,
+  `The Hatherley Friendly Society walks on Whit Tuesday. Forty men with blue staves, and a band. They walk to the church, to the Bell and to the Hall, in that order.
+
+At the Hall they give three cheers. Some give four.`
+);
+VIGNETTES[2].push(
+  `In your pocket-book: “Sept. 29. Michaelmas. Received my Rents. Gave the Tenants a Goose rosted at the Top of the Table and another at the Bottom, and Plumb Puddings. They sat from 2 till 9. One was helped upon his Horse. The Horse knew the Way.”`,
+  `Nutting. The village children are in Hatherley Copse with hooked sticks and their mothers’ aprons. Mudge says they put up the pheasants. He says it from the gate.
+
+Your uncle’s keeper took him in that copse at nine years old, with an apron.`,
+  {w:() => S.year >= 1803 && S.year <= 1813, x:`Gunpowder Treason. The boys burn the Pope on the Common. This year he has a cocked hat and they call him Boney.
+
+It is last year’s straw.`},
+  `The hop-pickers come through from Farnham, walking home into Wiltshire. Sixty of them sleep in the great barn.
+
+In the morning the barn is swept. There is a bunch of hops tied to the door.`,
+  `In your pocket-book: “Brewed a Hogshead of strong Beer to day. To my Maltster for 8 Bushels 2. 8. 0. Mrs. Bunce says Thunder will turn it. It did thunder about 5. Dinner to day, Hash Mutton and a Suet Pudding.”`,
+  {w:() => S.year === 1811, x:`The comet stands over the stable clock at nine each night. It has a tail as long as a man’s arm.
+
+The shepherd says it means a hot summer, a dear loaf or the death of a king. He is asked which. He says it has always been one of the three.`},
+  {w:() => S.year === 1810, x:`The Wilts and Berks Canal is open to Abingdon. The proprietors’ boat went through the last lock at half past two. They dined in the Council Chamber until late.
+
+The hundred-pound shares are at twelve pounds ten. Mr Tamworth has nine.`},
+  `The apple-man is in the orchard with his ladder. Forty bushels of pippins for the house. The rest is for cider. The pigs have the windfalls.
+
+By evening two of the pigs cannot stand.`,
+  `A walking postman brings the letters out from Wyvern at a penny each. Six miles out and six back.
+
+Today there is one letter. It is for Mrs Bunce. The housemaid reads it to her in the scullery. Then she reads it again.`,
+  `In your pocket-book: “Octr. 10. Wyvern Fair. Saw a Man eat Fire, and a Woman with no Arms that cut Paper with her Feet, gave 0. 0. 6. Bought of her a Paper Cut in the Shape of a Church 0. 1. 0. Lost my Handkerchief.”`
+);
+VIGNETTES[3].push(
+  `In your pocket-book: “Decr. 21. St. Thomas. Gave to 43 poor People of this Parish 6d. each as usual, 1. 1. 6. Two came that are of Kintbury. Gave to them also, it being very cold.”`,
+  `Plough Monday. The ploughboys drag a plough to the Hall door with ribbons on it and ask for money. A house that gives none has its doorstep ploughed up.
+
+Your uncle had the step relaid twice. After that he gave a shilling.`,
+  `In your pocket-book: “Jany. 9. Frost very severe. The Milk froze in the Dairy and the Ink in my Ink Stand. Wrote this with a Pencil. Sent a Chaldron of Coals to the Alms House, 1. 16. 0.”`,
+  `The carrier is four days late from Reading. He was in a drift at Thatcham from Monday to Thursday.
+
+He lived on the Hall’s Christmas order. He has brought the bill for it.`,
+  `Twelfth Night. Henrietta has a cake from the Wyvern confectioner with a bean baked in it. The bean makes a king.
+
+Mr Tamworth has the bean. He gives orders until midnight. Mrs Tamworth obeys none of them.`,
+  `The church singers come round at five on Christmas morning. They sing “While Shepherds Watched” under your window. The bassoon is frozen.
+
+They sing it again to be sure you are awake.`,
+  `In your pocket-book: “Feby. 14. Valentine’s Day. To 37 Children of the Parish that came to the Door saying Good morrow Valentine, 1d. each, 0. 3. 1. Three were the same Child in different Hats.”`,
+  {w:() => S.year === 1810, x:`A barge of stone went up the locks at Devizes on Friday night. The Kennet and Avon is open from London to Bath. Nobody was there to see it.
+
+Carriage to Bath is two pounds nine and sixpence the ton. By road it was six pounds three.`},
+  `The ice-house is filled. Twelve men cut the pond with saws and wheel the blocks up in barrows.
+
+One block has a perch in it. Mrs Bunce says it will keep till August.`,
+  `Old Christmas Day. The oldest man in the parish will not keep the new one. He has not kept it since they took the eleven days in ’52.
+
+He eats his Christmas dinner on the sixth of January, alone, with his hat on.`
+);
+function vignette(q){ S.vig = S.vig || {};
+  const all = VIGNETTES[q].map((v, i) => ({i, v})).filter(o => typeof o.v === 'string' || !o.v.w || o.v.w());
+  const fresh = all.filter(o => S.vig[q + '-' + o.i] === undefined);
+  const set = fresh.length ? fresh : all.slice().sort((a, b) => S.vig[q + '-' + a.i] - S.vig[q + '-' + b.i]).slice(0, 4);
+  const o = pick(set); S.vig[q + '-' + o.i] = S.t;
+  const x = typeof o.v === 'string' ? o.v : o.v.x; return typeof x === 'function' ? x() : x; }
 
 function fmt(n){ const a = Math.abs(Math.round(n)).toLocaleString('en-GB'); return (n < 0 ? '−' : '') + '£' + a; }
 function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
