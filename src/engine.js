@@ -114,14 +114,15 @@ function startProject(id){ const p = PROJECTS[id]; S.works.push({id, left:p.seas
 function worksInHand(){ return S.works.map(w => ({id:w.id, name:PROJECTS[w.id].name, left:w.left, per:w.per})); }
 function worksDone(){ return Object.keys(PROJECTS).filter(id => S.projectsDone[id] === 'done').map(id => ({id, name:PROJECTS[id].name})); }
 function worksList(){ const busy = S.works.filter(w => !PROJECTS[w.id].hidden).length;
-  return Object.keys(PROJECTS).filter(id => (!PROJECTS[id].hidden || S.projectsDone[id]) && (S.projectsDone[id] || !PROJECTS[id].if || PROJECTS[id].if())).map(id => { const p = PROJECTS[id], cost = projCost(id), per = Math.round(cost / p.seasons);
+  return Object.keys(PROJECTS).filter(id => (!PROJECTS[id].hidden || S.projectsDone[id]) && (S.projectsDone[id] || soldWhy(PROJECTS[id]) || !PROJECTS[id].if || PROJECTS[id].if())).map(id => { const p = PROJECTS[id], cost = projCost(id), per = Math.round(cost / p.seasons);
     const state = S.projectsDone[id] === 'done' ? 'done' : S.projectsDone[id] === 'begun' ? 'inHand' : 'open'; const w = S.works.find(x => x.id === id);
-    let why = '';
-    if (state === 'open') { if (S.phase === 'end' || S.dead) why = 'The books are closed.';
+    const off = state === 'open' && !!soldWhy(p); let why = '';
+    if (state === 'open') { if (off) why = soldWhy(p);
+      else if (S.phase === 'end' || S.dead) why = 'The books are closed.';
       else if (busy >= MAX_WORKS) why = 'Two works in hand already. There is one estate carpenter, and he is on both.';
       else if (S.money < per) why = 'The purse will not stand the first instalment of ' + fmt(per) + '.'; }
     return {id, name:p.name, blurb:p.blurb, gain:p.gain, effects:p.effects || p.gain, fx:typeof p.fx === 'function' ? p.fx() : p.fx, cost, seasons:p.seasons, per,
-      note:fmt(cost) + (p.seasons > 1 ? ', in ' + p.seasons + ' quarterly instalments' : ''), state, left:w ? w.left : 0, can:state === 'open' && !why, why}; }); }
+      note:fmt(cost) + (p.seasons > 1 ? ', in ' + p.seasons + ' quarterly instalments' : ''), state, off, left:w ? w.left : 0, can:state === 'open' && !why, why}; }); }
 function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || !w.can) return false;
   startProject(id); S.journal.unshift({when:stamp(), title:'Works', did:'Put in hand: ' + PROJECTS[id].name});
   save(); render(); return true; }
