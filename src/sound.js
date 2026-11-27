@@ -2,7 +2,7 @@
    Loaded last: it wraps render, start, resume, choose, undertake, showTab and showWho, and alters nothing in them.
    The house is silent until Sound is turned on in the corner of the desk. The choice is remembered. */
 const Sound = (() => {
-  const DIR = 'sound/', VOL = .3, AIR = .32, LAP = 2.5, KEY = 'hatherley-quiet';
+  const DIR = 'sound/', VOL = .6, AIR = .45, LAP = 2.5, KEY = 'hatherley-quiet';
   let muted = true; try { muted = localStorage.getItem(KEY) !== '0'; } catch (err) {}
   let ctx = null, master = null, live = false, airName = '', airWant = '', airTok = 0, airBus = null, airTag = null;
   const bufs = {};
@@ -15,7 +15,7 @@ const Sound = (() => {
       const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = b; g.gain.value = vol; s.connect(g).connect(master); s.start(ctx.currentTime + delay); }); }
 
   // The air of the place: one long recording at a time, lapped over itself so that the join is not heard.
-  function air(name){ airWant = name; if (!live || muted) name = ''; if (name === airName) return; airName = name; const tok = ++airTok;
+  function air(name){ airWant = name; if (!live || muted || ctx.state !== 'running') name = ''; if (name === airName) return; airName = name; const tok = ++airTok;
     if (airBus) { const g = airBus; g.gain.setTargetAtTime(0, ctx.currentTime, .7); setTimeout(() => g.disconnect(), 5000); airBus = null; }
     if (airTag) { airTag.pause(); airTag = null; }
     if (!name) return;
@@ -26,11 +26,14 @@ const Sound = (() => {
         s.connect(g).connect(bus); s.start(at); setTimeout(() => lap(end - LAP), Math.max(0, (end - LAP - ctx.currentTime - 1) * 1000)); };
       lap(ctx.currentTime); }); }
 
-  function wake(){ if (live) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
-    ctx = new AC(); master = ctx.createGain(); master.gain.value = muted ? 0 : VOL; master.connect(ctx.destination); live = true;
-    if (ctx.state === 'suspended') ctx.resume(); air(airWant); }
+  // Browsers keep an audio context asleep until the reader touches something, and Safari will let it doze off again.
+  // So every touch, click and key tries to wake it, and the air begins only once it is truly awake.
+  function wake(){ const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    if (!live) { ctx = new AC(); master = ctx.createGain(); master.gain.value = muted ? 0 : VOL; master.connect(ctx.destination); live = true;
+      ctx.onstatechange = () => air(airWant); }
+    if (ctx.state !== 'running') { const p = ctx.resume(); if (p && p.then) p.then(() => air(airWant), () => {}); } else air(airWant); }
   function quiet(q){ muted = q; try { localStorage.setItem(KEY, q ? '1' : '0'); } catch (err) {}
-    if (master) master.gain.setTargetAtTime(q ? 0 : VOL, ctx.currentTime, .05); air(airWant); }
+    if (!q) wake(); if (master) master.gain.setTargetAtTime(q ? 0 : VOL, ctx.currentTime, .05); air(airWant); }
   return {play, air, wake, quiet, get muted(){ return muted; }};
 })();
 
@@ -67,13 +70,13 @@ const Sound = (() => {
   let purse = 0;
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.inkbtn, .lv button')) purse = S ? S.money : 0; }, true);
   document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.inkbtn, .lv button'); if (b && S) Sound.play(Math.abs(S.money - purse) >= 1 ? 'coins' : 'quill', .6); });
-  for (const ev of ['pointerdown', 'keydown']) document.addEventListener(ev, Sound.wake, true);
+  for (const ev of ['pointerdown', 'pointerup', 'mousedown', 'touchend', 'click', 'keydown']) document.addEventListener(ev, Sound.wake, true);
   document.addEventListener('visibilitychange', () => Sound.air(document.hidden ? '' : airNow()));
 
   // The one control: a word in the corner of the desk.
   const b = document.createElement('button'); b.id = 'hush'; b.type = 'button';
   const show = () => { b.textContent = Sound.muted ? 'Sound off' : 'Sound on'; b.setAttribute('aria-pressed', String(!Sound.muted)); };
-  b.onclick = () => { Sound.quiet(!Sound.muted); show(); }; show();
+  b.onclick = () => { Sound.quiet(!Sound.muted); show(); if (!Sound.muted) Sound.play('bell', .6); }; show();
   const st = document.createElement('style');
   st.textContent = '#hush{position:fixed;top:6px;right:10px;z-index:5;background:none;border:0;padding:4px 6px;cursor:pointer;font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:#d9c9a3;opacity:.8}#hush:hover,#hush:focus-visible{opacity:1}#hush[aria-pressed="false"]{text-decoration:line-through}';
   document.head.appendChild(st); document.body.appendChild(b);
