@@ -685,148 +685,324 @@ The Bell runs dry by ten that night. Jem Pryor proposes your health. At the vica
   ]});
 
 ev({ id:'enclosure', from:1797, to:1809, weight:3, cond:() => !F('enclosed') && !S.project && !F('encloseRefused'), title:'The Common Question',
-  text:() => `Lord Cullerne and ${F('gallDead') ? 'his man of business' : 'Dr Gall'} have called on you together, which is like being visited by both blades of a pair of scissors.
+  text:() => `Lord Cullerne’s carriage is at the door. ${F('gallDead') ? 'His man of business' : 'Dr Gall'} gets out of it after him.
 
-Hatherley Common is four hundred acres of gorse, geese and independence. It is, his lordship says, wasted on cottagers who keep a cow and a pig there, cut their furze, and suppose themselves free. Enclosed, hedged and let, it would add a third to your rental. ${F('gallDead') ? 'The tithe' : 'Dr Gall’s tithe'} would be commuted for land, and no more counting of piglets. It wants a private Act of Parliament, a surveyor, three commissioners, and about twelve hundred pounds.
+They have a plan of Hatherley Common unrolled on your library table before the wine is poured. Four hundred acres. Gorse, geese, a pond, and forty cottagers’ cows.
 
-Jem Pryor’s cow is grazing outside the window as they speak, as if she had been sent.`,
+“Hedge it and let it,” says his lordship, “and you add a third to your rental. ${F('gallDead') ? 'The tithe is' : 'The Doctor’s tithe is'} commuted for land. A private Act. A surveyor. Three commissioners. Twelve hundred pounds, and it is done in a year.”
+
+A cow walks past the library window. It is Jem Pryor’s. She stops and looks in.`,
   choices:[
     {t:'Promote the bill.', note:'£1,200 over three seasons', go:() => { startProject('enclosure'); reg('cullerne',2,'You joined him in enclosing the common'); if (!F('gallDead')) reg('gall',2); reg('pryor',-2,'You moved to enclose the common');
-      return `The notice is fixed to the church door on three successive Sundays, as the law requires, where those whom it most concerns cannot read it. A surveyor comes with a chain and a boy. He walks the common for a week, putting in pegs, and everywhere he goes the geese follow him in a body, hissing.`; }},
+      return `The notice goes up on the church door. “Hatherley Inclosure.” It hangs there three Sundays running, as the Act requires. Most of the men it concerns cannot read it. Their children read it to them.
+
+A surveyor comes with a chain and a boy. He walks the common for a week, driving in pegs. The geese walk behind him in a body, hissing.`; }},
     {t:'Promote it, but set aside sixty acres in allotments for the cottagers.', note:'£1,400 over three seasons', go:() => { fl('allotments'); startProject('enclosure'); reg('cullerne',1); meet('thorne'); reg('thorne',1); reg('pryor',-1,'You enclosed the common, but left him an acre');
-      return `Lord Cullerne thinks the allotments “a premium upon idleness”. You hold to them. An acre and a cow-gate to every cottage that can show it used the common: it is not what they had, which was the whole sky, but it is more than any other enclosure in the county has left them, and the surveyor pegs it out with the geese at his heels.`; }},
+      return `“Sixty acres to the cottagers. An acre and a cow-gate to every house that used the common.”
+
+“A premium upon idleness,” says Lord Cullerne. He says it twice. You do not move.
+
+The surveyor comes with his chain. He pegs out the sixty acres first, at your order. The geese follow him. No other parish in the county has left its cottagers a rood.`; }},
     {t:'Refuse. The common stays as it is.', go:() => { fl('encloseRefused'); add({goodwill:6, standing:-2}); reg('cullerne',-3,'You would not enclose with him'); if (!F('gallDead')) reg('gall',-2); reg('pryor',2,'You kept the common open');
-      return `His lordship says you are standing in the way of improvement. You say that you are standing in the way of Jem Pryor’s cow, and mean to go on doing so. They leave together. The cow lifts her head to watch the carriage go, chewing, like a constituent.`; }}
+      return `“The common stays as it is.”
+
+“You are standing in the way of improvement, sir.”
+
+“I am standing in the way of Pryor’s cow, my lord. I mean to go on standing there.”
+
+They roll up the plan. The carriage goes down the drive. The cow lifts her head and watches it out of the gate. She is still chewing.`; }}
   ]});
 
 ev({ id:'commonRiot', follow:true, cond:() => F('enclosed'), title:'Posts in the Night',
-  text:() => `The fencers came on Monday to stake out the new allotments on what was Hatherley Common. On Tuesday morning every post they had set was found pulled up and laid out on the turf, very neatly, in the shape of a gallows.
+  text:() => `The fencers set their posts along the new allotments on Monday.
 
-Today some sixty persons, men and women, are sitting on the line of the new hedge. They are not shouting. They have brought their dinners.`,
+On Tuesday morning every post is out of the ground. They have been laid on the turf in a pattern. An upright. A beam. A brace. From the Down it is plain enough. It is a gallows.
+
+Today there are sixty people sitting along the line of the new hedge. Men and women. Nobody is shouting. They have brought their dinners in cloths.`,
   choices:[
     {t:'Send for the yeomanry.', go:() => { add({goodwill:-9, standing:2}); reg('pryor',-2,'You brought sabres on to the common'); reg('cullerne',1);
-      return `Lord Cullerne’s troop arrives at a trot, very fine, and rides the line of the hedge. Nobody is cut. An old woman is knocked into a furze bush and a boy has his arm broken by a horse. The posts go in that week and stay in. For some years after, your quickset hedges on that side of the parish fail to thrive, as though something got at the roots.`; }},
+      return `Lord Cullerne’s troop comes up at a trot, forty sabres. They ride the line of the hedge.
+
+Nobody is cut. An old woman is knocked into a furze bush. A horse treads on a boy and breaks his arm.
+
+The posts go in that week. The quickset is planted behind them. On that side of the parish it does not take. Somebody has been at the roots with a spade.`; }},
     {t:'Go down and sit on the turf with them.', go:() => { add({goodwill:5, standing:-3}); reg('pryor',1,'You sat down on the common and heard them out');
-      return `You sit. Somebody passes you bread and an onion. For three hours you are told what the common was: where each family cut its turf, whose grandmother’s geese had the pond, which thorn the children were sent to. None of it is in the Act. At the end you can undo nothing, and you tell them so, and promise the furze-cutting and the pond shall stay open. It is a small thing. They get up, slowly, and let the fencers through.`; }},
+      return `You walk down and sit on the turf. Somebody passes you bread and an onion.
+
+They talk for three hours. Where each family cut its turf. Whose grandmother’s geese had the pond. Which thorn tree the children were sent to and told to come back from.
+
+“I cannot undo the Act,” you say. “The pond stays open. So does the furze-cutting. You have my word.”
+
+They get up slowly. They let the fencers through.`; }},
     {t:'Wait them out. They cannot sit there for ever.', go:() => { add({goodwill:-3});
-      return `They sit for nine days, in shifts. On the tenth it rains, and the hay wants cutting, and hunger, which built the fence in the first place, takes it up and finishes it. The fencers go back to work. Nobody has been hurt and nobody has been heard.`; }}
+      return `They sit for nine days, by turns.
+
+On the tenth day it rains. The hay wants cutting. The men go to the hay, because there is fourpence a day in it. The women go home.
+
+The fencers come back on the eleventh. Nobody has been hurt. Nobody has been spoken to.`; }}
   ]});
 
 ev({ id:'bath', from:1796, to:1814, weight:2, repeatGap:16, title:'Henrietta’s Rheumatism',
-  text:() => `Henrietta’s rheumatism has come on again, as it reliably does when the Tamworths go to Bath. Ferris the surgeon, who knows his business, prescribes the waters, six weeks of them, taken warm, with society.
+  text:() => `The Tamworths went to Bath on Monday. On Tuesday Henrietta has rheumatism in both shoulders.
 
-Lodgings in Pulteney Street are four guineas a week this season. The waters, Ferris adds, taste as if a blacksmith had cooled his irons in them, and that is thought to be the virtue.`,
+Mr Ferris the surgeon is sent for. He looks at her tongue. He looks at you.
+
+“The Bath waters, sir. Six weeks. Taken warm, in company.”
+
+Lodgings in Pulteney Street are four guineas a week this season. Ferris has tasted the water. “A blacksmith has cooled his irons in it. That is the virtue.”`,
   choices:[
     {t:'Six weeks at Bath.', note:'£350', go:() => { add({money:-350, family:8, standing:2}); reg('henrietta',2);
-      return `She drinks three glasses a day in the Pump Room, to music, and is carried to the Assembly in a chair. The rheumatism is gone by the second Tuesday. You lose eleven pounds at whist to a clergyman, and gain the impression that the whole of Bath is one large drawing room in which the same hundred people are pretending not to have met.`; }},
+      return `Three glasses a day in the Pump Room, with a band playing. A chair to the Assembly every evening. Three hundred and fifty pounds.
+
+The rheumatism is gone by the second Tuesday.
+
+You lose eleven pounds at whist to a clergyman. You meet the Tamworths nine times in six weeks. Each time, everybody is surprised.`; }},
     {t:'A fortnight at Cheltenham, which is cheaper.', note:'£150', go:() => { add({money:-150, family:3});
-      return `Cheltenham is where the King took the waters in 1788, shortly before he went mad, a connexion on which the town does not dwell. The water is salt and works upon the system with a violence you would rather not describe. Henrietta declares herself much better and does not ask to go again.`; }},
+      return `Cheltenham. A hundred and fifty pounds. The King took these waters in ’88. He went out of his mind in the autumn.
+
+The water is salt. It acts within the hour. You do not stray far from the lodgings.
+
+Henrietta says she is much better. She does not ask to go again.`; }},
     {t:'A mustard plaster, at home.', go:() => { add({family:-5}); reg('henrietta',-2,'You prescribed mustard when she wanted Bath');
-      return `The plaster is applied. Henrietta bears it with fortitude, loudly, for six weeks, during which the Tamworths’ letters from Bath are read out at breakfast in full.`; }}
+      return `A mustard plaster, morning and night. She bears it for six weeks. She can be heard bearing it from the library.
+
+The Tamworths write from Bath on Tuesdays and Fridays. Henrietta reads each letter aloud at breakfast, from “My dearest Henrietta” to the postscript.`; }}
   ]});
 
 ev({ id:'chinese', from:1802, to:1812, weight:1, title:'The Chinese Taste',
-  text:() => `Henrietta has seen an account of the Prince of Wales’s Pavilion at Brighton, which is being fitted up inside in the Chinese manner: bamboo, dragons, lanterns, and wallpaper on which mandarins fish from bridges.
+  text:() => `Henrietta has La Belle Assemblée open on her knee. There is an account in it of the Prince of Wales’s Pavilion at Brighton. Bamboo. Lanterns. Dragons. Wallpaper with mandarins fishing from bridges.
 
-She now finds that she cannot sit in the yellow drawing room another week. A man in Bond Street will do the whole for four hundred pounds, with a pagoda for the chimney-piece.`,
+She looks round the yellow drawing-room. She looks at the yellow sofa.
+
+“I cannot sit in this room another week.”
+
+A man in Bond Street will do the whole for four hundred pounds. He has sent drawings. There is a pagoda for the chimney-piece.`,
   choices:[
     {t:'Let her have her dragons.', note:'£400', go:() => { fl('chineseRoom'); add({money:-400, family:7, standing:3}); reg('henrietta',2,'You gave her the Chinese drawing room');
-      return `It takes three months and a great many Italians. The result is astonishing. There are eleven dragons, forty-two mandarins and a gilt serpent holding up each curtain. The county comes to stare, and stays to tea. Lady Cullerne says it is “very like the Prince”, in a tone that settles nothing.`; }},
+      return `Three months. Nine Italian workmen. Four hundred pounds.
+
+You count when they have gone. Eleven dragons. Forty-two mandarins. A gilt serpent holding back each curtain.
+
+The county comes to look and stays to tea. Lady Cullerne stands in the middle of the carpet. “Very like the Prince,” she says. Henrietta has been trying ever since to decide what she meant.`; }},
     {t:'Offer new paper only.', note:'£80', go:() => { add({money:-80, family:2});
-      return `Mandarins fish from bridges all round the room, above the old yellow sofas, like guests who have come to the wrong party. Henrietta says it will do. It is the phrase she uses of mutton twice cooked.`; }},
+      return `New paper. Eighty pounds. The mandarins go up all round the room, fishing. The yellow sofas stay underneath them.
+
+Henrietta stands in the doorway.
+
+“It will do,” she says. She said the same on Tuesday, of the mutton, when it came up cold.`; }},
     {t:'Decline. Yellow was good enough for your uncle.', go:() => { add({family:-4}); reg('henrietta',-1);
-      return `She says no more about it. But the Bond Street man’s drawings stay open on her writing table for a twelvemonth, and she sighs whenever she passes the door, exactly loud enough.`; }}
+      return `“Yellow was good enough for my uncle.”
+
+She closes the magazine.
+
+The Bond Street drawings stay open on her writing table for a year. She dusts round them. Each time she passes the drawing-room door she sighs. You can hear it from the library with the door shut.`; }}
   ]});
 
 ev({ id:'ballot', from:1796, to:1811, weight:2, repeatGap:20, title:'The Militia Ballot',
-  text:() => `The ballot for the county militia has been drawn in the vestry, and your groom, Will Tanner, has come out of the hat. Will has a wife, two children, and a way with horses that is very nearly witchcraft.
+  text:() => `The Militia ballot is drawn in the vestry. Nine names for the county regiment. Five years’ service.
 
-A balloted man serves five years or finds a substitute, and substitutes have grown dear since the war, like everything else. The going rate in Wyvern is thirty pounds and rising, the substitutes having formed what amounts to a club.`,
+The seventh name out of the hat is Will Tanner. He is your groom. He has a wife and two children. Your bay mare will not let another man into her box.
+
+A balloted man may find a substitute to go for him. The price in Wyvern this week is thirty pounds. It was twenty-five at Christmas.
+
+Will is in the yard holding his hat. He has not asked you for anything.`,
   choices:[
     {t:'Buy him a substitute.', note:'£30', go:() => { add({money:-30, goodwill:3});
-      return `The substitute is a weaver from Newbury who has already served for three other men and deserted twice. He takes your thirty pounds with the calm of a professional. Will Tanner says nothing at all, but your hunters have never been turned out as they are that winter; they shine like wet slates.`; }},
+      return `The substitute is a weaver from Newbury. He has served for three other men already. He has deserted twice. He counts your thirty pounds and signs with a mark.
+
+Will Tanner says, “Thank you, sir.” Nothing else.
+
+All that winter your hunters come out of the stable shining. You could shave in the bay mare’s quarters.`; }},
     {t:'Let the ballot stand. Every man must take his chance.', go:() => { add({goodwill:-3, family:-1});
-      return `Will marches off to Portsmouth with a bundle. His wife goes on the parish. Your horses are given to a lad from Kintbury who is afraid of them, and they know it; by Christmas the bay mare has kicked a hole in the coach-house door and the grey has taught herself to slip a halter.`; }},
+      return `“Every man must take his chance, Will.”
+
+He marches for Portsmouth on Monday with a bundle. On Tuesday his wife goes to the overseer.
+
+The stable is given to a lad from Kintbury. He is afraid of horses. By Christmas the bay mare has kicked a hole in the coach-house door. The grey has learnt to slip her halter.`; }},
     {t:'Subscribe to the parish club that insures every man against the ballot.', note:'£12', go:() => { add({money:-12, goodwill:5});
-      return `Every labourer pays in sixpence, you pay in twelve pounds, and the club buys a substitute for whoever is drawn. Will is saved, and so, next year, is the wheelwright’s son. It is the cheapest popularity you ever bought, and the club dinner at the Bell is the best night of the Hatherley year.`; }}
+      return `There is a club at the Bell. Every labourer pays in sixpence. Whoever is drawn has his substitute bought from the box. The box is nine pounds short this year.
+
+You put in twelve.
+
+Will is bought out. Next year it is the wheelwright’s son. The club dines at the Bell at Michaelmas, and they send up to ask you to take the chair.`; }}
   ]});
 
 ev({ id:'windows', from:1797, to:1809, weight:1, title:'Fifty-Four Windows',
-  text:() => `The window tax is raised again. Hatherley Hall has fifty-four windows, a vanity of your great-grandfather’s, and is charged on every one above six.
+  text:() => `The assessor’s notice has come. The window tax is raised again.
 
-${F('crabbeGone') ? 'Lark' : 'Crabbe'} proposes bricking up eleven of them, chiefly on the north front, where nobody looks out and only the housemaids look in.`,
+Hatherley has fifty-four windows. Your great-grandfather built it so. Every one above six is charged.
+
+${F('crabbeGone') ? 'Lark' : 'Crabbe'} has walked round the house with a pencil. He has a list of eleven. Nine are on the north front. Two light the back stairs.
+
+“Nobody looks out of them, sir. Only the housemaids.”`,
   choices:[
     {t:'Brick up the eleven.', go:() => { fl('bricked'); add({family:-3, standing:-1});
-      return `The mason comes. The back stairs, the still room and the maids’ attic go dark as the inside of a boot, and the saving is nine pounds a year. From the park the north front now looks like a man with a patch over one eye. The housemaids take to carrying candles at noon, the cost of which nobody has reckoned.`; }},
+      return `The mason is two days about it. Eleven windows. The saving is nine pounds a year.
+
+The back stairs are dark at noon. So is the still room. So is the maids’ attic.
+
+Henrietta meets Sarah on the stairs carrying a lit candle at midday. She asks the price of candles. Nobody has reckoned it.`; }},
     {t:'Brick them up and paint sham windows on the plaster.', note:'£20', go:() => { fl('bricked'); add({money:-20, family:-1});
-      return `An Italian from Reading paints eleven windows on the bricks, with glazing bars and reflected clouds, and, in one, for a guinea extra, a housemaid looking out. She is very lifelike. A dragoon officer, riding by in 1803, salutes her twice.`; }},
+      return `The mason bricks them up. Then an Italian comes from Reading with his pots. Twenty pounds.
+
+He paints eleven windows on the plaster. Glazing bars. Clouds in the glass. In the last one, for a guinea more, a housemaid looking out.
+
+A dragoon officer rides by the north front a week later. He lifts his hat to her. He rides on, turns in the saddle, and lifts it again.`; }},
     {t:'Pay. An Englishman is entitled to his daylight.', go:() => { add({standing:1});
-      return `You pay for all fifty-four, and are rather pleased with yourself. The assessor, who has heard a great deal of rhetoric about daylight in the course of his duties, writes out the receipt without looking up.`; }}
+      return `“An Englishman is entitled to his daylight. I shall pay for all fifty-four.”
+
+The assessor dips his pen. He writes the receipt. He does not look up.
+
+“They all say that, sir,” he says, and blots it.`; }}
   ]});
 
 ev({ id:'canal', from:1796, to:1805, weight:2, title:'A Staircase for Barges',
-  text:() => `The Kennet and Avon Canal Company is cutting a waterway from Newbury to Bath, fifty-seven miles of it, to join the Thames to the Severn. There is to be a flight of twenty-nine locks up the hill at Devizes, which the engineer, Mr Rennie, calls “a staircase for barges”.
+  text:() => `Hartopp has a prospectus. He spreads it on your table.
 
-Shares are a hundred and twenty pounds. Hartopp has taken ten. Somerset coal will come up and your wheat go down to London for a third of the cart hire; and it will all be open, he assures you, in three years at the outside.`,
+“The Kennet and Avon Canal. Newbury to Bath, fifty-seven miles. Thames to Severn. Mr Rennie is the engineer. There are to be twenty-nine locks up the hill at Devizes.” He taps the engraving. “A staircase for barges, sir.”
+
+Shares are a hundred and twenty pounds. Hartopp has ten.
+
+“Somerset coal up. Your wheat down to London for a third of the cart hire. Three years, and it is open. Three at the outside.”`,
   choices:[
     {t:'Take five shares.', note:'£600', go:() => { S.canal = 5; add({money:-600}); reg('hartopp',1);
-      return `You are now a proprietor of a ditch. Calls upon the shares follow at intervals, with engraved views of aqueducts. Three years pass, and then six. Hartopp says that all great works encounter clay.`; }},
+      return `Five shares. Six hundred pounds. The certificate has a barge engraved on it.
+
+Letters come from the Company at Marlborough. Each asks for a further call upon the shares. Each encloses a view of an aqueduct.
+
+You ask Hartopp when it will open. “All great works meet with clay,” he says.`; }},
     {t:'Take one, to be civil.', note:'£120', go:() => { S.canal = 1; add({money:-120});
-      return `One share. It entitles you to attend the general meeting at Marlborough and to be told, annually, that the works proceed with every prospect.`; }},
+      return `One share. A hundred and twenty pounds.
+
+It entitles you to attend the general meeting at Marlborough. You go once. The chairman reports that the works proceed with every prospect. There is a cold collation.`; }},
     {t:'Keep your money on dry land.', go:() => { reg('hartopp',-1);
-      return `Hartopp says you will live to regret it. He does not say how long you will have to live. The canal will open in the year 1810, fourteen years and nearly a million pounds after the first sod, by which time several of the original proprietors have been spared any regrets whatever.`; }}
+      return `“I shall keep my money on dry land.”
+
+“You will live to regret it,” says Hartopp. He rolls up the prospectus.
+
+He brings it out again at the Tamworths’, the same evening, before the fish.`; }}
   ]});
 
 ev({ id:'merino', from:1804, to:1809, weight:2, title:'The King’s Sheep',
-  text:() => `King George, who in his clear seasons is the best farmer in the kingdom, has been breeding Spanish merinos at Kew, smuggled out of Spain by way of Portugal. Now the royal flock is to be sold by auction, in a field, under an elm.
+  text:() => `The King keeps Spanish sheep at Kew. They are merinos, got out of Spain by way of Portugal. This summer part of the royal flock is to be sold by auction, in a field, under an elm.
 
-Merino wool is as fine as gossip and fetches prices that make Hartopp perspire. A ram has gone for forty-two guineas. All at once everybody of consequence in agriculture speaks of fleece in the voice usually kept for bishops.`,
+Hartopp has been. He has a lock of the wool in his pocket-book. He lays it on your sleeve.
+
+“Feel that, sir. Six shillings the pound. A ram made forty-two guineas on Thursday.”
+
+He is sweating. He puts the wool back between the pages and shuts the book on it.`,
   choices:[
     {t:'Buy a small flock.', note:'£420', go:() => { fl('merino'); add({money:-420, standing:2}); reg('hartopp',2,'You went into merinos with him');
-      return `Twenty ewes and a ram, small, wrinkled, and Spanish in their opinion of the Berkshire climate. The shepherd regards them as he would foreign royalty: with respect, and the conviction that they will die of something. But the first clip sells in Bradford-on-Avon at six shillings the pound, three times English wool, and you begin to speak of fleece in that voice yourself.`; }},
+      return `Twenty ewes and a ram. Four hundred and twenty pounds. They are small and wrinkled. They stand in the rain with their backs to Berkshire.
+
+The shepherd walks round them twice. “They’ll die of something, sir.”
+
+They do not die. The first clip goes to Bradford-on-Avon. Six shillings the pound. English wool made two.`; }},
     {t:'Buy one ram, to cross on your Berkshire ewes.', note:'£50', go:() => { fl('merinoRam'); add({money:-50}); reg('hartopp',1);
-      return `The ram is the size of a large dog and has horns like a pair of French rolls. The lambs he gets are neither one thing nor the other, with fine wool on a carcase no butcher will praise. “Ah,” says Hartopp, “but you have not persevered.”`; }},
+      return `One ram. Fifty pounds. He is the size of a large dog. His horns curl twice.
+
+The lambs come in the spring. The wool is fine. The butcher looks at the carcase and shakes his head.
+
+“Ah,” says Hartopp. “But you have not persevered.”`; }},
     {t:'Leave Spanish sheep to the Spaniards.', go:() => { reg('hartopp',-1);
-      return `You decline. Hartopp tells you fortunes are being made. He is right, for the present. In 1811 the price of merinos will fall through the floor, and sheep bought at forty guineas be sold to the butcher at forty shillings; but that is six years off, and for six years you must listen to Hartopp.`; }}
+      return `“I shall leave Spanish sheep to the Spaniards.”
+
+“Fortunes are being made, sir.”
+
+He tells you so again at the Bench. He tells you at the Tamworths’. He sends you the sale prices each quarter, cut from the Farmer’s Journal.`; }}
   ]});
 
 ev({ id:'allotments', from:1796, to:1808, weight:2, cond:() => !F('enclosed') && !F('allotments') && !F('nephewFarm'), title:'A Rood for Every Cottage',
-  text:() => { meet('thorne'); return `Mrs Thorne has been reading the reports of the Society for Bettering the Condition of the Poor, and has ridden over in her gig to tell you what is in them.
+  text:() => { meet('thorne'); return `Mrs Thorne drives over from Long Barrow in her gig. She has a bundle of printed reports on the seat beside her. The Society for Bettering the Condition of the Poor.
 
-A labourer with a quarter-acre of garden, she says, will grow potatoes enough to keep his family off the parish, and will not need to steal yours. She proposes that you let forty acres of the Hall Close in roods, at a fair rent, to any cottager who wants one. Mr Hartopp thinks it will give them ideas.`; },
+She does not sit down.
+
+“A quarter of an acre, sir. A labourer with a quarter of an acre grows potatoes for his family the year round. He stays off the parish. He does not need to steal yours.”
+
+She wants forty acres of the Hall Close let in roods, at a fair rent, to any cottager who asks.
+
+Hartopp is with you. “It will give them ideas,” he says.`; },
   choices:[
     {t:'Let the forty acres in roods.', go:() => { fl('gardens'); S.poorMult *= 0.85; add({goodwill:8}); reg('thorne',2,'You let the Hall Close in gardens on her advice'); reg('hartopp',-1);
-      return `A hundred and sixty roods, pegged with hazel. By the second summer the Hall Close is a patchwork of potatoes, beans and cabbages, with here and there a row of sweet williams, because people who are given ground will always grow something useless on a corner of it. The poor rate falls. Hartopp says it is coincidence.`; }},
+      return `A hundred and sixty roods, pegged out with hazel. Every one is taken by Lady Day.
+
+By the second summer the Hall Close is all potatoes, beans and cabbages. In the corner of nearly every plot there is a row of sweet williams.
+
+The overseer brings his book at Michaelmas. The poor rate is down by a sixth. “Coincidence,” says Hartopp.`; }},
     {t:'Try it with ten acres first.', go:() => { S.poorMult *= 0.95; add({goodwill:3}); reg('thorne',1);
-      return `Forty gardens, drawn for by lot in the vestry. The forty who draw them are envied; the sixty who do not are worse off than before, since now they know what they lack. Mrs Thorne says that is how all half-measures work, and drives home.`; }},
+      return `Ten acres. Forty gardens. A hundred men want one. They draw lots in the vestry.
+
+Forty go home and fetch their spades. Sixty go home.
+
+“That is how a half-measure works, sir,” says Mrs Thorne. She gathers up her reports and drives off.`; }},
     {t:'Decline. A labourer with land is a labourer with opinions.', go:() => { add({goodwill:-2}); reg('thorne',-1); reg('hartopp',1);
-      return `Mrs Thorne puts the reports back in her reticule. “Then they’ll go on having their opinions hungry,” she says, “which I never found improved an opinion.”`; }}
+      return `“A labourer with land is a labourer with opinions, Mrs Thorne.”
+
+She puts the reports back in her reticule.
+
+“Then they will have their opinions hungry, sir. I never found that improved an opinion.”
+
+Hartopp helps her into the gig. She does not thank him.`; }}
   ]});
 
 ev({ id:'battue', from:1798, to:1813, weight:2, title:'Lord Cullerne’s Battue',
-  text:() => `Lord Cullerne invites you to shoot. A Cullerne shoot is not sport but slaughter by appointment: beaters drive the birds over a ride where the guns stand in a row and fire until their shoulders are blue. On the last occasion eleven hundred head were killed in a day, and also a beater.
+  text:() => `A card from Cullerne Castle. His lordship hopes you will shoot on the ninth.
 
-His lordship is said to have been very decent about the beater.`,
+At the Castle the guns stand in a row along a ride. Forty beaters drive the wood towards them. The guns fire until the wood is empty. A servant stands behind each gentleman to load.
+
+Last year the bag was eleven hundred head. It was also one beater, a man named Hobbs, in the last drive.
+
+Lord Cullerne paid for the funeral. He is said to have been very decent about it.`,
   choices:[
     {t:'Go, and shoot your best.', note:'£20 in vails', go:() => { add({money:-20, standing:4}); reg('cullerne',2,'You shot at Cullerne and tipped his keepers');
-      return `You kill forty-one pheasants, nine hares and a woodcock, and are placed third in the game book, below a duke and above a bishop. Dinner is for thirty. You are put next to a lady who tells you that the poor have never been so well off, and that one sees it in their faces.`; }},
+      return `Forty-one pheasants. Nine hares. One woodcock. Twenty pounds to the keepers. You are third in the game book. There is a duke above you and a bishop below.
+
+Thirty sit down to dinner. The lady on your left has driven through Hatherley.
+
+“The poor have never been so well off,” she tells you. “One sees it in their faces.”`; }},
     {t:'Go, and fire wide all day.', note:'£20 in vails', go:() => { add({money:-20, standing:1}); reg('cullerne',1);
-      return `You fire sixty shots and kill nothing, with real ingenuity. Lord Cullerne commiserates. His head keeper, who has seen every kind of gun there is, comes by your stand at the last drive, looks at the sky you have been aiming into, and says, “Very humane, sir,” without moving his face.`; }},
+      return `You fire sixty shots. You hit nothing. Twenty pounds to the keepers.
+
+“Bad luck,” says Lord Cullerne.
+
+At the last drive the head keeper stops by your stand. He looks at your gun. He looks up at the piece of sky you have been firing into.
+
+“Very humane, sir,” he says. His face does not move.`; }},
     {t:'Send regrets.', go:() => { reg('cullerne',-2,'You would not come to his shoot');
-      return `Your regrets are received. Your place in the line is given to the brewer from Reading, who shoots a spaniel.`; }}
+      return `You send your regrets.
+
+Your place in the line goes to the brewer from Reading. He kills fourteen pheasants and a spaniel.`; }}
   ]});
 
 ev({ id:'hunt', from:1797, to:1814, weight:2, cond:() => !F('nephewFarm') && S.chars.thorne.met, title:'Forty Gentlemen in Pink',
-  text:() => `The Craven hounds have run a fox across Long Barrow, and after them forty gentlemen in scarlet have galloped through Mrs Thorne’s winter wheat, two gates, and a clamp of mangolds.
+  text:() => `The Craven hounds ran a fox across Long Barrow on Tuesday. Forty gentlemen in scarlet went after them. They went through Mrs Thorne’s winter wheat, two of her gates and a clamp of mangolds.
 
-Mrs Thorne has sent up an account, itemised, for seventeen pounds four shillings, addressed to the Master. The Master is Lord Cullerne’s brother-in-law. No farmer in the history of the Craven country has ever sent the hunt a bill.`,
+On Wednesday a paper comes up to the Hall, in her round hand.
+
+“To the Master of the Craven Hunt. Winter wheat, 4 acres trodden, £11. Two gates, £3 10s. Mangolds, £2 14s. Total £17 4s. A. Thorne.”
+
+The Master is Lord Cullerne’s brother-in-law. No farmer has ever sent the Craven a bill.`,
   choices:[
     {t:'Carry her bill to the Master yourself.', go:() => { add({standing:-3, goodwill:3}); reg('thorne',2,'You presented her bill to the Craven Hunt'); reg('cullerne',-1);
-      return `The Master receives it between finger and thumb. It is paid, in the end, out of the poultry fund, with a note regretting that the lady “does not enter into the spirit of the country”. Mrs Thorne frames the note and hangs it in her dairy.`; }},
+      return `You ride over and put it into the Master’s hand. He holds it by one corner.
+
+It is paid in a month, out of the poultry fund. A note comes with the money. The lady, the Master regrets, “does not enter into the spirit of the country”.
+
+Mrs Thorne has the note framed. It hangs in her dairy, over the butter.`; }},
     {t:'Pay her yourself and say it came from the hunt.', note:'£17', go:() => { add({money:-17}); reg('thorne',1);
-      return `She counts it, and looks at you, and says, “The hunt banks at Tidmarsh’s, does it? Same as you?” But she takes it. The wheat is resown where the horses went, and comes up late and thin, in the exact shape of the field of riders, so that all summer you can see the run from the Down.`; }},
+      return `You take her seventeen pounds four shillings. “From the Hunt, Mrs Thorne.”
+
+She counts it. She looks at the notes. “The Hunt banks at Tidmarsh’s, does it? The same as you?”
+
+She puts it in her apron. The wheat is sown again where the horses went. It comes up late and thin. All summer you can see the line of the run from the Down.`; }},
     {t:'Tell her that a hunting country must expect to be hunted over.', go:() => { add({standing:2, goodwill:-3}); reg('thorne',-2,'You sided with the hunt over her wheat');
-      return `She hears you with her arms folded. Next season, the fox that goes to ground on Long Barrow is found, when dug for, to have been shot the previous evening and put down the earth for the hounds to discover. To a hunting man there is no blacker crime. Nobody can prove who did it. Nobody needs to.`; }}
+      return `“A hunting country must expect to be hunted over, Mrs Thorne.”
+
+She hears you with her arms folded.
+
+Next season the Craven run a fox to ground on Long Barrow. They dig. The fox has been dead a day. There is shot in it.
+
+Forty gentlemen sit their horses round the hole. Nobody says a name.`; }}
   ]});
 
 ev({ id:'overseer', from:1801, to:1814, weight:2, repeatGap:24, title:'The Overseer’s Accounts',
