@@ -40,6 +40,7 @@ button:focus-visible, input:focus-visible, select:focus-visible{outline:2px soli
 #tabs button:hover{width:calc(var(--edge) * .7)} #tabs button[aria-pressed="true"]:hover{width:calc(var(--edge) * .78)}
 #verso::after{content:"";flex:none;height:92px;margin-top:auto;background:url(art/ui/tailpiece.png) center/contain no-repeat;opacity:.8}
 body.intro #verso::after{content:none}
+@media (max-height:980px){ #verso::after{content:none} }
 
 /* the flyleaf: marbled endpaper facing the title page */
 body.intro #tabs, body.intro #ribbon{display:none}
@@ -3899,7 +3900,7 @@ function render(){
     const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
     $('verso').innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>'; $('verso').appendChild(told);
     $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
-  document.querySelector('.desk').style.zoom = '';
+  { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
@@ -3907,8 +3908,9 @@ function render(){
   const first = stage.querySelector('button'); if (first && S.phase !== 'ledger') first.focus({preventScroll:true});
 }
 /* the opening is sized to the window, so the will and the choosing are read without scrolling */
-function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; if (S || innerWidth <= 1080) return;
-  for (let i = 0; i < 2; i++){ const z = (innerHeight - 30) / (d.offsetHeight * (parseFloat(d.style.zoom) || 1)) * (parseFloat(d.style.zoom) || 1); if (z < 1) d.style.zoom = Math.max(.7, z).toFixed(3); } }
+function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; if (S || innerWidth <= 1080) return;
+  const room = innerHeight - 34, wide = Math.min(1420, innerWidth - 32); let z = 1;
+  for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.7, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
 addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
   $('tabs').innerHTML = TABS.map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
