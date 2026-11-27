@@ -53,7 +53,7 @@ function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CA
 function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; return; }
   if (!S.plates) S.plates = [];
   const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; PSTEP = k;
-  VIEW = S.phase === 'ledger' || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
+  VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
   if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
 function shutBook(){ VIEW = 'plan'; WHO = ''; if (S.phase === 'ledger') return next(); render(); }
@@ -130,6 +130,7 @@ function landHTML(){ const q = S.season, calm = window.matchMedia && matchMedia(
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
 function cueHTML(){
   if (S.phase === 'event') { const e = byId(S.pending), at = PLACES[eventPlace(e)].n.replace(/^The /, 'the '); return `<button class="cue" onclick="callOn()">${BILLS.has(e.id) ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`}</button>`; }
+  if (S.phase === 'ledger') return `<button class="cue" onclick="openBook()">The ${esc(QUARTER[S.season])} account is made up.</button>`;
   if (S.phase === 'undertake') return `<button class="cue" onclick="goPlace('season')">The season is yours.</button>`;
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words, low) => `<button class="vig${v < 40 ? ' low' : ''}" onclick="goPlace('memo')">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b></button>`;

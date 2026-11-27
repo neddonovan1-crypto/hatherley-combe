@@ -7,9 +7,10 @@ for (const [tag,vp] of [['d',{width:1360,height:900}],['m',{width:400,height:800
  await p.goto('file://' + require('path').resolve(__dirname, '..', 'index.html'));await p.waitForTimeout(1500);
  await p.screenshot({path:`${d}/${tag}0-intro.png`,fullPage:true});
  await p.click('#takeit');await p.waitForTimeout(400);
- await p.screenshot({path:`${d}/${tag}1-ledger.png`,fullPage:true});
+ await p.screenshot({path:`${d}/${tag}1-plan.png`});
+ await p.click('.cue');await p.waitForTimeout(400);
+ await p.screenshot({path:`${d}/${tag}2-ledger.png`,fullPage:true});
  await p.click('.go');await p.waitForTimeout(600);
- await p.screenshot({path:`${d}/${tag}2-plan.png`});
  await p.evaluate(()=>callOn());await p.waitForTimeout(400);
  await p.screenshot({path:`${d}/${tag}3-plate.png`});
  await p.click('#plate .choice');await p.waitForTimeout(400);
