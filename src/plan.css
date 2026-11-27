@@ -126,3 +126,7 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 @keyframes beckon{0%, 100%{transform:translateY(-.55em);opacity:.55} 50%{transform:translateY(0);opacity:1}}
 @media (prefers-reduced-motion: reduce){ .lbl .fist{animation:none} }
 .balloon.flip{transform:scaleX(-1)} .balloon.flip span{transform:scaleX(-1)}
+
+/* the Castle: what was last done there, and the yearly figure on a rung */
+.castle .said{border-left:3px double var(--ink);padding:2px 0 2px 10px;margin:2px 0 4px} .castle .said p{margin:0 0 6px;font-size:1rem;line-height:1.35} .castle .said p:last-child{margin-bottom:0}
+.castle .rung .yr small{display:inline;font-family:var(--caps);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
