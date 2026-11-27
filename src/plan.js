@@ -56,7 +56,7 @@ const SIGNS = [[/Kennet/, 'kennet'], [/Long Barrow/, 'longbarrow'], [/Church Far
 function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CALLAT; CALLKEY = k;
   const hit = t => { for (const [re, at] of SIGNS) if (re.test(t) && placeOn(at)) return at; return ''; };
   if (BILLS.has(e.id)) return CALLAT = 'wyvern';
-  const text = e.text(), who = whoOf(e.title + ' ' + text);
+  const text = e.text(), who = e.who ? e.who() : whoOf(e.title + ' ' + text);
   return CALLAT = hit(e.title) || (who && livesAt(who) !== 'hall' ? livesAt(who) : '') || hit(text.slice(0, 320)) || 'hall'; }
 
 /* ---------- which view is up ---------- */
@@ -96,7 +96,7 @@ function balloonHTML(src, say){ const at = say && ART.has('ui/balloon.png') && t
   return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span>${esc(say)}</span></q>`; }
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
 function plateViewHTML(){
-  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
+  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : e.who ? e.who() : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
     const src = eventCut(e) || placeCut(eventPlace(e)); S.plateCut = src;
     return `${printHTML(S.plates.length + 1, src, e.title, quarterDay(), sayOf(text))}
       <div class="pside"><article class="sheet${bill ? ' bill' : ''}">${who ? `<div class="from">${medal(who)}<p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p></div>` : `<p class="kicker">${esc(stamp())}</p>`}<div class="prose">${paras(text)}</div></article>

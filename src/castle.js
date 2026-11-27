@@ -174,7 +174,7 @@ He looks at you for the first time.
 You ride home by Cuckoo Copse, where two of his keepers, who are sitting upon the gate, get down and open it for you.`; }}
   ]});
 
-ev({ id:'courtBaron', follow:true, cond:() => !!castle().manor, title:'Your Own Court',
+ev({ id:'courtBaron', follow:true, cond:() => !!castle().manor, who:() => F('crabbeGone') || !PEOPLE.crabbe ? null : 'crabbe', title:'Your Own Court',
   text:() => `The first Court Baron of the Manor of Nether Cullerne under its new lord is held in the long room of the Bell; and ${steward()} sits as steward of it, with the rolls out of their tin box before him, and a new pen.
 
 Eleven copyholders answer to their names. The twelfth name is that of Amos Tubb, hedger, who was buried at Candlemas; and as his widow now comes to be admitted to the cottage and the rood of garden, which are held at a rent of one shilling and a fat hen, there falls due to the lord, by the custom of the manor, a heriot of the best beast.
