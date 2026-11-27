@@ -1006,13 +1006,13 @@ One of the small Dances watches with her thumb in her mouth. “Who will come fo
 She does not speak of London again. She reads the Tamworths’ letters upstairs.`; }}
   ]});
 
-ev({ id:'abatement', fixed:'1814-2', title:'Eleven Sunday Coats',
+ev({ id:'abatement', fixed:'1814-2', title:'Sunday Coats',
   text:() => { meet('thorne'); const dewey = F('nephewFarm');
-    return `Eleven tenants are in the hall. They have come up together. It is a Wednesday. Every one of them is in Sunday clothes.
+    return `Your tenants are in the hall. They have come up together. It is a Wednesday. Every one of them is in Sunday clothes.
 
 ${dewey ? 'Old Dewey' : 'Mrs Thorne'} has a paper. ${dewey ? 'He' : 'She'} is the one among them who can add.
 
-“Wheat was above a hundred when we signed, sir. It was seventy-four on Thursday. At seventy-four, six of us are sold up by Lady Day.”${F('abatePromised') ? ' The paper is turned over. “You said at the audit dinner that you would look at the rents. We have come so that you can look.”' : ''}
+“Wheat was above a hundred when we signed, sir. It was seventy-four on Thursday. At seventy-four, half of us are sold up by Lady Day.”${F('abatePromised') ? ' The paper is turned over. “You said at the audit dinner that you would look at the rents. We have come so that you can look.”' : ''}
 
 “What do you ask?”
 
@@ -1021,7 +1021,7 @@ ${dewey ? 'Old Dewey' : 'Mrs Thorne'} has a paper. ${dewey ? 'He' : 'She'} is th
     {t:'Grant the fifth.', go:() => { fl('abated'); S.rentAdj *= 0.8; add({goodwill:11, standing:-1}); reg('thorne',2,'You took a fifth off the rents in the bad year');
       return `“One fifth. From Michaelmas.”
 
-Eleven people breathe out. It will cost you four hundred a year.
+The hall breathes out. It will cost you a fifth of the rental.
 
 In the spring the bailiffs come through the county with their carts. They sell up three farms at Kintbury and five at Inkpen. They pass the Hatherley turning. They do not take it.`; }},
     {t:'Grant a tenth, and let the Michaelmas arrears stand over.', go:() => { fl('abatedHalf'); S.rentAdj *= 0.9; add({goodwill: F('abatePromised') ? 2 : 5}); reg('thorne',1);
