@@ -788,7 +788,7 @@ function next(){
 function finish(){ S.phase = 'end'; save(); render(); window.scrollTo({top:0}); }
 
 function setRent(v){ S.rentPolicy = v; setRentAll(v); save(); render(); }
-function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += 500; } save(); render(); }
+function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
