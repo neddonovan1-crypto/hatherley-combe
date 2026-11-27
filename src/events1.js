@@ -1,3 +1,5 @@
+/* Henrietta at the Hall, or at Bath: hh(home, away) picks the reading for dated papers. */
+const hh = (home, away) => F('henriettaAway') ? away : home;
 /* The fixed calendar: what history brings to the door, and when. */
 const EVENTS = [];
 const ev = e => EVENTS.push(e);
@@ -70,28 +72,28 @@ That evening he drives home past your gate. He keeps his eyes on the horse.`; }}
 ev({ id:'powder', fixed:'1795-2', title:'A Guinea a Head',
   text:() => `The collector’s paper comes with the morning post. “Certificate for Using Hair Powder. One Guinea.” One certificate for every powdered head in the house.
 
-You count heads at breakfast. Henrietta has worn powder every day since she was twelve. Edmund has not had his hair dressed for a week. He wants it cut short, the way the Duke of Bedford’s friends are wearing it. The two footmen stand by the sideboard. Both are called John. Both are white to the collar.
+You count heads at breakfast. ${hh(`Henrietta has worn powder every day since she was twelve.`, `Henrietta is at Bath and must take out her own there.`)} Edmund has not had his hair dressed for a week. He wants it cut short, the way the Duke of Bedford’s friends are wearing it. The two footmen stand by the sideboard. Both are called John. Both are white to the collar.
 
-Henrietta puts down her cup. “Well?”`,
+${hh(`Henrietta puts down her cup. “Well?”`, `The collector’s man is waiting in the hall.`)}`,
   choices:[
     {t:'Pay for every head in the house, footmen and all.', note:'8 guineas', go:() => { add({money:-9, standing:3, family:2}); reg('henrietta',1);
       return `You send to Wyvern with eight guineas. Eight certificates come back.
 
 On Sunday the names are pasted on the church door, by order. Yours is at the top. The footmen are at the bottom, entered as “John” and “John”.
 
-The Morning Chronicle has a name for people who pay. Edmund reads it out at dinner. “Guinea-pigs.” Henrietta asks him to leave the table.`; }},
+The Morning Chronicle has a name for people who pay. Edmund reads it out at dinner. “Guinea-pigs.” ${hh(`Henrietta asks him to leave the table.`, `The Johns look at the ceiling.`)}`; }},
     {t:'Crop the lot of you.', go:() => { add({family:-4, standing:-2}); reg('henrietta',-2,'You cropped her footmen'); reg('edmund',1); reg('cullerne',-1); reg('hartopp',1);
       return `The barber walks up from Wyvern with his scissors. He does Edmund first, then you, then the Johns in the scullery. He sweeps up enough hair to stuff a bolster and asks if he may keep it.
 
 Edmund spends the afternoon in front of the hall glass. Hartopp rides over, looks at you and says, “Sensible.” On Thursday Lord Cullerne passes you in Wyvern and does not seem to know you.
 
-Henrietta has her dinner sent up for three days. On the fourth she comes down in a turban.`; }},
+${hh(`Henrietta has her dinner sent up for three days. On the fourth she comes down in a turban.`, `Mrs Tamworth writes it all to Gay Street. A parcel comes from Bath by the Friday coach. It is a nightcap.`)}`; }},
     {t:'Pay for Henrietta. Shear everyone else.', note:'1 guinea', go:() => { add({money:-1, family:1});
       return `One guinea. One certificate. “Mrs ${S.sur}, Hatherley Combe.”
 
 The barber shears the rest of you on Saturday. The younger John cries in the scullery. Mrs Bunce gives him a jam tart.
 
-At church Henrietta sits at the end of the pew with her head high and white. Everybody else in the pew has cold ears.`; }}
+${hh(`At church Henrietta sits at the end of the pew with her head high and white. Everybody else in the pew has cold ears.`, `The certificate goes to Gay Street by the post. On Sunday everybody in the Hall pew has cold ears.`)}`; }}
   ]});
 
 ev({ id:'fenn', fixed:'1795-3', title:'A Citizen at the Bell',
@@ -130,34 +132,36 @@ ev({ id:'edmundFuture', fixed:'1796-0', title:'Edmund Wishes to Be Useful',
 
 “Twenty.” He folds the paper. “I should like a commission.”
 
-Henrietta sets down the teapot. “Dr Gall is an old man. The living is in your father’s gift. Three hundred a year and the vicarage, Edmund. You could ride over to dinner.”
+${hh(`Henrietta sets down the teapot. “Dr Gall is an old man. The living is in your father’s gift. Three hundred a year and the vicarage, Edmund. You could ride over to dinner.”
 
-They both look at you.`,
+They both look at you.`, `There is a letter from Gay Street under his saucer. He turns it round for you to read. “Dr Gall is an old man. The living is in your father’s gift. Three hundred a year and the vicarage. You could ride over to dinner.”
+
+He waits.`)}`,
   choices:[
     {t:'Buy him an ensigncy in the 52nd Foot.', note:'£450', go:() => { fl('edmund','army'); add({money:-450, family:-1}); reg('edmund',3,'You bought him his colours'); reg('henrietta',-2,'You sent her son to the wars');
       return `Four hundred and fifty pounds to Mr Cox, the army agent in Craig’s Court. The Gazette prints it a month later. “52nd Foot. Edmund ${S.sur}, Gent., to be Ensign, by purchase.”
 
 The coat comes from London in a box. Edmund puts it on in the hall. He looks at it in the drawing-room glass. He looks at it in the glass on the stairs. Mrs Bunce finds him in the dairy, in front of the small square one.
 
-Henrietta does not come down to see it.`; }},
+${hh(`Henrietta does not come down to see it.`, `He writes to Bath to say how it fits. Gay Street does not answer.`)}`; }},
     {t:'Write to Captain Holloway for a berth in his frigate.', go:() => { fl('edmund','navy'); add({family:-1}); reg('edmund',2,'You got him to sea'); reg('henrietta',-2,'You sent her son to sea');
       return `You write to Captain Holloway of the Thetis, thirty-two guns. He served with your uncle.
 
 The answer comes from Portsmouth in a week. “Sir, Send him. He is six years too old and will be ordered about by children. Good. Holloway.”
 
-Edmund reads it three times. He packs that night. Henrietta sews his name into eleven shirts. She does not speak to you while she does it.`; }},
+Edmund reads it three times. He packs that night. ${hh(`Henrietta sews his name into eleven shirts. She does not speak to you while she does it.`, `Eleven shirts come from Bath with his name sewn in. There is no line with them for you.`)}`; }},
     {t:'Steer him into the Church.', go:() => { fl('edmund','church'); add({family:1}); reg('edmund',-3,'You steered him into the Church'); reg('henrietta',3); reg('gall',-1,'Dislikes being reminded he is mortal');
       return `Edmund goes up to Oriel to read for orders. He shakes your hand at the coach door. He does not look at you.
 
 He writes every Sunday. The weather in Oxford. The text of the sermon. His duty to his mother. Each letter covers one side exactly.
 
-Henrietta keeps them in her work-box. Dr Gall has heard why the boy was sent. He stops you at the vestry door and asks whether you find him looking ill.`; }},
+${hh(`Henrietta keeps them in her work-box. Dr Gall`, `A second letter goes to Gay Street by the same post. It covers both sides. Dr Gall`)} has heard why the boy was sent. He stops you at the vestry door and asks whether you find him looking ill.`; }},
     {t:'Keep him at home to learn the estate.', go:() => { fl('edmund','home'); add({family:2}); reg('edmund',-1); reg('henrietta',2);
       return `“You will stay here and learn the estate.”
 
 “Yes, sir.”
 
-He rides the farms. He learns a sound ewe from a rotten one. He learns which tenants pay and which explain. Henrietta has his chair moved nearer hers at dinner.
+He rides the farms. He learns a sound ewe from a rotten one. He learns which tenants pay and which explain. ${hh(`Henrietta has his chair moved nearer hers at dinner.`, `A letter from Bath orders his chair moved to the foot of the table.`)}
 
 In the evenings he is in the gun room. You look in at eight. He is cleaning a fowling piece. You look in at ten. It is the same fowling piece. The Gazette is open on the bench beside him.`; }}
   ]});
@@ -185,7 +189,7 @@ On Friday a card comes from the Castle. Dinner, the fourteenth. It is the first 
 
 The poll is on Thursday. Sixteen votes for you. Fifteen for Mr Bligh. Six men carry you round the market place in a chair.
 
-You are Member for Wyvern. Henrietta orders a London gown the same evening. The Castle gates are shut when you drive past.`; }
+You are Member for Wyvern. ${hh(`Henrietta orders a London gown the same evening.`, `Henrietta orders a London gown from Bath by the next post.`)} The Castle gates are shut when you drive past.`; }
       S.mpBeat = 1796; add({standing:-4}); reg('cullerne',-4,'You stood against his nephew, and lost');
       return `The haunch goes back. You send to Tidmarsh’s bank for nine hundred pounds. Beer at the George. Blue ribbons. Eleven conversations in back kitchens.
 
@@ -252,7 +256,7 @@ He has the figures on a half-sheet. The creditors will get seven shillings in th
 ev({ id:'nore', fixed:'1797-1', cond:() => E() === 'navy', title:'A Letter from the Nore',
   text:() => `The Mercury has it on the front page. The fleet at the Nore has run up the red flag. The paper prints the ships in a column. The Thetis is the ninth name down.
 
-Henrietta reads the column twice and goes to the window. She is at that window for ten days. On the eleventh the post-boy brings a letter in Edmund’s hand. You pay eightpence for it at the door.
+${hh(`Henrietta reads the column twice and goes to the window. She is at that window for ten days.`, `You cut the column out and send it to Gay Street. Henrietta writes by every post for ten days. Each letter asks one question.`)} On the eleventh the post-boy brings a letter in Edmund’s hand. You pay eightpence for it at the door.
 
 “Sheerness, Sunday night.
 
@@ -360,7 +364,7 @@ There is none. It takes him a fortnight to believe it.`; }},
     {t:'Declare what the estate was worth in your uncle’s day.', go:() => { fl('taxDodge'); later('taxCaught', 5 + Math.floor(Math.random() * 6));
       return `Your uncle’s rent book for 1785 is in the bottom drawer. You copy the figures from that.
 
-You sign. For a week you turn the lamp down early and tell Henrietta the claret must last.
+You sign. ${hh(`For a week you turn the lamp down early and tell Henrietta the claret must last.`, `For a week you turn the lamp down early and drink the table beer.`)}
 
 A note comes from Spurling. One line. “Received, with interest.”`; }},
     {t:'Pay in full, and denounce it at the Bell.', go:() => { fl('taxHonest'); add({goodwill:3, standing:-1});
@@ -412,7 +416,7 @@ Mrs Bunce is in the back pew. She walks out before the blessing.`,
     {t:'Sign the pledge. No pastry at the Hall.', go:() => { add({family:-4, goodwill:5, standing:2}); reg('henrietta',-1);
       return `You sign the pledge and nail a copy to the kitchen door.
 
-Mrs Bunce sends up rice pudding on Monday. Rice pudding on Tuesday. On Wednesday there are potatoes in the bread. Henrietta leaves the table and has a tray in her room.
+Mrs Bunce sends up rice pudding on Monday. Rice pudding on Tuesday. On Wednesday there are potatoes in the bread. ${hh(`Henrietta leaves the table and has a tray in her room.`, `A letter from Gay Street mentions a pastry-cook in Milsom Street.`)}
 
 On Sunday three cottage children stand in the lane under the kitchen chimney with their noses up. There is no pie. They go home and tell their mothers.`; }},
     {t:'Open a soup kitchen in the old brewhouse.', note:'£250', go:() => { fl('soup'); add({money:-250, goodwill:11, standing:3}); meet('thorne'); reg('thorne',1); reg('gall',-1); reg('pryor',1);
@@ -465,26 +469,28 @@ ev({ id:'paris', fixed:'1802-1', title:'Everyone Is Going to Paris',
 
 There has been peace since March. The packets are running from Dover again.
 
-Henrietta has a letter from Mrs Tamworth open by her plate. It is about bonnets in the Palais Royal. ${K() === 'free' ? 'Kitty wants to see Bonaparte. She has said so twice since the fish. ' : ''}${F('gallDead') ? 'The new curate' : 'Dr Gall'} is dining with you. He has not been further than Bath in his life.
+${hh(`Henrietta has a letter from Mrs Tamworth open by her plate. It is about bonnets in the Palais Royal.`, `Henrietta has sent on a letter of Mrs Tamworth’s from Gay Street. It is about bonnets in the Palais Royal. The bonnets are underlined.`)} ${K() === 'free' ? 'Kitty wants to see Bonaparte. She has said so twice since the fish. ' : ''}${F('gallDead') ? 'The new curate' : 'Dr Gall'} is dining with you. He has not been further than Bath in his life.
 
-“They eat frogs, madam,” he tells Henrietta. “I have it from a man who saw it done.”`,
+${hh(`“They eat frogs, madam,” he tells Henrietta. “I have it from a man who saw it done.”`, `“They eat frogs, sir,” he tells you. “I have it from a man who saw it done.”`)}`,
   choices:[
-    {t:'Take the family.', note:'£500', go:() => { fl('paris'); add({money:-500, family:10, standing:3}); reg('henrietta',2,'You took her to Paris in the peace'); if (K() === 'free') reg('kitty',2);
+    {t:() => hh('Take the family.', 'Fetch Henrietta from Bath and take the family.'), note:'£500', go:() => { fl('paris'); add({money:-500, family:10, standing:3}); reg('henrietta',2,'You took her to Paris in the peace'); if (K() === 'free') reg('kitty',2);
       return `Dover to Calais in four hours. Calais to Paris in three days. Five hundred pounds before you are home.
 
 On Sunday there is a review in the Place du Carrousel. You stand in the crowd. A small sallow man rides down the line on a white horse. He looks along the faces as he passes. He looks at yours.
 
-Henrietta buys eleven bonnets. You catch a cold on the packet home. At Dover you tell her it will be war again within the year.`; }},
+Henrietta buys eleven bonnets. You catch a cold on the packet home. ${hh(`At Dover you tell her it will be war again within the year.`, `At Dover you tell her it will be war again within the year. She says Bath will do until then.`)}`; }},
     {t:'Send Henrietta with your sister Selina.', note:'£220', go:() => { fl('paris'); add({money:-220, family:4}); reg('henrietta',1);
       return `Your sister Selina goes with her. Two hundred and twenty pounds.
 
-They are back in six weeks. Henrietta says “Mon Dieu” when the tea is cold. Selina has been shown Madame Récamier’s bed. She describes it at dinner.
+They are back in six weeks. ${hh(`Henrietta says “Mon Dieu” when the tea is cold.`, `Henrietta’s letters from Gay Street now begin “Mon cher”.`)} Selina has been shown Madame Récamier’s bed. She describes it at dinner.
 
 Selina has also seen the First Consul. “Common,” she says. She says it at the Tamworths’ and again at the Castle.`; }},
     {t:'Refuse. The French are not to be trusted.', go:() => { add({family:-6}); reg('henrietta',-2,'You kept her from Paris'); if (!F('gallDead')) reg('gall',1);
-      return `“The French are not to be trusted. We stay at home.”
+      return `${hh(`“The French are not to be trusted. We stay at home.”
 
-Henrietta folds Mrs Tamworth’s letter and puts it in her sleeve.
+Henrietta folds Mrs Tamworth’s letter and puts it in her sleeve.`, `You write it to Gay Street. “The French are not to be trusted. You will oblige me by remaining at Bath.”
+
+Your letter comes back torn across.`)}
 
 All summer there are letters from Paris in the neighbourhood. They are read aloud after dinner at every house you visit. At the Lovedays’ you hear about the Louvre twice in one evening.`; }}
   ]});
@@ -507,7 +513,7 @@ The blacksmith is serjeant. He stands six foot four with a pike in his fist. The
     {t:'Raise a corps of Volunteers now.', note:() => T('soldier') ? '£160' : '£320', if:() => !F('volunteers'), go:() => { fl('volunteers'); add({money: T('soldier') ? -160 : -320, standing:6, goodwill:2});
       return `Forty men give their names at the vestry. ${T('soldier') ? 'A hundred and sixty' : 'Three hundred and twenty'} pounds for green coats, a drum and forty pike-heads.
 
-The ladies of the parish work a flag. It shows a yellow animal on a green field. Henrietta says it is a lion.
+The ladies of the parish work a flag. It shows a yellow animal on a green field. ${hh(`Henrietta says it is a lion.`, `Mrs Loveday says it is a lion.`)}
 
 The men asked for muskets. There are none. The blacksmith is serjeant. “A pike,” he tells them, “is a musket with the nonsense left out.”`; }},
     {t:'Send a hundred pounds to the Patriotic Fund at Lloyd’s.', note:'£100', go:() => { add({money:-100, standing:3}); reg('cullerne',1);
@@ -516,10 +522,12 @@ The men asked for muskets. There are none. The blacksmith is serjeant. “A pike
 The list of subscribers is in the Times on Tuesday. A duke, fifty pounds. Then you. Then a soap-boiler of Wapping, two hundred.
 
 Lord Cullerne has seen it. He says so across the room at the Wyvern assembly, with his hand on your shoulder.`; }},
-    {t:'Set Henrietta at the head of a flannel committee.', go:() => { add({family:3, goodwill:1, standing:1}); reg('henrietta',1);
-      return `Henrietta calls the ladies of the parish to the drawing-room. Flannel shirts for the troops. Tuesdays at eleven.
+    {t:() => hh('Set Henrietta at the head of a flannel committee.', 'Have Henrietta raise a flannel committee at Bath.'), go:() => { add({family:3, goodwill:1, standing:1}); reg('henrietta',1);
+      return `${hh(`Henrietta calls the ladies of the parish to the drawing-room. Flannel shirts for the troops. Tuesdays at eleven.
 
-You pass the door each week. Fourteen women and one pair of scissors.
+You pass the door each week. Fourteen women and one pair of scissors.`, `Henrietta calls the ladies of Gay Street to her lodgings. Flannel shirts for the troops. Tuesdays at eleven.
+
+She sends you the numbers each week. Fourteen women and one pair of scissors.`)}
 
 By Christmas there are nine shirts in the basket. Miss Loveday is engaged to a lieutenant of Militia.`; }}
   ]});
@@ -529,7 +537,7 @@ ev({ id:'beacon', fixed:'1804-0', title:'The Beacon on Hatherley Down',
 
 There is fire on Hatherley Down. There is fire on Inkpen Hill behind it. From the landing window you count five more along the valley.
 
-The Volunteers are falling in on the green. Some have coats. The smith has a pike and a nightshirt. Henrietta is on the stairs with the ${ended('plate') ? 'spoons' : 'silver'} in a pillowcase.
+The Volunteers are falling in on the green. Some have coats. The smith has a pike and a nightshirt. ${hh(`Henrietta is on the stairs with the ${ended('plate') ? 'spoons' : 'silver'} in a pillowcase.`, `Mrs Bunce is on the stairs with the ${ended('plate') ? 'spoons' : 'silver'} in a pillowcase.`)}
 
 ${F('gallDead') ? 'The sexton comes up the drive at a run. He has buried the communion plate in the vicarage asparagus bed. He wants you to know which row, in case he is killed. He cannot remember which row.' : 'Dr Gall comes up the drive in his dressing-gown. He has buried the communion plate in his asparagus bed. He wants you to know which row, in case he is killed. He cannot remember which row.'}`,
   choices:[
@@ -546,7 +554,7 @@ Billy Coombes is beside the beacon. It is burning well. He is crying. He saw fir
 
 You are in bed again by four. The Volunteers are out till noon. On Sunday nobody on the green will look at you.`; }},
     {t:'Stay, and guard the house.', go:() => { add({family:4, standing:-5}); reg('henrietta',1);
-      return `You take your uncle’s sword down from the hall chimney-piece and stand at the head of the stairs. Henrietta sits on the top step with the pillowcase.
+      return `You take your uncle’s sword down from the hall chimney-piece and stand at the head of the stairs. ${hh(`Henrietta sits on the top step with the pillowcase.`, `Mrs Bunce sits on the top step with the pillowcase.`)}
 
 At first light the Bath mail brings the truth through Wyvern. No French.
 
@@ -567,7 +575,7 @@ There is a letter from Edmund in the bag. The writing slopes uphill. “The Thet
 
 People walk out from Wyvern to stand in the road and look. Somebody starts “Rule, Britannia”.
 
-Henrietta walks the gallery with a snuffer. She counts the candles aloud. At ten o’clock she begins putting them out.`; }},
+${hh(`Henrietta walks the gallery with a snuffer. She counts the candles aloud. At ten o’clock she begins putting them out.`, `The elder John walks the gallery with a snuffer. He counts the candles aloud. At ten o’clock he begins putting them out.`)}`; }},
     {t:'Roast a sheep for the village.', note:'£60', go:() => { add({money:-60, goodwill:6});
       return `You give a sheep and three barrels. It is roasted on ${ground()}.
 
@@ -649,12 +657,12 @@ You hold the seat. The returning officer does not read out the figures. Six men 
 
 Three of the plots you counted on change hands at breakfast on the day of the poll. The new Member is a brewer from Reading. Lord Cullerne calls him “biddable”.
 
-Henrietta gives up the house in Half Moon Street. “I never liked it,” she says. She has kept the door-knocker.`,
+${hh(`Henrietta gives up the house in Half Moon Street. “I never liked it,” she says. She has kept the door-knocker.`, `Henrietta gives up the house in Half Moon Street from Bath. “I never liked it,” she writes. She has had the door-knocker sent to her.`)}`,
     quit:() => `You write to the electors. The cares of your estate forbid you to offer yourself again.
 
 The letter is in the Mercury on Saturday. On Monday a note comes from the Castle. “Lord Cullerne is obliged to Mr ${S.sur}.”
 
-It is the first note from the Castle in some years. Henrietta reads it and puts it on the fire.`,
+It is the first note from the Castle in some years. ${hh(`Henrietta reads it and puts it on the fire.`, `You send it on to Gay Street. It is not sent back.`)}`,
     vote:() => `“Thank his lordship.”
 
 Mr Bligh is returned. A man comes down from London to deal with the turtle. Mrs Bunce will not be in the kitchen while he does it.
@@ -780,7 +788,7 @@ Twelve votes. Somebody has chalked a triple crown on your ${keepsCarriage() ? 'c
 
 The groom puts up his hammer. He leaves the ham. He says he was told nothing about the ham.
 
-Mr Bligh is returned without your votes. You eat the ham. Henrietta says a ham is not a vote. She has a second slice.`},
+Mr Bligh is returned without your votes. ${hh(`You eat the ham. Henrietta says a ham is not a vote. She has a second slice.`, `You eat the ham. It lasts you and the Johns till Thursday.`)}`},
   1812:{
     mp:() => `Parliament is dissolved. Mr Perceval was shot dead in the lobby in May. ${(S.mpSince || 1796) <= 1811 ? 'You heard the pistol from the stairs.' : 'Lord Liverpool has the Treasury.'}
 
@@ -808,7 +816,7 @@ A stranger comes down on Monday with two thousand. He has the contract for the a
 
 You are out by four. He is chaired. He gives the six men a guinea each not to drop him.
 
-Half Moon Street is given up at Christmas. Henrietta says London was always too far from the linen.`,
+Half Moon Street is given up at Christmas. ${hh(`Henrietta says London was always too far from the linen.`, `Henrietta writes that London was always too far from the Pump Room.`)}`,
     quit:() => `You tell the electors at the George that you will not offer yourself again. You have spoken in the House twice.
 
 They give you three cheers and a dinner. You pay for the dinner.
@@ -887,13 +895,13 @@ Edmund reads the line at breakfast. He reads it again. He does not ask you anyth
 
 He butters his toast. “Harry Tamworth got his for seven hundred.”
 
-He sails for Lisbon a captain. Henrietta has packed four new shirts and a cheese.`; }},
+He sails for Lisbon a captain. ${hh(`Henrietta has packed four new shirts and a cheese.`, `Four new shirts and a cheese go after him from Gay Street.`)}`; }},
     {t:'Send the letter to the Horse Guards.', go:() => { add({standing:3}); reg('edmund',-1,'Thinks you made him conspicuous at the Horse Guards');
       return `You enclose Dawlish’s letter to the Commander-in-Chief’s office.
 
 A colonel replies in six lines. He thanks you. Dawlish is arrested on the Tuesday.
 
-Edmund’s next letter from the regiment is short. There is a new name for him in the mess. He does not tell you what it is. Harry Tamworth tells his sister. She tells Henrietta.`; }}
+Edmund’s next letter from the regiment is short. There is a new name for him in the mess. He does not tell you what it is. Harry Tamworth tells his sister. ${hh(`She tells Henrietta.`, `She writes it to Henrietta at Bath.`)}`; }}
   ]});
 
 ev({ id:'jubilee', fixed:'1809-3', title:'Fifty Years a King',
@@ -982,12 +990,14 @@ ev({ id:'peace', fixed:'1814-1', title:'The Sovereigns in London',
 
 The Emperor of Russia is in London. So is the King of Prussia. So is Marshal Blücher, who is seventy-one. The Mercury says women stop his carriage to kiss him.
 
-Henrietta has had a letter. “The Tamworths have taken a house in Brook Street for the summer.”
+${hh(`Henrietta has had a letter. “The Tamworths have taken a house in Brook Street for the summer.”
 
-She leaves it by your plate.`,
+She leaves it by your plate.`, `Henrietta writes from Gay Street. “The Tamworths have taken a house in Brook Street for the summer.”
+
+There is nothing else in the letter.`)}`,
   choices:[
     {t:'Take a house in town for the celebrations.', note:'£600', go:() => { add({money:-600, standing:5, family:7}); reg('henrietta',2);
-      return `Six hundred pounds for a house in Clarges Street until August.
+      return `${hh(`Six hundred pounds for a house in Clarges Street until August.`, `Six hundred pounds for a house in Clarges Street until August. Henrietta comes up from Bath with five trunks.`)}
 
 You see the Tsar at the Opera. You see the King of Prussia at a window in St James’s. In Piccadilly the crowd takes the horses out of Blücher’s carriage and drags it to Carlton House by hand.
 
@@ -999,11 +1009,15 @@ At dusk they burn Bonaparte. He is made of straw and an old coat of Mudge’s, s
 
 One of the small Dances watches with her thumb in her mouth. “Who will come for us now?” she asks. Nobody can tell her.`; }},
     {t:'Stay home. It will not last.', go:() => { add({family:-4}); reg('henrietta',-1);
-      return `“We stay at home. He will be back within the year.”
+      return `${hh(`“We stay at home. He will be back within the year.”
 
 “You are impossible,” says Henrietta.
 
-She does not speak of London again. She reads the Tamworths’ letters upstairs.`; }}
+She does not speak of London again. She reads the Tamworths’ letters upstairs.`, `You write to Gay Street. “We stay where we are. He will be back within the year.”
+
+“You are impossible,” Henrietta writes.
+
+She does not write of London again. The Tamworths’ letters are no longer sent on.`)}`; }}
   ]});
 
 ev({ id:'abatement', fixed:'1814-2', title:'Sunday Coats',
@@ -1066,7 +1080,7 @@ Lord Cullerne is in the lobby. You bow. He looks at the wall behind your head un
 
 The bill passes.
 
-At the Castle they have a new name for you. Mrs Tamworth lets it out to Henrietta. “The Loaf.”`; }},
+At the Castle they have a new name for you. ${hh(`Mrs Tamworth lets it out to Henrietta.`, `Mrs Tamworth lets it out in a letter to Gay Street.`)} “The Loaf.”`; }},
     {t:() => F('mp') ? 'Be unavoidably detained in the country.' : 'Sign neither.', go:() => { add({standing:-1});
       return F('mp') ? `On Friday you are at Hatherley, looking at a drain. The bill passes.` : `You ride past the George on market day and do not go in. The bill passes.`; }}
   ]});
@@ -1078,7 +1092,7 @@ Wyvern rings its bells until the tenor cracks.
 
 The Gazette comes two days after. The killed and wounded fill nine columns of small type.${E() === 'army' && !F('edmundDead') ? `
 
-The 52nd was in the line. Henrietta met the post-boy at the gate. She is in the hall with the paper in both hands. She has not opened it. She holds it out to you.` : ''}`,
+The 52nd was in the line. ${hh(`Henrietta met the post-boy at the gate. She is in the hall with the paper in both hands. She has not opened it. She holds it out to you.`, `A second packet lies under your Gazette. It is from Gay Street, by express. Henrietta has sent her own copy. She has not broken the wrapper.`)}` : ''}`,
   choices:[
     {t:'Read the lists.', if:() => E() === 'army' && !F('edmundDead'), go:() => {
       const r = Math.random();
@@ -1091,13 +1105,13 @@ The colonel writes in July. It was in the last half-hour. The regiment wheeled o
 
 A box comes in August. His sword. His watch. Eleven shillings. A letter that begins “My dear Mother” and stops after six lines.
 
-Henrietta gives her coloured gowns to the maids.`; }
+${hh(`Henrietta gives her coloured gowns to the maids.`, `At Gay Street Henrietta gives her coloured gowns to the maid.`)}`; }
       if (r < 0.6) { fl('edmundFate','lost an arm at Waterloo'); add({family:6, standing:4}); reg('edmund',1);
         return `You find the 52nd. You go down the column with your finger.
 
 “Wounded, severely. ${F('major') ? 'Major' : 'Captain'} ${S.sur}.”
 
-Six weeks later he gets down from the Bath coach. His left sleeve is pinned across his chest. He puts his one arm round his mother.
+Six weeks later he gets down from the Bath coach. His left sleeve is pinned across his chest. ${hh(`He puts his one arm round his mother.`, `His mother gets down after him.`)}
 
 At dinner he tells it. “A farmyard. The surgeon was very quick. Afterwards he asked if I wanted it. I could not think what for.”
 
@@ -1105,7 +1119,7 @@ Henrietta cuts up his meat. He lets her.`; }
       fl('edmundFate','came through Waterloo without a scratch'); add({family:10, standing:4}); reg('edmund',1);
       return `You find the 52nd. You go down the column with your finger. Then again. Then a third time. He is not in it.
 
-Henrietta sits down on the hall floor.
+${hh(`Henrietta sits down on the hall floor.`, `You send a groom to Bath with one line. He is there by dark.`)}
 
 His letter comes nine days later. “Two horses killed under me and a ball through my hat. I am perfectly well. Pray send a hat.”`; }},
     {t:() => `Ring the bells and broach a hogshead on ${ground()}.`, note:'£50', if:() => !(E() === 'army' && !F('edmundDead')), go:() => { add({money:-50, goodwill:5, standing:1});
