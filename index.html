@@ -7935,9 +7935,8 @@ function ledgerHTML(){
   return `${runhead('Papers received this quarter', 'Cr.')}
     ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
     <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
-    <p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
-    <h2>The Accounts</h2>
-    <div class="narrow">${accountHTML()}</div>
+    <div class="narrow"><p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
+    <h2>The Accounts</h2>${accountHTML()}</div>
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
