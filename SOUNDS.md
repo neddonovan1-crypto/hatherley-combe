@@ -39,6 +39,7 @@ Taken from Freesound's high-quality mp3 previews, cut as above, mixed to mono an
 - Which paper makes which noise is the `ARRIVES` table. An event not named there knocks; a handbill turns a leaf.
 - Master volume is `VOL` (0.6). The airs sit at `AIR` (0.45) of that.
 - Turning sound on strikes the church clock once, so the reader knows it has taken.
+- If somebody hears nothing, rest the pointer on the control: its tooltip gives the audio state, how many files loaded and the last error.
 - The game starts silent. "Sound off" in the corner of the desk turns it on, and the choice is remembered in `localStorage` under `hatherley-quiet`.
 
 ## Adding one
