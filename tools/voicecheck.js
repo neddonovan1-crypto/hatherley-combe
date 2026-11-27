@@ -49,9 +49,13 @@ function strings(code){ const out = []; const re = /`((?:[^`\\]|\\.)*)`/g; let m
 function sentences(s){ return s.replace(/\$\{[^}]*\}/g, 'x').split(/(?<=[.!?”])\s+/).filter(x => x.trim()); }
 // The tail: a statement, a comma, then a comment hung on the end. The owner's chief complaint.
 const TAIL = /,\s+(and|but|which|who|whom|whose|as|though|so that|like|having|being|not|or)\b[^,;:]*[.!?]”?$/i;
+// Staccato: the narrator in sentences of six and eight words. Speech, bills and the pocket-book are left out of the count.
+function pace(s){ const ss = sentences(s.replace(/“[^”]*”/g, '')).map(x => x.trim().split(/\s+/).length).filter(n => n > 1);
+  let run = 0, worst = 0; for (const n of ss) { run = n <= 9 ? run + 1 : 0; if (run > worst) worst = run; }
+  return [ss.reduce((a, b) => a + b, 0), ss.length, worst]; }
 function tails(s){ const ss = sentences(s.replace(/“[^”]*”/g, 'Q')); return [ss.filter(x => TAIL.test(x.trim())).length, ss.length]; }
 
-let errors = 0; const rows = []; const tot = {events:0, simile:0, which:0, punch:0, strings:0, hind:0};
+let errors = 0; const rows = []; const tot = {events:0, simile:0, which:0, punch:0, strings:0, hind:0, stac:0};
 for (const f of FILES) {
   const code = fs.readFileSync(path.join(SRC, f), 'utf8');
   const parts = code.split(/(?=ev\(\{ id:')/);
@@ -67,7 +71,9 @@ for (const f of FILES) {
     if (idm) { tot.events++; tot.simile += sim; tot.which += wh; tot.punch += tl; tot.strings += sn; tot.hind += hind; }
     if (idm && sim > 2) notes.push('similes: ' + sim + ' (ration is one, two at a pinch)');
     if (idm && wh > 1) notes.push('", which is" deflations: ' + wh);
-    if (idm && sn >= 8 && tl > sn / 6) notes.push('statement, comma, aside: ' + tl + ' of ' + sn + ' sentences end on a hung clause (keep it under one in six)');
+    if (idm && sn >= 8 && tl > sn / 3) notes.push('statement, comma, aside: ' + tl + ' of ' + sn + ' sentences end after a comma and a joiner. Read each: a member that carries the action on is well, a remark upon the fact is not');
+    let pw = 0, pn = 0, pr = 0; for (const x of ss) { if (/^In your pocket-book|^“/.test(x)) continue; const [a, b, c] = pace(x); pw += a; pn += b; pr = Math.max(pr, c); }
+    if (idm && pn >= 6 && (pw / pn < 13 || pr >= 4)) { tot.stac++; notes.push('staccato: ' + (pw / pn).toFixed(0) + ' words to a sentence, ' + pr + ' short ones running (write in periods; three short running is the limit)'); }
     if (hind) notes.push('hindsight: the narrator knows the future ' + hind + ' time' + (hind > 1 ? 's' : ''));
     if (notes.length || showAll) rows.push([id, notes]);
   }
@@ -75,5 +81,5 @@ for (const f of FILES) {
 for (const [id, notes] of rows) { console.log(id); for (const n of notes) console.log('   ' + n); }
 console.log('\n' + tot.events + ' events. Per event: ' + (tot.simile / tot.events).toFixed(1) + ' similes, '
   + (tot.which / tot.events).toFixed(1) + ' which-deflations, ' + Math.round(100 * tot.punch / tot.strings) + '% of sentences end on a hung clause, '
-  + tot.hind + ' lapses into hindsight in all.');
+  + tot.hind + ' lapses into hindsight in all. ' + tot.stac + ' events still staccato.');
 if (errors) { console.log(errors + ' hard error' + (errors > 1 ? 's' : '') + '.'); process.exit(1); }
