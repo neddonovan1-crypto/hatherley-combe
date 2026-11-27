@@ -165,7 +165,8 @@ table.acct tr.total .n{font-size:1.3rem}
 .lede{margin:2px 0 8px;font-size:.95rem;line-height:1.35;color:var(--muted)}
 .who{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:16px;align-items:start;min-height:0} .who .plate{aspect-ratio:4/5} .who .plate img{object-position:50% 20%}
 .who > div{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0} .who h3{margin:0;font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.1} .who p{margin:0} .who .role{color:var(--muted);font-size:.92rem}
-.who .regard{display:flex;flex-direction:column;gap:3px} .who .r{font-family:var(--hand);font-size:1.7rem;line-height:1} .who .scale{display:flex;gap:3px} .who .scale i{width:11px;height:5px;border:1px solid var(--ink)} .who .scale i.on{background:var(--ink)}
+.who .regard{display:flex;flex-direction:column;gap:3px} .who .r{font-family:var(--hand);font-size:1.7rem;line-height:1} .scale{display:flex;gap:2px;margin-top:2px} .scale i{width:10px;height:5px;border:1px solid rgba(42,35,32,.55)} .scale i.on{background:var(--ink)} .scale.pos i.on{background:var(--good);border-color:var(--good)} .scale.neg i.on{background:var(--bad);border-color:var(--bad)}
+.people .r.r6, .people .r.r7, .people .r.r8, .people .r.r9, .people .r.r10, .who .r.r6, .who .r.r7, .who .r.r8, .who .r.r9, .who .r.r10{color:var(--good)} .who .bio{font-size:.95rem;line-height:1.4}
 .who .dealings{margin:2px 0 4px;padding:0 0 0 1.1em;font-size:.92rem;line-height:1.35;max-height:11.5rem;overflow-y:auto;align-self:stretch}
 .people .medal{width:46px;height:58px} .people .medal span{font-size:1.7rem}
 .people b{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -8103,14 +8104,16 @@ const DRAFT_SOCIETY = [
   {name: 'The family plate', cost: 600, state: 'inHand', held: 'In the strong room', well: 'It would fetch about six hundred pounds at Rundell’s.'}];
 function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it'); }
 
+const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){
   if (WHO && S.chars[WHO] && S.chars[WHO].met) { const c = S.chars[WHO], p = PEOPLE[WHO], full = pic('portraits/' + WHO, p.name), notes = c.notes.slice().reverse();
     return `<div class="who">${full ? `<figure class="plate">${full}</figure>` : medal(WHO, true)}<div><h3>${esc(p.name)}</h3><p class="role">${esc(p.role())}</p>
-      <p class="regard"><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span><span class="scale" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i === c.r + 5 ? 'on' : ''}"></i>`).join('')}</span></p>
+      <p class="regard"><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span>${regardScale(c)}</p>
+      ${p.bio ? `<p class="bio">${esc(typeof p.bio === 'function' ? p.bio() : p.bio)}</p>` : ''}
       ${notes.length ? `<ul class="dealings">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : `<p class="role">No dealings entered.</p>`}
       <button class="inkbtn" onclick="showWho('')">All persons</button></div></div>`; }
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id];
-    return `<li><button onclick="showWho('${id}')">${medal(id)}<span class="pp"><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`; }
+    return `<li><button onclick="showWho('${id}')">${medal(id)}<span class="pp"><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span>${regardScale(c)}</span></button></li>`; }).join('')}</ul>`; }
 
 function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YEAR + 1, bw = (W - pad) / n; let bars = '';
   const yOf = v => H - 16 - (v / 130) * (H - 28);

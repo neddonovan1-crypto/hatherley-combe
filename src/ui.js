@@ -241,14 +241,16 @@ const DRAFT_SOCIETY = [
   {name: 'The family plate', cost: 600, state: 'inHand', held: 'In the strong room', well: 'It would fetch about six hundred pounds at Rundell’s.'}];
 function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it'); }
 
+const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){
   if (WHO && S.chars[WHO] && S.chars[WHO].met) { const c = S.chars[WHO], p = PEOPLE[WHO], full = pic('portraits/' + WHO, p.name), notes = c.notes.slice().reverse();
     return `<div class="who">${full ? `<figure class="plate">${full}</figure>` : medal(WHO, true)}<div><h3>${esc(p.name)}</h3><p class="role">${esc(p.role())}</p>
-      <p class="regard"><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span><span class="scale" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i === c.r + 5 ? 'on' : ''}"></i>`).join('')}</span></p>
+      <p class="regard"><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span>${regardScale(c)}</p>
+      ${p.bio ? `<p class="bio">${esc(typeof p.bio === 'function' ? p.bio() : p.bio)}</p>` : ''}
       ${notes.length ? `<ul class="dealings">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : `<p class="role">No dealings entered.</p>`}
       <button class="inkbtn" onclick="showWho('')">All persons</button></div></div>`; }
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id];
-    return `<li><button onclick="showWho('${id}')">${medal(id)}<span class="pp"><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`; }
+    return `<li><button onclick="showWho('${id}')">${medal(id)}<span class="pp"><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span>${regardScale(c)}</span></button></li>`; }).join('')}</ul>`; }
 
 function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YEAR + 1, bw = (W - pad) / n; let bars = '';
   const yOf = v => H - 16 - (v / 130) * (H - 28);

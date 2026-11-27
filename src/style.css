@@ -161,7 +161,8 @@ table.acct tr.total .n{font-size:1.3rem}
 .lede{margin:2px 0 8px;font-size:.95rem;line-height:1.35;color:var(--muted)}
 .who{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:16px;align-items:start;min-height:0} .who .plate{aspect-ratio:4/5} .who .plate img{object-position:50% 20%}
 .who > div{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0} .who h3{margin:0;font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.1} .who p{margin:0} .who .role{color:var(--muted);font-size:.92rem}
-.who .regard{display:flex;flex-direction:column;gap:3px} .who .r{font-family:var(--hand);font-size:1.7rem;line-height:1} .who .scale{display:flex;gap:3px} .who .scale i{width:11px;height:5px;border:1px solid var(--ink)} .who .scale i.on{background:var(--ink)}
+.who .regard{display:flex;flex-direction:column;gap:3px} .who .r{font-family:var(--hand);font-size:1.7rem;line-height:1} .scale{display:flex;gap:2px;margin-top:2px} .scale i{width:10px;height:5px;border:1px solid rgba(42,35,32,.55)} .scale i.on{background:var(--ink)} .scale.pos i.on{background:var(--good);border-color:var(--good)} .scale.neg i.on{background:var(--bad);border-color:var(--bad)}
+.people .r.r6, .people .r.r7, .people .r.r8, .people .r.r9, .people .r.r10, .who .r.r6, .who .r.r7, .who .r.r8, .who .r.r9, .who .r.r10{color:var(--good)} .who .bio{font-size:.95rem;line-height:1.4}
 .who .dealings{margin:2px 0 4px;padding:0 0 0 1.1em;font-size:.92rem;line-height:1.35;max-height:11.5rem;overflow-y:auto;align-self:stretch}
 .people .medal{width:46px;height:58px} .people .medal span{font-size:1.7rem}
 .people b{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
