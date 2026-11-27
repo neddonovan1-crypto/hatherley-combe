@@ -114,15 +114,10 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 .balloon span{position:absolute;left:14%;right:11%;top:10%;bottom:26%;display:grid;place-items:center;overflow:hidden} .balloon span i{display:block;font-family:var(--display);font-style:italic;font-size:12px;line-height:1.12;text-align:center;color:#2b1d10;text-wrap:balance}
 
 #landart, #landmot, #landlbl{display:contents}
-#land .beast{position:absolute;height:auto;pointer-events:none;translate:-50% -100%;transform:scaleX(var(--f, 1));filter:saturate(.8) drop-shadow(0 .5px 0 rgba(60,40,20,.25))}
-#land .beast.graze{animation:graze 50s linear infinite}
-@keyframes graze{0%{transform:translateX(0) scaleX(var(--f))} 46%{transform:translateX(calc(var(--f) * -140%)) scaleX(var(--f))} 49.9%{transform:translateX(calc(var(--f) * -140%)) scaleX(var(--f))} 50%{transform:translateX(calc(var(--f) * -140%)) scaleX(calc(var(--f) * -1))} 96%{transform:translateX(0) scaleX(calc(var(--f) * -1))} 99.9%{transform:translateX(0) scaleX(calc(var(--f) * -1))} 100%{transform:translateX(0) scaleX(var(--f))}}
-#land .beast.drift{animation:drift 26s ease-in-out infinite alternate !important;animation-duration:26s !important}
+#land .beast{position:absolute;height:auto;pointer-events:none;translate:-50% -100%;filter:saturate(.8) drop-shadow(0 .5px 0 rgba(60,40,20,.25))}
+#land .beast.drift{animation:drift 26s ease-in-out infinite alternate}
 @keyframes drift{from{transform:translate(-70%, 0) rotate(-2deg)} 50%{transform:translate(0, 4%) rotate(1.5deg)} to{transform:translate(70%, -3%) rotate(-1deg)}}
-#land .beast.coach{animation:coach 58s linear infinite !important;animation-duration:58s !important}
-@keyframes coach{0%{left:93.6%;top:19.4%;opacity:0;width:2.6%} 3%{opacity:1} 8%{left:94.9%;top:22.4%} 14%{left:94.3%;top:25.4%} 20%{left:92.2%;top:28.4%} 27%{left:90.7%;top:31.6%} 34%{left:90.1%;top:35.4%} 41%{left:90.5%;top:39.4%} 48%{left:91.6%;top:43.4%} 54%{left:93.2%;top:47.2%} 58%{opacity:1} 60%{left:95.6%;top:50.4%;opacity:0;width:5.2%} 100%{left:95.6%;top:50.4%;opacity:0;width:5.2%}}
-#land .beast.wagon{animation:wagon 96s linear infinite !important;animation-duration:96s !important}
-@keyframes wagon{0%{left:93.4%;top:48.9%;opacity:0} 3%{opacity:1} 14%{left:88%;top:50.5%} 28%{left:82%;top:52%} 40%{left:77%;top:52.1%} 54%{left:71%;top:50.4%} 60%{opacity:1} 63%{left:68.2%;top:48.4%;opacity:0} 100%{left:68.2%;top:48.4%;opacity:0}}
+#land .stock{position:absolute;visibility:hidden;pointer-events:none;translate:-50% -94%;background-repeat:no-repeat;filter:saturate(.8) drop-shadow(0 .5px 0 rgba(60,40,20,.25))}
 .lbl .fist{position:absolute;left:50%;bottom:100%;width:2.6em;margin-left:-1.3em;pointer-events:none;animation:beckon 1.1s ease-in-out infinite;filter:drop-shadow(1px 3px 3px rgba(40,25,10,.45))} .lbl .fist img{display:block;width:100%;height:auto}
 /* near the head of the sheet there is no room above the name, so the hand stands under it and points up */
 .lbl .fist.under{bottom:auto;top:100%;animation-name:beckonup} @keyframes beckonup{0%, 100%{transform:translateY(.55em);opacity:.55} 50%{transform:translateY(0);opacity:1}} .lbl .fist.under img{transform:scaleY(-1)}
