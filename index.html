@@ -149,21 +149,21 @@ const FAMILY_W = ['At open war','Frosty','Civil','Contented','Happy','Doting'];
 // County intelligence. Keyed year-season.
 const NEWS = {
   '1795-0':'Bread riots at Newbury, Chichester and Wells. The quartern loaf at elevenpence.',
-  '1795-1':'The Prince of Wales has married his cousin Caroline. He is said to have called for brandy on first seeing her.',
+  '1795-1':'The Prince of Wales is married to his cousin, the Princess Caroline of Brunswick.',
   '1795-2':'A stone thrown at the King’s coach on his way to open Parliament. The harvest the worst in thirty years.',
   '1795-3':'Parliament passes the Two Acts against treasonable practices and seditious meetings.',
   '1796-0':'General Bonaparte, aged twenty-six, has crossed into Italy.',
-  '1796-1':'A general election. Dr Jenner of Berkeley has put cow-pox into a gardener’s boy, to see what happens.',
+  '1796-1':'A general election. Dr Jenner of Berkeley has put matter from a cow-pox sore into a gardener’s boy.',
   '1796-3':'A French fleet with fifteen thousand men sails for Ireland and is scattered by a gale in Bantry Bay.',
   '1797-0':'The French land at Fishguard. The Bank of England stops payment in gold.',
   '1797-1':'The fleet has mutinied at Spithead, and again at the Nore. The men ask a shilling a day.',
   '1797-3':'Admiral Duncan has beaten the Dutch at Camperdown. Mr Pitt trebles the assessed taxes.',
-  '1798-1':'Rebellion in Ireland. Bonaparte has sailed from Toulon, nobody knows whither.',
+  '1798-1':'Rebellion in Ireland. Bonaparte has sailed from Toulon with four hundred ships. His destination is not known.',
   '1798-2':'Nelson has found the French fleet at the mouth of the Nile and destroyed it.',
   '1799-1':'The wettest summer in memory. Corn sprouting in the ear.',
   '1799-3':'Bonaparte makes himself First Consul. Mr Pitt’s tax on incomes comes into force.',
   '1800-1':'Wheat past a hundred shillings. Riots at Banbury, Oxford and Nottingham.',
-  '1800-2':'The Brown Bread Act forbids the miller to dress fine white flour. It is evaded by Tuesday.',
+  '1800-2':'The Brown Bread Act. Millers are forbidden to dress fine white flour.',
   '1801-0':'Union with Ireland. Mr Pitt has resigned and Mr Addington, a doctor’s son, is Minister.',
   '1801-1':'The first Census of the people. Nelson at Copenhagen puts the glass to his blind eye.',
   '1802-0':'Peace signed at Amiens. The income tax is to be repealed and the returns burnt.',
@@ -172,7 +172,7 @@ const NEWS = {
   '1804-1':'Mr Pitt returns. Bonaparte has had himself voted Emperor of the French.',
   '1805-2':'The French camp at Boulogne has broken up and marched east. Nobody knows why.',
   '1805-3':'A great victory off Cape Trafalgar. Lord Nelson killed.',
-  '1806-0':'Mr Pitt is dead, at forty-six. His last words concerned either his country or a veal pie; accounts differ.',
+  '1806-0':'Mr Pitt is dead, at forty-six. The House votes forty thousand pounds to pay his debts.',
   '1806-3':'Bonaparte, at Berlin, forbids all Europe to trade with Britain.',
   '1807-0':'The slave trade is abolished by two hundred and eighty-three votes to sixteen.',
   '1807-2':'The fleet bombards Copenhagen and carries off the Danish navy.',
@@ -181,47 +181,67 @@ const NEWS = {
   '1809-3':'The King’s Jubilee. The expedition to Walcheren dying of fever in the Dutch marshes.',
   '1810-3':'The Princess Amelia is dead, and the King’s mind has given way with grief.',
   '1811-0':'The Prince of Wales sworn in as Regent. Frame-breakers at work in Nottinghamshire.',
-  '1811-2':'A great comet, with a tail like a peacock. The vintage in France is said to be superb.',
+  '1811-2':'A great comet in the north-west every evening. The wine growers of France expect a famous vintage.',
   '1812-1':'Mr Perceval, the Prime Minister, shot dead in the lobby of the House. War with America.',
   '1812-3':'Bonaparte has entered Moscow and found it on fire.',
-  '1813-1':'Lord Wellington’s victory at Vitoria. King Joseph’s baggage taken, including his chamber pot.',
+  '1813-1':'Lord Wellington’s victory at Vitoria. King Joseph’s coach is taken, with his plate, his pictures and his chamber pot.',
   '1813-2':'The greatest harvest in living memory. Corn falling at every market.',
   '1814-0':'The Thames frozen at London. An elephant led across the ice below Blackfriars.',
   '1814-1':'Bonaparte has abdicated and gone to govern the island of Elba.',
   '1815-0':'The Corn Bill before Parliament. Bonaparte has left Elba and landed in France.',
   '1815-1':'A great battle near Brussels, at a village called Waterloo.',
-  '1815-3':'Bonaparte is landed on St Helena. Wheat at fifty-six shillings and the farmers ruined by plenty.'
+  '1815-3':'Bonaparte is landed on St Helena. Wheat at fifty-six shillings. Farms to let in every county.'
 };
 
 // Quiet seasons. One is drawn when nothing else demands you.
 const VIGNETTES = [
   [ // spring
-    `A late frost. The blossom on the orchard wall goes brown overnight and Mrs Bunce takes it as an omen, though she declines to say of what.`,
+    `A late frost. The blossom on the orchard wall is brown by morning.
+
+“That’s a sign,” says Mrs Bunce. She will not say what of.`,
     `In your pocket-book: “Rooks building in the tops of the Elms. Mudge says it is the Sign of a dry Summer. Gave him 0. 1. 0. We finished sowing Barley this Afternoon. Dinner to day, a boiled Leg of Mutton and Capers &c. Wind N.E. and cold.”`,
-    `Lambing on the Down. The shepherd has not slept in a bed for three weeks and has begun to answer questions in the voice he uses for ewes.`,
-    `The rent audit dinner. Eleven farmers eat a round of beef between them and each explains, separately, that he alone is being ruined.`,
+    `Lambing on the Down. The shepherd has slept three weeks in the hut on wheels. You ask him how many twins.
+
+“Coom on then, coom on,” he says. Then he begs your pardon.`,
+    `The rent audit dinner. Eleven farmers finish a round of beef. When the cloth is drawn each one takes you aside. Each is the only man at the table being ruined.`,
     `In your pocket-book: “April 14. Heard the Cuckoo in the Copse about 7 this Morn’. To the Mole-catcher for his Quarter paid 0. 10. 6. He shewed me 41 Tails. Dinner to day, a Couple of Rabbits smothered with Onions, a Gooseberry Tart &c.”`
   ],
   [ // summer
-    `Haymaking. The whole parish is in Kennet Meadow with rakes, and the beer goes out to them in buckets. By evening nobody can say with certainty whose child is whose.`,
+    `Haymaking in Kennet Meadow. The whole parish is out with rakes. The beer goes down to them in buckets.
+
+At dusk Mrs Pryor counts her children into the cart. She has nine. She came with seven.`,
     `In your pocket-book: “We washed 900 Sheep in the Lambourn to day. To the Washers, Beer, Bread and Cheese, and gave among them 0. 5. 0. The Shepherd stood to his Middle in the River from 6 till Noon. Sent him a Glass of Rum. Very hot. Wind S.”`,
     `In your pocket-book: “Hatherley played Kintbury on the Common for eleven Pair of Gloves. Kintbury beat us by 14 Notches. The Smith bowled. He hit the Wicket once and the Kintbury Long-stop three times. Lost to Mr. Hartopp on the Match 0. 10. 6.”`,
-    `Three weeks without rain. The pond shrinks to a green plate and something is found in the middle of it that your uncle was known to have lost in 1771.`,
-    `A travelling show at Wyvern exhibits a Learned Pig that tells the time and picks out the greatest rogue in the company. It picks out Crabbe. Crabbe laughs longest.`
+    `Three weeks without rain. The pond is down to a green plate. The wheel of a gig stands up in the middle of it.
+
+Your uncle lost a gig in 1771. He never said where.`,
+    `A show at Wyvern has a Learned Pig. For a penny it tells the hour by a watch. For twopence it finds the greatest rogue in the company.
+
+It goes twice round the ring. It sits down in front of Mr Skinner the auctioneer.`
   ],
   [ // autumn
-    `Harvest home. The last load comes in with a boy on top of it dressed in ribbons, and you make the same speech your uncle made, because nobody would forgive a new one.`,
-    `The gleaners are out on Long Barrow at first light, bent double, women and children in a line. A good gleaning family will carry home six bushels, and know to the ear who took more.`,
-    `Wyvern Michaelmas Fair. Servants stand for hire in the market place: carters with whipcord in their hats, shepherds with a lock of wool, and one man with a turnip, whom nobody likes to ask.`,
+    `Harvest home. The last load comes down the lane with a boy on top in ribbons. You give the speech from the wagon. It is your uncle’s speech. The men say the last line with you.`,
+    `The gleaners are on Long Barrow at first light. Women and children go up the stubble in a line, bent double.
+
+Mrs Pryor carries home six bushels. She can tell you what each of the others carried.`,
+    `Wyvern Michaelmas Fair. The servants stand for hire in the market place. Carters wear whipcord in their hats. Shepherds wear a lock of wool.
+
+One man has a turnip in his. Nobody has asked him yet.`,
     `In your pocket-book: “Octbr. 1. Out by 8 this Morn’ with Mudge and both Spaniels. We killed 4 Brace of Pheasants and a Hare. Three of the Birds fell over Mr. Hartopp’s Hedge. His Man came for them before we had loaded again. Let him have a Brace. Dinner to day, the Hare rosted.”`,
     `In your pocket-book: “Thick Mist in the Combe till 10. A great many Mushrooms on the Down. Mrs. Bunce made 11 Bottles of Catchup. Recd. of Farmer Dewey for half a Year’s Rent 62. 10. 0. Gave him back as usual 0. 2. 6. My Uncle always did.”`
   ],
   [ // winter
     `In your pocket-book: “Snow as high as the Hedge Tops. No Mail these 9 Days. Read Prayers in the Hall, the Church Path being stopped. Sent Widow Harris a Sack of Coals and 0. 2. 6. At Backgammon this Evening with H. lost 0. 1. 6. Bitter cold. Wind N.”`,
-    `The mummers come to the Hall on Christmas Eve. Saint George is killed by the Turkish Knight and raised by the Doctor, who is the wheelwright, and drunk, and has to be raised himself.`,
+    `The mummers come to the Hall on Christmas Eve. The Turkish Knight kills Saint George. The Doctor is to raise him. The Doctor is the wheelwright. He falls over Saint George.
+
+The Turkish Knight raises them both.`,
     `In your pocket-book: “We killed two Pigs this Morn’. They weighed 16 Score the Pair. Sent a Spare-rib to the Vicarage and the Chitterlings to the Lodge. Gave the Pryor Children the Bladder. It was in the Carp Pond by 3 o’clock. Dinner to day, the Fry &c.”`,
-    `A hard frost. The carp pond bears, and the footmen skate on it after dark when they think the house is asleep.`,
-    `Plough Monday. The plough boys drag a plough from door to door, asking for pennies, and drawing a furrow across the gravel of anyone who refuses. Your gravel is spared, at a price.`
+    `A hard frost. The carp pond bears. After eleven at night there are lanterns on it.
+
+In the morning the ice is cut all over. Both footmen yawn through breakfast.`,
+    `Plough Monday. The plough boys drag a plough from door to door for pennies. The miller gives nothing. They draw a furrow across his yard.
+
+You send out half a crown.`
   ]
 ];
 
@@ -259,17 +279,47 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
 const PROJECTS = {
   enclosure:{ name:'The Hatherley Inclosure Bill', seasons:3, cost:() => F('allotments') ? 1400 : 1200, hidden:true,
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
-      return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The award is read out in the vestry: so many acres to you, so many to Lord Cullerne, so many in lieu of tithe, and sixty in acre plots to the cottagers. The rest of the common, which was everybody’s, now belongs to somebody.` : `The Hatherley Inclosure Act has the Royal Assent, with forty others that session. The award is read out in the vestry: so many acres to you, so many to Lord Cullerne, so many in lieu of tithe; and to nineteen cottagers who could show no deed, nothing, the law having no column for “always”.`; }},
+      return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
+
+To ${S.name}, Esquire, 400 acres. To the Earl of Cullerne, 190. To the Vicar in lieu of tithe, 110. To the cottagers, sixty plots of one acre.
+
+The clerk rolls up the map. There is no common on it.` : `The Hatherley Inclosure Act has the Royal Assent. Forty other parishes had theirs in the same session. The Commissioners read the award in the vestry.
+
+To ${S.name}, Esquire, 400 acres. To the Earl of Cullerne, 190. To the Vicar in lieu of tithe, 110. To nineteen cottagers who could show no deed, nothing.
+
+Jem Pryor stands up at the back. His family has turned a cow out there since Queen Anne.
+
+“Have you that in writing?” says the clerk.`; }},
   drain:{ name:'Drain and marl the clay at Kennet Bottom', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
-    done:() => { S.improve += 2; return `The drains are in at Kennet Bottom: nine miles of them, laid in stone and blackthorn, and for the first time since the Flood a man may cross the low fields in March and keep both boots.`; }},
+    done:() => { S.improve += 2; return `The drains are in at Kennet Bottom. There are nine miles of them, laid with stone and blackthorn.
+
+You walk the low fields from end to end. Your boots come home on your feet.`; }},
   fourcourse:{ name:'Put the home farm under the Norfolk four-course', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
-    done:() => { S.improve += 1; reg('hartopp',1); return `Wheat, turnips, barley, clover, and round again. The fallow year is abolished on the home farm. The old carter looks on a field that never rests as he would on a man who never sleeps: with awe, and an expectation of judgment.`; }},
+    done:() => { S.improve += 1; reg('hartopp',1); return `Wheat, turnips, barley, clover. Then wheat again. There is no fallow on the home farm this year.
+
+The old carter stands at the gate of Twelve Acres.
+
+“That ground ent had a rest since Lady Day twelvemonth, sir.”
+
+He shakes his head at it.`; }},
   cottages:{ name:'Build six brick cottages on the Kintbury lane', seasons:2, cost:() => 360,
-    done:() => { fl('cottages'); add({goodwill:9}); return `Six cottages stand finished on the Kintbury lane: brick, tiled, two bedrooms, a bread oven and a pigsty apiece. The families who are to have them walk through in silence, touching the walls. One woman asks whether the upstairs is included.`; }},
+    done:() => { fl('cottages'); add({goodwill:9}); return `Six cottages stand on the Kintbury lane. Brick walls. Tiled roofs. Two bedrooms, a bread oven and a pigsty to each.
+
+The six families walk through on Saturday. Nobody speaks. They put their hands on the walls.
+
+One woman stops at the foot of the stairs.
+
+“Is the upstairs ours and all, sir?”`; }},
   oaks:{ name:'Plant forty acres of oak for the Navy', seasons:1, cost:() => 120,
-    done:() => { fl('oaks'); add({standing:2}); return `Forty acres of acorns are dibbled in on Gallows Piece, for the wooden walls of England. They will be fit for ship timber in about the year 1920. You find this very restful to think about.`; }},
+    done:() => { fl('oaks'); add({standing:2}); return `Forty acres of acorns are dibbled in on Gallows Piece.
+
+The nurseryman from Newbury says they will make ship timber in a hundred and twenty years. You ask him to say it again.
+
+You ride home at a walk.`; }},
   icehouse:{ name:'Sink an ice-house in the north shrubbery', seasons:1, cost:() => 140,
-    done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk: a brick egg under a mound of earth. It is filled in January from the carp pond, and in July Henrietta serves a lemon ice to the Tamworths with the face of a general accepting a surrender.`; }}
+    done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk in the north shrubbery. It is a brick egg under a mound of earth. The men are to fill it from the carp pond at the first hard frost.
+
+Henrietta has written to Gunter’s for a receipt for lemon ice. She has asked the Tamworths already.`; }}
 };
 function startProject(id){ const p = PROJECTS[id]; const cost = p.cost(); S.project = {id, left:p.seasons, per:Math.round(cost / p.seasons)}; S.projectsDone[id] = 'begun'; }
 
@@ -368,40 +418,88 @@ function choose(i){
 
 const UNDERTAKINGS = [
   { id:'ride', t:'Ride round the tenancies', hint:'Goodwill', go:() => { add({goodwill:4}); return pick([
-      `You ride the eleven farms in a day and a half and are given, in order: cider, perry, a cold pie, more cider, advice about your horse, and a dog you did not ask for.`,
-      `At Kennet Bottom the Widow Harris shows you the place where her roof lets in the rain, and then, that there may be no mistake, the rain. You promise a thatcher. She looks at you as one who has been promised thatchers before.`,
-      `A wet week in the saddle learning the names of children. By Friday you have thirty-one, three of whom were christened after your uncle, which tells you something about your uncle.`,
-      `You walk the bounds of Starveall with its tenant, who points out every gate that wants hanging and describes each as “your gate, sir”. The hedges, which are in good order, are “my hedges”.`]); }},
+      `You ride the eleven farms in a day and a half. You are given cider. Then perry. A cold pie. Cider again. At Starveall the tenant lifts your horse’s off fore and tells you what he would do. At the mill you are given a dog.`,
+      `At Kennet Bottom the Widow Harris takes you up her stairs. She shows you the hole in the thatch. It comes on to rain while you stand under it.
+
+“I will send the thatcher, Mrs Harris.”
+
+“So the old Squire said, sir.”`,
+      `A wet week in the saddle. At every farm you learn the children’s names. By Friday you have thirty-one. Three of the boys were christened Barnaby.`,
+      `You walk the bounds of Starveall with the tenant. He stops at every gate that wants hanging.
+
+“Your gate, sir.”
+
+The hedges are new laid.
+
+“My hedges,” he says.`]); }},
   { id:'dine', t:'Dine the county', note:'£70', hint:'Standing', go:() => { add({money:-70, standing:4}); return pick([
-      `Three removes for sixteen. The Bishop’s chaplain eats like a man provisioning for a siege. Lady Cullerne calls your turbot “very brave”, and you lie awake wondering what she meant.`,
-      `Dinner at the Tamworths’, at the Lovedays’, at Hartopp’s, and then at your own table, where Mrs Bunce sends up a haunch hung until it can very nearly speak. The county pronounces it excellent. The county has no sense of smell.`,
-      `A ball at the Wyvern Assembly Rooms, of which you are steward, and therefore answerable for the candles, the negus, and the moment at which old Mrs Loveday sits down on the fiddler’s bow.`,
-      `You give a venison dinner to nine magistrates and a colonel. By the second bottle the war is won; by the third, the harvest is saved; by the fourth, nobody can find the door.`]); }},
+      `Three removes for sixteen. The Bishop’s chaplain is helped twice to the turbot and three times to the saddle.
+
+“Your turbot is very brave,” says Lady Cullerne.
+
+At two in the morning you are awake. You are turning the word over.`,
+      `You dine at the Tamworths’. You dine at the Lovedays’. You dine at Hartopp’s. Then the county dines with you.
+
+Mrs Bunce sends up a haunch that has hung five weeks. Old Mr Tamworth calls it the best he ever ate. The dogs will not come into the room.`,
+      `You are steward of the ball at the Wyvern Assembly Rooms. Candles, £3 4s. Negus, £2 10s. Three fiddlers at half a guinea.
+
+At eleven old Mrs Loveday sits down on the first fiddler’s bow. A new bow, 7s. 6d.`,
+      `Venison for nine magistrates and a colonel.
+
+At the second bottle the Colonel takes Paris. At the third the Chairman gets the harvest in. At the fourth Mr Tamworth walks into the china closet and wishes the company good night.`]); }},
   { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { const g = pick([-2, 0, 2, 3]); add({standing:3, goodwill:g}); return pick([
-      `You sentence a man to be whipped for stealing a goose and a woman to a month for stealing it back from him. The goose is produced in evidence, and bites the clerk.`,
-      `A bastardy case, in which three men of Kintbury are each named as the father, and each swears upon oath that it was one of the other two. You order all three to pay. It is as near to justice as you will come this year.`,
-      `A long day in the Shire Hall deciding who must mend a bridge that every parish in the hundred says belongs to the next. By evening it is settled that the bridge belongs to no one, which is what the bridge has always suspected.`,
-      `You license eleven alehouses, refuse a twelfth, and remove a pauper to the parish of her birth, forty miles off, where they will prove that she was born in a wagon and send her back.`]); }},
+      `A man has stolen a goose. You order him whipped. A woman stole it back from him. One month.
+
+The goose is brought into court in a hamper. It bites the clerk.`,
+      `A bastardy case from Kintbury. The girl names three men. Each takes the oath. Each swears it was one of the other two.
+
+You make the order on all three. Eighteen pence a week between them.`,
+      `All day in the Shire Hall over a bridge. Each parish in the hundred swears it belongs to the next. The surveyor unrolls a map of 1740. The bridge is on the fold.
+
+The Bench rises at six. Tonight the bridge has no owner.`,
+      `You license eleven alehouses. You refuse the twelfth.
+
+You sign an order removing Ann Giles, pauper, to Andover, the parish of her birth. It is forty miles. The overseer of Andover has written already. He says she was born in a wagon.`]); }},
   { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { add({family:5}); const a = [
-      `You stay at home and play backgammon with Henrietta, who cheats with such grace that you would not stop her for the world.`,
-      `A week of wet afternoons in the library. You read Tom Jones for the sixth time; Henrietta nets a purse, and tells you between rows what is wrong with every family in Berkshire, beginning with the As.`,
-      `You teach the dogs nothing, shoot nothing, decide nothing, and enjoy it more than anything since Christmas.`];
-      if ((S.flags.kitty || 'free') === 'free') a.push(`Kitty reads Mrs Radcliffe aloud after dinner, doing all the voices. The wicked monk sounds exactly like ${F('gallDead') ? 'the late Dr Gall' : 'Dr Gall'}. Nobody remarks on it and everybody notices.`);
+      `You stay at home. You play backgammon with Henrietta every evening. She moves a man with her sleeve when you look at the fire.
+
+You look at the fire a good deal.`,
+      `Rain all the week. You read Tom Jones in the library for the sixth time. Henrietta nets a purse.
+
+Between rows she tells you what is amiss with the families of Berkshire. She takes them by the alphabet. On Friday she is at the Lovedays.`,
+      `“At home all this Week. Shot nothing, signed nothing, taught the Dogs nothing. Dined each Day upon what there was. Have not passed a better Week since Christmas.”`];
+      if ((S.flags.kitty || 'free') === 'free') a.push(`Kitty reads Mrs Radcliffe aloud after dinner. She does every voice. The wicked monk has ${F('gallDead') ? 'the late Dr Gall’s' : 'Dr Gall’s'} cough.
+
+Henrietta counts her stitches. Nobody looks up.`);
       return pick(a); }},
   { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { add({money:-350, standing:6, family:4}); reg('henrietta',1); return pick([
-      `A house in Upper Brook Street for ten weeks. You see Mrs Siddons as Lady Macbeth and are afraid of her for a fortnight. Henrietta is presented at a Drawing Room, in hoops and feathers, and comes home walking sideways out of habit.`,
-      `London. You are jostled at the Opera, overcharged at Tattersall’s, and cut by a duke who mistook you for somebody else and, on finding out, cut you again in your own right. Henrietta has never been happier.`,
-      `Ten weeks of routs, at which three hundred people stand on a staircase for two hours, in order to say that they were there. You say that you were there. It was very hot.`]); }},
+      `You take a house in Upper Brook Street for ten weeks. You see Mrs Siddons in Lady Macbeth. You sleep with a candle for a fortnight after.
+
+Henrietta goes to the Drawing Room in a hoop and feathers. For three days she comes through every door sideways.`,
+      `London. A man treads on you at the Opera. Tattersall’s sells you a bay with a spavin.
+
+A duke cuts you in St James’s Street. He has taken you for another man. He is told your name. He cuts you again.
+
+Henrietta puts all of it in her letters to Mrs Tamworth.`,
+      `Ten weeks of routs. At Lady Salt’s three hundred people stand on a staircase from ten until midnight. You are on the ninth stair. You do not reach the drawing-room.
+
+Next morning you leave your card to say you were there.`]); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
-      `You sell the second carriage, two hunters, and the claret your uncle laid down against a christening that never happened. Henrietta calls it “living like curates”, in a voice which suggests she has seen how curates live, and blames you for that too.`,
-      `One footman is let go, the hot-house fires are put out, and the family dines on mutton four days in seven. The pine-apples die. Mrs Bunce wears black for them.`,
-      `You shut up the east wing and sell the timber in Cuckoo Copse. The woodmen are a month about it, and the rooks, turned out, sit on the Hall roof and discuss you.`]); }}
+      `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
+
+“We are to live like curates,” says Henrietta. She says it at dinner, before the servants.`,
+      `One footman is turned off. The hot-house fires are let out. Mutton four days in seven.
+
+The pine-apples die within the week. Mrs Bunce puts a black ribbon in her cap.`,
+      `You shut up the east wing. You sell the timber in Cuckoo Copse. The woodmen are a month felling it.
+
+The rooks come over to the Hall roof. They are there each morning when you go out.`]); }}
 ];
 
 function undertakingOptions(){
   const o = UNDERTAKINGS.filter(u => !u.if || u.if()).map(u => ({t:u.t, note:u.note, hint:u.hint, run:() => { const r = u.go(); return r; }}));
   if (!S.project) for (const id in PROJECTS){ const p = PROJECTS[id]; if (p.hidden || S.projectsDone[id]) continue;
-    o.push({t:p.name, note:fmt(p.cost()) + (p.seasons > 1 ? ' over ' + p.seasons + ' seasons' : ''), hint:'A work', project:true, run:() => { startProject(id); return `The work is put in hand. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} draws up the estimate in his best copperplate, and you sign it without reading the second page, as is traditional.`; }}); }
+    o.push({t:p.name, note:fmt(p.cost()) + (p.seasons > 1 ? ' over ' + p.seasons + ' seasons' : ''), hint:'A work', project:true, run:() => { startProject(id); return `The work is put in hand. ${F('crabbeGone') ? 'Lark' : 'Crabbe'} brings the estimate in his best copperplate. It is two pages. You sign at the foot of the first.`; }}); }
   return o;
 }
 function undertake(i){ const u = undertakingOptions()[i]; const b = snapshot(); const text = u.run();
@@ -422,52 +520,52 @@ function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mort
 /* ---------- the reckoning ---------- */
 function reckoning(){
   const net = S.money - S.mortgage, k = S.flags.kitty || 'free', e = S.flags.edmund, P = [];
-  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, by the visitation of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${S.year - 1795 + 46}th year of his age. The coroner’s jury, composed of gentlemen who understood the matter perfectly, returned a verdict of misadventure while shooting rooks.`);
-    P.push(`Captain Vane has gone abroad for his health. The deceased is succeeded in his estates by his widow, who is said to have remarked that she had always told him so.`);
+  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${S.year - 1795 + 46}th year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
+    P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
     return {title:'Shot at Dawn', P, score:null}; }
-  if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern: the capital freehold estate of HATHERLEY COMBE, comprising a mansion house of fifty-four windows, eleven farms, a water corn mill${F('enclosed') ? ', and four hundred acres of newly enclosed land' : ', with rights over an extensive common'}; by order of the mortgagees.`);
-    P.push(`${S.name}, Esquire, late of that place, is understood to have removed with his family to Douglas, in the Isle of Man, where the King’s writ for debt does not run, and where he may be seen most mornings on the pier, looking at England.`);
-    P.push(`The principal purchaser is expected to be the Earl of Cullerne.`);
+  if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, eleven Farms, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
+    P.push(`${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`);
+    P.push(`The Earl of Cullerne is expected to bid.`);
     return {title:'Sold Up', P, score:null}; }
 
-  P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years, and the county, which was not consulted at the time, has had leisure to form a view.`);
-  P.push(net > 4000 ? `He is richer than his uncle was, which nobody had thought possible and several think indecent. The estate stands clear by some ${fmt(net)}.`
-    : net > -1500 ? `His affairs balance, more or less, in the way that a man balances on a gate. Set the mortgage against the purse and there is ${net >= 0 ? fmt(net) + ' to the good' : fmt(-net) + ' wanting'}, which for a landed gentleman at the end of a great war is a species of triumph.`
-    : `His debts are spoken of in Wyvern with something approaching awe: ${fmt(-net)} at the last computation, secured upon every acre, and Mr Tidmarsh’s successors are observed to raise their hats to him rather lower each year, as to a monument.`);
-  P.push(S.goodwill >= 68 ? `In Hatherley, where memories are long and patience short, he is called a fair man, which is the highest thing they say there of anybody not yet dead.`
-    : S.goodwill >= 42 ? `In Hatherley he is thought no worse than most and better than some. They touch their hats and mean about half of it, which is the customary proportion.`
-    : `In Hatherley they have a song about him. It has nine verses and is not sung when he is in the room.`);
-  if (F('enclosed')) P.push(F('allotments') ? `He enclosed the common, and left every cottage its acre; the cottagers, weighing the acre against the common, have decided to remember both.` : `He enclosed the common. The hedges are grown up now, and children are being born in the parish who do not know there was ever anything there but fields. Their grandmothers tell them.`);
-  else P.push(`Hatherley Common lies open still, to the grief of every improver in Berkshire and the satisfaction of some forty cows.`);
-  if (F('speen')) P.push(`He was of the party at the Pelican in the year ’95, and may live to hear the Speenhamland scale cursed by the men who pay it and the men who draw it, with equal warmth.`);
-  if (F('wages')) P.push(`He paid his labourers nine shillings when his neighbours paid seven, and has been forgiven it by almost all of them.`);
-  P.push(S.standing >= 70 ? `Among the gentry he is a man of weight. Lord Cullerne calls him “a coming man”, though he has been coming these twenty years.`
-    : S.standing >= 40 ? `Among the gentry he is received everywhere and consulted nowhere, an enviable condition.`
-    : `Among the gentry he is asked to large parties.`);
-  if (F('mp')) P.push(`He sits for the borough of Wyvern, and has spoken in the House twice, once by mistake.`);
+  P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
+  P.push(net > 4000 ? `He is a richer man than his uncle was. The estate stands clear by some ${fmt(net)}.`
+    : net > -1500 ? `His affairs balance. Set the mortgage against the purse and there is ${net >= 0 ? fmt(net) + ' to the good' : fmt(-net) + ' wanting'}. Few landed gentlemen can show as much at the end of this war.`
+    : `His debts are put at ${fmt(-net)}, secured upon every acre. The clerks at Tidmarsh’s take off their hats when he passes the Bank.`);
+  P.push(S.goodwill >= 68 ? `In Hatherley they call him a fair man. We could not learn that they say it of any other gentleman living.`
+    : S.goodwill >= 42 ? `In Hatherley hats are touched to him. We heard no harm of him there and no great good.`
+    : `In Hatherley there is a song about him. It has nine verses. It is not sung when he is by.`);
+  if (F('enclosed')) P.push(F('allotments') ? `He inclosed the common. He left an acre to every cottage. Both are remembered.` : `He inclosed the common. The quickset hedges are grown up. There are children in the parish who never saw it open. Their grandmothers show them where the cows stood.`);
+  else P.push(`Hatherley Common lies open still. Some forty cows are turned out upon it.`);
+  if (F('speen')) P.push(`He was of the party at the Pelican in ’95. The Speenhamland scale is cursed today by the men who pay it. It is cursed by the men who draw it.`);
+  if (F('wages')) P.push(`He paid his labourers nine shillings when his neighbours paid seven. Most of his neighbours speak to him again.`);
+  P.push(S.standing >= 70 ? `Among the gentry he is a man of weight. Lord Cullerne calls him “a coming man”. His Lordship first said so in 1796.`
+    : S.standing >= 40 ? `Among the gentry he is received everywhere. His opinion is not much asked.`
+    : `Among the gentry he is asked to the large parties.`);
+  if (F('mp')) P.push(`He sits for the borough of Wyvern. He has spoken in the House twice. The second time he had risen to leave.`);
   // children
-  const kl = {vane:`His daughter is Mrs Vane, ${F('kittySettled') ? 'living at Northampton on forty pounds a year that her husband cannot touch, which is the only circumstance in the marriage anybody praises' : 'and follows the Captain from garrison to garrison, one town ahead of his creditors'}.`,
-    pinch:F('kittyManumit') ? `His daughter, the widow of Mr Pinch of Bristol, gave freedom to three hundred persons in Jamaica at the cost of most of her fortune, and is thought in Clifton to be out of her mind and in Hatherley to be the pick of the family.` : F('kittyWidow') ? `His daughter is the widow of Mr Pinch of Bristol, and very rich. She does not speak of how.` : `His daughter is Mrs Pinch, of Clifton, and has everything that money can buy her.`,
-    oakes:`His daughter married the ${F('oakesVicar') ? 'vicar, who was then the curate' : 'curate, who is the curate still'}. She has five children, no carriage, and the look of a woman who was right.`,
-    dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo, and keeps bees. The county has almost forgiven it.`,
-    free:F('kittyBotanist') ? `His daughter is unmarried, and has an orchid named for her in Sowerby’s Botany, which is more than can be said for the Miss Tamworths.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
+  const kl = {vane:`His daughter is Mrs Vane. ${F('kittySettled') ? 'She lives at Northampton on forty pounds a year. Her husband cannot touch it.' : 'She follows the Captain from garrison to garrison. His creditors follow one town behind.'}`,
+    pinch:F('kittyManumit') ? `His daughter is the widow of Mr Pinch of Bristol. She has given freedom to three hundred persons in Jamaica. It took the greater part of her fortune. Clifton thinks her out of her mind. Hatherley thinks her the pick of the family.` : F('kittyWidow') ? `His daughter is the widow of Mr Pinch of Bristol. She is very rich. She does not say where the money came from.` : `His daughter is Mrs Pinch, of Clifton. She keeps two carriages.`,
+    oakes:`His daughter married the ${F('oakesVicar') ? 'curate. He is now the vicar' : 'curate. He is the curate still'}. She has five children and no carriage. She has not once said she is sorry.`,
+    dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
+    free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
   P.push(kl[k]);
-  if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant, with a great many others. There is a tablet in Hatherley church. His mother has had the pew moved so as to face it.`);
-  else if (e === 'army') P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur}, ${S.flags.edmundFate || 'served through the Peninsula'}, and is home, on half-pay, teaching the Volunteers’ old serjeant how the thing is really done.`);
-  else if (e === 'navy') P.push(`His son commands a sloop of war, at present laid up, there being nobody left to fight, and is ashore at Hatherley walking the terrace eight paces each way from habit.`);
-  else if (e === 'church') P.push(F('edmundVicar') ? `His son is vicar of the parish, and preaches short.` : `His son is in orders, in Hampshire, and writes on Sundays.`);
-  else if (e === 'farmer') P.push(`His son farms Kennet Bottom better than it has ever been farmed, and has given him three grandchildren, one of whom bites.`);
-  else if (e === 'militia') P.push(`His son came home from the Militia a captain, with a straight back and an Irish wife.`);
-  else P.push(`His son is at home still. He is forty, and manages everything, and is waiting.`);
-  if (F('oaks')) P.push(`He planted forty acres of oak on Gallows Piece for the Royal Navy. It will be ready when the Navy, by all appearances, has gone over to iron.`);
-  if (F('soldLiving')) P.push(`He sold the living of Hatherley to a wine merchant, and the Bishop has not dined with him since.`);
-  if (F('vaccinated')) P.push(`There has been no smallpox in the parish these ten years, since he sat on a kitchen chair on the green and had his arm scratched before them all.`);
-  if (F('soup')) P.push(`The old people still judge every soup they are given against the soup of 1800.`);
-  if (F('hoarder')) P.push(`It is remembered in the cottages that his wheat left the parish in three wagons, in the dearth, in daylight.`);
-  if (S.chars.pryor.r >= 3) P.push(`Jem Pryor, who has taken game off the estate for thirty years, has let it be known that anyone else who tries it will answer to him.`);
-  else if (S.chars.pryor.r <= -3) P.push(`Jem Pryor has not been seen in the parish lately. Neither have a good many of the pheasants.`);
-  if (F('cornFor')) P.push(`He put his name to the Corn Bill, and the loaf is dear.`);
-  if (F('cornAgainst')) P.push(`He set his name against the Corn Bill, almost alone among the landed gentlemen of the county, and has been “the Loaf” at Cullerne Castle ever since.`);
+  if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
+  else if (e === 'army') P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur}, ${S.flags.edmundFate || 'served through the Peninsula'}. He is home on half-pay. He has the Volunteers’ old serjeant out on the lawn at six, learning the new drill.`);
+  else if (e === 'navy') P.push(`His son commands a sloop of war. She is laid up. He is ashore at Hatherley. He walks the terrace eight paces each way.`);
+  else if (e === 'church') P.push(F('edmundVicar') ? `His son is vicar of the parish. His sermons are twelve minutes.` : `His son is in orders, in Hampshire. He writes on Sundays.`);
+  else if (e === 'farmer') P.push(`His son farms Kennet Bottom. There are three grandchildren. One of them bites.`);
+  else if (e === 'militia') P.push(`His son came home from the Militia a captain. He brought a wife with him from Dover.`);
+  else P.push(`His son is at home still. He is forty. He manages everything. He waits.`);
+  if (F('oaks')) P.push(`He planted forty acres of oak on Gallows Piece for the Navy. The trees do not yet reach the keeper’s shoulder.`);
+  if (F('soldLiving')) P.push(`He sold the living of Hatherley to a wine merchant. The Bishop has not dined at the Hall since.`);
+  if (F('vaccinated')) P.push(`He had his arm scratched for the cow-pox on a kitchen chair on the green, before the whole parish. There has been no smallpox in Hatherley since.`);
+  if (F('soup')) P.push(`The old people of the parish measure every soup against the soup of 1800.`);
+  if (F('hoarder')) P.push(`In the dearth his wheat left the parish in three wagons, by daylight. The cottages have the date.`);
+  if (S.chars.pryor.r >= 3) P.push(`Jem Pryor has taken game off the estate for thirty years. He has let it be known that no other man is to try.`);
+  else if (S.chars.pryor.r <= -3) P.push(`Jem Pryor has not been seen in the parish lately. The keeper is short some two hundred pheasants.`);
+  if (F('cornFor')) P.push(`He put his name to the Corn Bill. The quartern loaf is at a shilling.`);
+  if (F('cornAgainst')) P.push(`He set his name against the Corn Bill. Few landed gentlemen of the county did. At Cullerne Castle he is called “the Loaf”.`);
 
   let score = Math.round(S.standing * 0.25 + S.goodwill * 0.4 + S.family * 0.35 + clamp(net / 400, -12, 12));
   score = clamp(score, 0, 100);
@@ -478,7 +576,7 @@ function reckoning(){
   else if (S.goodwill < 30) title = 'The Man in the Song';
   else if (S.family < 30) title = 'Master of an Empty House';
   else if (S.goodwill >= 60) title = 'A Fair Man';
-  P.push(`He is ${S.year - 1795 + 46}, and in tolerable health. He has been heard to say that the next twenty years cannot possibly be as troublesome as the last. We wish him joy of the opinion.`);
+  P.push(`He is ${S.year - 1795 + 46}, and in tolerable health. He has been heard to say that the next twenty years cannot be as troublesome as the last.`);
   return {title, P, score};
 }
 
@@ -2730,7 +2828,7 @@ function resume(){ const s = load(); if (s) { S = s; render(); } }
 function ledgerHTML(){ let rows = '', tot = 0;
   for (const [l, a] of S.ledger){ tot += a; rows += `<tr><td>${esc(l)}</td><td class="${a < 0 ? 'neg' : 'pos'}">${fmt(a)}</td></tr>`; }
   rows += `<tr class="total"><td>Carried to the purse</td><td class="${tot < 0 ? 'neg' : 'pos'}">${fmt(tot)}</td></tr>`;
-  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern have met at the George and resolved, unanimously, to give no further credit. The mortgagees have sent a man to look at the roof.</p>` : '';
+  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `<article class="card">
     <p class="kicker">${esc(QUARTER[S.season])} ${S.year}. ${esc(F('crabbeGone') ? 'Mr Lark' : 'Mr Crabbe')} presents the quarter</p>
     <h2>The Accounts</h2>
@@ -2759,7 +2857,7 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand, and will want ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. For the rest, one undertaking, and only one.' : 'One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner.'}</p></div>
+    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand. It wants ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. You may undertake one thing besides.' : 'You may undertake one thing this season.'}</p></div>
     <div class="choices">${o.map((c, i) => `<button class="choice${c.project ? ' work' : ''}" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 

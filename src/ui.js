@@ -43,7 +43,7 @@ function resume(){ const s = load(); if (s) { S = s; render(); } }
 function ledgerHTML(){ let rows = '', tot = 0;
   for (const [l, a] of S.ledger){ tot += a; rows += `<tr><td>${esc(l)}</td><td class="${a < 0 ? 'neg' : 'pos'}">${fmt(a)}</td></tr>`; }
   rows += `<tr class="total"><td>Carried to the purse</td><td class="${tot < 0 ? 'neg' : 'pos'}">${fmt(tot)}</td></tr>`;
-  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern have met at the George and resolved, unanimously, to give no further credit. The mortgagees have sent a man to look at the roof.</p>` : '';
+  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `<article class="card">
     <p class="kicker">${esc(QUARTER[S.season])} ${S.year}. ${esc(F('crabbeGone') ? 'Mr Lark' : 'Mr Crabbe')} presents the quarter</p>
     <h2>The Accounts</h2>
@@ -72,7 +72,7 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `<article class="card">
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand, and will want ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. For the rest, one undertaking, and only one.' : 'One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner.'}</p></div>
+    <div class="prose"><p>${S.project ? esc(PROJECTS[S.project.id].name) + ' is in hand. It wants ' + S.project.left + ' more season' + (S.project.left > 1 ? 's' : '') + '. You may undertake one thing besides.' : 'You may undertake one thing this season.'}</p></div>
     <div class="choices">${o.map((c, i) => `<button class="choice${c.project ? ' work' : ''}" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${c.note ? `<em>${esc(c.note)}</em>` : ''}</button>`).join('')}</div>
   </article>`; }
 
