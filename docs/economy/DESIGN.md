@@ -231,9 +231,8 @@ Three pull requests, each playable, after the ledger and character work have mer
 
 ## Settled with Ned, 26 November
 
-Three farms to begin, five at most. A trait may start a squire with four. He should be able to end greatly rich or a good deal poorer.
+Three farms to begin, five at most. A trait may start a squire with four. He should be able to end greatly rich or a good deal poorer. Ruin comes by stages.
 
 ## Still open
 
-- Whether ruin by stages is wanted. It is kinder, and some would say softer.
 - Whether five thousand a year is rich enough for "greatly", or whether the ceiling should go higher.
