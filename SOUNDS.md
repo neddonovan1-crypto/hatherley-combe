@@ -38,8 +38,7 @@ Taken from Freesound's high-quality mp3 previews, cut as above, mixed to mono an
 - `Sound.play(name, volume, delay)` plays a file once. `Sound.air(name)` sets the long recording under everything, lapped over itself.
 - Which paper makes which noise is the `ARRIVES` table. An event not named there knocks; a handbill turns a leaf.
 - Master volume is `VOL` (0.3). The airs sit at `AIR` (0.32) of that.
-- "Sound on" in the corner of the desk silences the lot and is remembered in `localStorage` under `hatherley-quiet`.
-- Browsers allow no sound before the first click or key, so the title page is silent until touched.
+- The game starts silent. "Sound off" in the corner of the desk turns it on, and the choice is remembered in `localStorage` under `hatherley-quiet`.
 
 ## Adding one
 

@@ -125,7 +125,7 @@ When the cloth is drawn each one takes you aside. Each is the only farmer in Ber
 
 At dusk Mrs Pryor counts her children into the cart. She has nine. She came with seven.`,
     `In your pocket-book: “We washed 900 Sheep in the Lambourn to day. To the Washers, Beer, Bread and Cheese, and gave among them 0. 5. 0. The Shepherd stood to his Middle in the River from 6 till Noon. Sent him a Glass of Rum. Very hot. Wind S.”`,
-    `In your pocket-book: “Hatherley played Kintbury on the Common for eleven Pair of Gloves. Kintbury beat us by 14 Notches. The Smith bowled. He hit the Wicket once and the Kintbury Long-stop three times. Lost to Mr. Hartopp on the Match 0. 10. 6.”`,
+    {w:() => !F('enclosed'), x:`In your pocket-book: “Hatherley played Kintbury on the Common for eleven Pair of Gloves. Kintbury beat us by 14 Notches. The Smith bowled. He hit the Wicket once and the Kintbury Long-stop three times. Lost to Mr. Hartopp on the Match 0. 10. 6.”`},
     `Three weeks without rain. The pond is down to a green plate. The wheel of a gig stands up in the middle of it.
 
 Your uncle lost a gig in 1771. He never said where.`,
@@ -150,9 +150,9 @@ One man has a turnip in his. Nobody has asked him yet.`,
 
 The Turkish Knight raises them both.`,
     `In your pocket-book: “We killed two Pigs this Morn’. They weighed 16 Score the Pair. Sent a Spare-rib to the Vicarage and the Chitterlings to the Lodge. Gave the Pryor Children the Bladder. It was in the Carp Pond by 3 o’clock. Dinner to day, the Fry &c.”`,
-    `A hard frost. The carp pond bears. After eleven at night there are lanterns on it.
+    {w:() => keepsCarriage(), x:`A hard frost. The carp pond bears. After eleven at night there are lanterns on it.
 
-In the morning the ice is cut all over. Both footmen yawn through breakfast.`,
+In the morning the ice is cut all over. Both footmen yawn through breakfast.`},
     `Plough Monday. The plough boys drag a plough from door to door for pennies. The miller gives nothing. They draw a furrow across his yard.
 
 You send out half a crown.`
@@ -217,7 +217,7 @@ VIGNETTES[2].push(
   `Nutting. The village children are in Hatherley Copse with hooked sticks and their mothers’ aprons. Mudge says they put up the pheasants. He says it from the gate.
 
 Your uncle’s keeper took him in that copse at nine years old, with an apron.`,
-  {w:() => S.year >= 1803 && S.year <= 1813, x:`Gunpowder Treason. The boys burn the Pope on the Common. This year he has a cocked hat and they call him Boney.
+  {w:() => S.year >= 1803 && S.year <= 1813 && !F('enclosed'), x:`Gunpowder Treason. The boys burn the Pope on the Common. This year he has a cocked hat and they call him Boney.
 
 It is last year’s straw.`},
   `The hop-pickers come through from Farnham, walking home into Wiltshire. Sixty of them sleep in the great barn.
@@ -266,6 +266,7 @@ He eats his Christmas dinner on the sixth of January, alone, with his hat on.`
 );
 function vignette(q){ S.vig = S.vig || {};
   const all = VIGNETTES[q].map((v, i) => ({i, v})).filter(o => typeof o.v === 'string' || !o.v.w || o.v.w());
+  if (F('henriettaAway')) { const here = all.filter(o => !/Henrietta/.test(typeof o.v === 'string' ? o.v : String(o.v.x))); if (here.length >= 4) all.splice(0, all.length, ...here); }
   const fresh = all.filter(o => S.vig[q + '-' + o.i] === undefined);
   const set = fresh.length ? fresh : all.slice().sort((a, b) => S.vig[q + '-' + a.i] - S.vig[q + '-' + b.i]).slice(0, 4);
   const o = pick(set); S.vig[q + '-' + o.i] = S.t;

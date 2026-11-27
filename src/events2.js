@@ -27,7 +27,7 @@ The new steward is a Scot of twenty-six named Lark. On his first morning you han
 At Lady Day there is a new line in the quarter’s accounts, in his best hand. “Sundries. £4. 10s.” At Midsummer it is there again. “Sundries. £6.”`; }}
   ]});
 
-ev({ id:'thorneLease', from:1795, to:1800, weight:4, title:'The Widow of Long Barrow',
+ev({ id:'thorneLease', from:1795, to:1800, weight:4, cond:() => thorneHolds(), title:'The Widow of Long Barrow',
   text:() => { meet('thorne'); const st = F('crabbeGone') ? 'Lark' : 'Crabbe';
     return `They buried Samuel Thorne on Tuesday. On Wednesday his widow is in your estate office at nine o’clock. She has brought the farm book.
 
@@ -375,7 +375,7 @@ He has come into Berkshire to buy two things. One is an estate. He tells you the
 
 Through the open door he can see Kitty at the pianoforte. He looked at your rent roll this morning. He is looking at her in the same way.`; },
   choices:[
-    {t:'Accept him, on Kitty’s behalf.', note:'+£3,000', go:() => { fl('kitty','pinch'); add({money:3000, family:-12, standing:2}); reg('kitty',-5,'You married her to Mr Pinch for three thousand pounds'); reg('pinch',3); reg('henrietta',-1); later('pinchDies', 20 + Math.floor(Math.random() * 12));
+    {t:'Accept him, on Kitty’s behalf.', note:'+£3,000', go:() => { fl('kitty','pinch'); add({money:3000, family:-12, standing:2}); reg('kitty',-5,'You married her to Mr Pinch for three thousand pounds'); reg('pinch',3); reg('henrietta',-1); later('pinchDies', Math.max(20 + Math.floor(Math.random() * 12), 50 - S.t));
       return `The settlements are signed in the library. Three thousand pounds.
 
 They are married at Hatherley. Kitty’s veil is Brussels lace. Pinch has had it valued. He tells the figure to the clergyman, the Tamworths and the clerk.
@@ -491,7 +491,7 @@ You had meant to ask him what they really think of Bonaparte. You had a good man
 
 Each afternoon he walks out to the milestone. He touches it with his cane. He walks back.
 
-Your carriage passes him on the turnpike on Thursday. He takes off his hat and bows low. He is smiling.`; }}
+${keepsCarriage() ? 'Your carriage passes' : 'You pass'} him on the turnpike on Thursday. He takes off his hat and bows low. He is smiling.`; }}
   ]});
 
 ev({ id:'dubreuilAsks', follow:true, cond:() => K() === 'free' && F('dubreuilFriend'), title:'The Lieutenant Is Exchanged',
@@ -876,7 +876,7 @@ Will is in the yard holding his hat. He has not asked you for anything.`,
 
 Will Tanner says, “Thank you, sir.” Nothing else.
 
-All that winter your hunters come out of the stable shining. You could shave in the bay mare’s quarters.`; }},
+All that winter your ${ended('hunters') ? 'horses' : 'hunters'} come out of the stable shining. You could shave in the bay mare’s quarters.`; }},
     {t:'Let the ballot stand. Every man must take his chance.', go:() => { add({goodwill:-3, family:-1});
       return `“Every man must take his chance, Will.”
 
@@ -976,7 +976,7 @@ The lambs come in the spring. The wool is fine. The butcher looks at the carcase
 He tells you so again at the Bench. He tells you at the Tamworths’. He sends you the sale prices each quarter, cut from the Farmer’s Journal.`; }}
   ]});
 
-ev({ id:'allotments', from:1796, to:1808, weight:2, cond:() => !F('enclosed') && !F('allotments') && !F('nephewFarm'), title:'A Rood for Every Cottage',
+ev({ id:'allotments', from:1796, to:1808, weight:2, cond:() => !F('enclosed') && !F('allotments') && !F('nephewFarm') && thorneHolds(), title:'A Rood for Every Cottage',
   text:() => { meet('thorne'); return `Mrs Thorne drives over from Long Barrow in her gig. She has a bundle of printed reports on the seat beside her. The Society for Bettering the Condition of the Poor.
 
 She does not sit down.
@@ -1038,7 +1038,7 @@ At the last drive the head keeper stops by your stand. He looks at your gun. He 
 Your place in the line goes to the brewer from Reading. He kills fourteen pheasants and a spaniel.`; }}
   ]});
 
-ev({ id:'hunt', from:1797, to:1814, weight:2, cond:() => !F('nephewFarm') && S.chars.thorne.met, title:'Forty Gentlemen in Pink',
+ev({ id:'hunt', from:1797, to:1814, weight:2, cond:() => !F('nephewFarm') && S.chars.thorne.met && thorneHolds(), title:'Forty Gentlemen in Pink',
   text:() => `The Craven hounds ran a fox across Long Barrow on Tuesday. Forty gentlemen in scarlet went after them. They went through Mrs Thorne’s winter wheat, two of her gates and a clamp of mangolds.
 
 On Wednesday a paper comes up to the Hall, in her round hand.
@@ -1177,7 +1177,7 @@ const EDMUND = [
   {id:'edmund-waiting', kind:'news', w:() => at('church') && yr(1804, 1815), x:() => `“My dear Father, I have now been a curate eleven years counting from my Deacon’s orders. The Rector is seventy-four and takes the waters. I asked his agent who has the next presentation. It is sold already to a gentleman in the City for his nephew. The nephew is nine. I keep a pig, a pony and a school for six farmers’ sons. How does ${F('gallDead') ? 'the new man do at Hatherley' : 'Dr Gall do'}?”`},
 
   /* ---------- at home, the heir ---------- */
-  {id:'edmund-rentbook', kind:'talk', w:() => at('home'), x:() => `Edmund comes to the book-room with the rent book under his arm.
+  {id:'edmund-rentbook', kind:'talk', w:() => at('home') && !!tenantOf('church'), x:() => `Edmund comes to the book-room with the rent book under his arm.
 
 “Church Farm has paid the same rent since 1784, sir. Wheat was forty shillings then.”
 
@@ -1216,7 +1216,7 @@ He finishes the lock. He hangs up the guns. Next week you see the pegs in Cuckoo
 He folds the paper. He asks whether you want him for anything this morning.`,
     a:() => `“Take the grey and ride to Newbury market. Sell the barley as you think fit.”
 
-He sells it at two shillings over what Crabbe had asked. He tells you the price at dinner. He does not mention the Gazette.`,
+He sells it at two shillings over what ${steward()} had asked. He tells you the price at dinner. He does not mention the Gazette.`,
     b:() => `You take him round the home farm. You ask his opinion of every field and you take it in two.
 
 At the last gate he says, “I know what you are doing, sir.”
@@ -1607,7 +1607,7 @@ His next letter is to her.`
 Henrietta has taken to dining with a book. She lays it open between the two of you and reads it.`; }}
   ]});
 
-ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home' && !F('edmundDead'), title:'Edmund and the Volunteers',
+ev({ id:'edmundHome', from:1803, to:1806, weight:3, cond:() => E() === 'home' && !F('edmundDead') && !!tenantOf('kennet'), title:'Edmund and the Volunteers',
   text:() => `Edmund is rising thirty. He knows every field on the estate and what it let for in 1790.
 
 The war has begun again. Two of his schoolfellows are at sea. One is at Malta. Edmund reads the Gazette at breakfast and leaves his egg.
@@ -2286,7 +2286,7 @@ The direction is care of a pastry-cook.`},
 She has come to borrow the Hall mangle. Theirs has broken a roller. There are four surplices in the basket and a great many small shirts.
 
 “Mr Oakes sends his duty, sir. He is writing a sermon and minding the baby. He does both with the one hand.”`},
-  {id:'kitty-oakes-pew', kind:'news', w:() => K() === 'oakes', x:() => `Sunday. Kitty sits in the ${F('oakesVicar') ? 'Vicarage' : 'curate’s'} pew under the pulpit. There are ${Math.min(5, Math.max(1, Math.floor((S.year - 1800) / 2)))} children in it with her.
+  {id:'kitty-oakes-pew', kind:'news', w:() => K() === 'oakes', x:() => `Sunday. Kitty sits in the ${F('oakesVicar') ? 'Vicarage' : 'curate’s'} pew under the pulpit. There are ${ONES[Math.min(5, Math.max(2, Math.floor((S.year - 1800) / 2)))]} children in it with her.
 
 The smallest gets out during the Litany. He walks up the aisle to the Hall pew and holds up his arms.
 
@@ -3091,7 +3091,7 @@ He is back on Thursday. Brandy, cardamom, a little tincture of cantharides. “I
 
 He has not brought the bottles. He says the analysis used them up.`; }}]},
 
-  {id:'county-fight', title:'A Fight on the Common', x:() => `There is to be a fight on Hatherley Common on Tuesday. The Wyvern butcher against a Bristol man. Twenty-five guineas a side.
+  {id:'county-fight', title:'A Fight on the Common', w:() => !F('enclosed'), x:() => `There is to be a fight on Hatherley Common on Tuesday. The Wyvern butcher against a Bristol man. Twenty-five guineas a side.
 
 A prize-fight is a breach of the peace. You are the nearest magistrate. Four thousand people are looked for, and eleven coaches from London.
 
@@ -3909,7 +3909,7 @@ Forty-one stairs. She opens the door herself. She has a pen in her hand.
 “You are out of breath,” she says.
 
 You stay four days at the White Hart. You walk in the Crescent with her at one. On the fourth day she lets you carry her shawl.`; }},
-    {t:'Send the carriage, empty, with her maid.', go:() => { add({family:-2}); reg('henrietta',-1,'You sent an empty carriage for her');
+    {t:'Send the carriage, empty, with her maid.', if:() => keepsCarriage(), go:() => { add({family:-2}); reg('henrietta',-1,'You sent an empty carriage for her');
       return `The carriage goes to Bath with her maid in it and a rug.
 
 It is back on Thursday. The maid is in it. So is the rug.

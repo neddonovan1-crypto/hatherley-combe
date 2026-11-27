@@ -23,7 +23,7 @@ He looks at the lodge for some time before he answers.
 
 “I can open a gate, sir.”
 
-He is at the gate next morning before the carrier. He salutes every carriage with the arm he has.${F('volunteers') ? ' On Sundays he drills the Volunteers on the common, from a chair.' : ''}`; }},
+He is at the gate next morning before the carrier. He salutes every carriage with the arm he has.${F('volunteers') ? ' On Sundays he drills the Volunteers on ${ground()}, from a chair.' : ''}`; }},
     {t:'Write to the Board at Chelsea in his behalf.', go:() => { if (chance(0.5 + (S.standing - 40) / 100)) { add({standing:2, goodwill:2});
         return `You write four sides to the Commissioners of Chelsea Hospital and sign them with your rank.
 

@@ -296,7 +296,7 @@ On Sunday nobody stays to talk in the churchyard. Old Dewey stops you at the gat
 
 There are no muskets to be had in England. The blacksmith makes forty pike-heads in a fortnight.
 
-They drill on the common on Sunday afternoons. On the first Sunday the drummer puts his foot through the drum. On the fourth they march the length of the common in step. You find you are standing very straight.`; }},
+They drill on ${ground()} on Sunday afternoons. On the first Sunday the drummer puts his foot through the drum. On the fourth they march the length of ${ground()} in step. You find you are standing very straight.`; }},
     {t:'Leave it all to Crabbe.', if:() => !F('crabbeGone'), go:() => { reg('crabbe',1); later('crabbeList', 3);
       return `“See to it, Crabbe.”
 
@@ -499,7 +499,7 @@ At the Tamworths’ the nurse has a new way of getting the children to bed. “B
 There is a handbill on the church door. “BRITONS! To Arms!”`,
   choices:[
     {t:'Drill the Hatherley Volunteers yourself, twice a week.', if:() => F('volunteers'), go:() => { add({standing:5, goodwill:2, family:-2});
-      return `You buy the drill book and read it on Saturday nights. On Sundays and Wednesdays you take them on the common.
+      return `You buy the drill book and read it on Saturday nights. On Sundays and Wednesdays you take them on ${ground()}.
 
 Form line. Form square. Charge pikes. By November they can do all three. One man has been stuck in the leg.
 
@@ -529,7 +529,7 @@ ev({ id:'beacon', fixed:'1804-0', title:'The Beacon on Hatherley Down',
 
 There is fire on Hatherley Down. There is fire on Inkpen Hill behind it. From the landing window you count five more along the valley.
 
-The Volunteers are falling in on the green. Some have coats. The smith has a pike and a nightshirt. Henrietta is on the stairs with the silver in a pillowcase.
+The Volunteers are falling in on the green. Some have coats. The smith has a pike and a nightshirt. Henrietta is on the stairs with the ${ended('plate') ? 'spoons' : 'silver'} in a pillowcase.
 
 ${F('gallDead') ? 'The sexton comes up the drive at a run. He has buried the communion plate in the vicarage asparagus bed. He wants you to know which row, in case he is killed. He cannot remember which row.' : 'Dr Gall comes up the drive in his dressing-gown. He has buried the communion plate in his asparagus bed. He wants you to know which row, in case he is killed. He cannot remember which row.'}`,
   choices:[
@@ -569,7 +569,7 @@ People walk out from Wyvern to stand in the road and look. Somebody starts “Ru
 
 Henrietta walks the gallery with a snuffer. She counts the candles aloud. At ten o’clock she begins putting them out.`; }},
     {t:'Roast a sheep for the village.', note:'£60', go:() => { add({money:-60, goodwill:6});
-      return `You give a sheep and three barrels. It is roasted on the common.
+      return `You give a sheep and three barrels. It is roasted on ${ground()}.
 
 They drink to Lord Nelson first. Nobody says a word. Then they drink confusion to the French. The noise can be heard at the Hall.
 
@@ -775,7 +775,7 @@ You are Member for Wyvern. On Sunday ${F('gallDead') ? 'the Vicar' : 'Dr Gall'} 
 
 On Tuesday night it is put about that you dined with a priest at Reading in ’98. He was a French abbé. There were nine others at table.
 
-Twelve votes. Somebody has chalked a triple crown on your carriage door. It is washed off. It shows when the sun is low.`,
+Twelve votes. Somebody has chalked a triple crown on your ${keepsCarriage() ? 'carriage' : 'hall'} door. It is washed off. It shows when the sun is low.`,
     home:() => `“I nail my own gate.”
 
 The groom puts up his hammer. He leaves the ham. He says he was told nothing about the ham.
@@ -903,7 +903,7 @@ Every parish in Berkshire is to roast an ox. Newbury has bought one. Wyvern has 
 
 The churchwardens are in your hall with their hats in their hands. They would like to know what Hatherley is to do.`,
   choices:[
-    {t:'Roast an ox on the common.', note:'£80', go:() => { add({money:-80, goodwill:8});
+    {t:() => `Roast an ox on ${ground()}.`, note:'£80', go:() => { add({money:-80, goodwill:8});
       return `You give the ox. Eighty pounds with the beer.
 
 It goes on the spit at four in the morning. Every dog in the parish sits round it. Six men turn. Eleven give advice.
@@ -992,8 +992,8 @@ She leaves it by your plate.`,
 You see the Tsar at the Opera. You see the King of Prussia at a window in St James’s. In Piccadilly the crowd takes the horses out of Blücher’s carriage and drags it to Carlton House by hand.
 
 On the first of August there are fireworks in the Park. A Chinese pagoda on the canal catches fire and falls in. Henrietta has your arm. She does not let go of it all evening.`; }},
-    {t:'Feast the village on the common.', note:'£70', go:() => { add({money:-70, goodwill:6});
-      return `Trestles on the common. Four hundred sit down to beef and plum pudding. Seventy pounds.
+    {t:() => `Feast the village on ${ground()}.`, note:'£70', go:() => { add({money:-70, goodwill:6});
+      return `Trestles on ${ground()}. Four hundred sit down to beef and plum pudding. Seventy pounds.
 
 At dusk they burn Bonaparte. He is made of straw and an old coat of Mudge’s, stuffed with squibs. He burns for ten minutes and goes off at the end.
 
@@ -1007,7 +1007,7 @@ She does not speak of London again. She reads the Tamworths’ letters upstairs.
   ]});
 
 ev({ id:'abatement', fixed:'1814-2', title:'Sunday Coats',
-  text:() => { meet('thorne'); const dewey = F('nephewFarm');
+  text:() => { meet('thorne'); const dewey = !thorneHolds();
     return `Your tenants are in the hall. They have come up together. It is a Wednesday. Every one of them is in Sunday clothes.
 
 ${dewey ? 'Old Dewey' : 'Mrs Thorne'} has a paper. ${dewey ? 'He' : 'She'} is the one among them who can add.
@@ -1108,8 +1108,8 @@ Henrietta cuts up his meat. He lets her.`; }
 Henrietta sits down on the hall floor.
 
 His letter comes nine days later. “Two horses killed under me and a ball through my hat. I am perfectly well. Pray send a hat.”`; }},
-    {t:'Ring the bells and broach a hogshead on the common.', note:'£50', if:() => !(E() === 'army' && !F('edmundDead')), go:() => { add({money:-50, goodwill:5, standing:1});
-      return `You have a hogshead rolled out on the common. Fifty pounds for that and the ringers.
+    {t:() => `Ring the bells and broach a hogshead on ${ground()}.`, note:'£50', if:() => !(E() === 'army' && !F('edmundDead')), go:() => { add({money:-50, goodwill:5, standing:1});
+      return `You have a hogshead rolled out on ${ground()}. Fifty pounds for that and the ringers.
 
 It is empty by dusk. Two old soldiers are carried round the green in kitchen chairs. One left a leg at Alexandria. One left a leg at Talavera. They argue about which was the worse place.
 
