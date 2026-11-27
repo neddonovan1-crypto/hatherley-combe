@@ -26,11 +26,20 @@ If only five things get opened, open these.
 
 **David Davies, *The Case of Labourers in Husbandry*** (1795). Davies was rector of Barkham, six miles from Reading, and he printed the weekly budgets of six of his own parishioners down to the halfpenny of thread. Free on HathiTrust. Nothing else tells you so exactly what the Pryors eat.
 
-**Mary Russell Mitford.** Her letters from Bertram House near Reading run through 1806 to 1811 (L'Estrange's 1870 edition is on archive.org; a life is Gutenberg ebook 72028). Her father is a plotline on legs: a doctor who won a lottery fortune and spent the next twenty years losing it at cards and coursing. **[lead]** on the details; I could not open the text.
+**Mary Russell Mitford.** Her letters from Bertram House near Reading run through 1806 to 1811, in L'Estrange's 1870 *Life*, [free on archive.org](https://archive.org/stream/lifeofmaryrussel01mitfuoft/lifeofmaryrussel01mitfuoft_djvu.txt). Her father is a plotline on legs. **[checked]** About 1796 Dr Mitford was hiding from his creditors within the rules of the King's Bench. He took his small daughter to a lottery office to choose a ticket; she fixed on number 2224 and would have no other, though it had been split into sixteenths among several offices. He bought up the shares at a premium and it drew £20,000, "the largest prize that was then given". By 1797 he was in Reading with "his phaeton, his spaniels, and his greyhounds", and the family's prosperity, says the editor, hung "on the fleetness of the doctor's greyhounds, or the number of his trumps at whist". He coursed with Cobbett, whose letters to him end "God bless you and d— the ministers!" By 1808 Mary is writing to advise him to sell his latest lottery ticket.
 
 **Thomas Hughes, *The Scouring of the White Horse*** (1859, Gutenberg 53241). Old men's memories of the Uffington pastimes: cheese chased down the Manger, backsword play for a gold-laced hat, a gallon of gin for the longest smoker. Scourings are said to have fallen in 1803, 1808 and 1813 **[lead]**, which would drop one neatly into the thin stretch. Confirm the years in Hughes before building on them.
 
-**Mrs Lybbe Powys's diaries**, 1756 to 1808 (archive.org). Gentry life at Hardwick House, across the Thames from Reading. Balls, theatricals, who dined with whom and what it cost. Henrietta's social calendar is in here.
+**Mrs Lybbe Powys's diaries**, 1756 to 1808, [free on archive.org](https://archive.org/stream/passagesfromdiar00powyuoft/passagesfromdiar00powyuoft_djvu.txt). Gentry life at Hardwick and Fawley, across the Thames from Reading. Henrietta's social calendar is in here, with prices. A sample from the last three years **[checked]**:
+
+- *1 August 1805.* "I rode my donkey for the first time, which Mr. Powys had just bought me. It cost three guineas and a half." Two summers later she drives a donkey-chaise into Henley, "quite a new carriage in this part of the world", and "children follow'd me all over the town".
+- *December 1805.* A new theatre at Henley, where county ladies take turns to "bespeak" a play and fill the house. On the 12th it snows, they have "great difficulty in getting down our hill", and Mrs Atkyns Wright has a full house anyway.
+- *3 January 1806.* "First Henley assembly. A very good one, twenty couples." On the 23rd Mr Pitt dies, "to the inexpressible loss of the nation".
+- *1 April 1806.* "The illness now everywhere term'd 'the influenza' very prevalent."
+- *3 February 1807.* The funeral of Walter Long of Bath, aged ninety-six and worth £800,000: plumed horsemen, a hearse and six, coaches and six, and a crowd past counting.
+- *2 December 1807.* Four guns at Hardwick "had great sport": six woodcock, four rabbits, one hare, and a missed pheasant. Set that beside Lord Cullerne's battue.
+- *March 1808.* Madame Catalani arrives at Bath too hoarse to sing to a thousand people who have waited since three. Hisses begin. The promoter refunds every half-guinea.
+- *10 March 1808.* A French emigrant dances beautifully at the Lower Rooms until a gentleman remarks, "No wonder he dances fine, when he was a dancing-master."
 
 ## Year by year
 
@@ -144,4 +153,4 @@ From general knowledge. Each needs a source before use.
 
 ## What I could not reach
 
-Gutenberg and the History of Parliament site refused every request from this workspace, so Hughes, the Hammonds, Abell's *Prisoners of War in Britain* and the Mitford life are listed on the strength of their catalogue entries. The archive.org scan of Lybbe Powys cut off in 1759. The National Archives catalogue pages for Berkshire Quarter Sessions and HO 42 returned blank. All of these open normally in a browser.
+Project Gutenberg was down for maintenance on the night this was compiled, and the History of Parliament site refuses automated readers, so Hughes, the Hammonds and Abell's *Prisoners of War in Britain* are listed on the strength of their catalogue entries. Archive.org full texts can be read from the cloud workspace through its `/stream/` pages, though not as downloads. The National Archives catalogue pages for Berkshire Quarter Sessions and HO 42 returned blank. All of these open normally in a browser.
