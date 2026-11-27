@@ -201,14 +201,18 @@ function hazardHTML(v){
   if (v.odds) { const o = v.odds, pc = x => Math.round((x || 0) * 100); return `<span class="hazard"><span>Hazard</span><span class="oddsbar" role="img" aria-label="${pc(o.well)} in 100 well, ${pc(o.dull)} middling, ${pc(o.ill)} ill"><i class="w" style="flex:${pc(o.well)}"></i><i class="d" style="flex:${pc(o.dull)}"></i><i class="l" style="flex:${pc(o.ill)}"></i></span></span>`; }
   if (!Number.isFinite(v.risk)) return '';
   return `<span class="hazard" role="img" aria-label="Hazard ${v.risk} of 4"><span>Hazard</span>${[1, 2, 3, 4].map(i => `<i class="pip${i <= v.risk ? ' on' : ''}"></i>`).join('')}</span>`; }
-function creditHTML(){
-  return `<div class="creditbox"><details class="pick credit"><summary><b>Credit</b></summary><div class="opts">${creditList().map(c => `<button type="button" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}><b>${esc(c.name)}</b>${c.gets ? amt(c.gets, c.gets) : ''}<small>${c.why && !c.can ? esc(c.why) : (c.fx || []).slice(1).map(esc).join('. ') + (c.note ? (c.fx && c.fx.length > 1 ? '. ' : '') + esc(c.note) : '')}</small></button>`).join('')}</div></details></div>`; }
+function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id === id);
+  const b = (c, label) => c ? `<button type="button" onclick="takeCredit('${c.id}')" ${c.can ? '' : `disabled title="${esc(c.why || '')}"`}>${label} ${amt(c.gets, c.gets)}</button>` : '';
+  return `<div class="creditbox">${b(by('mortgage'), 'Borrow')}${b(by('repay'), 'Pay off')}</div>`; }
+/* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
+function raiseHTML(ids){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
+  return `<h3 class="orn">Raising money</h3><div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
 function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
     ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
     ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${fxHTML(w) || `<p>${esc(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
-    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>`; }
+    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${raiseHTML(['timber'])}`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
 const DRAFT_FARMS = [
@@ -245,7 +249,7 @@ const DRAFT_SOCIETY = [
   {name: 'A pack of harriers', cost: 260, well: 'Forty gentlemen to breakfast twice a week.'},
   {name: 'A commission for Edmund', cost: 450, well: 'An ensigncy in a marching regiment.'},
   {name: 'The family plate', cost: 600, state: 'inHand', held: 'In the strong room', well: 'It would fetch about six hundred pounds at Rundell’s.'}];
-function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it'); }
+function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
 
 const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){
