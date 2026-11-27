@@ -105,6 +105,28 @@ Inclosure deserves its own note. I have put it at £2,400 where the game says £
 
 The house works (the front, the pinery, the ice-house, the oaks, the cottages, the school, the road) keep their present prices. They buy regard, which section 5 makes worth having.
 
+## Ventures
+
+The works above are sound. They cost money, they pay, and the worst they can do is leave a squire in debt when rents fall. Ventures are the other kind. Each can make him or break him, each was tried by real landowners in these years, and each has a moment to get out which the game will not announce.
+
+A farm takes one venture at a time. The estate at large takes two.
+
+| Venture | Where | Cost | While it goes well | What ends it |
+|---|---|---|---|---|
+| **Plough up the down** | Long Barrow, Starveall | £250 | The farm lets a quarter higher, at once | The soil is thin. After seven crops it is finished, and the farm lets at seven-tenths until it has been laid back to grass (£300) and rested five years |
+| **Merinos** | The home farm | £420 | Wool worth £110 more a year; from 1806 rams sell at fancy prices, and the flock is worth £1,400 by 1810 | 1811. A forty-guinea ram goes to the butcher at forty shillings |
+| **Cut the peat** | Kennet Bottom | £300 | About £170 a year in peat and ashes, for nine years | It does not grow again. When it is dug out the meadow is gone, unless the ground has been floated for water meadow |
+| **Forage for the barracks** | The estate | £200 | £130 a year, as long as there is cavalry at Reading | Peace, twice. In 1802 and in 1814 the stock is left on his hands |
+| **A threshing machine** | The home farm | £120 | Saves about £50 a year in wages | Somebody comes for it in the night, if the parish dislikes him, and takes a rick as well |
+| **A partner's share in the Wyvern Bank** | The estate | £1,000 | Fifteen per cent, and a seat in the bank parlour | A partner answers for the bank's notes with everything he has. A run costs him £500. If it stops, in 1815 or sooner, he loses the stake and up to £4,000 more |
+| **The Hatherley Spa** | The estate | £1,800 | If the waters take, £300 a year rising to £750, and the county comes to him | Three times in ten they take. Half the time it idles at £70 a year. Twice in ten nobody comes at all |
+
+Four of these turn on dates a player can learn: the soil's seven years, the merino crash, the two peaces, the bank. Two turn on how he has treated the parish and the land. The spa is plain luck, and should be sold as such by a man in a yellow waistcoat. The existing `merino` and `canal` events become two of these doors, and the rest want an event apiece to open them.
+
+Mavor is behind three. He describes the Newbury peat and warns that "when the peat land is once dug out, it must be applied to some other purpose". He notes the deep clay of the Kennet valley as fit for bricks, which would make an eighth venture, and the malt sent to London a ninth. The Windsor Bank that broke in 1816 was owned by two ironmongers.
+
+In the model a squire who takes every venture and leaves each in time ends with no debt, four farms and seventeen thousand pounds in hand. The one who takes them all and never leaves is turned over by the bank in 1815 nearly half the time, with a worn-out down, a dead flock and tenants breaking round him.
+
 ## 3. The home farm
 
 Two hundred acres in hand, and for the first time a wages bill. Mavor's account of an acre of wheat (£11 13s out, £18 8s in) sets the proportions: in an ordinary year the farm grosses about a thousand pounds and clears four hundred.
@@ -202,7 +224,7 @@ The Mercury should speak as the county did, in pounds a year. "A man of two thou
 
 The letting value tracks Clark's Midland rent series within a few points (1.21, 1.42 and 1.69 for the three five-year spans after 1800, against 1.24 to 1.50, 1.51 and 1.61 to 1.82 here). 1804 is a small rehearsal for 1814, and the game should let the player feel it.
 
-Ten scripted squires, 2,000 lives each. The measure is **clear income**: what the estate will bring in a settled year after 1815, with rents marked down to what they will bear and the interest paid. Every squire starts on about £1,950 a year. Prices rose by half in the meantime, so £3,000 in 1815 is standing still.
+Twelve scripted squires, 2,000 lives each. The measure is **clear income**: what the estate will bring in a settled year after 1815, with rents marked down to what they will bear and the interest paid. Every squire starts on about £1,950 a year. Prices rose by half in the meantime, so £3,000 in 1815 is standing still.
 
 | Squire | What he does | Farms | Clear income | Debt, 1815 | Sold up |
 |---|---|---|---|---|---|
@@ -212,27 +234,31 @@ Ten scripted squires, 2,000 lives each. The measure is **clear income**: what th
 | The Improver | Everything for the land by 1802, inclosure included | 4 | £4,040 | £1,000 | never |
 | The Engrosser | Saves, takes Starveall at the forced sale, marries Edmund to Coldharbour, incloses, lives handsomely | 5 | £3,750 | £10,500 | never |
 | The Great Man | The trait, then the Improver's programme | 5 | £4,740 | £1,000 | never |
+| The Shrewd Projector | Every venture, and out of each in time | 4 | £4,310, with £17,000 in hand | £1,000 | never |
+| The Projector | Every venture, rack rents, Handsome, and never sells | 3 | £2,500 | £5,900 | never; 3% lose a farm |
 | The Rack-Renter | At will, an eighth over, holds tenants to it | 3 | £2,990 | £3,000 | never |
 | The Late Convert | Idles to 1808, then drains, incloses, lets at rack and buys Coldharbour in 1811 | 5 | £2,900 | £24,700 | never |
 | Buys Everything | Every work, two a year, Handsome, and both farms on the market | 4 | £2,560 | £25,400 | never, but 9% lose a settled farm |
 | The Figure | Handsome then Splendid, the front, London, a seat in 1807 | n/a | n/a | n/a | always, in 1806 or 1807 |
 
-What I take from it. The range is now wide: from the auctioneer, through a man with five farms and less to spend than when he had three, up to five farms clear of debt and close on five thousand a year. Doing nothing treads water, which is the right floor. The three cheap ways to a fourth farm all pay, and the dear way does not, at least by 1815: the Late Convert holds the grandest rent roll in the book, £4,860 on paper, and owes twenty-five thousand against it. The Rack-Renter leads until 1813 and then sees his receipts fall by a third in two years as tenants break. Splendour on three farms is ruin by 1807. On five farms clear it can be afforded, so the Figure is a prize for getting rich and no way of doing it.
+What I take from it. The range is now wide: from the auctioneer, through a man with five farms and less to spend than when he had three, up to five farms clear of debt and close on five thousand a year, or four farms and seventeen thousand pounds in the bank. Doing nothing treads water, which is the right floor. The three cheap ways to a fourth farm all pay, and the dear way does not, at least by 1815: the Late Convert holds the grandest rent roll in the book, £4,860 on paper, and owes twenty-five thousand against it. The Rack-Renter leads until 1813 and then sees his receipts fall by a third in two years as tenants break. Splendour on three farms is ruin by 1807. On five farms clear it can be afforded, so the Figure is a prize for getting rich and no way of doing it.
 
-The weak points, plainly. This is a model of the proposal and not the game. The hall's sixty events are one random sum of about £170 a year, the squires follow scripts, and steps are yearly where the game's are quarterly. The crash bites late, because tenants with savings last out 1815. The top of the range is also lower than I should like: nobody in the model clears five thousand, and the game's events (a canal share that pays, a good match for Kitty, a lucky year holding wheat) ought to be what carries a squire over it. All of it wants re-running inside `test/sim.js` once there is an engine to run.
+The weak points, plainly. This is a model of the proposal and not the game. The hall's sixty events are one random sum of about £170 a year, the squires follow scripts, and steps are yearly where the game's are quarterly. The crash bites late, because tenants with savings last out 1815. The ventures are also too kind on average. Even the Projector, who does everything wrong, draws about a thousand a year from them before the bank goes, and the spa pays too often. Their odds want a hard look once they are events with choices. All of it wants re-running inside `test/sim.js` once there is an engine to run.
 
 ## How I would build it
 
-Three pull requests, each playable, after the ledger and character work have merged so nobody is editing the same file twice.
+Four pull requests, each playable, after the ledger and character work have merged so nobody is editing the same file twice.
 
 1. **The rent roll.** Three farms, the two indices, leases falling in, abatement. A Rent Roll tab in the Steward's Book. This is most of the value.
 2. **Credit, the household and the fourth farm.** The six rungs, tight years, the Funds, staged ruin, the four establishments, Starveall and Coldharbour, the trait.
-3. **The home farm and the family.** Courses and heart, the woods, the settlement of 1797, portions and the bride, the new reckoning.
+3. **Ventures.** The seven above, each opened by an event.
+4. **The home farm and the family.** Courses and heart, the woods, the settlement of 1797, portions and the bride, the new reckoning.
 
 ## Settled with Ned, 26 November
 
-Three farms to begin, five at most. A trait may start a squire with four. He should be able to end greatly rich or a good deal poorer. Ruin comes by stages.
+Three farms to begin, five at most. A trait may start a squire with four. He should be able to end greatly rich or a good deal poorer. Ruin comes by stages. Upgrades should include ventures that can make a fortune or destroy one.
 
 ## Still open
 
-- Whether five thousand a year is rich enough for "greatly", or whether the ceiling should go higher.
+- Whether these seven ventures are the right ones, and which others are wanted. A brickfield, a malthouse, a rabbit warren on Starveall and a share in a privateer are all to hand.
+- Whether five thousand a year, or seventeen thousand in hand, is rich enough for "greatly".
