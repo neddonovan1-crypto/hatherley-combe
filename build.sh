@@ -1,15 +1,18 @@
 #!/bin/sh
-# Stitches src/ into one self-contained index.html.
+# Stitches src/ into one index.html. Pictures stay beside it in art/ and are listed for the page in ART.
 set -e
 cd "$(dirname "$0")"
+JS="src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js"
+ART="const ART = new Set([$( [ ! -d art ] || find art -type f \( -name '*.jpg' -o -name '*.webp' -o -name '*.png' \) | sed 's#^art/##' | sort | sed "s/.*/'&'/" | paste -sd, - )]);"
+script() { cat $JS; echo "$ART"; cat src/ui.js; }
 {
   cat src/head.html
   echo '<style>'; cat src/style.css; echo '</style>'
   cat src/body.html
-  echo '<script>'; cat src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js src/ui.js; echo '</script>'
+  echo '<script>'; script; echo '</script>'
 } > index.html
 echo "built index.html ($(wc -c < index.html) bytes)"
 # The parts share one script, so a name declared twice breaks the whole page. Catch it here.
 if command -v node >/dev/null 2>&1; then
-  cat src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js src/ui.js | node -e "new Function(require('fs').readFileSync(0,'utf8'))" || { echo 'build.sh: the combined script does not parse' >&2; exit 1; }
+  script | node -e "new Function(require('fs').readFileSync(0,'utf8'))" || { echo 'build.sh: the combined script does not parse' >&2; exit 1; }
 fi

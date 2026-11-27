@@ -3,23 +3,48 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
-let TAB = 'accounts';
+let TAB = 'accounts', LEAF = -1;
 const TABS = [['accounts', 'Accounts'], ['works', 'Works'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
 
+// Pictures. build.sh lists what is in art/; anything missing falls back to an ornament drawn here.
+const artURL = p => { for (const x of ['.jpg', '.webp', '.png']) if (ART.has(p + x)) return 'art/' + p + x; return ''; };
+const pic = (p, alt) => { const u = artURL(p); return u ? `<img src="${u}" alt="${esc(alt || '')}" onerror="this.remove()">` : ''; };
+function medal(id, big){ const n = PEOPLE[id].name; return `<span class="medal${big ? ' big' : ''}"><span aria-hidden="true">${esc(n.split(' ').pop()[0])}</span>${pic('portraits/' + id, n)}</span>`; }
+function whoOf(text){ let best = null, at = Infinity;
+  for (const id in PEOPLE){ if (!S.chars[id]) continue; const i = text.indexOf(PEOPLE[id].name.split(' ').pop()); if (i >= 0 && i < at) { at = i; best = id; } }
+  return best; }
+function sceneSVG(q){ const C = [['#cddfdd','#b6cc9c','#98b97f','#7c9f69'], ['#cde2ea','#c3cd8a','#a6b668','#5d884d'], ['#e7dab9','#d6b97b','#c39954','#b0672e'], ['#dde2e6','#eff1ee','#e0e4e2','#6b6258']][q], k = '#4b3a2a';
+  const tree = (x, y, s) => q === 3 ? `<path d="M${x} ${y}v${-34 * s}m0 ${14 * s}l${-11 * s} ${-13 * s}m${11 * s} ${5 * s}l${12 * s} ${-14 * s}m${-12 * s} ${-2 * s}l${-6 * s} ${-11 * s}m${6 * s} ${4 * s}l${7 * s} ${-9 * s}" fill="none" stroke="${k}" stroke-width="1.5"/>`
+    : `<path d="M${x} ${y}v${-14 * s}" stroke="${k}" stroke-width="2"/><g fill="${C[3]}" stroke="${k}" stroke-width="1"><circle cx="${x - 10 * s}" cy="${y - 17 * s}" r="${9 * s}"/><circle cx="${x + 10 * s}" cy="${y - 16 * s}" r="${9 * s}"/><circle cx="${x}" cy="${y - 25 * s}" r="${13 * s}"/></g>`;
+  let sky = ''; for (let y = 8; y < 130; y += 7) sky += `<path d="M${(y * 37) % 90} ${y}h${150 + (y * 53) % 240}m60 0h${80 + (y * 29) % 200}" stroke="${k}" stroke-width=".5" opacity=".28"/>`;
+  let win = ''; for (let i = 0; i < 5; i++) win += `<rect x="${302 + i * 21.5}" y="127" width="9" height="11"/><rect x="${302 + i * 21.5}" y="144" width="9" height="${i === 2 ? 18 : 11}"/>`;
+  return `<svg viewBox="0 0 700 260" role="img" aria-label="Hatherley Hall and its park in ${SEASONS[q].toLowerCase()}"><rect width="700" height="260" fill="${C[0]}"/>${sky}
+    <circle cx="565" cy="${[62, 44, 84, 104][q]}" r="20" fill="#f4e6b0" stroke="${k}" stroke-width=".8"/>
+    <path d="M0 150C120 108 240 120 360 142S600 108 700 136V260H0Z" fill="${C[1]}" stroke="${k}" stroke-width="1"/>
+    <g stroke="${k}" stroke-width="1"><rect x="302" y="104" width="9" height="16" fill="#cdbf9c"/><rect x="389" y="104" width="9" height="16" fill="#cdbf9c"/><rect x="292" y="118" width="116" height="46" fill="#ece1c6"/><path d="M328 118l22-17 22 17z" fill="#ece1c6"/><path d="M286 118h128" stroke-width="2"/></g><g fill="${k}" opacity=".75">${win}</g>
+    ${tree(246, 176, .8)}${tree(456, 174, .8)}
+    <path d="M0 192C160 166 300 186 430 179S620 170 700 186V260H0Z" fill="${C[2]}" stroke="${k}" stroke-width="1"/>
+    <path d="M40 214c120-14 220 6 330-2s200-16 300-4" fill="none" stroke="${k}" stroke-width=".8" stroke-dasharray="2 5"/>
+    ${tree(112, 206, 1.6)}${tree(176, 196, 1.1)}${tree(528, 192, 1.25)}${tree(612, 208, 1.75)}</svg>`; }
+function plateHTML(q, src, cap){ return `<figure class="plate">${sceneSVG(q)}${pic(src, cap)}</figure>`; }
+
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
-  if (!S) { stage.innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>' + introHTML(); $('verso').innerHTML = ''; $('tabs').innerHTML = ''; syncTraits(); return; }
+  if (!S) { LEAF = -1; stage.classList.remove('turn'); stage.innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>' + introHTML();
+    $('verso').innerHTML = `<div class="bookplate">${plateHTML(1, 'frontispiece', 'Hatherley Hall from the park')}<span>The Estate Book of</span><b>Hatherley Combe</b><i>in the County of Berks, kept by Mr Crabbe, steward</i></div>`;
+    $('tabs').innerHTML = ''; syncTraits(); return; }
+  if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
   const first = stage.querySelector('button'); if (first && S.phase !== 'ledger') first.focus({preventScroll:true});
 }
 function drawBook(){ $('verso').innerHTML = versoHTML();
-  $('tabs').innerHTML = TABS.map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${n}</button>`).join(''); }
+  $('tabs').innerHTML = TABS.map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
 function showTab(t){ TAB = t; drawBook(); }
 
 function introHTML(){ const has = !!load();
@@ -65,29 +90,31 @@ function accountHTML(){ let rows = '', tot = 0;
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern have met at the George and resolved, unanimously, to give no further credit. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
+    ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
+    <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
     <p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
     <h2>The Accounts</h2>
     <div class="narrow">${accountHTML()}</div>
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
-    <div class="row"><button class="go" onclick="next()">${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</button></div>`; }
+    <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</span></button></div>`; }
 
-function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c => !c.if || c.if()); const bill = BILLS.has(e.id);
+function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c => !c.if || c.if()); const bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text);
   return `${runhead(bill ? 'Posted this quarter' : 'Papers received this quarter', 'Cr.')}
     <article class="sheet${bill ? ' bill' : ''}">
-      <p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>
-      <div class="prose">${paras(e.text())}</div>
+      ${who ? `<div class="from">${medal(who, true)}<div><p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p><h2>${esc(e.title)}</h2></div></div>` : `<p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>`}
+      <div class="prose">${paras(text)}</div>
     </article>
-    <h3>Your answer</h3>
+    <h3 class="orn">Your answer</h3>
     <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function outcomeHTML(){ const o = S.outcome;
   return `${runhead(S.phase === 'undone' ? 'The season’s undertaking' : 'What came of it', 'Cr.')}
-    <p class="kicker">${esc(stamp())}</p><h2>${esc(o.title)}</h2>
-    <div class="prose">${paras(o.text)}</div>
+    <p class="kicker">${esc(stamp())}</p><h2>${esc(o.title)}</h2><div class="swell"></div>
+    <div class="prose lead">${paras(o.text)}</div>
     ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}
-    <div class="row"><button class="go" onclick="next()">${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</button></div>`; }
+    <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div>`; }
 
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
@@ -103,7 +130,7 @@ function endHTML(){ const r = reckoning();
       <div class="prose">${r.P.map(p => '<p>' + esc(p) + '</p>').join('')}</div>
       ${r.score !== null ? `<p class="score">Esteem of the county <b>${r.score}</b><span> in the hundred</span></p>` : ''}
     </article>
-    <div class="row"><button class="go" onclick="wipe()">Inherit again</button></div>`; }
+    <div class="row"><button class="go" onclick="wipe()"><span>Inherit again</span></button></div>`; }
 
 function meter(label, v, words){ return `<div class="meter${v < 40 ? ' low' : ''}"><span>${label}</span><i><u style="width:${v}%"></u></i><b>${esc(band(v, words))}</b></div>`; }
 
@@ -118,7 +145,7 @@ function versoHTML(){
     ${accountHTML()}
     <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
       ${over ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${S.mortgage < 9000 ? '' : 'disabled'}>Borrow £500</button></div>`}</dl>
-    <div class="memo"><h3>${esc('Mr ' + steward())}’s memoranda</h3>
+    <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W)}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W)}
       ${meter('Peace of the household', S.family, FAMILY_W)}
@@ -136,7 +163,7 @@ function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state 
 
 function peopleHTML(){
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id]; const note = c.notes[c.notes.length - 1];
-    return `<li><div><b>${esc(p.name)}</b><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></div><small>${esc(p.role())}</small>${note ? `<q>${esc(note)}</q>` : ''}</li>`; }).join('')}</ul>`; }
+    return `<li>${medal(id)}<div><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span>${note ? `<q>${esc(note)}</q>` : ''}</div></li>`; }).join('')}</ul>`; }
 
 function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YEAR + 1, bw = (W - pad) / n; let bars = '';
   const yOf = v => H - 16 - (v / 130) * (H - 28);

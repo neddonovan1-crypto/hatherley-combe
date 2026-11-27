@@ -1,50 +1,85 @@
 <title>Hatherley Combe</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=UnifrakturCook:wght@700&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&display=swap">
 <style>
-/* Layout: Mr Crabbe's account book, open on the baize. Left page the standing account, right page the paper in hand, thumb tabs down the fore-edge. One look, by candle or by daylight. */
+/* Layout: Mr Crabbe's account book, half-bound in calf, open on the baize by candlelight. Left page the standing account, right page the paper in hand, thumb tabs down the fore-edge. Plates and portraits are tipped in where art exists. One look. */
 :root{
-  --baize:#24382c; --board:#5a3a26; --card:#e3e7df; --paper:#e3e7df; --sheet:#f1e9d2; --clip:#e4dfd0; --gutter:#cdd3c8;
-  --ink:#2a2320; --muted:#55554c; --rule:#a9b9c4; --redrule:#b0413e; --wash:#d3d9cf;
-  --madder:#8f2422; --bad:#8f2422; --good:#2e5a3a; --gold:#6b4f12;
+  --baize:#1f3327; --board:#4a2c1b; --gilt:#c9a24a; --card:#e8e6d8; --paper:#e8e6d8; --sheet:#f3ead0; --clip:#e6dfcc; --gutter:#c9c7b4;
+  --ink:#2a2320; --muted:#57534a; --rule:#9fb4c2; --redrule:#b0413e; --wash:#d9d6c3;
+  --madder:#8f2422; --bad:#8f2422; --good:#2e5a3a; --gold:#6b4f12; --wax:#9c1f1b;
   --display:'IM Fell English', 'Libre Caslon Text', Georgia, serif;
   --caps:'IM Fell English SC', 'IM Fell English', Georgia, serif;
   --body:'Libre Caslon Text', 'Iowan Old Style', Georgia, serif;
   --hand:'Pinyon Script', 'IM Fell English', cursive;
   --fat:'Abril Fatface', 'IM Fell English', Georgia, serif;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .28 0 0 0 0 .22 0 0 0 0 .12 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --weave:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .3 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --marble:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.007 .021' numOctaves='5' seed='23' stitchTiles='stitch'/%3E%3CfeColorMatrix values='3.4 0 0 0 -1.2 3.4 0 0 0 -1.2 3.4 0 0 0 -1.2 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='.12 .90 .56 .12 .79 .90 .29 .12 .56 .90 .12 .79'/%3E%3CfeFuncG type='discrete' tableValues='.18 .86 .14 .18 .64 .86 .35 .18 .14 .86 .18 .64'/%3E%3CfeFuncB type='discrete' tableValues='.29 .75 .13 .29 .29 .75 .42 .29 .13 .75 .29 .29'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
   color-scheme:light;
 }
 *{box-sizing:border-box}
 body{background:var(--baize);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
-  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:28px 56px}
+  background-image:radial-gradient(60rem 40rem at 12% -6%, rgba(255,196,120,.24), transparent 70%), radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.5) 100%), var(--weave);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:34px 60px}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--madder);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
 /* the book */
-.desk{max-width:1290px;margin:0 auto;padding-right:84px}
-.book{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--paper);border:11px solid var(--board);border-radius:4px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
-.page{min-width:0;min-height:46rem;padding:30px clamp(18px,3.2vw,44px) 28px;display:flex;flex-direction:column;gap:14px}
-#verso{background:linear-gradient(90deg, var(--paper) 86%, var(--gutter) 100%)}
-#stage{background:linear-gradient(270deg, var(--paper) 86%, var(--gutter) 100%)}
-#ribbon{position:absolute;left:calc(50% - 6px);top:-22px;width:12px;height:60px;background:var(--madder);box-shadow:1px 2px 3px rgba(0,0,0,.35);z-index:2;transition:height .6s}
-#tabs{position:absolute;left:calc(100% + 11px);top:48px;display:flex;flex-direction:column;gap:6px}
-#tabs button{width:70px;min-height:52px;background:#b98a5e;color:#24160c;border:0;border-radius:0 6px 6px 0;font-family:var(--caps);font-size:.82rem;letter-spacing:.05em;padding:4px}
-#tabs button[aria-pressed="true"]{width:80px;background:var(--paper);color:var(--ink);box-shadow:2px 2px 4px rgba(0,0,0,.3)}
-#tabs button:hover{filter:brightness(1.08)}
+.desk{max-width:1300px;margin:0 auto;padding-right:88px}
+.book{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:13px 15px 15px;border-radius:5px;
+  background:linear-gradient(var(--paper), var(--paper)) right 15px top 13px / calc(50% - 15px) calc(100% - 28px) no-repeat, linear-gradient(180deg, rgba(255,255,255,.07), transparent 30%, rgba(0,0,0,.22)), var(--weave), var(--board);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.35), inset 0 0 0 5px var(--board), inset 0 0 0 6px var(--gilt), 0 26px 60px rgba(0,0,0,.6), 0 3px 0 #2a170d}
+.page{position:relative;min-width:0;min-height:47rem;padding:30px clamp(18px,3.2vw,44px) 30px;display:flex;flex-direction:column;gap:14px;
+  background-color:var(--paper)}
+#verso{background-image:linear-gradient(90deg, transparent 84%, rgba(70,62,40,.2) 100%), repeating-linear-gradient(90deg, transparent 0 94px, rgba(90,80,50,.05) 94px 95px), var(--grain);
+  box-shadow:-2px 0 0 #d4d2c2, -3px 0 0 #a9a797, -5px 0 0 #d4d2c2, -6px 0 0 #a9a797, 0 2px 0 #d4d2c2, 0 3px 0 #a9a797, 0 5px 0 #d4d2c2}
+#stage{background-image:linear-gradient(270deg, transparent 84%, rgba(70,62,40,.2) 100%), repeating-linear-gradient(90deg, transparent 0 94px, rgba(90,80,50,.05) 94px 95px), var(--grain);
+  box-shadow:2px 0 0 #d4d2c2, 3px 0 0 #a9a797, 5px 0 0 #d4d2c2, 6px 0 0 #a9a797, 0 2px 0 #d4d2c2, 0 3px 0 #a9a797, 0 5px 0 #d4d2c2}
+#ribbon{position:absolute;left:calc(50% - 7px);top:-20px;width:14px;height:60px;z-index:3;transition:height .6s;
+  background:linear-gradient(90deg, #6f1715, var(--wax) 40%, #b53a32 60%, #7a1a17);box-shadow:1px 2px 4px rgba(0,0,0,.4);
+  clip-path:polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%)}
+#tabs{position:absolute;left:100%;top:54px;display:flex;flex-direction:column;gap:6px}
+#tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:72px;min-height:56px;padding:5px 4px;border:0;border-radius:0 7px 7px 0;
+  background:linear-gradient(180deg, #c79a6c, #a77a4f);color:#24160c;font-family:var(--caps);font-size:.8rem;letter-spacing:.05em;box-shadow:inset 0 0 0 1px rgba(60,30,10,.35), 2px 2px 4px rgba(0,0,0,.35);transition:width .15s}
+#tabs button img{width:26px;height:26px;mix-blend-mode:multiply;opacity:.85}
+#tabs button[aria-pressed="true"]{width:86px;background:var(--paper);color:var(--ink)}
+#tabs button:hover{width:80px} #tabs button[aria-pressed="true"]:hover{width:86px}
 
-body.intro .desk{max-width:800px;padding-right:0}
-body.intro .book{grid-template-columns:minmax(0,1fr)}
-body.intro #verso, body.intro #tabs, body.intro #ribbon{display:none}
-body.intro #stage{background:var(--paper);min-height:0}
+/* the flyleaf: marbled endpaper facing the title page */
+body.intro .desk{max-width:1180px;padding-right:0}
+body.intro #tabs, body.intro #ribbon{display:none}
+body.intro .book{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+body.intro #verso{background:var(--marble) center/520px;align-items:center;justify-content:center;min-height:0}
+body.intro #stage{min-height:0}
+.bookplate{width:min(100%, 21rem);background:var(--sheet);background-image:var(--grain);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.4);outline:1px solid var(--ink);outline-offset:-7px;border:1px solid var(--ink)}
+.bookplate .plate{width:100%}
+.bookplate b{font-family:var(--hand);font-weight:400;font-size:2.5rem;line-height:1}
+.bookplate span{font-family:var(--caps);font-size:.8rem;letter-spacing:.14em;color:var(--muted)}
+.bookplate i{font-family:var(--display);font-size:.95rem}
 
-/* running heads and titles */
-.runhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-family:var(--caps);font-size:.86rem;letter-spacing:.1em;color:var(--muted);margin:0}
+/* plates, tipped in */
+.plate{position:relative;margin:0;border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:3px;background:#dcd8c4;overflow:hidden;line-height:0}
+.plate svg{display:block;width:100%;height:auto}
+.plate img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.platecap{display:flex;justify-content:space-between;gap:10px;margin:7px 0 0;font-family:var(--display);font-style:italic;font-size:.82rem;color:var(--muted)}
+.medal{position:relative;flex:none;width:64px;height:80px;border-radius:50%;overflow:hidden;background:#231d1a;display:grid;place-items:center;
+  box-shadow:0 0 0 2px #8c6a22, 0 0 0 4px var(--gilt), 0 0 0 5px #6d5118, 2px 4px 8px rgba(0,0,0,.35)}
+.medal span{font-family:var(--hand);font-size:2.3rem;line-height:1;color:#e9dfc4;padding-top:6px}
+.medal img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%}
+.medal.big{width:92px;height:114px} .medal.big span{font-size:3.3rem}
+
+/* running heads, titles, ornament */
+.runhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-family:var(--caps);font-size:.8rem;letter-spacing:.07em;color:var(--muted);margin:0}
 .runhead span{min-width:0} .runhead span:last-child{white-space:nowrap}
 .qtitle{font-family:var(--hand);font-weight:400;font-size:clamp(2.1rem,4.2vw,2.9rem);line-height:1;margin:0}
 .kicker{font-family:var(--caps);letter-spacing:.12em;font-size:.84rem;color:var(--muted);margin:0}
 h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3.4vw,2.05rem);line-height:1.1;margin:0;text-wrap:balance}
 h3{font-family:var(--caps);font-weight:400;letter-spacing:.12em;font-size:.86rem;color:var(--muted);margin:0}
+h3.orn{display:flex;align-items:center;gap:12px;color:var(--ink)}
+h3.orn::before, h3.orn::after{content:"";flex:1;height:5px;background:var(--ink)}
+h3.orn::before{clip-path:polygon(0 50%, 100% 0, 100% 100%)} h3.orn::after{clip-path:polygon(0 0, 100% 50%, 0 100%)}
+.swell{height:5px;background:var(--ink);clip-path:polygon(0 50%, 50% 0, 100% 50%, 50% 100%);margin:2px 12%;flex:none}
 
 /* the account */
 .tablewrap{overflow-x:auto}
@@ -53,25 +88,25 @@ table.acct th{font-family:var(--caps);font-weight:400;font-size:.8rem;letter-spa
 table.acct td{padding:3px 0;border-bottom:1px solid var(--rule);vertical-align:bottom}
 table.acct td:first-child{font-family:var(--hand);font-size:1.65rem;line-height:1.2;padding-right:10px}
 table.acct .n{width:3rem;text-align:right;padding:0 8px 5px;border-left:1px solid var(--redrule);font-family:var(--display);font-size:1.18rem;white-space:nowrap}
-table.acct .n.l{width:5rem}
+table.acct .n.l{width:5rem;border-left:3px double var(--redrule)}
 table.acct th.n{padding:5px 8px;font-size:.8rem;font-family:var(--caps)}
-table.acct .z{color:#7c7c72}
+table.acct .z{color:#7c786c}
 table.acct tr.neg td{color:var(--bad)}
 table.acct tr.total td{border-bottom:0;border-top:1px solid var(--ink)}
 table.acct tr.total td:first-child{font-family:var(--caps);font-size:1rem;letter-spacing:.08em;padding:8px 0}
 table.acct tr.total .n{font-size:1.3rem}
 .bal{display:flex;flex-wrap:wrap;gap:8px 30px;align-items:flex-end;margin:0}
 .bal dt{font-family:var(--caps);font-size:.8rem;letter-spacing:.1em;color:var(--muted)}
-.bal dd{margin:0;font-family:var(--display);font-size:2.3rem;line-height:1.05;font-variant-numeric:tabular-nums}
+.bal dd{margin:0;font-family:var(--display);font-size:2.4rem;line-height:1.05;font-variant-numeric:tabular-nums}
 .bal .owe, .bal .neg{color:var(--bad)}
 .bal .mort{display:flex;gap:8px;margin-left:auto;padding-bottom:5px}
-.inkbtn{background:transparent;border:1px solid var(--ink);padding:8px 10px;min-height:44px;font-family:var(--caps);font-size:.82rem;letter-spacing:.06em}
+.inkbtn{background:rgba(255,255,255,.25);border:1px solid var(--ink);box-shadow:inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--ink);padding:9px 14px;min-height:44px;font-family:var(--caps);font-size:.82rem;letter-spacing:.06em;transition:background .15s}
 .inkbtn:hover:not(:disabled){background:var(--wash)} .inkbtn:disabled{opacity:.4;cursor:default}
-.memo{display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--ink);padding-top:12px}
+.memo{display:flex;flex-direction:column;gap:9px}
 .meter{display:grid;grid-template-columns:minmax(0,10.5rem) minmax(40px,1fr) 12rem;align-items:center;gap:12px}
 .meter span{font-size:.9rem}
-.meter i{display:block;height:9px;border-bottom:1px solid var(--ink);position:relative}
-.meter u{position:absolute;left:0;bottom:-3px;height:5px;background:var(--ink);transition:width .5s}
+.meter i{display:block;height:11px;position:relative;background:repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 10%) left bottom/100% 5px no-repeat;border-bottom:1px solid var(--ink);border-right:1px solid var(--ink)}
+.meter u{position:absolute;left:0;bottom:1px;height:5px;background:var(--ink);transition:width .6s}
 .meter b{font-family:var(--hand);font-weight:400;font-size:1.45rem;line-height:1;text-align:right;white-space:nowrap}
 .meter.low b{color:var(--bad)} .meter.low u{background:var(--bad)}
 .rents{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:auto;border-top:1px solid var(--ink);padding-top:8px}
@@ -82,33 +117,44 @@ table.acct tr.total .n{font-size:1.3rem}
 .born{line-height:1.45}
 
 /* papers tipped in */
-.sheet{position:relative;background:var(--sheet);padding:28px clamp(16px,2.6vw,30px) 22px;transform:rotate(-.6deg);box-shadow:2px 5px 12px rgba(40,30,20,.3);display:flex;flex-direction:column;gap:10px}
-.sheet::before{content:"";position:absolute;top:9px;left:50%;width:9px;height:9px;border-radius:50%;background:#9aa0a4;box-shadow:1px 2px 2px rgba(0,0,0,.45)}
+.sheet{position:relative;background:var(--sheet);background-image:var(--grain);padding:28px clamp(16px,2.6vw,30px) 22px;transform:rotate(-.6deg);box-shadow:1px 2px 2px rgba(40,30,20,.2), 3px 9px 18px rgba(40,30,20,.28);display:flex;flex-direction:column;gap:10px}
+.sheet::before{content:"";position:absolute;top:8px;left:50%;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #f4f4f0, #8d9296 55%, #55595c);box-shadow:1px 3px 3px rgba(0,0,0,.45)}
 .sheet .kicker{text-align:center} .sheet h2{text-align:center}
+.sheet .from{display:flex;align-items:center;gap:14px;margin:0 0 2px}
+.sheet .from h2, .sheet .from .kicker{text-align:left}
+.sheet .from div{min-width:0;display:flex;flex-direction:column;gap:4px}
 .prose p{margin:0 0 .8em;font-size:.95rem;line-height:1.58;hanging-punctuation:first} .prose p:last-child{margin-bottom:0}
-.sheet.bill{background:#efe9da;transform:rotate(.4deg);padding-top:30px}
+.sheet .prose p:first-child::first-letter, .lead p:first-child::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
+.sheet.bill{background-color:#efe7d2;transform:rotate(.4deg);padding-top:30px}
 .sheet.bill .kicker{align-self:center;border-block:1px solid var(--ink);padding:4px 12px;color:var(--ink)}
 .sheet.bill h2{font-family:var(--fat);font-size:clamp(1.9rem,4.2vw,2.8rem);line-height:1;text-transform:uppercase;letter-spacing:.02em;padding-bottom:10px;border-bottom:4px solid var(--ink)}
 .sheet.bill .prose{padding-top:8px;border-top:1px solid var(--ink);margin-top:-7px}
 .sheet.bill .prose p{text-align:justify;hyphens:auto}
-.sheet.clip{background:var(--clip);transform:rotate(.5deg);padding:16px 18px 14px;gap:4px;align-self:flex-start;max-width:30rem}
+.sheet.bill .prose p:first-child::first-letter{font-family:var(--fat);color:var(--ink)}
+.sheet.clip{background-color:var(--clip);transform:rotate(.5deg);padding:14px 18px 14px;gap:5px;align-self:flex-start;max-width:30rem}
 .sheet.clip::before{display:none}
-.sheet.clip span{font-family:var(--caps);letter-spacing:.14em;font-size:.78rem;border-bottom:1px solid var(--ink);padding-bottom:3px}
-.sheet.clip p{margin:0;font-size:.93rem}
+.sheet.clip span{font-family:'UnifrakturCook', var(--fat);font-size:1.25rem;line-height:1;text-align:center;border-bottom:3px double var(--ink);padding-bottom:5px}
+.sheet.clip p{margin:0;font-size:.93rem;text-align:justify;hyphens:auto}
 .note{margin:0;font-style:italic;font-size:.95rem} .note.bad{color:var(--bad)}
 .vignette{font-style:italic;color:var(--muted)}
 .narrow{display:none}
 
 /* answering */
-.choices{display:flex;flex-direction:column}
-.choice{display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--rule);padding:10px 2px 9px;min-height:48px;transition:background .15s}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.45);padding:11px 14px 10px 44px;min-height:50px;box-shadow:1px 2px 3px rgba(40,30,20,.14);transition:transform .15s, box-shadow .15s, background .15s}
+.choice::before{content:"\261E\FE0E";position:absolute;left:12px;top:8px;font-family:var(--body);font-size:1.35rem;line-height:1.3;color:var(--madder);opacity:.55;transition:transform .15s, opacity .15s}
 .choice span{min-width:0;font-family:var(--display);font-size:1.2rem;line-height:1.3}
 .choice small{display:block;font-family:var(--body);font-style:italic;font-size:.82rem;line-height:1.35;color:var(--muted);padding-top:2px}
 .choice em{font-family:var(--display);font-style:normal;font-size:1.1rem;color:var(--gold);white-space:nowrap;flex:none}
-.choice:hover{background:var(--wash)}
-.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px}
-.go{background:var(--ink);color:var(--paper);border:0;padding:11px 22px;min-height:44px;font-family:var(--caps);letter-spacing:.1em;font-size:1rem}
-.go:hover{background:var(--madder)} .go:disabled{background:var(--muted);cursor:not-allowed}
+.choice:hover, .choice:focus-visible{background:var(--sheet);transform:translateX(4px);box-shadow:2px 5px 10px rgba(40,30,20,.25)}
+.choice:hover::before, .choice:focus-visible::before{opacity:1;transform:translateX(3px)}
+.row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:8px}
+.go{display:inline-flex;align-items:center;gap:14px;background:none;border:0;padding:4px 6px 4px 0;min-height:64px;font-family:var(--caps);letter-spacing:.1em;font-size:1.05rem;color:var(--ink);text-align:left}
+.go::before{content:"H";flex:none;width:58px;height:58px;border-radius:47% 53% 50% 50% / 52% 48% 52% 48%;display:grid;place-items:center;font-family:var(--hand);font-size:2.2rem;line-height:1;padding-top:6px;color:#6d1512;text-shadow:0 1px 0 rgba(255,150,130,.5);
+  background:radial-gradient(circle at 36% 30%, #c8433a, var(--wax) 55%, #6f1512);box-shadow:inset 0 0 0 5px rgba(0,0,0,.08), inset 0 0 0 7px rgba(255,160,140,.16), inset 0 -3px 6px rgba(0,0,0,.35), 1px 3px 5px rgba(0,0,0,.4);transition:transform .15s}
+.go span{border-bottom:1px solid var(--ink);padding-bottom:2px}
+.go:hover::before{transform:scale(.94) rotate(-6deg)} .go:hover span{border-bottom-width:2px}
+.go:disabled{cursor:not-allowed;color:var(--muted)} .go:disabled::before{filter:grayscale(1);opacity:.6}
 .quiet{background:none;border:0;border-bottom:1px dotted var(--muted);color:var(--muted);padding:2px 0;min-height:32px;font-style:italic;font-size:.95rem}
 .deltas{list-style:none;padding:10px 0 0;margin:0;border-top:1px solid var(--ink);display:flex;flex-wrap:wrap;gap:4px 18px;font-family:var(--caps);letter-spacing:.06em;font-size:.9rem}
 .deltas .up{color:var(--good)} .deltas .down{color:var(--bad)}
@@ -117,14 +163,14 @@ table.acct tr.total .n{font-size:1.3rem}
 .score b{font-family:var(--fat);font-weight:400;font-size:2.2rem;color:var(--madder);padding:0 .2em;letter-spacing:0}
 
 /* the other tabs */
-.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.people li{border-bottom:1px solid var(--rule);padding:7px 0 6px}
-.people li div{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.people b{font-family:var(--display);font-weight:400;font-size:1.2rem}
-.people .r{font-family:var(--hand);font-size:1.5rem;line-height:1;white-space:nowrap}
+.people{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill, minmax(15rem, 1fr));gap:14px 18px}
+.people li{display:flex;gap:12px;align-items:center;min-width:0}
+.people li > div{min-width:0;display:flex;flex-direction:column}
+.people b{font-family:var(--display);font-weight:400;font-size:1.15rem;line-height:1.15}
+.people .r{font-family:var(--hand);font-size:1.45rem;line-height:1}
 .r0,.r1,.r2,.r3{color:var(--bad)} .r4,.r5{color:var(--muted)} .r6,.r7,.r8,.r9,.r10{color:var(--good)}
-.people small{display:block;color:var(--muted);font-size:.86rem;line-height:1.3}
-.people q{display:block;font-style:italic;font-size:.86rem;line-height:1.35;margin-top:2px;quotes:none}
+.people small{color:var(--muted);font-size:.84rem;line-height:1.3}
+.people q{font-style:italic;font-size:.82rem;line-height:1.3;margin-top:2px;quotes:none}
 .works{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .works li{border-bottom:1px solid var(--rule);padding:9px 0 8px}
 .works li div{display:flex;justify-content:space-between;gap:12px;align-items:center}
@@ -142,11 +188,12 @@ table.acct tr.total .n{font-size:1.3rem}
 .daybook time{font-family:var(--caps);letter-spacing:.06em;color:var(--muted);font-size:.84rem}
 .daybook b{font-weight:400;font-style:italic}
 
-/* taking possession: the flyleaf */
+/* taking possession: the title page */
 .titlepage{margin:0 0 6px;padding-bottom:12px;border-bottom:3px double var(--ink);text-align:center;font-family:var(--hand);font-size:clamp(2.6rem,8vw,4rem);line-height:1}
 .titlepage small{display:block;font-family:var(--caps);font-size:.9rem;letter-spacing:.14em;color:var(--muted);padding-top:8px}
 .opening{display:flex;flex-direction:column;gap:12px}
 .opening > p:not(.kicker){margin:0;max-width:64ch;font-size:1.02rem}
+.opening > p:nth-of-type(2)::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
 .names{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 14px;align-items:center;margin-top:10px}
 .names label{font-family:var(--caps);letter-spacing:.08em;font-size:.9rem;color:var(--muted)}
 .names > label{max-width:10rem} .names > input{max-width:18rem}
@@ -158,33 +205,44 @@ table.acct tr.total .n{font-size:1.3rem}
 .traits .fine{font-size:.95rem;max-width:60ch} #pts{font-family:var(--display);font-size:1.5rem;font-style:normal;color:var(--madder);padding:0 .1em} #pts.neg{color:var(--bad);text-decoration:underline wavy}
 .pickrow{display:grid;grid-template-columns:9rem minmax(0,26rem);gap:2px 14px;align-items:baseline;margin-top:12px}
 .pickrow label{font-family:var(--caps);letter-spacing:.08em;font-size:.9rem;color:var(--muted)}
-.pickrow select{font:inherit;font-family:var(--display);font-size:1.12rem;color:var(--ink);background:var(--card);border:0;border-bottom:1px solid var(--ink);padding:4px 2px;min-height:40px;min-width:0;width:100%;cursor:pointer}
+.pickrow select{font:inherit;font-family:var(--display);font-size:1.12rem;color:var(--ink);background:rgba(255,255,255,.35);border:0;border-bottom:1px solid var(--ink);padding:4px 2px;min-height:40px;min-width:0;width:100%;cursor:pointer}
 .pickblurb{grid-column:2;margin:4px 0 0;font-style:italic;font-size:.93rem;line-height:1.45;color:var(--muted);max-width:26rem}
 .pickblurb:empty{display:none}
 .pickblurb span{display:block;font-family:var(--caps);font-style:normal;font-size:.78rem;letter-spacing:.06em;color:var(--gold);margin-top:2px}
+
+/* motion: a leaf turning, a paper laid down */
+@keyframes leaf{from{transform:perspective(1800px) rotateY(-38deg);filter:brightness(.78);opacity:.3}to{transform:perspective(1800px) rotateY(0);filter:none;opacity:1}}
+@keyframes laid{from{opacity:0;translate:0 -14px;scale:1.03}to{opacity:1;translate:0 0;scale:1}}
+@keyframes inked{from{opacity:0}to{opacity:1}}
+#stage.turn{transform-origin:left center;animation:leaf .55s cubic-bezier(.2,.7,.2,1) both}
+#stage .sheet{animation:laid .4s ease-out both}
+#stage .choice{animation:inked .35s ease-out both} #stage .choice:nth-child(2){animation-delay:.07s} #stage .choice:nth-child(3){animation-delay:.14s} #stage .choice:nth-child(n+4){animation-delay:.2s}
 
 /* a phone: one page at a time, the paper in hand first */
 @media (max-width:900px){
   body{padding-block:14px 40px}
   .desk{padding-right:0}
-  .book{grid-template-columns:minmax(0,1fr);border-width:7px}
+  .book, body.intro .book{grid-template-columns:minmax(0,1fr);padding:8px}
   .page{min-height:0}
-  #stage{order:1;background:var(--paper)} #tabs{order:2} #verso{order:3;background:var(--paper)}
+  #stage{order:1;box-shadow:none} #tabs{order:2} #verso{order:3;box-shadow:none}
+  body.intro #verso{order:0;padding:22px 16px}
   #ribbon{display:none}
   #tabs{position:static;flex-direction:row;flex-wrap:wrap;gap:0;border-block:3px double var(--ink);background:var(--paper)}
-  #tabs button, #tabs button[aria-pressed="true"]{flex:1 1 0;width:auto;min-height:46px;border-radius:0;background:transparent;color:var(--ink);box-shadow:none}
-  #tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+  #tabs button, #tabs button[aria-pressed="true"], #tabs button:hover{flex:1 1 0;width:auto;min-height:50px;border-radius:0;background:transparent;color:var(--ink);box-shadow:none}
+  #tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)} #tabs button[aria-pressed="true"] img{filter:invert(1);mix-blend-mode:screen}
   .narrow{display:block}
   .sheet, .sheet.bill, .sheet.clip{transform:none}
   .bal .mort{margin-left:0}
+  #stage.turn{animation:inked .3s both}
 }
 @media (max-width:520px){
   .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1}
   .memo{gap:16px} .meter{grid-template-columns:minmax(0,1fr) auto;row-gap:2px} .meter i{grid-column:1/-1;order:3}
   .daybook li{grid-template-columns:minmax(0,1fr);gap:0}
   table.acct td:first-child{font-size:1.4rem} table.acct .n{width:2.1rem;padding-inline:5px} table.acct .n.l{width:3.6rem}
+  #tabs button{font-size:.72rem} #tabs button img{display:none}
 }
-@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 </style>
 <div class="desk">
   <div class="book">
@@ -2366,28 +2424,54 @@ Ferris smells the cork and says nothing. He sends in his bill for the three days
 
 The foot is on the stool until Lady Day. John learns to carry you upstairs without touching it.`; }}
   ]});
+const ART = new Set([]);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paras = t => t.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
-let TAB = 'accounts';
+let TAB = 'accounts', LEAF = -1;
 const TABS = [['accounts', 'Accounts'], ['works', 'Works'], ['persons', 'Persons'], ['wheat', 'Wheat'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
 
+// Pictures. build.sh lists what is in art/; anything missing falls back to an ornament drawn here.
+const artURL = p => { for (const x of ['.jpg', '.webp', '.png']) if (ART.has(p + x)) return 'art/' + p + x; return ''; };
+const pic = (p, alt) => { const u = artURL(p); return u ? `<img src="${u}" alt="${esc(alt || '')}" onerror="this.remove()">` : ''; };
+function medal(id, big){ const n = PEOPLE[id].name; return `<span class="medal${big ? ' big' : ''}"><span aria-hidden="true">${esc(n.split(' ').pop()[0])}</span>${pic('portraits/' + id, n)}</span>`; }
+function whoOf(text){ let best = null, at = Infinity;
+  for (const id in PEOPLE){ if (!S.chars[id]) continue; const i = text.indexOf(PEOPLE[id].name.split(' ').pop()); if (i >= 0 && i < at) { at = i; best = id; } }
+  return best; }
+function sceneSVG(q){ const C = [['#cddfdd','#b6cc9c','#98b97f','#7c9f69'], ['#cde2ea','#c3cd8a','#a6b668','#5d884d'], ['#e7dab9','#d6b97b','#c39954','#b0672e'], ['#dde2e6','#eff1ee','#e0e4e2','#6b6258']][q], k = '#4b3a2a';
+  const tree = (x, y, s) => q === 3 ? `<path d="M${x} ${y}v${-34 * s}m0 ${14 * s}l${-11 * s} ${-13 * s}m${11 * s} ${5 * s}l${12 * s} ${-14 * s}m${-12 * s} ${-2 * s}l${-6 * s} ${-11 * s}m${6 * s} ${4 * s}l${7 * s} ${-9 * s}" fill="none" stroke="${k}" stroke-width="1.5"/>`
+    : `<path d="M${x} ${y}v${-14 * s}" stroke="${k}" stroke-width="2"/><g fill="${C[3]}" stroke="${k}" stroke-width="1"><circle cx="${x - 10 * s}" cy="${y - 17 * s}" r="${9 * s}"/><circle cx="${x + 10 * s}" cy="${y - 16 * s}" r="${9 * s}"/><circle cx="${x}" cy="${y - 25 * s}" r="${13 * s}"/></g>`;
+  let sky = ''; for (let y = 8; y < 130; y += 7) sky += `<path d="M${(y * 37) % 90} ${y}h${150 + (y * 53) % 240}m60 0h${80 + (y * 29) % 200}" stroke="${k}" stroke-width=".5" opacity=".28"/>`;
+  let win = ''; for (let i = 0; i < 5; i++) win += `<rect x="${302 + i * 21.5}" y="127" width="9" height="11"/><rect x="${302 + i * 21.5}" y="144" width="9" height="${i === 2 ? 18 : 11}"/>`;
+  return `<svg viewBox="0 0 700 260" role="img" aria-label="Hatherley Hall and its park in ${SEASONS[q].toLowerCase()}"><rect width="700" height="260" fill="${C[0]}"/>${sky}
+    <circle cx="565" cy="${[62, 44, 84, 104][q]}" r="20" fill="#f4e6b0" stroke="${k}" stroke-width=".8"/>
+    <path d="M0 150C120 108 240 120 360 142S600 108 700 136V260H0Z" fill="${C[1]}" stroke="${k}" stroke-width="1"/>
+    <g stroke="${k}" stroke-width="1"><rect x="302" y="104" width="9" height="16" fill="#cdbf9c"/><rect x="389" y="104" width="9" height="16" fill="#cdbf9c"/><rect x="292" y="118" width="116" height="46" fill="#ece1c6"/><path d="M328 118l22-17 22 17z" fill="#ece1c6"/><path d="M286 118h128" stroke-width="2"/></g><g fill="${k}" opacity=".75">${win}</g>
+    ${tree(246, 176, .8)}${tree(456, 174, .8)}
+    <path d="M0 192C160 166 300 186 430 179S620 170 700 186V260H0Z" fill="${C[2]}" stroke="${k}" stroke-width="1"/>
+    <path d="M40 214c120-14 220 6 330-2s200-16 300-4" fill="none" stroke="${k}" stroke-width=".8" stroke-dasharray="2 5"/>
+    ${tree(112, 206, 1.6)}${tree(176, 196, 1.1)}${tree(528, 192, 1.25)}${tree(612, 208, 1.75)}</svg>`; }
+function plateHTML(q, src, cap){ return `<figure class="plate">${sceneSVG(q)}${pic(src, cap)}</figure>`; }
+
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
-  if (!S) { stage.innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>' + introHTML(); $('verso').innerHTML = ''; $('tabs').innerHTML = ''; syncTraits(); return; }
+  if (!S) { LEAF = -1; stage.classList.remove('turn'); stage.innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>' + introHTML();
+    $('verso').innerHTML = `<div class="bookplate">${plateHTML(1, 'frontispiece', 'Hatherley Hall from the park')}<span>The Estate Book of</span><b>Hatherley Combe</b><i>in the County of Berks, kept by Mr Crabbe, steward</i></div>`;
+    $('tabs').innerHTML = ''; syncTraits(); return; }
+  if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
   const first = stage.querySelector('button'); if (first && S.phase !== 'ledger') first.focus({preventScroll:true});
 }
 function drawBook(){ $('verso').innerHTML = versoHTML();
-  $('tabs').innerHTML = TABS.map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${n}</button>`).join(''); }
+  $('tabs').innerHTML = TABS.map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
 function showTab(t){ TAB = t; drawBook(); }
 
 function introHTML(){ const has = !!load();
@@ -2433,29 +2517,31 @@ function accountHTML(){ let rows = '', tot = 0;
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern have met at the George and resolved, unanimously, to give no further credit. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
+    ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
+    <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
     <p class="kicker">${esc(quarterDay())}. ${esc('Mr ' + steward())} presents the quarter</p>
     <h2>The Accounts</h2>
     <div class="narrow">${accountHTML()}</div>
     ${S.notes.map(n => `<p class="note">${esc(n)}</p>`).join('')}${warn}
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
-    <div class="row"><button class="go" onclick="next()">${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</button></div>`; }
+    <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'Face the creditors' : S.pending ? 'See who is waiting in the hall' : 'Decide how to spend the season'}</span></button></div>`; }
 
-function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c => !c.if || c.if()); const bill = BILLS.has(e.id);
+function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c => !c.if || c.if()); const bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text);
   return `${runhead(bill ? 'Posted this quarter' : 'Papers received this quarter', 'Cr.')}
     <article class="sheet${bill ? ' bill' : ''}">
-      <p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>
-      <div class="prose">${paras(e.text())}</div>
+      ${who ? `<div class="from">${medal(who, true)}<div><p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p><h2>${esc(e.title)}</h2></div></div>` : `<p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>`}
+      <div class="prose">${paras(text)}</div>
     </article>
-    <h3>Your answer</h3>
+    <h3 class="orn">Your answer</h3>
     <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function outcomeHTML(){ const o = S.outcome;
   return `${runhead(S.phase === 'undone' ? 'The season’s undertaking' : 'What came of it', 'Cr.')}
-    <p class="kicker">${esc(stamp())}</p><h2>${esc(o.title)}</h2>
-    <div class="prose">${paras(o.text)}</div>
+    <p class="kicker">${esc(stamp())}</p><h2>${esc(o.title)}</h2><div class="swell"></div>
+    <div class="prose lead">${paras(o.text)}</div>
     ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}
-    <div class="row"><button class="go" onclick="next()">${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</button></div>`; }
+    <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div>`; }
 
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
@@ -2471,7 +2557,7 @@ function endHTML(){ const r = reckoning();
       <div class="prose">${r.P.map(p => '<p>' + esc(p) + '</p>').join('')}</div>
       ${r.score !== null ? `<p class="score">Esteem of the county <b>${r.score}</b><span> in the hundred</span></p>` : ''}
     </article>
-    <div class="row"><button class="go" onclick="wipe()">Inherit again</button></div>`; }
+    <div class="row"><button class="go" onclick="wipe()"><span>Inherit again</span></button></div>`; }
 
 function meter(label, v, words){ return `<div class="meter${v < 40 ? ' low' : ''}"><span>${label}</span><i><u style="width:${v}%"></u></i><b>${esc(band(v, words))}</b></div>`; }
 
@@ -2486,7 +2572,7 @@ function versoHTML(){
     ${accountHTML()}
     <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
       ${over ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${S.mortgage < 9000 ? '' : 'disabled'}>Borrow £500</button></div>`}</dl>
-    <div class="memo"><h3>${esc('Mr ' + steward())}’s memoranda</h3>
+    <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W)}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W)}
       ${meter('Peace of the household', S.family, FAMILY_W)}
@@ -2504,7 +2590,7 @@ function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state 
 
 function peopleHTML(){
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id]; const note = c.notes[c.notes.length - 1];
-    return `<li><div><b>${esc(p.name)}</b><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></div><small>${esc(p.role())}</small>${note ? `<q>${esc(note)}</q>` : ''}</li>`; }).join('')}</ul>`; }
+    return `<li>${medal(id)}<div><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span>${note ? `<q>${esc(note)}</q>` : ''}</div></li>`; }).join('')}</ul>`; }
 
 function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YEAR + 1, bw = (W - pad) / n; let bars = '';
   const yOf = v => H - 16 - (v / 130) * (H - 28);
