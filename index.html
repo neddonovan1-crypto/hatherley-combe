@@ -9367,7 +9367,8 @@ const Sound = (() => {
   let muted = true; try { muted = localStorage.getItem(KEY) !== '0'; } catch (err) {}
   let ctx = null, master = null, live = false, airName = '', airWant = '', airTok = 0, airBus = null, airTag = null;
   const bufs = {};
-  const fetchBuf = name => bufs[name] || (bufs[name] = fetch(DIR + name + '.mp3').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(a => ctx.decodeAudioData(a)).catch(() => null));
+  const fetchBuf = name => bufs[name] || (bufs[name] = fetch(DIR + name + '.mp3').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(a => new Promise((yes, no) => { const p = ctx.decodeAudioData(a, yes, no); if (p && p.catch) p.catch(no); })).then(b => { tally.ok++; return b; }).catch(err => { tally.bad++; tally.err = name + ': ' + (err && err.message || err); delete bufs[name]; return null; }));
+  const tally = {ok:0, bad:0, err:''};
   // Where the page cannot fetch (opened from a folder), plain audio elements stand in.
   const tag = (name, vol, delay, loop) => { const a = new Audio(DIR + name + '.mp3'); a.volume = Math.min(1, VOL * vol); a.loop = !!loop; setTimeout(() => { if (!muted) a.play().catch(() => {}); }, delay * 1000); return a; };
 
@@ -9389,13 +9390,30 @@ const Sound = (() => {
 
   // Browsers keep an audio context asleep until the reader touches something, and Safari will let it doze off again.
   // So every touch, click and key tries to wake it, and the air begins only once it is truly awake.
+  // An iPhone with its ringer switched off silences this kind of sound altogether. Newer ones can be told it is playback, not a ringtone.
+  // Older ones are persuaded by a plain audio element playing silence alongside.
+  let hum = null;
+  function loud(){ try { if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return; } } catch (err) {}
+    if (!/iP(hone|ad|od)/.test(navigator.userAgent) && !(navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent))) return;
+    if (!hum) { const n = 4000, w = new Uint8Array(44 + n), v = new DataView(w.buffer); w.fill(128, 44);
+      [[0, 0x52494646], [8, 0x57415645], [12, 0x666d7420], [36, 0x64617461]].forEach(([o, x]) => v.setUint32(o, x));
+      v.setUint32(4, 36 + n, true); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); v.setUint32(40, n, true);
+      hum = new Audio(URL.createObjectURL(new Blob([w], {type:'audio/wav'}))); hum.loop = true; hum.setAttribute('playsinline', ''); }
+    if (muted) hum.pause(); else if (hum.paused) hum.play().catch(() => {}); }
   function wake(){ const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
     if (!live) { ctx = new AC(); master = ctx.createGain(); master.gain.value = muted ? 0 : VOL; master.connect(ctx.destination); live = true;
       ctx.onstatechange = () => air(airWant); }
+    if (!muted) loud();
+    // Safari wants something actually started inside the touch itself. One silent sample serves.
+    try { const z = ctx.createBufferSource(); z.buffer = ctx.createBuffer(1, 1, 22050); z.connect(ctx.destination); z.start(0); } catch (err) {}
     if (ctx.state !== 'running') { const p = ctx.resume(); if (p && p.then) p.then(() => air(airWant), () => {}); } else air(airWant); }
   function quiet(q){ muted = q; try { localStorage.setItem(KEY, q ? '1' : '0'); } catch (err) {}
-    if (!q) wake(); if (master) master.gain.setTargetAtTime(q ? 0 : VOL, ctx.currentTime, .05); air(airWant); }
-  return {play, air, wake, quiet, get muted(){ return muted; }};
+    if (!q) wake(); else if (hum) hum.pause(); if (master) master.gain.setTargetAtTime(q ? 0 : VOL, ctx.currentTime, .05); air(airWant); }
+  // For when somebody hears nothing: what the browser says of itself, shown when the pointer rests on the control.
+  const report = () => !live ? 'Audio not yet woken' : `Audio ${ctx.state}, ${ctx.sampleRate} Hz. ${tally.ok} loaded, ${tally.bad} failed${tally.err ? ' (' + tally.err + ')' : ''}. Air: ${airName || 'none'}`;
+  // A plain audio element, played inside the click that asks for sound. Every browser allows that much.
+  const ring = () => { try { const a = new Audio(DIR + 'bell.mp3'); a.volume = .35; const p = a.play(); if (p && p.catch) p.catch(err => { tally.err = 'bell element: ' + (err && err.message || err); }); } catch (err) {} };
+  return {play, air, wake, quiet, report, ring, get muted(){ return muted; }};
 })();
 
 (() => {
@@ -9437,7 +9455,7 @@ const Sound = (() => {
   // The one control: a word in the corner of the desk.
   const b = document.createElement('button'); b.id = 'hush'; b.type = 'button';
   const show = () => { b.textContent = Sound.muted ? 'Sound off' : 'Sound on'; b.setAttribute('aria-pressed', String(!Sound.muted)); };
-  b.onclick = () => { Sound.quiet(!Sound.muted); show(); if (!Sound.muted) Sound.play('bell', .6); }; show();
+  b.onclick = () => { Sound.quiet(!Sound.muted); show(); if (!Sound.muted) Sound.ring(); }; b.onpointerenter = () => { b.title = Sound.report(); }; show();
   const st = document.createElement('style');
   st.textContent = '#hush{position:fixed;top:6px;right:10px;z-index:5;background:none;border:0;padding:4px 6px;cursor:pointer;font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:#d9c9a3;opacity:.8}#hush:hover,#hush:focus-visible{opacity:1}#hush[aria-pressed="false"]{text-decoration:line-through}';
   document.head.appendChild(st); document.body.appendChild(b);
