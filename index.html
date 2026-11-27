@@ -17,6 +17,7 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
+html, body{margin:0}
 body{background:var(--baize);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
   background-image:radial-gradient(60rem 40rem at 12% -6%, rgba(255,196,120,.24), transparent 70%), radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.5) 100%), var(--weave);
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:15px 15px}
@@ -241,11 +242,12 @@ body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:
 }
 
 /* scroll bars drawn always, since some systems hide theirs until touched */
+html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#172018} html::-webkit-scrollbar-thumb{background:#8a6a3c;border:3px solid #172018;border-radius:7px}
 .sheet::-webkit-scrollbar, .page::-webkit-scrollbar{width:11px}
 .sheet::-webkit-scrollbar-track, .page::-webkit-scrollbar-track{background:rgba(70,50,25,.1);border-left:1px solid rgba(70,50,25,.25)}
 .sheet::-webkit-scrollbar-thumb, .page::-webkit-scrollbar-thumb{background:#5a3a22;border:2px solid transparent;border-left-width:3px;background-clip:padding-box;border-radius:6px}
 .sheet::-webkit-scrollbar-thumb:hover, .page::-webkit-scrollbar-thumb:hover{background-color:var(--madder)}
-@supports not selector(::-webkit-scrollbar){ .sheet, .page{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} }
+@supports not selector(::-webkit-scrollbar){ .sheet, .page{scrollbar-width:thin;scrollbar-color:#5a3a22 rgba(70,50,25,.12)} html{scrollbar-color:#8a6a3c #172018} }
 
 /* a phone: one page at a time, the paper in hand first */
 @media (max-width:1080px){
@@ -4267,7 +4269,7 @@ const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
 function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
   line('Home farm wages, nine men at ' + s + 's. the week', -(9 * s * 13 / 20) * (live('thresher') ? 0.94 : 1));
   if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75); }
-const ART = new Set(['events/flour.jpg','events/speen.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/persons.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png']);
+const ART = new Set(['events/abolition.jpg','events/bank.jpg','events/beacon.jpg','events/boulogne.jpg','events/census.jpg','events/cornLaw.jpg','events/dearth.jpg','events/defence.jpg','events/election.jpg','events/election96.jpg','events/flour.jpg','events/incomeTax.jpg','events/jubilee.jpg','events/peace.jpg','events/powder.jpg','events/speen.jpg','events/trafalgar.jpg','events/waterloo.jpg','frontispiece.jpg','icons/accounts.jpg','icons/daybook.jpg','icons/persons.jpg','icons/wheat.jpg','icons/works.jpg','portraits/crabbe.jpg','portraits/cullerne.jpg','portraits/dubreuil.jpg','portraits/edmund.jpg','portraits/gall.jpg','portraits/hartopp.jpg','portraits/henrietta.jpg','portraits/kitty.jpg','portraits/oakes.jpg','portraits/pinch.jpg','portraits/pryor.jpg','portraits/thorne.jpg','portraits/vane.jpg','seasons/0.jpg','seasons/1.jpg','seasons/2.jpg','seasons/3.jpg','ui/book-leaf.jpg','ui/book.jpg','ui/headpiece.png','ui/marble.jpg','ui/seal.png','ui/tailpiece.png']);
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
