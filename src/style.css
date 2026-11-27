@@ -15,7 +15,7 @@
 *{box-sizing:border-box}
 body{background:var(--baize);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
   background-image:radial-gradient(60rem 40rem at 12% -6%, rgba(255,196,120,.24), transparent 70%), radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.5) 100%), var(--weave);
-  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:34px 60px}
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:15px 15px}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--madder);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -25,7 +25,7 @@ button:focus-visible, input:focus-visible, select:focus-visible{outline:2px soli
 .book{--edge:clamp(64px,9.4vw,134px);position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:clamp(12px,2vw,30px);
   background:var(--paper) padding-box;border-style:solid;border-color:var(--board);border-width:clamp(22px,3.3vw,48px) var(--edge) clamp(24px,3.5vw,50px);
   border-image:url(art/ui/book.jpg) 5.4% 10.3% 5.6% fill stretch;clip-path:inset(0 round 14px)}
-.page{position:relative;min-width:0;min-height:47rem;padding:26px clamp(12px,2.2vw,38px) 30px;display:flex;flex-direction:column;gap:14px}
+.page{position:relative;min-width:0;min-height:min(47rem, calc(100vh - 135px));padding:26px clamp(12px,2.2vw,38px) 30px;display:flex;flex-direction:column;gap:14px}
 #ribbon{display:none}
 #tabs{position:absolute;left:calc(100% + var(--edge) * .1);top:30px;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
 #tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:calc(var(--edge) * .62);min-height:54px;padding:6px 4px;border:0;border-radius:0 5px 5px 0;
@@ -36,11 +36,11 @@ button:focus-visible, input:focus-visible, select:focus-visible{outline:2px soli
 #tabs button:hover{width:calc(var(--edge) * .7)} #tabs button[aria-pressed="true"]:hover{width:calc(var(--edge) * .78)}
 #verso::after{content:"";flex:none;height:92px;margin-top:auto;background:url(art/ui/tailpiece.png) center/contain no-repeat;opacity:.8}
 body.intro #verso::after{content:none}
+@media (max-height:980px){ #verso::after{content:none} }
 
 /* the flyleaf: marbled endpaper facing the title page */
 body.intro #tabs, body.intro #ribbon{display:none}
-body.intro #verso{background:linear-gradient(90deg, rgba(0,0,0,.12), transparent 8%, transparent 78%, rgba(30,15,5,.45)), url(art/ui/marble.jpg) center top/100% auto repeat-y;margin:-4px 0 -4px -4px;align-items:center;justify-content:center;min-height:0}
-body.intro #stage{min-height:0}
+body.intro .page{min-height:0;gap:10px}
 .bookplate{width:min(100%, 21rem);background:var(--sheet);background-image:var(--grain);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.4);outline:1px solid var(--ink);outline-offset:-7px;border:1px solid var(--ink)}
 .bookplate .plate{width:100%}
 .bookplate b{font-family:var(--hand);font-weight:400;font-size:2.5rem;line-height:1}
@@ -75,7 +75,7 @@ h3.orn::before{clip-path:polygon(0 50%, 100% 0, 100% 100%)} h3.orn::after{clip-p
 table.acct{width:100%;border-collapse:collapse;border-top:2px solid var(--ink);border-bottom:3px double var(--ink);font-variant-numeric:tabular-nums}
 table.acct th{font-family:var(--caps);font-weight:400;font-size:.8rem;letter-spacing:.1em;color:var(--muted);text-align:left;padding:5px 0;border-bottom:1px solid var(--ink)}
 table.acct td{padding:3px 0;border-bottom:1px solid var(--rule);vertical-align:bottom}
-table.acct td:first-child{font-family:var(--hand);font-size:clamp(1.2rem,1.62vw,1.65rem);line-height:1.2;padding-right:10px}
+table.acct td:first-child{font-family:var(--display);font-size:1.05rem;line-height:1.25;padding-top:5px;padding-bottom:4px;padding-right:10px}
 table.acct .n{width:3rem;text-align:right;padding:0 8px 5px;border-left:1px solid var(--redrule);font-family:var(--display);font-size:1.18rem;white-space:nowrap}
 table.acct .n.l{width:5rem;border-left:3px double var(--redrule)}
 table.acct th.n{padding:5px 8px;font-size:.8rem;font-family:var(--caps)}
@@ -117,7 +117,7 @@ table.acct tr.total .n{font-size:1.3rem}
 .sheet .prose p:first-child::first-letter, .lead p:first-child::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
 .sheet.bill{background-color:#efe7d2;transform:rotate(.4deg);padding-top:30px}
 .sheet.bill .kicker{align-self:center;border-block:1px solid var(--ink);padding:4px 12px;color:var(--ink)}
-.sheet.bill h2{font-family:var(--fat);font-size:clamp(1.9rem,4.2vw,2.8rem);line-height:1;text-transform:uppercase;letter-spacing:.02em;padding-bottom:10px;border-bottom:4px solid var(--ink)}
+.sheet.bill h2{font-family:var(--fat);font-size:clamp(1.6rem,2.9vw,2.3rem);line-height:1;text-transform:uppercase;letter-spacing:.02em;padding-bottom:10px;border-bottom:4px solid var(--ink)}
 .sheet.bill .prose{padding-top:8px;border-top:1px solid var(--ink);margin-top:-7px}
 .sheet.bill .prose p{text-align:justify;hyphens:auto}
 .sheet.bill .prose p:first-child::first-letter{font-family:var(--fat);color:var(--ink)}
@@ -131,11 +131,11 @@ table.acct tr.total .n{font-size:1.3rem}
 
 /* answering */
 .choices{display:flex;flex-direction:column;gap:8px}
-.choice{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.45);padding:11px 14px 10px 44px;min-height:50px;box-shadow:1px 2px 3px rgba(40,30,20,.14);transition:transform .15s, box-shadow .15s, background .15s}
+.choice{position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 12px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.45);padding:11px 14px 10px 44px;min-height:50px;box-shadow:1px 2px 3px rgba(40,30,20,.14);transition:transform .15s, box-shadow .15s, background .15s}
 .choice::before{content:"\261E\FE0E";position:absolute;left:12px;top:8px;font-family:var(--body);font-size:1.35rem;line-height:1.3;color:var(--madder);opacity:.55;transition:transform .15s, opacity .15s}
-.choice span{min-width:0;font-family:var(--display);font-size:1.2rem;line-height:1.3}
+.choice span{min-width:0;flex:1 1 60%;font-family:var(--display);font-size:1.2rem;line-height:1.3}
 .choice small{display:block;font-family:var(--body);font-style:italic;font-size:.82rem;line-height:1.35;color:var(--muted);padding-top:2px}
-.choice em{font-family:var(--display);font-style:normal;font-size:1.1rem;color:var(--gold);white-space:nowrap;flex:none}
+.choice em{font-family:var(--display);font-style:normal;font-size:1.02rem;line-height:1.3;color:var(--gold);min-width:0;flex:0 1 auto}
 .choice:hover, .choice:focus-visible{background:var(--sheet);transform:translateX(4px);box-shadow:2px 5px 10px rgba(40,30,20,.25)}
 .choice:hover::before, .choice:focus-visible::before{opacity:1;transform:translateX(3px)}
 .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:8px}
@@ -152,14 +152,28 @@ table.acct tr.total .n{font-size:1.3rem}
 .score b{font-family:var(--fat);font-weight:400;font-size:2.2rem;color:var(--madder);padding:0 .2em;letter-spacing:0}
 
 /* the other tabs */
-.people{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill, minmax(15rem, 1fr));gap:14px 18px}
-.people li{display:flex;gap:12px;align-items:center;min-width:0}
+.people{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:9px 14px}
+.people li{display:flex;gap:10px;align-items:center;min-width:0}
 .people li > div{min-width:0;display:flex;flex-direction:column}
-.people b{font-family:var(--display);font-weight:400;font-size:1.15rem;line-height:1.15}
-.people .r{font-family:var(--hand);font-size:1.45rem;line-height:1}
-.r0,.r1,.r2,.r3{color:var(--bad)} .r4,.r5{color:var(--muted)} .r6,.r7,.r8,.r9,.r10{color:var(--good)}
-.people small{color:var(--muted);font-size:.84rem;line-height:1.3}
-.people q{font-style:italic;font-size:.82rem;line-height:1.3;margin-top:2px;quotes:none}
+.people .medal{width:46px;height:58px} .people .medal span{font-size:1.7rem}
+.people b{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.people small{color:var(--muted);font-size:.78rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.people .r{font-family:var(--hand);font-size:1.3rem;line-height:1}
+.lots{display:flex;flex-direction:column;border-top:2px solid var(--ink)}
+.lots summary, .lots .lot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0 6px;border-bottom:1px solid var(--rule);cursor:pointer;list-style:none}
+.lots summary::-webkit-details-marker{display:none}
+.lots .lot{cursor:default}
+.lots b{font-family:var(--display);font-weight:400;font-size:1.1rem;line-height:1.2;min-width:0}
+.lots summary span, .lots .lot span{flex:none;font-family:var(--display);font-size:1.05rem;font-variant-numeric:tabular-nums}
+.lots .lot span{font-family:var(--caps);font-size:.78rem;letter-spacing:.08em;color:var(--muted)} .lots .done b{color:var(--muted)}
+.lots summary:hover b{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.lots details[open] summary{border-bottom-color:transparent} .lots details[open] summary b::before{content:"\261E\FE0E  ";color:var(--madder)}
+.lots details > div{padding:0 0 12px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.lots details p{margin:0;font-size:.95rem;line-height:1.4} .lots .terms{color:var(--muted);font-size:.86rem} .lots .terms em{color:var(--bad)}
+.qtitle sup{font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:var(--madder);margin-left:10px;vertical-align:top}
+table.roll .lv{display:flex;flex-wrap:wrap;gap:4px 6px;padding:2px 0 6px} table.roll .lv button{background:none;border:1px solid transparent;border-radius:50%;padding:1px 10px;font-family:var(--hand);font-size:1.2rem;line-height:1.1} table.roll .lv button.on{border-color:var(--ink)} table.roll .lv button:last-child:not([aria-pressed]){font-family:var(--caps);font-size:.74rem;letter-spacing:.06em;border:1px solid var(--ink);border-radius:0;padding:4px 8px}
+.sheet .prose > img{float:right;width:46%;aspect-ratio:3/2;object-fit:cover;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.1);margin:4px 0 6px 14px;outline:1px solid var(--ink);outline-offset:2px}
+@media (max-width:520px){ .sheet .prose > img{float:none;width:100%;margin:0 0 10px} }
 .works{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .works li{border-bottom:1px solid var(--rule);padding:9px 0 8px}
 .works li div{display:flex;justify-content:space-between;gap:12px;align-items:center}
@@ -182,10 +196,13 @@ table.roll .n{width:4rem;vertical-align:top;padding-top:10px} table.roll tr.tota
 .daybook b{font-weight:400;font-style:italic}
 
 /* taking possession: the title page */
-.titlepage::before{content:"";display:block;height:clamp(84px,11vw,132px);margin-bottom:10px;background:url(art/ui/headpiece.png) center/contain no-repeat}
-.titlepage{margin:0 0 6px;padding-bottom:12px;border-bottom:3px double var(--ink);text-align:center;font-family:var(--hand);font-size:clamp(2.6rem,8vw,4rem);line-height:1}
+.titlepage::before{content:"";display:block;height:clamp(70px,7vw,104px);margin-bottom:6px;background:url(art/ui/headpiece.png) center/contain no-repeat}
+.titlepage{margin:0 0 6px;padding-bottom:12px;border-bottom:3px double var(--ink);text-align:center;font-family:var(--hand);font-size:clamp(2.4rem,4.6vw,3.4rem);line-height:1}
 .titlepage small{display:block;font-family:var(--caps);font-size:.9rem;letter-spacing:.14em;color:var(--muted);padding-top:8px}
-.opening{display:flex;flex-direction:column;gap:12px}
+.opening{display:flex;flex-direction:column;gap:9px}
+.opening h2{margin:0}
+.plate.band{aspect-ratio:4.2;flex:none} .plate.band svg{position:absolute;inset:0;width:100%;height:100%} .plate.band img{object-position:50% 78%}
+body.intro .names{margin-top:2px} body.intro .traits{margin-top:8px;padding-top:8px} body.intro .pickrow{margin-top:7px} body.intro .traits .fine{margin:4px 0 0}
 .opening > p:not(.kicker){margin:0;max-width:64ch;font-size:1.02rem}
 .opening > p:nth-of-type(2)::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.8;padding:.08em .1em 0 0;color:var(--madder)}
 .names{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 14px;align-items:center;margin-top:10px}
@@ -212,6 +229,13 @@ table.roll .n{width:4rem;vertical-align:top;padding-top:10px} table.roll tr.tota
 #stage .sheet{animation:laid .4s ease-out both}
 #stage .choice{animation:inked .35s ease-out both} #stage .choice:nth-child(2){animation-delay:.07s} #stage .choice:nth-child(3){animation-delay:.14s} #stage .choice:nth-child(n+4){animation-delay:.2s}
 
+@media (min-width:1081px) and (min-height:600px){
+  body:not(.intro) .book{height:min(calc(100vh - 30px), 940px)}
+  #stage > .sheet{flex:0 1 auto;min-height:9rem;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(70,50,25,.3) transparent}
+  #stage > .orn, #stage > .choices, #stage > .runhead{flex:none}
+  body:not(.intro) .page{min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(70,50,25,.3) transparent}
+}
+
 /* a phone: one page at a time, the paper in hand first */
 @media (max-width:1080px){
   body{padding-block:14px 40px}
@@ -219,7 +243,7 @@ table.roll .n{width:4rem;vertical-align:top;padding-top:10px} table.roll tr.tota
   .book{grid-template-columns:minmax(0,1fr);border-width:16px clamp(26px,7vw,48px) 20px 9px;border-image:url(art/ui/book-leaf.jpg) 5.4% 20.5% 5.6% 2.5% fill stretch;clip-path:inset(0 round 0 12px 12px 0)}
   .page{min-height:0;padding-inline:clamp(10px,3.4vw,30px)}
   #stage{order:1} #tabs{order:2} #verso{order:3}
-  body.intro #verso{order:0;padding:22px 16px;margin:0}
+  body.intro #verso{order:0}
   #tabs{position:static;width:auto;padding:0;flex-direction:row;flex-wrap:wrap;gap:0;border-block:3px double var(--ink)}
   #tabs button, #tabs button[aria-pressed="true"], #tabs button:hover, #tabs button[aria-pressed="true"]:hover{flex:1 1 22%;width:auto;min-height:50px;border-radius:0;background:transparent;color:var(--ink);box-shadow:none}
   #tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)} #tabs button[aria-pressed="true"] img{filter:invert(1);mix-blend-mode:screen}
@@ -232,7 +256,7 @@ table.roll .n{width:4rem;vertical-align:top;padding-top:10px} table.roll tr.tota
   .pickrow{grid-template-columns:minmax(0,1fr)} .pickblurb{grid-column:1}
   .memo{gap:16px}
   .daybook li{grid-template-columns:minmax(0,1fr);gap:0}
-  table.acct td:first-child{font-size:1.4rem} table.acct .n{width:2.1rem;padding-inline:5px} table.acct .n.l{width:3.6rem}
+  table.acct .n{width:2.1rem;padding-inline:5px} table.acct .n.l{width:3.6rem}
   #tabs button{font-size:.72rem} #tabs button img{display:none}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }

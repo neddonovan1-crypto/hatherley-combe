@@ -34,15 +34,23 @@ function plateHTML(q, src, cap){ return `<figure class="plate">${sceneSVG(q)}${p
 function render(){
   const stage = $('stage');
   document.body.classList.toggle('intro', !S);
-  if (!S) { LEAF = -1; stage.classList.remove('turn'); stage.innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>' + introHTML();
-    $('verso').innerHTML = `<div class="bookplate">${plateHTML(1, 'frontispiece', 'Hatherley Hall from the park')}<span>The Estate Book of</span><b>Hatherley Combe</b><i>in the County of Berks, kept by Mr Crabbe, steward</i></div>`;
-    $('tabs').innerHTML = ''; syncTraits(); return; }
+  if (!S) { LEAF = -1; stage.classList.remove('turn');
+    stage.innerHTML = `<figure class="plate band">${sceneSVG(1)}${pic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
+    const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
+    $('verso').innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>'; $('verso').appendChild(told);
+    $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
+  { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   stage.innerHTML = ({ledger:ledgerHTML, event:eventHTML, outcome:outcomeHTML, undertake:undertakeHTML, undone:outcomeHTML, end:endHTML})[S.phase]();
   drawBook();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
   const first = stage.querySelector('button'); if (first && S.phase !== 'ledger') first.focus({preventScroll:true});
 }
+/* the opening is sized to the window, so the will and the choosing are read without scrolling */
+function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; if (S || innerWidth <= 1080) return;
+  const room = innerHeight - 34, wide = Math.min(1420, innerWidth - 32); let z = 1;
+  for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.7, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
+addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML();
   $('tabs').innerHTML = TABS.map(([id, n]) => `<button aria-pressed="${TAB === id}" onclick="showTab('${id}')">${pic('icons/' + id)}${n}</button>`).join(''); }
 function showTab(t){ TAB = t; drawBook(); }
@@ -51,10 +59,13 @@ function introHTML(){ const has = !!load();
   return `<article class="card opening">
     <p class="kicker">Berkshire, Lady Day 1795</p>
     <h2>An Inheritance</h2>
-    <p>Your uncle Barnaby is dead at seventy-one, face down in a syllabub at his own Michaelmas dinner, which the county agreed was how he would have wished to go, though perhaps not in front of the Bishop.</p>
-    <p>He has left you Hatherley Combe: two thousand one hundred acres of chalk and clay, eleven tenant farms, a mill, a common that nobody owns and everybody uses, a house with a smoking chimney in every room but the one you want, a mortgage of four thousand pounds, and a steward named Crabbe who smiles as a ledger would, if it could.</p>
-    <p>England has been two years at war with the French Republic. Bread is dear and growing dearer. You have a wife, Henrietta, who had hoped for a baronet; a daughter, Kitty, seventeen, who has read every novel in the Newbury circulating library and believed most of them; and a son, Edmund, nineteen, who wants very badly to be shot at.</p>
-    <p>You have twenty-one years, a season at a time. Nobody will tell you what a good squire is. Several people will tell you what a bad one is, afterwards.</p>
+    <p>Your uncle Barnaby died at his own table on Michaelmas Day. He was seventy-one. The Bishop was on his right. The syllabub had just come in.</p>
+    <p>Mr Spurling the attorney read the will in the library a week later. It took four minutes. Everything comes to you.</p>
+    <p>Hatherley Combe. Two thousand one hundred acres of chalk and clay. Three farms let to tenants. A water mill. A common where forty cottagers keep a cow apiece. A house with fifty-four windows and eleven chimneys. Nine of the chimneys smoke. A mortgage of four thousand pounds at five per cent.</p>
+    <p>The steward met your carriage at the lodge this morning. His name is Crabbe. He had the keys in one hand and the rent book in the other. He gave you the keys.</p>
+    <p>Henrietta is upstairs counting bedrooms. She had hoped you would be a baronet by now. Kitty is seventeen and has found the library. Edmund is nineteen. He has found your uncle’s sword over the hall chimney-piece and is trying to get it out of the scabbard.</p>
+    <p>England has been at war with France for two years. The quartern loaf was sevenpence when it began. It is elevenpence today.</p>
+    <p>You have twenty-one years. They come one season at a time.</p>
     <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
       <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
@@ -88,7 +99,7 @@ function accountHTML(){ let rows = '', tot = 0;
   return `<div class="tablewrap"><table class="acct"><thead><tr><th>Particulars</th><th class="n l">£</th><th class="n">s.</th><th class="n">d.</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
 
 function ledgerHTML(){
-  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern have met at the George and resolved, unanimously, to give no further credit. The mortgagees have sent a man to look at the roof.</p>` : '';
+  const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
     ${plateHTML(S.season, 'seasons/' + S.season, 'Hatherley in ' + SEASONS[S.season].toLowerCase())}
     <p class="platecap"><span>Hatherley, ${esc(stamp())}</span><span>fo. ${Math.min(S.t + 1, 84)} of 84</span></p>
@@ -104,7 +115,7 @@ function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c =
   return `${runhead(bill ? 'Posted this quarter' : 'Papers received this quarter', 'Cr.')}
     <article class="sheet${bill ? ' bill' : ''}">
       ${who ? `<div class="from">${medal(who, true)}<div><p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p><h2>${esc(e.title)}</h2></div></div>` : `<p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>`}
-      <div class="prose">${paras(text)}</div>
+      <div class="prose">${pic('events/' + e.id, '')}${paras(text)}</div>
     </article>
     <h3 class="orn">Your answer</h3>
     <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div>`; }
@@ -119,7 +130,7 @@ function outcomeHTML(){ const o = S.outcome;
 function undertakeHTML(){ const o = undertakingOptions();
   return `${runhead('The season’s undertaking', 'Cr.')}
     <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>One undertaking, and only one. A squire who tries to do two things in a season does both badly and is late for dinner. Works on the estate are another matter, and may be put in hand at any time.</p></div>
+    <div class="prose"><p>You may undertake one thing this season. Works on the estate may be put in hand at any time.</p></div>
     <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}<small>${esc(c.hint || '')}</small></span>${noteOf(c)}</button>`).join('')}</div>`; }
 
 function endHTML(){ const r = reckoning();
@@ -136,32 +147,29 @@ function meter(label, v, words){ return `<div class="meter${v < 40 ? ' low' : ''
 
 function versoHTML(){
   const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
-  if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll</h2>` + farmsHTML();
-  if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures</h2>` + venturesHTML();
+  if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll${typeof farmsList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + farmsHTML();
+  if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + venturesHTML();
   if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2>` + worksHTML();
   if (TAB === 'persons') return head + `<h2 class="qtitle">Persons of Consequence</h2>` + peopleHTML();
   if (TAB === 'wheat') return head + `<h2 class="qtitle">Wheat at Wyvern Market</h2>` + chartHTML();
   if (TAB === 'daybook') return head + `<h2 class="qtitle">The Squire’s Day-Book</h2>` + journalHTML();
-  const pol = [[0.9, 'Indulgent'], [1, 'Customary'], [1.2, 'Rack']], over = S.phase === 'end';
+  const over = S.phase === 'end';
   return head + `<h2 class="qtitle">${esc(QUARTER[S.season])} Quarter, ${S.year}</h2>
     ${accountHTML()}
     <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
-      ${over ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${S.mortgage < 9000 ? '' : 'disabled'}>Borrow £500</button></div>`}</dl>
+      ${over ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}</dl>
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W)}
       ${meter('Goodwill of the parish', S.goodwill, GOODWILL_W)}
       ${meter('Peace of the household', S.family, FAMILY_W)}
-      ${S.traits && S.traits.length ? `<p class="fine born">The squire: ${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}</div>
-    ${over ? '' : `<div class="rents" role="group" aria-label="Rent policy"><h3>Rents</h3>${pol.map(([v, n]) => `<button class="${S.rentPolicy === v ? 'on' : ''}" aria-pressed="${S.rentPolicy === v}" onclick="setRent(${v})">${n}</button>`).join('')}
-      <p class="fine">Half-year rental due: ${fmt(halfRent())}. ${S.rentPolicy > 1 ? 'Rack-rents pay until they don’t.' : S.rentPolicy < 1 ? 'They drink your health at the audit.' : 'As your uncle left them.'}</p></div>`}`; }
+      ${S.traits && S.traits.length ? `<p class="fine born">The squire: ${S.traits.map(id => esc(traitById(id).name)).join('. ')}.</p>` : ''}</div>`; }
 
 function worksHTML(){ const list = worksList(), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
-  return `<p class="fine">Begin them when you please. They are paid for in the quarter’s accounts and do not cost you the season.</p>
-    ${hand.length ? `<h3>In hand</h3><ul class="works">${hand.map(w => `<li><div><b>${esc(w.name)}</b></div><small>${w.left} season${w.left > 1 ? 's' : ''} more, at ${fmt(w.per)} the quarter</small></li>`).join('')}</ul>` : ''}
-    ${open.length ? `<h3>That might be put in hand</h3>${common ? `<p class="note bad">${esc(common)}</p>` : ''}<ul class="works">${open.map(w => `<li><div><b>${esc(w.name)}</b><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div>
-      <small>${esc(w.note)}. ${esc(w.gain)}.</small><q>${esc(w.blurb)}</q>${w.why && !common ? `<small class="why">${esc(w.why)}</small>` : ''}</li>`).join('')}</ul>` : ''}
-    ${done.length ? `<h3>Finished</h3><ul class="works done">${done.map(w => `<li><div><b>${esc(w.name)}</b></div></li>`).join('')}</ul>` : ''}`; }
+  return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
+    ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
+    ${open.map(w => `<details name="lot"><summary><b>${esc(w.name)}</b><span>${fmt(w.cost)}</span></summary><div><p>${esc(w.blurb)}</p><p class="terms">${esc(w.note)}. ${esc(w.gain)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
+    ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
 const DRAFT_FARMS = [
@@ -176,19 +184,20 @@ const DRAFT_VENTURES = [
   {name: 'A threshing machine', where: 'The home farm', cost: 120, well: 'Saves about £50 a year in wages.'},
   {name: 'A partner’s share in the Wyvern Bank', where: 'The estate', cost: 1000, well: 'Fifteen per cent, and a seat in the bank parlour.'},
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
-const DRAFT_NOTE = '<p class="fine">A specimen leaf. These figures come from the new economy’s design and do not yet touch the accounts.</p>';
 function farmsHTML(){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sum = list.reduce((a, f) => a + f.rent, 0);
-  return `${live ? '' : DRAFT_NOTE}<table class="acct roll"><thead><tr><th>Farm and tenant</th><th class="n">Acres</th><th class="n l">£ a year</th></tr></thead><tbody>
-    ${list.map(f => `<tr><td>${esc(f.name)}<small>${esc(f.land)}. ${esc(f.tenant)}.</small><em>${esc(f.held)}</em></td><td class="n">${f.acres}</td><td class="n l">${f.rent}</td></tr>`).join('')}
-    <tr class="total"><td>The rental</td><td class="n">${list.reduce((a, f) => a + f.acres, 0)}</td><td class="n l">${sum.toLocaleString('en-GB')}</td></tr></tbody></table>
-    <p class="fine">Room on the estate for ${list.length < 5 ? ['', 'four', 'three', 'two', 'one'][list.length] + ' more' : 'no more'}. Five farms is as far as Hatherley goes.</p>`; }
+  return `<table class="acct roll"><thead><tr><th>Farm and tenant</th><th class="n">Acres</th><th class="n l">£ a year</th></tr></thead><tbody>
+    ${list.map(f => `<tr><td>${esc(f.name)}<small>${esc(f.land)}. ${esc(f.tenant)}.</small><em>${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}</em>
+      ${live && f.canLevel ? `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}${f.canOffer ? `<button onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}</span>` : ''}</td><td class="n">${f.acres}</td><td class="n l">${f.rent}</td></tr>`).join('')}
+    <tr class="total"><td>The rental</td><td class="n">${list.reduce((a, f) => a + f.acres, 0)}</td><td class="n l">${sum.toLocaleString('en-GB')}</td></tr></tbody></table>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function', list = live ? venturesList() : DRAFT_VENTURES;
-  return `${live ? '' : DRAFT_NOTE}<p class="fine">Works are sound. These are the other kind.</p><ul class="works">${list.map(v => `<li><div><b>${esc(v.name)}</b>${live && v.id ? `<button class="inkbtn" onclick="beginVenture('${v.id}')" ${v.can ? '' : 'disabled'}>Venture ${fmt(v.cost)}</button>` : `<span class="cost">${fmt(v.cost)}</span>`}</div>
-    <small>${esc(v.where)}</small><q>${esc(v.well)}</q></li>`).join('')}</ul>`; }
+  const row = v => v.state === 'ended' ? `<div class="lot done"><b>${esc(v.name)}</b><span>${esc(v.note || 'Ended')}</span></div>`
+    : `<details name="lot"><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? 'In hand' : fmt(v.cost)}</span></summary><div><p>${esc(v.well)}${v.ill ? ' ' + esc(v.ill) : ''}</p><p class="terms">${esc([v.where, v.note].filter(Boolean).join('. '))}.${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
+      ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="endVenture('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${esc(v.endLabel)}</button>` : '') : `<button class="inkbtn" onclick="beginVenture('${v.id}')" ${v.can ? '' : 'disabled'}>Venture it</button>`}</div></details>`;
+  return `<div class="lots">${list.map(row).join('')}</div>`; }
 
 function peopleHTML(){
   return `<ul class="people">${Object.keys(S.chars).filter(id => S.chars[id].met).map(id => { const c = S.chars[id], p = PEOPLE[id]; const note = c.notes[c.notes.length - 1];
-    return `<li>${medal(id)}<div><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span>${note ? `<q>${esc(note)}</q>` : ''}</div></li>`; }).join('')}</ul>`; }
+    return `<li title="${esc(p.role() + (note ? '. ' + note : ''))}">${medal(id)}<div><b>${esc(p.name)}</b><small>${esc(p.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></div></li>`; }).join('')}</ul>`; }
 
 function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YEAR + 1, bw = (W - pad) / n; let bars = '';
   const yOf = v => H - 16 - (v / 130) * (H - 28);
@@ -201,7 +210,7 @@ function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YE
     <text x="${pad}" y="${H - 3}">1795</text><text x="${W}" y="${H - 3}" text-anchor="end">1815</text></svg>`; }
 
 function journalHTML(){
-  return `${S.journal.length ? `<ol class="daybook">${S.journal.slice(0, 16).map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : '<p class="fine">Nothing entered yet.</p>'}
+  return `${S.journal.length ? `<ol class="daybook">${S.journal.slice(0, 12).map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : '<p class="fine">Nothing entered yet.</p>'}
     ${S.phase !== 'end' ? '<div class="row"><button class="quiet" onclick="askWipe(this)">Abandon this estate and begin again</button></div>' : ''}`; }
 function askWipe(b){ if (b.dataset.sure) return wipe(); b.dataset.sure = 1; b.textContent = 'Certain? Press again to give it all up'; }
 
