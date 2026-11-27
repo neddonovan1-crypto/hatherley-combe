@@ -184,7 +184,7 @@ function versoHTML(){
   const over = S.phase === 'end';
   return head + `<h2 class="qtitle">${esc(QUARTER[S.season])} Quarter, ${S.year}</h2>
     ${accountHTML()}
-    <dl class="bal"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}${typeof mortCap === 'function' ? `<small>of ${fmt(mortCap())}</small>` : ''}</dd></div>
+    <dl class="bal purse"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing${typeof mortCap === 'function' ? `, limit ${fmt(mortCap())}` : ' on the mortgage'}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
       ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}${over || typeof creditList !== 'function' ? '' : creditHTML()}</dl>
     <div class="wheatbox"><h3 class="orn">Wheat at Wyvern Market</h3><div>${chartHTML()}</div></div>
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
@@ -203,7 +203,7 @@ function hazardHTML(v){
   return `<span class="hazard" role="img" aria-label="Hazard ${v.risk} of 4"><span>Hazard</span>${[1, 2, 3, 4].map(i => `<i class="pip${i <= v.risk ? ' on' : ''}"></i>`).join('')}</span>`; }
 function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id === id);
   const b = (c, label) => c ? `<button type="button" onclick="takeCredit('${c.id}')" ${c.can ? '' : `disabled title="${esc(c.why || '')}"`}>${label} ${amt(c.gets, c.gets)}</button>` : '';
-  return `<div class="creditbox">${b(by('mortgage'), 'Borrow')}${b(by('repay'), 'Pay off')}</div>`; }
+  return `<div class="creditbox">${b(by('mortgage'), 'Borrow more')}${b(by('repay'), 'Pay off principal')}</div>`; }
 /* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
 function raiseHTML(ids){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
   return `<h3 class="orn">Raising money</h3><div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
