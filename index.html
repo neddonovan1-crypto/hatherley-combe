@@ -296,6 +296,25 @@ html::-webkit-scrollbar{width:13px} html::-webkit-scrollbar-track{background:#17
   #tabs button{font-size:.72rem} #tabs button img{display:none}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+
+/* Choosing the squire: favours as pips, each row a list that drops over the page. */
+.favours{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:4px 0 2px} .favours > span{font-family:var(--caps);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.favours #pts{font-weight:400;font-size:1.4rem;letter-spacing:.18em;color:var(--good);text-decoration:none;padding:0;font-family:var(--body)} .favours small{flex-basis:100%;font-size:.88rem;color:var(--muted)}
+.fav{flex:none;font-size:1.05rem;letter-spacing:.12em;white-space:nowrap} .fav.pos{color:var(--good)} .fav.neg{color:var(--bad)}
+.plabel{font-family:var(--caps);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);align-self:center}
+details.pick{position:relative;min-width:0}
+details.pick > summary{display:flex;justify-content:space-between;align-items:baseline;gap:10px;list-style:none;cursor:pointer;padding:5px 30px 5px 12px;border:1px solid rgba(42,35,32,.5);border-radius:5px;background:rgba(255,255,255,.35);position:relative}
+details.pick > summary::-webkit-details-marker{display:none} details.pick > summary::after{content:"\25BE";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+details.pick > summary b{font-family:var(--display);font-weight:400;font-size:1.12rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.pick[open] > summary{border-color:var(--ink);background:var(--sheet)}
+details.pick .opts{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 3px);display:flex;flex-direction:column;background:#f3ecd6;border:1px solid var(--ink);box-shadow:3px 8px 18px rgba(30,20,10,.4);max-height:19rem;overflow-y:auto}
+details.pick .opts button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 12px;align-items:baseline;text-align:left;background:none;border:0;border-bottom:1px solid var(--rule);padding:7px 12px 6px;color:inherit;font:inherit;cursor:pointer}
+details.pick .opts button:last-child{border-bottom:0} details.pick .opts button b{font-family:var(--display);font-weight:400;font-size:1.05rem;line-height:1.2}
+details.pick .opts button small{grid-column:1/-1;font-size:.82rem;line-height:1.3;color:var(--muted)}
+details.pick .opts button:hover:not(:disabled), details.pick .opts button:focus-visible{background:rgba(255,255,255,.6)}
+details.pick .opts button[aria-selected="true"] b::before{content:"\261E\FE0E  ";color:var(--madder)}
+details.pick .opts button:disabled{opacity:.42;cursor:not-allowed}
+details.pick.up .opts{top:auto;bottom:calc(100% + 3px)}
 </style>
 <div class="desk">
   <div class="book">
@@ -7430,21 +7449,25 @@ function introHTML(){ const has = !!load();
       <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
       <fieldset class="traits">
         <legend>What manner of man inherits</legend>
-        <p class="fine">You have <b id="pts">${pointsLeft(pickList())}</b> <span id="ptsw">points</span> in hand. An advantage costs them; a burden pays them back. Leave all five alone to start as plain as your uncle left you.</p>
-        ${TRAIT_GROUPS.map(([g, label, plain]) => `<div class="pickrow"><label for="pick-${g}">${label}</label>
-          <select id="pick-${g}" onchange="setPick('${g}', this.value)"><option value="">${plain}</option>${TRAITS.filter(t => t.group === g).map(t => `<option value="${t.id}"${PICKS[g] === t.id ? ' selected' : ''}>${esc(t.name)} (${t.cost > 0 ? 'costs ' + t.cost : 'gives ' + (-t.cost)})</option>`).join('')}</select>
-          <p class="pickblurb" id="blurb-${g}"></p></div>`).join('')}
+        <div id="picks">${picksHTML()}</div>
       </fieldset>
       <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
     </form>
   </article>`; }
 let PICKS = {};
 const pickList = () => Object.values(PICKS).filter(Boolean);
-function setPick(g, id){ PICKS[g] = id || null; syncTraits(); }
-function syncTraits(){ if (!$('pts')) return; const left = pointsLeft(pickList());
-  for (const [g] of TRAIT_GROUPS){ const t = PICKS[g] && traitById(PICKS[g]); $('blurb-' + g).innerHTML = t ? esc(t.blurb) + ' <span>' + esc(t.effect) + '</span>' : ''; }
-  $('pts').textContent = left; $('ptsw').textContent = Math.abs(left) === 1 ? 'point' : 'points'; $('pts').classList.toggle('neg', left < 0);
-  $('takeit').disabled = left < 0; $('takeit').textContent = left < 0 ? 'Overdrawn. Give something up, or take on a burden' : 'Take possession'; }
+/* Favours: three to begin. An advantage spends one or two, a burden earns them back. Each row opens a list; what cannot be afforded is greyed. */
+const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
+function picksHTML(){ const left = pointsLeft(pickList());
+  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${left > 0 ? '●'.repeat(left) : 'none'}</b><small>An advantage spends them. A burden earns them back.</small></p>
+    ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
+      const opt = (id, name, cost, effect) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${effect ? `<small>${esc(effect)}</small>` : ''}</button>`;
+      return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
+        <div class="opts" role="listbox">${opt('', plain, 0, '')}${TRAITS.filter(t => t.group === g).map(t => opt(t.id, t.name, t.cost, t.effect)).join('')}</div></details>
+        <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
+function setPick(g, id){ PICKS[g] = id || null; if ($('picks')) { $('picks').innerHTML = picksHTML(); fitLeaf(); } }
+function syncTraits(){ if ($('picks')) $('picks').innerHTML = picksHTML(); }
+document.addEventListener('click', e => { if (!e.target.closest('details.pick')) document.querySelectorAll('details.pick[open]').forEach(d => d.open = false); });
 function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }
 function resume(){ const s = load(); if (s) { S = s; render(); } }
 
