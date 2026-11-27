@@ -4,7 +4,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
 let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
-const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
+const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['works', 'Works'], ['ventures', 'Ventures'], ['household', 'Household'], ['society', 'Society'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
 const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','dearth','census','boulogne','beacon','trafalgar','abolition','election','election96','jubilee','peace','cornLaw','waterloo']);
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
@@ -179,6 +179,7 @@ function versoHTML(){
   if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll${typeof farmsList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + farmsHTML();
   if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">Money put out at hazard. Some of it comes home every year and some is never seen again.</p>` + venturesHTML();
   if (TAB === 'society') return head + `<h2 class="qtitle">Figure and Consequence${typeof societyList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">What the county sees of you. Most of it costs something every year to keep.</p>` + societyHTML();
+  if (TAB === 'household' && typeof householdList === 'function') return head + `<h2 class="qtitle">The Household</h2>` + householdHTML();
   if (TAB === 'works') return head + `<h2 class="qtitle">Works on the Estate</h2><p class="lede">Building and mending, paid for by the quarter. Two may be in hand at once.</p>` + worksHTML();
   if (TAB === 'persons') return head + `<h2 class="qtitle">Persons of Consequence</h2>` + peopleHTML();
   if (TAB === 'wheat') return head + `<h2 class="qtitle">Wheat at Wyvern Market</h2>` + chartHTML();
@@ -251,7 +252,20 @@ const DRAFT_SOCIETY = [
   {name: 'A pack of harriers', cost: 260, well: 'Forty gentlemen to breakfast twice a week.'},
   {name: 'A commission for Edmund', cost: 450, well: 'An ensigncy in a marching regiment.'},
   {name: 'The family plate', cost: 600, state: 'inHand', held: 'In the strong room', well: 'It would fetch about six hundred pounds at Rundell’s.'}];
-function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList() : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
+function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList().filter(r => !r.house || typeof householdList !== 'function') : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
+
+/* The Household: the footing the house is kept on, what its people are paid, and what is kept in it. */
+const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
+function householdHTML(){ const h = householdList();
+  const est = h.establishment.map(e => `<details name="lot"><summary><b>${esc(e.name)}</b><span>${e.now ? '<i class="tag">As now</i>' : ''}${amt(e.cost, -1)}</span></summary><div>${fxList(e.fx)}
+    ${e.now ? '' : `<p class="terms">${e.why ? `<em>${esc(e.why)}</em>` : ''}</p><button class="inkbtn" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}>${esc(e.verb)}</button>`}</div></details>`).join('');
+  const wages = h.wages.map(w => { const cur = w.levels.find(l => l.now);
+    return `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span><i class="tag">${esc(cur ? cur.label : '')}</i></span></summary><div><p class="terms">${esc(w.what)}.</p>
+      <div class="rungs">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>
+      ${(() => { const y = w.levels.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; })()}</div></details>`; }).join('');
+  return `<dl class="bal slim"><div><dt>The house, a year</dt><dd>${amt(h.cost, -1)}</dd></div></dl>
+    <div class="lots flat"><h3 class="orn">The footing of the house</h3>${est}<h3 class="orn">Wages and keep</h3>${wages}</div>
+    ${h.lots.length ? `<h3 class="orn">Kept in the house</h3>` + lotsHTML(h.lots, true, 'beginSociety', 'endSociety', 'Pay for it') : ''}`; }
 
 const regardScale = c => `<span class="scale ${c.r > 0 ? 'pos' : c.r < 0 ? 'neg' : ''}" role="img" aria-label="Regard ${c.r + 6} of 11">${REGARD.map((_, i) => `<i class="${i <= c.r + 5 ? 'on' : ''}"></i>`).join('')}</span>`;
 function peopleHTML(){

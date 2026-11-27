@@ -360,3 +360,11 @@ details.pick .opts button small i{display:block;font-style:normal;font-family:va
 details.pick .opts{max-height:min(30rem, 80vh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);left:auto;width:min(35rem, calc(100vw - 60px))} details.pick .opts > button{grid-column:1/-1;border-bottom:1px solid var(--rule)!important}
 details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details.pick .opts > div + div{border-left:1px solid var(--rule)} details.pick .opts > div button:last-child{border-bottom:0}
 @media (max-width:1080px){ details.pick .opts{left:0;width:auto;grid-template-columns:minmax(0,1fr)} details.pick .opts > div + div{border-left:0;border-top:1px solid var(--rule)} }
+.lots .rungs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-self:stretch}
+.lots .rung{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:6px 9px;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
+.lots .rung b{font-family:var(--caps);font-size:.82rem;letter-spacing:.08em} .lots .rung small{font-size:.8rem;line-height:1.25;color:var(--muted)} .lots .rung .fx{font-size:.9rem;line-height:1.25}
+.lots .rung:hover:not(:disabled), .lots .rung:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)}
+.lots .rung.now{background:var(--sheet);border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--madder);cursor:default} .lots .rung:disabled:not(.now){opacity:.5;cursor:not-allowed}
+.lots .rung.now b::before{content:"\261E\FE0E  ";color:var(--madder)}
+.lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
+@media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
