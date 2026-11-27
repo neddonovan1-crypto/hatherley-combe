@@ -1,6 +1,7 @@
 /* Where each drawn piece sits on the plan: left, top, width, height, in hundredths of the sheet. The pieces are art/plan/f/<id>-<season>.webp.
    The order here is the order they are laid down, so the Hall covers the park and the carriage stands before the Hall. */
 const PLAN_BOX = {
+  'london':[71.5, 8.3, 12.0, 3.1],
   'common':[0.5, 16.5, 23.0, 25.0],
   'drain':[60.333, 49.5, 27.042, 27.562],
   'meadows':[63.792, 69.562, 31.917, 27.0],
