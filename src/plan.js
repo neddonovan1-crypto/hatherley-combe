@@ -142,20 +142,10 @@ const CALM = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: 
 function landArtHTML(){ const q = S.season;
   const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
   return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}`; }
-/* Stock and traffic. s: the drawing. at: where its feet stand. w: its breadth in hundredths of the sheet. f: faces right. go: how it moves. */
+/* What stands still or drifts. The beasts and the carriages are in stock.js. s: the drawing. at: where its feet stand. w: its breadth in hundredths of the sheet. go: how it moves. */
 const BEASTS = [
-  {s:'sheep5', at:[19.5, 28], w:3.5, go:'graze', on:() => openCommon()},
   {s:'shepherd', at:[23, 27.4], w:2, on:() => openCommon()},
-  {s:'sheep3', at:[9.5, 37.5], w:2.7, f:1, go:'graze', on:() => openCommon()},
-  {s:'sheep5', at:[33, 17.2], w:2.6, f:1, go:'graze'},
-  {s:'sheep3', at:[44.5, 21.6], w:2.1, go:'graze'},
-  {s:'cow1', at:[79, 78.4], w:2.6, go:'graze', on:() => S.season < 3},
-  {s:'cow2', at:[83.6, 80.4], w:2.6, f:1, go:'graze', on:() => S.season < 3},
-  {s:'cow1', at:[62.6, 70.6], w:2.4, f:1, go:'graze', on:() => S.season < 3},
-  {s:'horse', at:[74.5, 34.6], w:2.4, go:'graze', on:() => S.season < 3},
-  {s:'boat', at:[73, 86], w:3.7, go:'drift', on:() => S.season < 3},
-  {s:'coach', at:[90.3, 37], w:4.8, go:'coach'},
-  {s:'wagon', at:[80, 51.7], w:4.3, go:'wagon'}
+  {s:'boat', at:[73, 86], w:3.7, go:'drift', on:() => S.season < 3}
 ];
 const openCommon = () => !F('enclosed') && !farmAt('commonpiece');
 function landMotHTML(){ const calm = CALM();
@@ -163,7 +153,7 @@ function landMotHTML(){ const calm = CALM();
   const moving = calm ? '' : ['smoke'].concat(isBuilt('front') ? [] : ['rooks']).map(id => { const b = PLAN_BOX[id]; return b && ART.has('plan/' + id + '.mp4') ? `<video class="mot" src="art/plan/${id}.mp4" autoplay muted loop playsinline disablepictureinpicture style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"></video>` : ''; }).join('');
   /* The mill wheel is a drawing turned by the page, laid over the wheel on the sheet. The new mill has its own wheel in another place, so it stops. */
   const wheel = ART.has('plan/wheel.webp') && !isBuilt('mill') ? `<i class="wheel${calm ? ' calm' : ''}"><img src="art/plan/wheel.webp" alt=""></i>` : '';
-  const beasts = BEASTS.map((b, i) => (b.on && !b.on()) || !ART.has('plan/s/' + b.s + '.webp') ? '' : `<img class="beast${b.go && !calm ? ' ' + b.go : ''}" src="art/plan/s/${b.s}.webp" alt="" style="left:${b.at[0]}%;top:${b.at[1]}%;width:${b.w}%;--f:${b.f ? -1 : 1};animation-delay:-${(i * 7.3) % 40}s;animation-duration:${b.go === 'graze' ? 38 + (i * 11) % 30 + 's' : ''}">`).join('');
+  const beasts = BEASTS.map(b => (b.on && !b.on()) || !ART.has('plan/s/' + b.s + '.webp') ? '' : `<img class="beast${b.go && !calm ? ' ' + b.go : ''}" src="art/plan/s/${b.s}.webp" alt="" style="left:${b.at[0]}%;top:${b.at[1]}%;width:${b.w}%">`).join('') + stockHTML(calm);
   return wheel + beasts + moving; }
 function landLblHTML(){
   const arms = artURL('arms/' + armsOf());
