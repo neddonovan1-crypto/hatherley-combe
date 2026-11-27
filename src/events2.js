@@ -2340,3 +2340,415 @@ She puts “and your father’s” after the love. She shows you that she has.`,
 
 A parcel goes with the letter. You are not told what is in it. It is the shape of a ham.`]); }}
   ]});
+
+/* ---- Papers with their own three answers ----
+   A pool whose pieces each carry a title and three choices. hot:true marks a piece tied to a year, which is
+   drawn before the rest while it is fresh; once:true is never drawn twice. Woodcuts at art/events/<piece id>. */
+function drawOwn(pool, slot){ S.did = S.did || {};
+  if (S[slot] && S[slot].t === S.t) { const p = pool.find(x => x.id === S[slot].id); if (p) return p; }
+  const ok = pool.filter(p => (!p.w || p.w()) && !(p.once && S.did[p.id] !== undefined)), fresh = ok.filter(p => S.did[p.id] === undefined), hot = fresh.filter(p => p.hot);
+  const set = hot.length ? hot : fresh.length ? fresh : ok.slice().sort((a, b) => S.did[a.id] - S.did[b.id]).slice(0, 3);
+  const p = pick(set) || pool[0];
+  S[slot] = {t:S.t, id:p.id}; S.did[p.id] = S.t; return p; }
+function pooled(id, pool, slot, opt){ const now = () => drawOwn(pool, slot);
+  ev({ id, from:opt.from, to:opt.to, weight:opt.weight, repeatGap:opt.repeatGap,
+    cond:() => (!opt.cond || opt.cond()) && pool.some(p => (!p.w || p.w()) && !(p.once && S.did && S.did[p.id] !== undefined)),
+    get title(){ return now().title; }, cut:() => now().id, text:() => now().x(),
+    choices:[0, 1, 2].map(i => ({ t:() => now().o[i].t, note:() => now().o[i].note || '', go:() => now().o[i].go() })) }); }
+const stew = () => F('crabbeGone') ? 'Lark' : 'Crabbe';
+const vicar = () => F('gallDead') ? 'The Vicar' : 'Dr Gall';
+
+const MEMBER = [
+  {id:'member-maiden', once:true, title:'The Wyvern Turnpike Bill', x:() => `The Wyvern Turnpike Bill is down for Tuesday. It is your bill. You have not yet opened your mouth in the House.
+
+Forty Members are present. Eleven are asleep. One is peeling an orange into his hat.
+
+The speech is in your pocket. It is nine minutes long. Henrietta has heard it four times.`,
+    o:[{t:'Rise and speak.', go:() => { add({standing:2}); reg('henrietta',1);
+      return `You rise. The Speaker calls your name. You had not known he had it.
+
+You speak for six minutes. You leave out the middle. A Member behind you says “Hear” once, in his sleep.
+
+The bill is read a second time. The Mercury gives you four lines. Henrietta cuts them out.`; }},
+    {t:'Read it from the paper.', go:() => { add({goodwill:1});
+      return `You take out the paper. There is a cry of “Order”. A Member may not read his speech.
+
+You put the paper in your hat. You hold the hat before you and address it for nine minutes.
+
+“The honourable gentleman has an eloquent hatter,” says somebody opposite. The bill is read a second time.`; }},
+    {t:'Move it without a word.', go:() => { add({standing:-1});
+      return `You rise. You bow. You say “I beg to move”. You sit down.
+
+It takes four seconds. The bill is read a second time.
+
+An old Member for a Cornish borough leans across and shakes your hand. He has sat thirty years. He has never said more.`; }}]},
+
+  {id:'member-franks', title:'Free of Postage', x:() => `A Member’s letters go free. He writes his name and the date on the cover with his own hand. He may send ten a day.
+
+The county has found it out. There are forty-three covers on the hall table, waiting for your name. ${vicar()} has sent nine. Mrs Tamworth has sent six, for her sister at Bath. One is from a man in Wyvern you have never met. He has enclosed a second cover for the answer.
+
+Postage to Bath is eightpence.`,
+    o:[{t:'Sign them all.', go:() => { add({goodwill:2, standing:1});
+      return `You sign forty-three covers. You date them over five days to keep within the law.
+
+Your wrist aches. By Saturday there are fifty more on the table.
+
+Mrs Tamworth’s sister writes back, free. She thanks Mrs Tamworth for the pattern. She says the Member writes a clerk’s hand.`; }},
+    {t:'Sign for the household and the parish.', go:() => { add({family:1, goodwill:-1});
+      return `You sign for Henrietta and for ${vicar().replace('The', 'the')}. The rest go back.
+
+Mrs Tamworth pays her eightpence for Bath. She pays it over the counter at Wyvern in coppers. She tells the shop what it is for.
+
+The man you never met writes again. This time he pays. He calls you a placeman.`; }},
+    {t:'Let Mudge sign them. He has your hand.', go:() => { add({goodwill:-2});
+      return `Mudge can write your name. He has done it on game tickets these ten years.
+
+He signs the forty-three in an evening in the gun room. He spells the month his own way.
+
+The postmaster at Wyvern charges every one. Forty-three people pay eightpence for a letter with your name on it.`; }}]},
+
+  {id:'member-place', title:'A Place in the Customs', x:() => `Mr Dodd holds a burgage plot in Pig Lane. He polled for you. He is in the library with his hat on his knee.
+
+His son William is twenty-two and writes a fair hand. A tide-waiter’s place is vacant at Bristol. Forty pounds a year, and what the ships give.
+
+“A word from the Member, sir. That is all a Treasury wants.”
+
+The Treasury keeps a book of such words.`,
+    o:[{t:'Ask the Treasury.', go:() => { add({goodwill:2, standing:-1});
+      return `You write to the Secretary of the Treasury. He answers within the week. William Dodd is appointed.
+
+In March a note comes on the morning of a division. “Mr ${S.sur} will be in his place tonight.” It is not put as a question.
+
+You are in your place. You vote for a duty on dogs.`; }},
+    {t:'Give the boy a stool in the estate office.', note:'£40', go:() => { add({money:-40, goodwill:1});
+      return `William Dodd has a stool in the estate office at forty pounds. ${stew()} sets him to copy the tithe accounts.
+
+He copies them fair. He finds eleven pounds that ${stew()} had not found.
+
+${stew()} gives him the game book next. Nobody has ever found anything in the game book.`; }},
+    {t:'Tell Dodd you ask nothing of Ministers.', go:() => { add({goodwill:-2, standing:1});
+      return `“I am an independent man, Mr Dodd. I ask for nothing.”
+
+Dodd looks into his hat. He says his father polled forty years for the old Earl and never came away from the Castle empty-handed.
+
+William goes for a soldier at Michaelmas. Mr Dodd tells Pig Lane what the bounty was.`; }}]},
+
+  {id:'member-whip', title:'A Note from Downing Street', x:() => `A note from Downing Street, by express. The express has cost them eleven shillings.
+
+“Mr ${S.sur}’s attendance is most earnestly requested on Thursday. A division of the first importance.”
+
+The word earnestly is underlined three times. It is the week of ${['the lambing', 'the hay', 'the harvest', 'the rent audit'][S.season]}. London is fifty-eight miles.`,
+    o:[{t:'Go up and vote with Ministers.', note:'£4 in chaises', go:() => { add({money:-4, standing:2});
+      return `You post up on Wednesday. Four pounds in chaises.
+
+The division is at three in the morning. You walk through the lobby with two hundred and nine others. At breakfast you read in the Chronicle what the question was.
+
+The Secretary of the Treasury nods to you on the stairs. He has your name right.`; }},
+    {t:'Go up and vote against them.', note:'£4 in chaises', go:() => { add({money:-4, goodwill:2, standing:-1});
+      return `You post up on Wednesday. You sit eleven hours.
+
+You go out with the Noes. There are sixty-one. Mr Whitbread counts you twice.
+
+No more notes come from Downing Street that session. The postmaster at Wyvern asks whether you are unwell.`; }},
+    {t:'Stay at Hatherley.', go:() => { add({standing:-1, family:1});
+      return `You stay.
+
+Ministers carry it by forty. The Courier prints a list of Members absent. You are between a man with the gout and a man who is dead.
+
+${['The last ewe lambs on Thursday night. She has twins.', 'The hay is carried on Thursday, dry.', 'The last load comes down the lane on Thursday.', 'The tenants pay on Thursday. Two pay in full.'][S.season]}`; }}]},
+
+  {id:'member-committee', title:'Committee Room Nine', x:() => `You are named to the committee on the Calder and Hebble Navigation Bill. It sits upstairs at eleven each morning.
+
+You have never seen the Calder. Nor has the chairman. Counsel for the bill has spoken three days. Counsel against has a map twelve feet long. He has not begun.
+
+The room has one window. It does not open.`,
+    o:[{t:'Sit it out.', go:() => { add({standing:1, family:-1});
+      return `You sit nineteen mornings. You learn the fall of the Calder at eleven locks, in feet and inches.
+
+The committee divides. Four for the bill, three against. You are one of the four. You could not say why.
+
+A Yorkshire Member presses your hand in the lobby. At Christmas a piece of blue broadcloth comes from Halifax.`; }},
+    {t:'Pair with a Member on the other side and go home.', go:() => { add({family:1});
+      return `Sir John Trelawny is against the bill and wishes to fish. You are for it and wish to go home. You pair. Neither vote is counted.
+
+You are at Hatherley by Friday. The bill passes without the two of you.
+
+He sends you a salmon in a rush basket. You send him a hare.`; }},
+    {t:'Sign the report unread.', go:() => { add({standing:-1});
+      return `The clerk brings the report to Half Moon Street. It is ninety pages. He shows you where to sign.
+
+In August a mill-owner writes from Brighouse. The new cut has taken his water. He has your signature before him as he writes.
+
+It is a long letter. He writes again in September. He writes in October.`; }}]},
+
+  {id:'member-petition', title:'The Maltsters of Wyvern', x:() => `Eleven maltsters of Wyvern have signed a petition against the malt duty. It is on parchment and begins “Humbly sheweth”.
+
+Mr Gabb is the oldest of them. He brings it to the Hall himself, wrapped in a clean shirt.
+
+“We should wish it read out, sir. All of it. With the names.”
+
+It is four feet long.`,
+    o:[{t:'Present it and speak to it.', go:() => { add({goodwill:3});
+      return `You present it on a Friday. You say that the maltsters of Wyvern are loyal men and cannot pay.
+
+The Chancellor of the Exchequer is sorry to hear it. The petition is ordered to lie upon the table.
+
+It lies there. The duty goes up a shilling in the Budget. The maltsters send you a cask of old ale notwithstanding.`; }},
+    {t:'Drop it in the bag behind the Chair.', go:() => { add({goodwill:1});
+      return `There is a bag behind the Speaker’s chair for petitions. You put it in the bag.
+
+The Votes print one line. “A Petition of Maltsters of Wyvern was presented.”
+
+Mr Gabb has the line framed. It hangs over his kiln.`; }},
+    {t:'Tell them the duty pays for the war.', go:() => { add({standing:1, goodwill:-2});
+      return `“The King’s ships are built out of the malt duty, Mr Gabb.”
+
+Mr Gabb wraps the parchment in the shirt again. He says his malt was thought good enough for the fleet at the Nore.
+
+The Member for Abingdon takes the petition up. He reads out all the names.`; }}]},
+
+  {id:'member-bellamy', title:'A Hundred Irish Members', w:() => yr(1801, 1805), x:() => `The Irish Members are come over under the Union. There are a hundred of them. No bench has been added.
+
+A seat is kept by leaving a hat on it at prayers. By four o’clock there is a hat on every place and gentlemen are walking about bareheaded.
+
+Yours was moved on Tuesday. It was found in the gallery. A Member for Tipperary was sitting where it had been.`,
+    o:[{t:'Come down for prayers and sit on your hat.', go:() => { add({standing:1});
+      return `You are in the House at prayers every day for a month. You hear the Chaplain twenty-two times.
+
+No other Member for the county has heard him once. The Speaker remarks your attendance to the Serjeant.
+
+The Member for Tipperary takes the place beside you. He has a snuff-box the size of a brick. You have the use of it.`; }},
+    {t:'Have it out with the Irishman.', go:() => { add({goodwill:1});
+      return `“Sir, you are in my place.”
+
+“Sir, I am in Parliament. They told me it was all the one place.”
+
+He moves up six inches. You sit on six inches for the session. He calls you his honourable neighbour and borrows your Order Paper.`; }},
+    {t:'Spend the evenings at Bellamy’s.', note:'£9', go:() => { add({money:-9});
+      return `Bellamy keeps the kitchen upstairs. A chop off the gridiron, a pint of port, and the division bell over the door.
+
+You dine there nineteen nights. When the bell rings you go down and ask your neighbour which way.
+
+The reckoning at the end of the session is nine pounds. Bellamy says Mr Pitt owes him more.`; }}]},
+
+  {id:'member-bull', hot:true, title:'The Bull-Baiting Bill', w:() => yr(1800, 1802), x:() => `A bill is brought in to put down bull-baiting. Mr Windham will speak against it. He says the bait is the poor man’s one sport. He says the bull enjoys it.
+
+Wyvern baits a bull in the market place every fifth of November. The butchers find the bull. The dog that pins him wears a silver collar for the year. The collar is older than the Town Hall.
+
+There are letters. ${vicar()} writes that it is a scene of drunkenness. Four of the butchers hold plots.`,
+    o:[{t:'Vote for the bill.', go:() => { add({goodwill:-2}); reg('gall',1);
+      return `You vote for the bill. It is lost by two.
+
+Mr Windham crosses the floor to tell you that you have voted with the Methodists.
+
+On the fifth of November the bull is baited as before. The butchers have named him. ${(S.sur || '').toUpperCase()} is painted on his flank in whitewash.`; }},
+    {t:'Vote with Mr Windham.', go:() => { add({goodwill:2}); reg('gall',-1);
+      return `The bill is thrown out by two. One of the two is yours.
+
+The butchers drink the Member’s health. ${vicar()} preaches on the merciful man and his beast. He looks over the Hall pew and not at it.
+
+In November the bull puts the collar dog through the window of the Bell.`; }},
+    {t:'Be in the country that night.', go:() => { add({standing:-1});
+      return `You are at Hatherley on the night. The bill is lost by two.
+
+Both sides write to ask where you were. ${vicar()} writes two sheets. The butchers write one line.
+
+You go into Wyvern on the fifth of November and stand at the back. A butcher asks which side you have come to see.`; }}]},
+
+  {id:'member-melville', hot:true, once:true, title:'Lord Melville', w:() => S.year === 1805, x:() => `Mr Whitbread moves to censure Lord Melville. As Treasurer of the Navy he let his paymaster keep the seamen’s money at Coutts’s and play with it. Lord Melville is Mr Pitt’s oldest friend.
+
+The House sits until past four in the morning. The candles are changed twice.
+
+The Treasury has counted. So has Mr Whitbread. Neither will say what he makes it. Both have looked twice at the Member for Wyvern.`,
+    o:[{t:'Vote for the censure.', go:() => { add({goodwill:2, standing:-1});
+      return `You go out with the Ayes. The tellers come to the table. Two hundred and sixteen each side.
+
+The Speaker sits ten minutes without a word. His face is the colour of his wig. He gives his voice for the censure.
+
+Mr Pitt pulls his little cocked hat down over his eyes. The young men of his side stand close round him and walk him out. Behind you a Welsh baronet gives a view-halloo.`; }},
+    {t:'Vote with Mr Pitt.', go:() => { add({standing:2, goodwill:-1});
+      return `You stay in with the Noes. The tellers come to the table. Two hundred and sixteen each side.
+
+The Speaker sits ten minutes without a word. He gives his voice against Lord Melville.
+
+Mr Pitt pulls his hat down over his eyes. You are four feet from him. There are tears running out under the brim. Going out, he thanks you by another man’s name.`; }},
+    {t:'Go home to bed.', go:() => { add({standing:-2});
+      return `You leave at two and walk to Half Moon Street.
+
+The Chronicle has it at breakfast. Two hundred and sixteen each side. The Speaker gave it against Lord Melville. Mr Pitt wept.
+
+On Saturday the Reading Mercury gives the list. Your name is in italics under “Not in the House.”`; }}]},
+
+  {id:'member-register', title:'The Dumb Members', w:() => S.year >= 1804, x:() => `Mr Cobbett’s Register has a list this week. It is headed “Gentlemen who have sat a whole Session and said Nothing.”
+
+There are a hundred and forty names, by counties. Berkshire is near the top.
+
+“WYVERN. Mr ${S.sur}. Is believed to be alive.”
+
+Mrs Tamworth has sent the copy over. She does not take the Register herself.`,
+    o:[{t:'Make a speech.', go:() => { add({standing:1});
+      return `You speak on Thursday against the hop duty. Eleven minutes.
+
+The Register notices it. “Mr ${S.sur} of Wyvern has spoken. He is against a duty on hops. We preferred him dead.”
+
+Henrietta sends that number to Mrs Tamworth.`; }},
+    {t:'Write to the Register.', go:() => { add({goodwill:-1, standing:-1});
+      return `You write that a Member may serve his constituents without troubling the House.
+
+Mr Cobbett prints the letter entire. He prints nine columns in answer. He has found out what a burgage plot fetches in Wyvern and what was spent at the George.
+
+The sum is right to the pound.`; }},
+    {t:'Say nothing.', go:() => {
+      return `You say nothing.
+
+The list is printed again next session. A hundred and thirty-one names are still on it. Yours is one.
+
+Mr Cobbett has kept the line about being alive.`; }}]},
+
+  {id:'member-schools', hot:true, title:'Mr Whitbread’s Schools', w:() => yr(1807, 1808), x:() => `Mr Whitbread has a bill for a school in every parish. Two years of reading and writing for every poor child, out of the rates.
+
+Mr Giddy speaks against it. Learning would teach the labouring classes to despise their lot. They would read seditious pamphlets. They would be insolent to their masters.
+
+Hatherley has a dame school. Widow Pocock keeps it in her kitchen at twopence a week. She can read. She cannot write.`,
+    o:[{t:'Vote for the schools.', go:() => { add({goodwill:2});
+      return `You vote for it. The bill goes up to the Lords.
+
+The Archbishop says it takes the children out of the hands of the Church. The Lords throw it out.
+
+Widow Pocock hears that the Squire voted for schools. She puts her charge up to threepence.`; }},
+    {t:'Vote with Mr Giddy.', go:() => { add({standing:1, goodwill:-2});
+      return `You vote against. The bill passes without you and dies in the Lords.
+
+In the autumn a paper is nailed to the church door. It concerns the price of bread. It is very ill spelt.
+
+Mr ${stew()} names four men in the parish who can write. He is one of them.`; }},
+    {t:'Stay away, and give the dame ten pounds for slates.', note:'£10', go:() => { add({money:-10, goodwill:3});
+      return `Ten pounds to Widow Pocock. Slates, pencils, and a writing-master out from Wyvern on Saturdays.
+
+The writing-master begins with the Widow. In a month she can write her name.
+
+At Christmas a letter comes from the school. Nineteen children have signed it. So has Ann Pocock. Hers is the largest.`; }}]},
+
+  {id:'member-curwen', hot:true, title:'Mr Curwen’s Bill', w:() => yr(1809, 1810), x:() => `Mr Curwen has a bill to stop the sale of seats in Parliament. A Member is to swear that he gave no money for his return.
+
+The House is very full for it. Nobody looks at anybody.
+
+Your own return for Wyvern cost nine hundred pounds${(S.mpWins || 1) > 1 ? ', and seven hundred each time since' : ''}. Tidmarsh’s bank has the drafts. The landlord of the George has a ledger.`,
+    o:[{t:'Vote for the bill.', go:() => { add({standing:1});
+      return `You vote for purity of election. So do two hundred others. You know what eleven of them paid.
+
+The bill passes. It forbids a seat to be bought with money. It is silent upon beer, ribbons and dinners.
+
+The landlord of the George reads it through at his own bar. He orders in forty barrels.`; }},
+    {t:'Vote against it.', go:() => { add({goodwill:-2});
+      return `You vote against. In the lobby you say that a seat is property like any other.
+
+On Saturday Sir Francis Burdett repeats it to a crowd in Palace Yard. He does not name you. He says “a Berkshire squire”.
+
+There are four Berkshire squires in the House. All four are asked about it at Sessions.`; }},
+    {t:'Buy the ledger from the George.', note:'£20', go:() => { add({money:-20});
+      return `The landlord brings the ledger to the Hall under his coat. Twenty pounds.
+
+You read it with the door locked. Beer. Ribbons. Chairmen. “To Mr Dodd, for his trouble, 30 guineas.” “To a person, 50l.”
+
+It goes on the library fire a leaf at a time. The landlord walks home whistling. He did not say whether he keeps a copy.`; }}]},
+
+  {id:'member-burdett', hot:true, once:true, title:'Burdett for Ever', w:() => S.year === 1810, x:() => `The House has voted Sir Francis Burdett to the Tower for a libel upon itself. He will not go. He has barred the door of 78 Piccadilly.
+
+Half Moon Street is forty yards off. There is a crowd from the Green Park to Hyde Park Corner. Every man who passes must take off his hat and cry “Burdett for ever”. Windows not lit after dark are broken.
+
+You voted on Thursday night. The landlady asks which way. She will decide about the candles when she knows.`,
+    o:[{t:'For the Tower. No candles.', note:'£9', go:() => { add({money:-9, standing:2, goodwill:-2});
+      return `You voted for the Tower. The windows stay dark.
+
+At ten a paving-stone comes through the parlour sash. Eleven more follow it. The landlady sits on the stairs with the plate basket in her lap.
+
+On Monday the Life Guards clear Piccadilly with the flat of the sword. The Serjeant gets in by the area and takes Sir Francis away in a coach. The glazier’s bill is nine pounds.`; }},
+    {t:'Against. Light every window.', go:() => { add({goodwill:2, standing:-1});
+      return `You voted against. The landlady puts two candles in every window, front and back.
+
+The crowd gives three cheers for Number Eleven. A man in a blue cockade is lifted up to shake your hand through the fanlight.
+
+Sir Francis goes to the Tower on Monday. The candles are in your account at fourteen shillings. Your watch has not been seen since the man in the cockade.`; }},
+    {t:'Go out by the mews and take the Bath coach.', go:() => { add({standing:-1, family:1});
+      return `You go out by the mews. At the corner a man with a pole tells you to take off your hat.
+
+You take it off. You say “Burdett for ever”. He says he did not hear. You say it again.
+
+You are at Hatherley on Sunday. The Mercury says the Member for Wyvern has gone into the country for his health.`; }}]},
+
+  {id:'member-flogging', hot:true, title:'Fifty Lashes for a Song', w:() => yr(1811, 1812), x:() => `The Liverpool Local Militia complained of their bread. Private Taylor made a song about it and had it printed. He was tried the same day and sentenced to two hundred lashes. He had fifty. His wife fainted at the first.
+
+Sir Francis Burdett moves to end flogging in the army.
+
+${E() === 'army' && !F('edmundDead') ? 'Edmund writes from his regiment. “We flogged a man on Tuesday for selling his shirt. He had three hundred. The surgeon stopped it twice.” He gives no opinion.' : 'The Berkshire Local Militia drilled in Wyvern market place in May. The drum-major carried the cats in a green baize bag.'}`,
+    o:[{t:'Vote with Sir Francis.', go:() => { add({goodwill:3, standing:-2});
+      return `You go into the lobby with Sir Francis. There are ten of you. The teller counts on his fingers.
+
+Ninety-four against.
+
+A general stops you on the stairs. He says he was flogged at Eton twice a week. He says it made him a general.`; }},
+    {t:'Vote with the Horse Guards.', go:() => { add({standing:1, goodwill:-2});
+      return `You vote with the ninety-four. Sir Francis has ten.
+
+The Secretary at War thanks the House. He says the lash is seldom used. He says the men prefer it to confinement.
+
+Private Taylor’s song is sold in Wyvern market at a halfpenny. The ballad-woman sings it under the windows of the Bell. It has a good tune.`; }},
+    {t:'Stay away.', go:() => {
+      return `You are not in the House. Sir Francis has ten votes. There are ninety-four against.
+
+Mudge has the song. He gave a halfpenny for it at Wyvern. He can be heard at it in the gun room.
+
+He stops when you come in. He goes on when the door is shut.`; }}]},
+
+  {id:'member-gas', hot:true, title:'The Gas Light and Coke Company', w:() => yr(1809, 1810), x:() => `Mr Winsor asks Parliament for a charter. He will light London with smoke. He burns coal in an iron pot. The smoke goes along pipes under the street and is set on fire at the end.
+
+He has lit one side of Pall Mall already. The lamps have no wick and no oil. They are very white.
+
+The whale-oil merchants have petitioned against him. So have the lamplighters. Dr Wollaston of the Royal Society says he might as well light London with a slice of the moon.`,
+    o:[{t:'Vote for the charter.', go:() => { add({goodwill:1});
+      return `You vote for it. The bill is thrown out.
+
+Mr Winsor brings it in again with a smaller capital. It passes. He sends a copper lamp to each of his friends in the House.
+
+Yours is put up in the hall at Hatherley. The nearest gas is fifty-eight miles off. Henrietta keeps a candle in it.`; }},
+    {t:'Vote against.', go:() => { add({standing:1});
+      return `You vote against. The bill is thrown out. The whale-oil merchants give a dinner at the London Tavern.
+
+You walk home by Pall Mall. Mr Winsor lights one side of the street and the parish lights the other.
+
+A lady is reading a letter under his lamps. On the parish side a gentleman walks into a post.`; }},
+    {t:'Go and look at Pall Mall first.', go:() => { add({goodwill:1});
+      return `You go at ten at night. There is a crowd. A boy puts his finger to the flame to see if it is hot. It is.
+
+Mr Winsor is there in a white waistcoat. He tells you the gas is wholesome to the lungs. He would pipe it into sick-rooms.
+
+You vote for him on account of the light. You say nothing of the lungs.`; }}]},
+
+  {id:'member-bellingham', hot:true, once:true, title:'The Lobby, the Eleventh of May', w:() => S.year === 1812 && S.season >= 1, x:() => `A quarter past five on Monday. You are on the lobby stairs with a paper from the Wyvern turnpike trustees in your hand.
+
+There is a crack like a door slammed. Mr Perceval comes two steps into the lobby. He says “Oh” and falls on his face.
+
+A tall man in a brown coat sits down on the bench by the fire. There is a pistol beside him. “I am the unfortunate man,” he says. Nobody has asked him yet.
+
+The Minister is carried into the Speaker’s secretary’s room. He is dead before the surgeon comes.`,
+    o:[{t:'Stay, and vote the family its fifty thousand.', go:() => { add({standing:1});
+      return `The House votes fifty thousand pounds to the twelve children and two thousand a year to Mrs Perceval. You vote for it. Nobody votes against.
+
+The man is named Bellingham. He was a merchant. He lay five years in a Russian prison. He wrote to every office in Whitehall, and every office answered him.
+
+He is tried on Friday. He is hanged on Monday.`; }},
+    {t:'Go to the trial.', go:() => { add({standing:1});
+      return `The trial is on Friday at the Old Bailey. The Sheriff finds you a seat.
+
+Bellingham speaks for an hour, quite calm. He had a claim upon the Government. A clerk at the Treasury told him he might take what measures he thought proper. He took them.
+
+The jury is out fourteen minutes. He is hanged on Monday at eight. You do not go to that.`; }},
+    {t:'Take the night mail home.', go:() => { add({family:2, standing:-1}); reg('henrietta',1);
+      return `You take the night mail from Piccadilly. The guard has heard. By Hounslow the whole coach has heard.
+
+At Reading there are men in the street at four in the morning. One calls up to ask if it is true. The guard says it is. Somebody cheers.
+
+At Hatherley Henrietta turns you round twice in the hall to look at you. She says you are not to go back. The lodgings are paid until midsummer.`; }}]}
+];
+pooled('member', MEMBER, 'mem', {from:1796, to:1815, weight:8, repeatGap:3, cond:() => F('mp')});
