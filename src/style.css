@@ -406,3 +406,9 @@ p.line{margin:0 0 6px;font-family:var(--display);font-style:italic;font-size:1.0
 .lots .leasing{margin:8px 0 4px} .lots .leasing h4{margin:0 0 6px;font-family:var(--hand);font-weight:400;font-size:1.5rem;line-height:1.1} .lots .leasing .choices{margin:0 0 8px}
 .lots .said{border-left:3px double var(--ink);padding:2px 0 2px 10px;margin:6px 0} .lots .said p{margin:0 0 6px;font-size:1rem;line-height:1.35} .lots .said p:last-child{margin-bottom:0}
 .nosave{margin:6px 0 0;font-size:.86rem;color:var(--bad)}
+
+/* Abandon the estate: a button that can be found, and a second question before it does anything. */
+.wipe{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 10px} .row .wipe{margin-left:auto}
+.wipe button{background:rgba(255,255,255,.3);border:1px solid var(--madder);border-radius:4px;padding:5px 12px;min-height:34px;font-family:var(--caps);font-size:.82rem;letter-spacing:.09em;color:var(--madder);cursor:pointer}
+.wipe button:hover, .wipe button:focus-visible{background:var(--madder);color:var(--sheet)}
+.wipe .sure{font-family:var(--display);font-size:1rem;color:var(--ink)} .wipe .yes{background:var(--madder);color:var(--sheet)} .wipe .no{border-color:var(--ink);color:var(--ink)} .wipe .no:hover{background:var(--ink);color:var(--sheet)}
