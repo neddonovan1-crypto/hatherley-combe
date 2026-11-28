@@ -244,21 +244,23 @@ At dusk Mudge brings the story back from Wyvern. It seems that at one o’clock 
   ]});
 
 ev({ id:'bankFate', follow:true, title:'Mr Tidmarsh Calls',
-  text:() => `A hired chaise is at the door. Mr Tidmarsh is shown into the library. He sits on the front two inches of the chair and holds his hat on his knees.`,
+  text:() => `A hired chaise is at the door; and Mr Tidmarsh, being shown into the library, sits down upon the front two inches of a chair, and holds his hat upon his knees.`,
   choices:[
     {t:'Hear him.', go:() => {
       if (chance(0.72)) { fl('cheapCredit'); add({standing:2});
-        return `“The house is safe, sir. We paid every note that came in. I know whose doing that was.”
+        return `“The house is safe, sir. We paid every note that came in; and I know whose doing that was.”
 
-He takes a paper from inside his hat. It is your mortgage deed. A line is ruled through “Five per Cent.” Above it somebody has written “Four”. The alteration is initialled.
+He takes from inside his hat a paper, which is your mortgage deed; and where it said “Five per Cent.” a line is ruled through the “Five”, and “Four” is written above it, with his initials in the margin.
 
-He shakes your hand at the door for some time. His palm is wet.`; }
+At the door he takes your hand in a wet palm, and keeps it for some time.`; }
       fl('bankFailed'); add({money:-600, standing:-1});
       return `“Harman’s of Bristol stopped on Tuesday, sir. They owed us eleven thousand. We stopped on Wednesday.”
 
-He has the figures on a half-sheet. The creditors will get seven shillings in the pound. Your loss comes to six hundred.
+He has the figures upon a half-sheet, by which the creditors are to have seven shillings in the pound, and your own loss comes to six hundred.
 
-“I am very sorry, sir.” He stands. He has left something on the hall table. It is a pineapple.`; }}
+“I am very sorry, sir.”
+
+He goes out to his chaise; and upon the hall table, where he set it down as he came in, there is a pine-apple.`; }}
   ]});
 
 ev({ id:'nore', fixed:'1797-1', cond:() => E() === 'navy', title:'A Letter from the Nore',

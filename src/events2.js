@@ -2826,7 +2826,7 @@ He has a barometer, a cold fowl, and a cat.`,
 ${kittyAtHome() ? 'Kitty' : 'Henrietta'} asks what the cat was for. It was to see whether a cat minds; and it minds.
 
 The balloon goes to Wyvern upon a wagon, in a heap. The cat stays at the Hall, and will not go near a basket of any kind.`; }},
-    {t:'Charge him for the barley.', note:'£6 to you', go:() => { add({money:6});
+    {t:'Charge him for the barley.', note:'+£6 to you', go:() => { add({money:6});
       return `Mr ${stew()} walks the barley, and puts it at six pounds; and Mr Finch pays in Oxford notes.
 
 He says that the Dean of Christ Church never charged him, and that the Dean had less barley.
@@ -3037,7 +3037,7 @@ There are four wagons stopped behind him, and the Bristol mail. His keeper asks 
 It is an hour, with the parish upon the bank, before Mr Polito’s man gets him out with a loaf.
 
 ${stew()} measures the footprints, each of which is a foot and a half across, and nine inches deep; and counting two hundred and twelve, he puts it at eight pounds of hay.`; }},
-    {t:'Four guineas for the meadow. One a foot.', note:'£4 to you', go:() => { add({money:3});
+    {t:'Four guineas for the meadow. One a foot.', note:'+£4 to you', go:() => { add({money:3});
       return `“Four guineas. One a foot.”
 
 Mr Polito pays in gold; and the elephant goes through the river, and up the far bank, taking a gate with him.
@@ -3176,7 +3176,7 @@ Lord Cullerne has taken a house on Richmond Hill by the quarter; and this is kno
       const won = chance(0.7); if (won) add({money:2000});
       return `Serjeant Best opens for you in the King’s Bench, the fees being four hundred pounds. Your own servants are sworn; and the footman tells the court what he saw through the window of the keeper’s lodge, and counsel reads her letters aloud, and does the voice.
 
-${won ? 'The jury gives two thousand pounds against the Earl.' : 'The jury finds for you. Damages, one shilling. The foreman holds a farm under the Castle.'} The Mercury gives it nine columns.
+${won ? 'The jury gives two thousand pounds against the Earl.' : 'The jury finds for you, with damages of one shilling; the foreman holds a farm under the Castle.'} The Mercury gives it nine columns.
 
 A divorce wants an Act of Parliament and a second fortune, and you do not move for one; and at the quarter the Earl gives up the Richmond house.
 
@@ -4350,13 +4350,13 @@ Having looked at your stables through the gate, he offers forty pounds apiece fo
 “They go by the Kennet to Bristol, sir, and they are in Lisbon in a month. Lord Wellington’s horses are eating chopped straw.”
 
 Henrietta drives to church behind the bays.`,
-    o:[{t:'Sell him the oats and the three horses.', note:'£190 to you', go:() => { add({money:190, family:-4, standing:1}); reg('henrietta',-1,'You sold her carriage horses to the army');
+    o:[{t:'Sell him the oats and the three horses.', note:'+£190 to you', go:() => { add({money:190, family:-4, standing:1}); reg('henrietta',-1,'You sold her carriage horses to the army');
       return `It is a hundred and twenty for the horses, and seventy for the oats; and the Treasury bills are paid to the day.
 
 The bays go down the drive behind Mr Fisk’s man, and at the lodge one of them looks round.
 
 On Sunday the carriage goes to church behind two plough-horses, who stop of themselves at every gate.`; }},
-    {t:'The oats only.', note:'£70 to you', go:() => { add({money:70});
+    {t:'The oats only.', note:'+£70 to you', go:() => { add({money:70});
       return `You have seventy pounds for the oats, and by Thursday the granary is swept bare.
 
 By March there is not an oat to be had in the county under forty shillings; and you buy back twenty quarters for your own horses, of a dealer at Newbury.
@@ -4430,7 +4430,7 @@ Your tenants pay at Michaelmas, in Tidmarsh’s notes. But your uncle left a sto
 The tenants cannot get gold, and they pay in notes, a fifth over; which comes to a hundred and fifty pounds.
 
 In July Parliament passes an Act, brought in by Lord Stanhope, that a note is to be taken for what it says upon it; and he named Lord King. Your name is mentioned at the Wyvern farmers’ ordinary, and not by a lord.`; }},
-    {t:'Sell Levi the stocking.', note:'£90 over the face of them', go:() => { add({money:90, standing:-1});
+    {t:'Sell Levi the stocking.', note:'+£90 over the face of them', go:() => { add({money:90, standing:-1});
       return `It is three hundred guineas, at twenty-seven shillings, in Bank paper, being ninety pounds over the face of them. Levi counts in the scullery, with the door shut, and weighs every one; and eleven being light, he takes those at twenty-two.
 
 The guineas go to Harwich in a cheese, and by Christmas are paying Lord Wellington’s muleteers; as Levi tells you himself, when he comes back to ask if there is another brick.`; }},

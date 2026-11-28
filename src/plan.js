@@ -46,7 +46,7 @@ const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ?
 /* Where a work is not yet built, or a venture not yet tried, a small roundel of each stands beside the name. */
 function toDoAt(){ const w = new Set(), v = new Set(), shut = S.phase === 'end' || S.dead; if (shut) return {w, v};
   if (typeof worksList === 'function') for (const x of worksList()) if (x.state === 'open' && !x.off) w.add(workAt(x.id));
-  if (typeof venturesList === 'function') for (const x of venturesList()) if (x.state === 'open' && !x.off && x.why !== 'Not to be had at present.') v.add(ventAt(x.id));
+  if (typeof venturesList === 'function') for (const x of venturesList()) if (x.state === 'open' && !x.off && !x.notYet) v.add(ventAt(x.id));
   return {w, v}; }
 function goLease(id){ const open = SHEET === id && !WHO; WHO = ''; ROUND = false; if (open && LEASING === PLACES[id].farm) { LEASING = ''; SHEET = ''; drawPlan(); return; }
   SHEET = id; SEC = 'farm'; LEASING = LOT = PLACES[id].farm; drawPlan(); showOnPlan(id); }
@@ -294,13 +294,13 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
     ${secs.map(([k, t, h]) => `<details class="sec" name="sec" ${k === open ? 'open' : ''} ontoggle="if(this.open)SEC='${k}'"><summary>${t}</summary><div>${h}</div></details>`).join('')}`; }
 /* What is owed at the Castle, and what may be had there: three standing matters set one of three ways, and the deeds his lordship will or will not sign. */
 function castleHTML(part){ const k = castleList(), fig = n => n ? amt(n, -1) : fmt(0), yr = n => n ? `<span class="yr">${amt(n, -1)} <small>a year</small></span>` : '';
-  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; };
+  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${tinted(y.why)}</em></p>` : ''; };
   const dials = k.dials.map(d => d.off ? `<div class="dial off"><b>${esc(d.name)}</b><p class="terms"><em>${esc(d.gone)}</em></p></div>`
-    : `<div class="dial"><b>${esc(d.name)}</b><div class="seg n3">${d.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setCastle('${d.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b>${yr(l.yearly)}<small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>${whyOf(d.levels)}</div>`).join('');
-  const lots = k.lots.map(v => { const what = `<div class="rung what">${v.line ? `<small>${esc(v.line)}</small>` : ''}</div>`;
-    const seg = v.state === 'done' ? `${what}<div class="rung what"><b>${esc(v.note)}</b></div>`
+    : `<div class="dial"><b>${esc(d.name)}</b><div class="seg n3">${d.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setCastle('${d.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b>${yr(l.yearly)}<small>${tinted(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>${whyOf(d.levels)}</div>`).join('');
+  const lots = k.lots.map(v => { const what = `<div class="rung what">${v.line ? `<small>${tinted(v.line)}</small>` : ''}</div>`;
+    const seg = v.state === 'done' ? `${what}<div class="rung what"><b>${tinted(v.note)}</b></div>`
       : `${what}<button type="button" class="rung" onclick="takeCastle('${v.id}')" ${v.can ? '' : 'disabled'}${v.why ? ` title="${esc(v.why)}"` : ''}><b>${esc(v.verb)}</b><span class="yr">${fig(v.cost)}</span>${fxList(v.fx)}</button>`;
-    return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && (v.why || v.note) ? `<p class="terms"><em>${esc(v.why || v.note)}</em></p>` : ''}</div>`; }).join('');
+    return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && (v.why || v.note) ? `<p class="terms"><em>${tinted(v.why || v.note)}</em></p>` : ''}</div>`; }).join('');
   return `<div class="hh lots flat castle"><p class="hhsum"><b>${esc(k.word)}</b><small>Lord Cullerne</small></p>${k.debt ? `<p class="terms"><em>His lordship holds your mortgage of ${fmt(k.owing)}.</em></p>` : ''}
     ${k.said ? `<div class="prose said">${paras(k.said)}</div>` : ''}${part === 'owed' ? dials : lots}</div>`; }
 /* The model of the Hall is fetched only when asked for. */
