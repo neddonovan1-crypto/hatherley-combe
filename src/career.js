@@ -18,6 +18,9 @@ const interest = () => (T('captain') ? 2 : 0) + (F('mp') ? 2 : 0) + (S.chars.cul
 const UNITS = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 const inWords = n => n < 20 ? UNITS[n] : ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'][Math.floor(n / 10) - 2] + (n % 10 ? '-' + UNITS[n % 10] : '');
 const edmServes = k => E() === k && !F('edmundDead');
+/* He leaves the service and comes back to the land. What he was is kept for the reckoning: edmWas, edmWasRank, edmWasHow (early, wound, peace). */
+const comeHome = (was, how) => { fl('edmWas', was); fl('edmWasRank', was === 'navy' ? NAVY_RANK[navRank()] : F('major') ? 'Major' : ARMY_RANK[armRank()]); fl('edmWasHow', how); fl('edmund', 'home'); };
+const edmYears = () => { const n = 19 + S.year - 1795, t = ['twenty', 'thirty', 'forty'][Math.floor(n / 10) - 2]; return n % 10 ? UNITS[n % 10] + '-and-' + t : t; };
 
 /* ================= The Navy ================= */
 
@@ -63,7 +66,7 @@ ${crewAboard() ? 'Tarbuck, having been shown the signature, carries the letter r
 “Sir, I have written. I said that he can work a ship and keep a reckoning and does not drink. I did not say whose son he is as they have enough of those. Holloway.”
 
 Their Lordships return no answer whatever. But in the autumn, the third Lieutenant of the Thetis being lost overboard from the fore chains in a gale off the Texel, the Captain gives Edmund an order to act in his room; and an acting order, Edmund writes, wants only six months and nobody’s nephew to become a commission.`; }},
-    {t:'Tell him to come home, and learn the estate.', go:() => { fl('edmund','home'); add({family:2}); reg('edmund',-3,'You fetched him home from the sea'); reg('henrietta',2);
+    {t:'Tell him to come home, and learn the estate.', go:() => { comeHome('navy', 'early'); add({family:2}); reg('edmund',-3,'You fetched him home from the sea'); reg('henrietta',2);
       return `You write that he has seen the sea, and that there are two thousand acres in Berkshire which he has not.
 
 He comes outside the Portsmouth coach, in a blue coat from which the buttons have been cut, with his chest, and a quadrant in a green baize bag. ${hh(`Henrietta has had his room aired for a week, and stands upon the steps without her shawl.`, `His room has been aired by Mrs Bunce, upon orders from Bath.`)}
@@ -151,7 +154,13 @@ In the eleventh week Edmund walks the length of the ward without a stick, before
 
 “A First Lieutenant does not go aloft, sir. He stands still, and finds fault.”
 
-He is read in at Spithead upon Lady Day. The surgeon of the Thetis, he writes, has looked at the leg, and said nothing about it; and has since had him moved into a cabin that has no step.`; }}
+He is read in at Spithead upon Lady Day. The surgeon of the Thetis, he writes, has looked at the leg, and said nothing about it; and has since had him moved into a cabin that has no step.`; }},
+    {t:'Have him surveyed, and bring him ashore for good.', go:() => { fl('navWound'); comeHome('navy', 'wound'); add({family:4}); reg('henrietta',2); reg('edmund',-2,'You had him surveyed unfit, and put upon half-pay');
+      return `Mr Ferris writes what he is asked to write: that the thigh has knit an inch short, and that Lieutenant ${S.sur} cannot go up a ship’s side without a chair. The surgeons at Haslar, having had him walk twice across their room, are of Mr Ferris’s opinion; and the Navy Office puts him upon half-pay, at five shillings a day.
+
+He says nothing against it. But the piece of gunwale, which ${hh('his mother', 'the housemaid')} had set upon the chimney-piece, is taken down, and locked in his own drawer.
+
+By haymaking he rides, with the near stirrup let down two holes. ${steward()}, going round the home farm with him in July, is asked what a load of hay weighs; what it fetches at Newbury; and why, the two answers being what they are, anybody at Hatherley grows wheat.`; }}
   ]});
 
 const navFail = () => { fl('navCmdrAt', 9999);
@@ -386,7 +395,7 @@ Edmund remains senior Lieutenant. On Tuesdays he commands the company that Dobbs
 “My dear ${S.sur}, I asked Moore at the levee. He says that your boy is one of four subalterns in his camp who can be found at five in the morning, and the only one who has been seen with a book upon out-posts. He will take no recommendation from this office, and told me so; but he had the name before I could spell it to him. Let Molesworth’s company go. There are ten coming, and they are not for sale. J. S.”
 
 Molesworth’s company is bought by a Lieutenant Dobbs, to whom Edmund taught his drill. In the spring the second battalion is gazetted, with ten Captains; and the fourth name is Edmund’s, with no “by purchase” after it.`; }},
-    {t:'Sell him out, and bring him home.', note:'+£550', go:() => { fl('edmund','home'); add({money:550, family:1}); reg('edmund',-3,'You sold his commission'); reg('henrietta',2);
+    {t:'Sell him out, and bring him home.', note:'+£550', go:() => { comeHome('army', 'early'); add({money:550, family:1}); reg('edmund',-3,'You sold his commission'); reg('henrietta',2);
       return `Mr Cox sells the Lieutenancy within the week, to the father of a boy at Harrow; and remits five hundred and fifty pounds, less his own commission upon it.
 
 Edmund comes home outside the Reading coach. He has kept his sword and the green feather; the coat he sold to the boy from Harrow, for whom it is to be taken in.
@@ -426,7 +435,15 @@ He carries the ball back to Portugal with him.`; }},
 
 “I should be glad to go, sir. Tamworth has my company, and Tamworth cannot count.”
 
-He sails from Falmouth in the Lisbon packet, with the sling in his pocket. ${hh(`Henrietta walks beside the chaise as far as the lodge, with her hand upon the door of it.`, `You write to Gay Street when he is gone; and the answer that comes is directed to Mrs Bunce.`)}`; }}
+He sails from Falmouth in the Lisbon packet, with the sling in his pocket. ${hh(`Henrietta walks beside the chaise as far as the lodge, with her hand upon the door of it.`, `You write to Gay Street when he is gone; and the answer that comes is directed to Mrs Bunce.`)}`; }},
+    {t:'Let him exchange to half-pay, and stay.', go:() => { fl('armWound','ball'); comeHome('army', 'wound'); add({family:4}); reg('henrietta',2); reg('edmund',-2,'You took him out of the regiment with the war unfinished');
+      return `You write to Mr Cox; and Mr Cox, who keeps a list of forty Captains upon half-pay desiring to be upon full, finds one within the week: a Captain Pym, of the late 98th, who exchanges into the 52nd, and sails for Lisbon by the next packet, with Edmund’s company book in his valise.
+
+Edmund signs the paper left-handed, and is some time about it.
+
+The sling comes off at Christmas. He shoots through January; and in February he walks the Down with ${steward()} and the estate map, upon which it is found, at the month’s end, that he has pencilled every hedge, with its length in paces, and against Twelve Acres the words “dead ground”.
+
+${hh(`Henrietta has the letters from Portugal carried up to him upon the breakfast tray, and does not ask what is in them.`, `The letters from Portugal are carried up to him upon the breakfast tray; and it is known at Gay Street within the week that he reads them standing.`)}`; }}
   ]});
 
 const brevet = () => { fl('major'); fl('brevet'); add({standing:2, family:2}); };
@@ -489,6 +506,96 @@ ${BREVET_YES()}`; }
 
 ${BREVET_NO()}`; }}
   ]});
+
+/* ================= The peace of 1814 ================= */
+
+const navShip = () => ['Thetis', 'Thetis', 'Sparrow', 'Calliope'][navRank()];
+ev({ id:'navPeace', weight:40, hen:false, at:'hall', who:() => 'edmund', from:1814, to:1815, cond:() => edmServes('navy') && !S.peril && (S.year === 1815 || S.season >= 2), title:'Paid Off',
+  text:() => { const r = navRank();
+    return `The ${navShip()} was paid off at ${r >= 2 ? 'Deptford' : 'Portsmouth'} upon the Tuesday. Her people had their money over the capstan head, and were out of her by noon; the pendant came down at sunset; and her ${r >= 2 ? 'Captain' : r ? 'First Lieutenant' : 'senior mate'}, having given up his keys to a clerk of the Dock-yard, went ashore in a wherry, and paid the waterman himself.
+
+He is at the Hall by Thursday, with a chest, a sword-case, and a tin box of charts.
+
+There are in Steel’s List ${r === 3 ? 'above eight hundred Post-Captains' : r === 2 ? 'near eight hundred Commanders' : 'above three thousand Lieutenants'}, and ships in commission for one in ${r === 3 ? 'eight' : 'ten'} of them. ${r ? `His half-pay is ${r === 3 ? 'ten and sixpence' : r === 2 ? 'eight and sixpence' : 'five shillings'} a day.` : `A master’s mate has no half-pay.`} He is ${edmYears()}; he has been ${inWords(S.year - 1796)} years afloat; and for a week he comes down to breakfast at six, and waits for it until nine.
+
+On the eighth morning you find him in the book-room. He has the estate map open upon the table, and held down at its corners by your inkstand, the snuffers, and two volumes of Mr Young’s Annals.
+
+“I can read this, sir, for it is a chart. But I cannot find upon it anything for me to do.”${T('captain') ? `
+
+You have done this yourself, and it was three years before you left off waking at four.` : ''}`; },
+  choices:[
+    {t:'Give him the home farm and the woods, to manage as his own.', go:() => { comeHome('navy', 'peace'); add({family:5, goodwill:-1}); reg('edmund',2,'You gave him the home farm when his ship paid off');
+      return `He takes them as he would take a ship that another man has let go. Within the month every gate upon the home farm has a number painted on it; the carters are mustered at five by a bell, and answer to their names; and the hedger, an old man who was never before asked what he did with his time, is desired to keep a log.
+
+${steward()} bears it for six weeks. He then lays before you the threshing account, which is up by eleven quarters, the barn floor having been swept every night for the first time since it was laid; and beside it a paper with nine marks to it, in which the men of the home farm humbly beg that they may not be piped to their dinner.`; }},
+    {t:'Go up with him, and ask for a ship in the peace.', note:'£40', go:() => { const r = navRank(); add({money:-40});
+      const head = `You are a fortnight in town with him. The waiting-room at the Admiralty has been given more chairs since the peace, and wants them; and Edmund, who sits there from eleven until four, counts upon the first day sixty officers, of whom he knows eleven, and has been shipmates with four.`;
+      if (chance(Math.min(0.8, 0.15 + 0.12 * interest()))) { fl('navPeaceShip'); reg('edmund',2,'You got him a ship in the peace'); add({family:-2});
+        return `${head}
+
+On the twelfth day a clerk comes out with a list in his hand, and reads from it. ${r === 3 ? `Captain ${S.sur} is to have the Hyperion, of thirty-two guns` : r === 2 ? `Commander ${S.sur} is to have the Cygnet brig` : `Mr ${S.sur} is to be ${r ? 'First' : 'mate'} of the Hyperion, thirty-two`}, fitting at Chatham for the Cape.
+
+He is gone from Hatherley within the week. The tin box goes with him; and the estate map is rolled up by ${steward()}, and put back behind the clock.`; }
+      comeHome('navy', 'peace'); reg('edmund',1);
+      return `${head}
+
+On the fourteenth day he is called in, and is four minutes with the Secretary; who is extremely sensible of his services, has his name upon the list for employment, and can hold out no expectation of a ship before the next war.
+
+You come down together outside the Bath coach. At Hounslow he asks the coachman what such a team costs to keep; and at Reading, what a man may clear upon forty acres of turnips.`; }},
+    {t:'Let him be, till he knows his own mind.', go:() => { comeHome('navy', 'peace'); add({family:2}); reg('edmund',1);
+      return `You tell him that the map will keep, and that nobody at Hatherley was ever yet hurried.
+
+For a month he does nothing that can be given a name. He winds the clocks. He rides to Wyvern for the newspaper, which would have come; and he is two whole days shut up in the carpenter’s shop, from which there is carried into the hall upon the Saturday a model of the ${navShip()}, four feet long, and rigged to her royals.
+
+On the Monday he asks ${steward()} for the key of the wood-yard, and for the name of the man who has been buying your oak at ninepence the foot.`; }}
+  ]});
+
+ev({ id:'armPeace', weight:40, hen:false, at:'hall', who:() => 'edmund', from:1814, to:1814, cond:() => edmServes('army') && !S.peril && S.season >= 2, title:'The Peace Establishment',
+  text:() => `Edmund has six weeks’ leave from Hythe, and has been three of them at the Hall before he lays a letter beside your plate.
+
+“This is from Craig’s Court, sir, and every Captain in the regiment has had the same.”
+
+It is in a clerk’s hand, upon a printed head.
+
+“Sir, The second battalion being ordered to be reduced, and the establishment of Captains in the first complete, I am to acquaint you, that an officer desirous of retiring may at present sell at the regulated price of £1,500; which price, in the event of a long peace, I cannot undertake to say that a Company will continue to fetch. I have upon my books eleven gentlemen who wait to purchase. Cox and Greenwood.”
+
+He has been ${inWords(S.year - 1797)} years in the regiment, and is ${edmYears()}. He has brought home from Toulouse a French drum, upon which ${hh('Henrietta', 'somebody')} has since set a fern; a Spanish mule, that will be led by nobody else; and a servant named Ortiz, who sleeps across his door.
+
+“They say in the mess that there is America, sir, for any man who has not had enough. Colonel Colborne asked me whether I had; and I told him that I would first ask my father what land is worth.”${T('soldier') ? `
+
+You were put upon half-pay yourself at the peace of ’83, and were a twelvemonth learning to get up without a drum.` : ''}`,
+  choices:[
+    {t:'Sell, and give him the home farm and the woods.', note:'+£1,500', go:() => { comeHome('army', 'peace'); add({money:1500, family:4}); reg('henrietta',2); reg('edmund',1,'You sold his Company at the peace, and gave him the woods');
+      return `Mr Cox sells the Company within nine days, to a Lieutenant of the Guards who has never been out of London, and remits fifteen hundred pounds.
+
+Edmund gives the mule to the home farm, and Ortiz to the stables. By Michaelmas he has the woods measured, the oak apart from the ash; and he has found in the Long Hanger a hundred and forty trees, marked for the Navy in the year ’96, for which nobody ever came.
+
+The red coat he keeps. It lies in the press between two sheets, with pepper against the moth${hh('; and Henrietta has the key', '')}.`; }},
+    {t:'Tell him that the regiment has not done with him.', go:() => { add({family:-2}); reg('edmund',2,'You sent him back to the regiment at the peace'); reg('henrietta',-1);
+      return `“You have not had enough, Edmund; and Colonel Colborne knew it, or he would not have asked.”
+
+He goes back to Hythe a week before his leave is out, upon the mule, with Ortiz behind him upon the cob.
+
+The battalion, he writes, is under orders for America, and is to embark after Christmas.`; }},
+    {t:'Leave it to him.', go:() => {
+      if (S.chars.edmund.r >= 1) { comeHome('army', 'peace'); add({family:5}); reg('edmund',1);
+        return `He is two days about it; and upon the third he rides into Wyvern, and puts a letter for Craig’s Court into the post with his own hand.
+
+“I have sold, sir. I found that I was counting the chimneys from the Down, as I used to count my company across a bridge; and a man who does that had better stop where the chimneys are.”
+
+The fifteen hundred pounds he lays out himself, in the Five per Cents; and he asks you at dinner, before ${steward()}, for the woods.`; }
+      add({family:-1});
+      return `He is two days about it; and upon the third he has Ortiz cord the trunk.
+
+“I thank you, sir. I find that I do not know what a Captain is for, at Hatherley; and at Hythe they tell me every morning.”
+
+The mule is led round to the door. It will not pass the lodge until he gets down, and walks.`; }}
+  ]});
+
+/* A son sold out in 1814 reads the Gazette of Waterloo at home. after() clears hen, which waterloo never had. */
+after('waterloo', () => E() === 'home' && S.flags.edmWas === 'army' && !F('edmundDead') ? `Edmund has the paper from you before you have done with it, and carries it to the window. He goes down the 52nd with his thumb, and stops four times; and having come to the foot of the column, he folds the sheet small, as a letter is folded, and puts it into his breast.` : '');
+/* Once he has a ship in the peace, the war's letters from Halifax and the Baltic are done. */
+EDMUND.forEach(x => { if (/at\('navy'\)/.test(String(x.w))) { const w0 = x.w; x.w = () => w0() && !F('navPeaceShip'); } });
 
 /* ================= The Church ================= */
 

@@ -23,6 +23,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
   if (e === 'church') return churchRole();
   if (e === 'militia') return 'Captain, Berkshire Militia';
   if (e === 'farmer') return 'Farming Kennet Bottom';
+  if (e === 'home' && S.flags.edmWas && S.flags.edmWasHow !== 'early') return S.flags.edmWasRank + (S.flags.edmWas === 'navy' ? ', Royal Navy, on half-pay' : S.flags.edmWasHow === 'peace' ? ', late of the 52nd' : ', half-pay') + '; at home';
   return 'At home, learning the estate'; }
 
 /* Estate works. Long business, commissioned whenever the squire pleases, paid by instalments in the quarter's accounts.
@@ -906,6 +907,9 @@ function reckoning(){
   if (F('edmundDead') && S.flags.edmundTomb) P.push(S.flags.edmundTomb);
   else if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
   else if (e === 'army') P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur}, ${S.flags.edmundFate || 'served through the Peninsula'}. He is home on half-pay. He has the Volunteers’ old serjeant out on the lawn at six, learning the new drill.`);
+  else if (e === 'navy' && F('navPeaceShip')) P.push(`His son is gone to the Cape in the ${navRank() === 2 ? 'Cygnet brig, which he commands' : navRank() === 3 ? 'Hyperion, which he commands' : 'Hyperion'}. It is peace. He writes that there is nothing to do, and that he does it by the watch.`);
+  else if (e === 'home' && S.flags.edmWas === 'navy') P.push(S.flags.edmWasHow === 'early' ? `His son was five years at sea, and was fetched home from it. He has the home farm. He can still tell the dairymaid which way it will blow by noon.` : `His son came ashore a ${S.flags.edmWasRank === 'Captain' ? 'Post-Captain' : S.flags.edmWasRank}${S.flags.edmWasHow === 'wound' ? ', lame of the left leg' : ''}, and is upon half-pay. He has the home farm and the woods. Every gate upon them has a number.`);
+  else if (e === 'home' && S.flags.edmWas === 'army') P.push(S.flags.edmWasHow === 'early' ? `His son was seven years a soldier, and was sold out a Lieutenant. He has the home farm. His sword hangs in the gun room, between the fowling-pieces.` : S.flags.edmWasHow === 'wound' ? `His son left the 52nd a ${S.flags.edmWasRank}, with a French ball under his collar-bone. He has the home farm and the woods. He has paced every hedge.` : `His son sold out of the 52nd at the peace, a ${S.flags.edmWasRank}. He has the home farm and the woods. He was not at Waterloo.`);
   else if (e === 'navy' && navRank() === 3) P.push(`His son is a Post-Captain. The Calliope is paid off, and he is ashore at Hatherley. There are seven hundred names above his in Steel’s List. He reads the Deaths first.`);
   else if (e === 'navy' && navRank() < 2) P.push(`His son is a Lieutenant on half-pay, at five shillings a day. He is ashore at Hatherley. He has the Thetis in a bottle, upon the library chimney-piece.`);
   else if (e === 'navy') P.push(`His son commands a sloop of war. She is laid up. He is ashore at Hatherley. He walks the terrace eight paces each way.`);
