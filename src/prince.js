@@ -8,10 +8,12 @@
    ("no predilections to indulge"), the hisses upon St Patrick's Day, the Morning Post's Adonis, and the Examiner of 22 March 1812; the Jubilee of 1 August 1814 and the
    sale of the Temple of Concord in a hundred lots that October.
    What is invented: that he ever came to Cullerne Castle or to Hatherley; his lordship's hope of the Buckhounds; the county address and the dinner at the Crown and Anchor;
-   Mr Quelch and his half-sheet; the terms offered upon the bond, the portrait and the List; every lot named in the catalogue, and what became of the columns.
+   Mr Quelch and his half-sheet; the terms offered upon the bond, the portrait and the List; every lot named in the catalogue, and what became of the columns;
+   Mr Crouch, the straw and its price, and whatever the Regent says under his verandah. (Nash's £2,750 for a verandah, the front of 170 feet, the thatch,
+   the bill of some £30,000 and the first night in Ascot week 1815 are true.)
 
    Flags: prMet (he has spoken to you), prHost (he breakfasted at Hatherley), prPlate, prBrighton, prSide ('whig', 'court' or 'none'), prLibel ('bound', 'bought' or 'let'),
-   prPaid, prPortrait, prList, prTemple. princeLoan is put down when the bond is given up. */
+   prPaid, prPortrait, prList, prTemple, prCottage. princeLoan is put down when the bond is given up. */
 const prAge = () => ['seven-and-thirty', 'eight-and-thirty', 'nine-and-thirty', 'forty'][clamp(S.year - 1799, 0, 3)];
 /* An outcome in which he is in the room has its own cut, where one is drawn. */
 const prCut = k => { if (typeof artURL === 'function' && artURL('events/' + k)) S.plateCut = 'events/' + k; };
@@ -19,7 +21,7 @@ const prBondYear = () => S.seen.royalBond === undefined ? 1806 : FIRST_YEAR + Ma
 
 /* The papers are sent for by the calendar, so that the luck of the draw cannot lose them. One that is put off by a dated paper, and has missed its season, is sent for again the next year. */
 const PR_WHEN = {prCastle:() => S.season === 2 && [1799, 1801, 1802].includes(S.year), prBrighton:() => S.season === 1 && S.year >= 1807 && S.year <= 1809,
-  prIn:() => S.year === 1811 && S.season === 0, prAdonis:() => S.year === 1812 && S.season === 0, prPurse:() => (S.year === 1812 && S.season >= 2) || S.year === 1813, prLots:() => S.year === 1814 && S.season === 3};
+  prIn:() => S.year === 1811 && S.season === 0, prAdonis:() => S.year === 1812 && S.season === 0, prPurse:() => (S.year === 1812 && S.season >= 2) || S.year === 1813, prLots:() => S.year === 1814 && S.season === 3, prCottage:() => S.year === 1815 && S.season >= 2};
 const ventureTickPrince = ventureTick;
 ventureTick = function(line){ ventureTickPrince(line);
   for (const id in PR_WHEN) { const e = byId(id); if (PR_WHEN[id]() && S.seen[id] === undefined && !S.queue.some(x => x.id === id) && (!e.cond || e.cond())) later(id, 0); } };
@@ -277,4 +279,45 @@ Old Dewey looks at it for some time, with his knife in his hand.
 ${hh('Henrietta reads the two figures aloud; and as you are still behind the Mercury, she reads them again.', 'Henrietta copies the two figures into her next letter, and underlines both.')}
 
 The six columns, it is afterwards heard, are holding up the roof of a skittle-ground.`; }}
+  ]});
+
+/* ---------- 1815: the Cottage ---------- */
+
+ev({ id:'prCottage', follow:true, at:'home', who:() => null, cond:() => S.year === 1815, title:'A Hundred and Seventy Feet of Thatch',
+  text:() => `The Regent has a cottage. It stands in the Great Park at Windsor, three miles from the Castle where his father is kept; Mr Nash was engaged three years since to add a verandah to it, for two thousand seven hundred and fifty pounds; and it has now a front of a hundred and seventy feet, a conservatory, an eating-room, and a bill of thirty thousand. His Royal Highness slept in it for the first time in Ascot week.
+
+As it is a cottage, it is thatched; and as there is more roof to it than to Hatherley church, there comes into your rick-yard upon a Tuesday a Mr Crouch, clerk of the works under Mr Nash, who has been through eleven parishes looking into barns, and who pulls a handful out of your wheat straw without asking.
+
+“Forty loads, sir, drawn by hand. I will have none that has been through a machine; His Royal Highness can tell broken straw from the road.”
+
+He offers two guineas the load, by a warrant upon the Office of Woods, payable in course. ${steward()}, who has stood behind him throughout, enquires what the course of that Office commonly is; and is told that it is very regular.
+
+The same forty loads were laid by for the cottages in Mill Lane, of which four let in the rain.`,
+  choices:[
+    {t:'Sell him the forty loads, and take the warrant.', note:'+£76', go:() => { add({money:76, goodwill:-2});
+      return `The forty loads go to Windsor in eleven wagons; and Mr Crouch gives you the warrant in the yard, for eighty-four pounds, upon the Office of Woods, Forests and Land Revenues, payable in course.
+
+${steward()} carries it to the bank at Wyvern, where the clerk reads it, turns it over, and takes it into the back room. The bank will give seventy-six pounds for it, in notes; which, for a paper upon that Office with a year or two to run, is thought in the back room to be handsome.
+
+It rains the whole of the week following. In Mill Lane a bed is moved against the chimney wall, and a milk-pan set where the bed was.`; }},
+    {t:'Make His Royal Highness a present of the straw, and go over with it.', go:() => { fl('prCottage'); add({standing:3, goodwill:-2}); prCut('prCottage-verandah');
+      return `You go over with the eleventh wagon, and are an hour at a white gate, while a keeper carries in your name.
+
+The cottage is longer than the Hall. It has a verandah the whole length of it, upon rustic posts, with a honeysuckle trained up every one; and under the verandah, in a chair made for the purpose, sits a gentleman of three-and-fifty in a green silk gown, watching the thatchers.
+
+${F('prHost') ? `“Hatherley. You gave me a turtle, and I told you something disagreeable about a picture.” He says it before the page has done with your name. “I was right about the picture.”` : F('prMet') ? `“I know that face. It was at Cullerne’s, and there was a napkin.” He appears to recollect the napkin with satisfaction, and Lord Cullerne not at all.` : F('princeLoan') ? `“Mr ${S.sur}. McMahon tells me that we are very old friends.” He says nothing of how the friendship was contracted.` : `“Berkshire straw. I am obliged to you, sir. I am obliged to the whole county; it leaves me alone.”`}
+
+He has you sit. He asks what a labourer’s cottage costs to thatch, and is told four pounds; and for some time afterwards he looks up at his own roof, where six men are at work.
+
+“Nash said a verandah.”
+
+A footman brings cherry brandy at eleven in the forenoon, and again at twelve. You are sent home in one of the royal carriages, with the wagons empty behind you; and no warrant is spoken of by anybody.`; }},
+    {t:'“It is bespoke, Mr Crouch.”', note:'£18', go:() => { add({money:-18, goodwill:5, standing:-1});
+      return `“By whom, sir?”
+
+“By four cottages.”
+
+Mr Crouch looks at the straw, and then at you, and writes a line in his book; and he has his forty loads within the week of Mr Tamworth, at two guineas and a half.
+
+The thatcher is nine days in Mill Lane, at eighteen pounds for the four roofs. Upon the tenth it rains from morning until dark; and walking down the lane in the evening, you are asked in at three doors of the four, to look at a dry floor.`; }}
   ]});
