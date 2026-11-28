@@ -45,6 +45,8 @@ test/oldsaves.js   loads saves from earlier builds and plays them out
 tools/play.js      walks the built page at desk and phone widths
 tools/voicecheck.js  the checker for docs/voice/VOICE.md
 tools/site.sh      lays out a folder a plain web host can serve
+tools/press.py     presses art/ for the web: WebP, two sizes, the icons on one sheet (site.sh calls it)
+tools/weigh.js     counts what a laid-out site sends a desk, a small laptop and a phone
 ```
 
 After changing anything in `src/`, run `./build.sh`, then `node test/sim.js 500`.
@@ -63,6 +65,12 @@ ev({ id:'unique', from:1797, to:1805, weight:2, cond:() => !F('someFlag'),
 `fixed:'1800-2'` pins an event to a year and season (0 spring, 3 winter). `follow:true` marks one that only arrives through `later('id', seasons)`.
 
 House rules for the prose: British spelling, no em dashes, nothing the period would not recognise, and the joke goes in the detail.
+
+## Pictures on the web
+
+`art/` holds every picture as it was made, and the page opened from the folder uses them so. Put a new one in its folder and run `./build.sh`; nothing else wants telling.
+
+`tools/site.sh <folder>` lays out what a host serves. It runs `tools/press.py`, which turns each picture into WebP under `p/`, once at a desk size and once smaller for a phone or a small laptop (the widths for each folder are the `RULES` table at its head), packs `art/icons/` into a single sheet, and writes a `PRESS` table into the site's page so that `artAt()` in `src/ui.js` can find them. A pressed file carries a mark of its contents in its name, and `_headers` tells Netlify that browsers may keep it for a year; redraw a picture and its name changes with it. In the sources, make a picture's address with `artURL()` or `artAt()` and never write `art/` into a string, or the site will ask for a file it has not got. `node tools/weigh.js <folder>` reports what the page sends for and names anything missing.
 
 ## Saves
 
