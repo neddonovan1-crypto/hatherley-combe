@@ -18,11 +18,13 @@ function kittyRole(){ const k = S.flags.kitty || 'free';
 function edmundRole(){ const e = S.flags.edmund, y = S.year;
   if (F('edmundDead')) return S.flags.edmundRoleDead || 'Killed at Waterloo, June 1815';
   if (!e) return 'Your son, ' + (19 + y - 1795);
-  if (e === 'army') return (F('major') ? 'Major' : y < 1800 ? 'Ensign' : y < 1807 ? 'Lieutenant' : 'Captain') + ', 52nd Foot';
-  if (e === 'navy') return (y < 1801 ? 'Master’s mate' : y < 1811 ? 'Lieutenant' : 'Commander') + ', Royal Navy';
-  if (e === 'church') return F('edmundVicar') ? 'Vicar of Hatherley' : y < 1800 ? 'Reading for orders at Oriel' : 'A curate in Hampshire, waiting';
+  if (e === 'army') return (F('major') ? 'Major' : ARMY_RANK[armRank()]) + ', 52nd Foot';
+  if (e === 'navy') return NAVY_RANK[navRank()] + ', Royal Navy';
+  if (e === 'church') return churchRole();
   if (e === 'militia') return 'Captain, Berkshire Militia';
   if (e === 'farmer') return 'Farming Kennet Bottom';
+  if (e === 'prisoner') return 'A prisoner of war, at ' + (F('edmBitche') ? 'Bitche' : 'Verdun');
+  if (e === 'home' && S.flags.edmWas && S.flags.edmWasHow !== 'early') return S.flags.edmWasRank + (S.flags.edmWas === 'navy' ? ', Royal Navy, on half-pay' : S.flags.edmWasHow === 'peace' ? ', late of the 52nd' : ', half-pay') + '; at home';
   return 'At home, learning the estate'; }
 
 /* Estate works. Long business, commissioned whenever the squire pleases, paid by instalments in the quarter's accounts.
@@ -171,6 +173,7 @@ function beginSeason(){
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160, 'Standing rises a point each quarter while you sit.');
   if (F('kittyAllowance') && q === 0) line('Mrs Vane, her allowance', -80);
+  if (F('edmAllowance') && q === 0 && S.flags.edmund === 'church' && !F('edmundDead') && !F('edmundVicar') && !F('edmRector')) line('Edmund, his allowance', -50);
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
   if (q === 3) {
@@ -905,11 +908,27 @@ function reckoning(){
   if (F('edmundDead') && S.flags.edmundTomb) P.push(S.flags.edmundTomb);
   else if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
   else if (e === 'army') P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur}, ${S.flags.edmundFate || 'served through the Peninsula'}. He is home on half-pay. He has the Volunteers’ old serjeant out on the lawn at six, learning the new drill.`);
+  else if (e === 'navy' && F('navPeaceShip')) P.push(`His son is gone to the Cape in the ${navRank() === 2 ? 'Cygnet brig, which he commands' : navRank() === 3 ? 'Hyperion, which he commands' : 'Hyperion'}. It is peace. He writes that there is nothing to do, and that he does it by the watch.`);
+  else if (e === 'prisoner') P.push(`His son is a prisoner of war in France. The letters come in threes.`);
+  else if (e === 'home' && (S.flags.edmWasHow === 'prisoner' || S.flags.edmWasHow === 'parole')) P.push(S.flags.edmWasHow === 'parole' ? `His son was taken by the French, and was bought out of Verdun for three hundred pounds. He gave his word not to serve again, and kept it. He has the home farm.` : `His son was ${inWords(Math.max(1, (S.flags.edmFreeAt || 1814) - S.flags.edmHeldAt))} ${(S.flags.edmFreeAt || 1814) - S.flags.edmHeldAt > 1 ? 'years' : 'year'} a prisoner in France${F('edmBitche') ? ', a part of it under ground' : ''}. He has the home farm and the woods. No gate upon them is ever shut.`);
+  else if (e === 'home' && S.flags.edmWas === 'navy') P.push(S.flags.edmWasHow === 'early' ? `His son was five years at sea, and was fetched home from it. He has the home farm. He can still tell the dairymaid which way it will blow by noon.` : `His son came ashore a ${S.flags.edmWasRank === 'Captain' ? 'Post-Captain' : S.flags.edmWasRank}${S.flags.edmWasHow === 'wound' ? ', lame of the left leg' : ''}, and is upon half-pay. He has the home farm and the woods. Every gate upon them has a number.`);
+  else if (e === 'home' && S.flags.edmWas === 'army') P.push(S.flags.edmWasHow === 'early' ? `His son was seven years a soldier, and was sold out a Lieutenant. He has the home farm. His sword hangs in the gun room, between the fowling-pieces.` : S.flags.edmWasHow === 'wound' ? `His son left the 52nd a ${S.flags.edmWasRank}, with a French ball under his collar-bone. He has the home farm and the woods. He has paced every hedge.` : `His son sold out of the 52nd at the peace, a ${S.flags.edmWasRank}. He has the home farm and the woods. He was not at Waterloo.`);
+  else if (e === 'navy' && navRank() === 3) P.push(`His son is a Post-Captain. The Calliope is paid off, and he is ashore at Hatherley. There are seven hundred names above his in Steel’s List. He reads the Deaths first.`);
+  else if (e === 'navy' && navRank() < 2) P.push(`His son is a Lieutenant on half-pay, at five shillings a day. He is ashore at Hatherley. He has the Thetis in a bottle, upon the library chimney-piece.`);
   else if (e === 'navy') P.push(`His son commands a sloop of war. She is laid up. He is ashore at Hatherley. He walks the terrace eight paces each way.`);
+  else if (e === 'church' && F('edmRector')) P.push(F('edmundVicar') ? `His son is vicar of the parish, and Rector of Upton Monachorum besides. He keeps a curate there at ${S.flags.chCurate === 75 ? 'seventy-five' : 'fifty'} pounds. His sermons are twelve minutes.` : `His son is Rector of Upton Monachorum, in Wiltshire. He farms his own glebe. He tolled the bell three times.`);
   else if (e === 'church') P.push(F('edmundVicar') ? `His son is vicar of the parish. His sermons are twelve minutes.` : `His son is in orders, in Hampshire. He writes on Sundays.`);
   else if (e === 'farmer') P.push(`His son farms Kennet Bottom. There are three grandchildren. One of them bites.`);
   else if (e === 'militia') P.push(`His son came home from the Militia a captain. He brought a wife with him from Dover.`);
   else P.push(`His son is at home still. He is forty. He manages everything. He waits.`);
+  if (S.flags.edmWife && !F('edmundDead')) P.push(`His son married ${S.flags.edmWife}${/Houzelle/.test(S.flags.edmWife) ? ', the daughter of a clock-maker of Verdun' : ''}.${S.flags.edmSon ? ` There is a grandson, ${S.flags.edmSon}. The button-maker of Birmingham has left off asking about the chimneys.` : ''}`);
+  if (F('clarenceMan') && !F('edmundDead')) P.push(F('clarenceReview') ? `His son carried the Duke of Clarence’s telescope before two crowned heads. The Duke has his name right two times in three.` : `His son is upon the Duke of Clarence’s list. So are forty others.`);
+  if (S.flags.edmOrder && !F('edmundDead')) P.push(S.flags.edmOrder === 'worn' ? `His son has the cross of Saint Anne from the Emperor of Russia, and the Regent’s leave to wear it. He wears it on Sundays.` : `His son has a Russian cross in a red box, which he has not leave to wear. His mother keeps the box.`);
+  if (F('yorkMan') && !F('edmundDead')) P.push(F('yorkPug') ? `His son is known at the Horse Guards as the officer who carried the pug.` : `His son is known by name to the Duke of York, who asks him every time whether the men have their greatcoats.`);
+  if (F('chRoyal') && !F('edmundDead')) P.push(`His son is an Assistant Chaplain to the Queen. He waits in November, and has never been above twelve minutes.`);
+  if (S.flags.edmCuckoo === 'kept' || S.flags.edmCuckoo === 'told') P.push(`His son has a daughter, Lucy, born at Michaelmas. Nobody at Hatherley has ever counted upon his fingers in her hearing.`);
+  if (S.flags.edmCuckoo === 'apart') P.push(`His son’s wife lives at her father’s, upon sixty pounds a year.`);
+  if (S.flags.edmWife && F('edmundDead')) P.push(S.flags.edmWidow === 'hall' ? `His son’s widow keeps the keys of Hatherley.${S.flags.edmSon ? ' Her boy, ' + S.flags.edmSon + ', is the heir, and has been round the farms upon the cob.' : ' The button-maker of Birmingham has been shown the chimneys by her, and has not come again.'}` : S.flags.edmWidow === 'board' ? `His son’s widow lives upon her pension.${S.flags.edmSon ? ' The heir of Hatherley, ' + S.flags.edmSon + ', is brought up in another man’s house.' : ' She does not write.'}` : S.flags.edmSon ? `His son left a widow, and a boy named ${S.flags.edmSon}, upon whom the land is settled.${S.flags.edmWidow === 'funds' ? ' He is at Hatherley every August.' : ''}` : `His son left a widow, who is at her father’s.`);
   if (F('oaks')) P.push(`He planted forty acres of oak on Gallows Piece for the Navy. The trees do not yet reach the keeper’s shoulder.`);
   if (F('soldLiving')) P.push(`He sold the living of Hatherley to a wine merchant. The Bishop has not dined at the Hall since.`);
   if (F('vaccinated')) P.push(`He had his arm scratched for the cow-pox on a kitchen chair on the green, before the whole parish. There has been no smallpox in Hatherley since.`);

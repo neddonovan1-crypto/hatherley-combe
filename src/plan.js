@@ -111,8 +111,9 @@ function strike(){ const key = S.t + ':' + S.phase + (S.phase === 'undone' ? ':'
   const src = under ? (o.cut && artURL('undertakings/' + o.cut) ? 'undertakings/' + o.cut : placeCut('hall')) : (S.plateCut || placeCut('hall'));
   S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay(), say:sayOf(o.text)}); delete S.plateCut; save(); }
 const imprint = pub => `Publish’d as the Act directs, ${esc(pub)}`;
-/* The words in the balloon are the first thing said aloud in the text, cut to its first sentence if it runs long. Nothing is written for it. */
-function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').replace(/<[^>]+>/g, '')); if (!m) return ''; let q = m[1].trim();
+/* The words in the balloon are the first thing said aloud in the text, cut to its first sentence if it runs long. Nothing is written for it.
+   A letter's place and day are not spoken: the balloon begins at the salutation. */
+function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').replace(/<[^>]+>/g, '')); if (!m) return ''; let q = m[1].trim().replace(/^[^.!?]{2,34}\.\s+(?=(My dear|Dear|Sir,|Madam,))/, '');
   if (q.length > 96) { const cut = /^(.{12,96}?[.!?])(\s|$)/.exec(q); if (!cut) return ''; q = cut[1]; }
   return q.replace(/,$/, '.'); }
 /* The balloon hangs in whatever empty sky, wall or foliage lies nearest the speaker, and its tail runs to the mouth. SAY_AT holds where the mouth is on each cut,

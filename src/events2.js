@@ -1084,7 +1084,7 @@ The ha-ha is finished, and in the first week a cow falls into it.`; }}
    art/events/<id>. Kinds: news (a letter), talk (he comes in person), ask (he wants money), girl (he wants to marry),
    settle (Long Barrow and his signature), cold (you are not on terms). */
 const edmWhere = () => F('edmundVicar') ? 'vicar' : (E() || 'home');
-const edmAway = () => ['army', 'navy', 'militia', 'church'].includes(edmWhere());
+const edmAway = () => ['army', 'navy', 'militia', 'church', 'prisoner'].includes(edmWhere());
 const edmR = () => S.chars.edmund.r;
 const yr = (a, b) => S.year >= a && S.year <= b;
 const at = (...w) => w.includes(edmWhere());
@@ -1407,7 +1407,7 @@ const PREFACE = [
   `The carrier leaves a letter at the lodge, from Edmund; and the lodge-keeper’s wife, having brought it up herself, waits in the hall.`];
 const mates = () => at('army') ? 'the mess' : at('navy') ? 'the gunroom' : at('militia') ? 'the mess' : 'his landlady';
 
-ev({ id:'edmundLetter', from:1797, to:1815, weight:7, repeatGap:5, cond:() => !F('edmundDead') && !!E() && (!at('army', 'navy') || S.year >= 1798),
+ev({ id:'edmundLetter', from:1797, to:1815, weight:7, repeatGap:5, cond:() => !F('edmundDead') && !!E() && E() !== 'prisoner' && (!at('army', 'navy') || S.year >= 1798),
   get title(){ return S.pending === 'edmundLetter' && !edmAway() ? 'Edmund at the Book-room Door' : 'A Letter from Edmund'; },
   cut:() => edmNow().id,
   text:() => { const p = edmNow(); return edmAway() ? `${PREFACE[S.t % PREFACE.length]}\n\n${p.x()}` : p.x(); },
@@ -3241,14 +3241,14 @@ The boy is put down at the lodge and runs the rest. He is in the stable before s
 /* ---- Edmund in danger ----
    Four ways into it, by his calling and the year. Each choice sets the odds and queues edmundFate, which rolls once.
    If he dies, edmundDead is set (as Waterloo sets it), the tablet and the role are recorded, and the heir follows. */
-const edmRank = () => E() === 'navy' ? (S.year < 1801 ? 'Mr' : S.year < 1811 ? 'Lieutenant' : 'Commander') : E() === 'army' ? (F('major') ? 'Major' : S.year < 1800 ? 'Ensign' : S.year < 1807 ? 'Lieutenant' : 'Captain') : E() === 'militia' ? 'Captain' : 'Mr';
+const edmRank = () => E() === 'navy' ? ['Mr', 'Lieutenant', 'Commander', 'Captain'][navRank()] : E() === 'army' ? (F('major') ? 'Major' : ARMY_RANK[armRank()]) : E() === 'militia' ? 'Captain' : 'Mr';
 const edmAge = () => 19 + S.year - 1795;
 const peril = (kind, p, how) => { S.peril = {kind, p, how}; later('edmundFate', kind === 'duel' ? 1 : 2); };
 const fate = () => { const P = S.peril || {kind:'walcheren', p:0}; if (P.dead === undefined) P.dead = chance(P.p); return P; };
 const TOMB = {
   walcheren:() => ['Died of the fever at Walcheren, 1809', `His son, Captain ${S.sur} of the 52nd, died of the fever at Walcheren in 1809, and is buried upon the island; and there is a tablet in Hatherley church.`],
   badajoz:() => ['Killed in the breach at Badajoz, 1812', `His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, fell in the great breach at Badajoz. There is a tablet in Hatherley church, and his mother has had the pew moved to face it.`],
-  fever:() => ['Died of the yellow fever at Port Royal, ' + S.year, `His son, a Lieutenant in the Navy, died of the yellow fever at Port Royal, and is buried at the Palisadoes; and his quadrant is upon the library table.`],
+  fever:() => ['Died of the yellow fever at Port Royal, ' + S.year, `His son, ${navRank() >= 2 ? 'a Commander' : navRank() === 1 ? 'a Lieutenant' : 'a Master’s Mate'} in the Navy, died of the yellow fever at Port Royal, and is buried at the Palisadoes; and his quadrant is upon the library table.`],
   duel:() => ['Shot on Hatherley Down, ' + S.year, `His son was shot upon Hatherley Down by a Cornet of Dragoons, at ${edmAge()}, and lies in the churchyard. The Cornet is believed to be in Ostend.`]
 };
 function edmundDies(blame){ const P = fate(), t = TOMB[P.kind](); fl('edmundDead'); fl('edmundRoleDead', t[0]); fl('edmundTomb', t[1]);
