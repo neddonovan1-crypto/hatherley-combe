@@ -10,7 +10,7 @@ const farmAt = id => (typeof farmsList === 'function' && farmsList().some(f => f
 /* n: the name lettered on the plan. at: where the lettering sits, in hundredths of the sheet. pic: the aquatint shown on the place's paper. */
 /* at: where the name is hung, in hundredths of the sheet. by: which side of that point the label lies (a above, b below, l left, r right), so that however long a label grows it grows away from the thing it names. None: it is centred on open ground. */
 const PLACES = {
-  hall:{n:'Hatherley Hall', at:[50.5, 56.4], by:'b', pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
+  hall:{n:'Hatherley Hall', at:[54, 61.6], by:'b', pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
   home:{n:'The Home Farm', at:[67, 45.3], by:'a', pic:() => 'places/estate-office'},
   longbarrow:{n:'Long Barrow', at:[43.5, 28], by:'a', farm:'longbarrow', pic:() => 'places/long-barrow-farm'},
   kennet:{n:'Kennet Bottom', at:[75, 67.9], by:'b', farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
@@ -202,7 +202,7 @@ function piecesOn(){ const on = [], y = S.year, est = footing();
   for (const id of ['maddle', 'withymead', 'starveall']) if (farmAt(id)) on.push('farm-' + id);
   if (isLive('merino')) on.push('sheepwalk');
   if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
-  if (est === 'splendid') on.push('parterre'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push('carriage');
+  if (est === 'splendid') on.push(isBuilt('front') ? 'parterre' : 'parterre-old'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push(isBuilt('front') ? 'carriage' : 'carriage-old');
   if (y < 1802 || (y >= 1803 && y <= 1813) || (y === 1815 && S.season < 2)) on.push('camp');
   if (F('volunteers') && !F('enclosed')) on.push('butts');
   on.push(isBuilt('front') ? 'hall-front' : 'hall-old'); const lay = Object.keys(PLAN_BOX); return on.sort((a, b) => lay.indexOf(a) - lay.indexOf(b)); }
