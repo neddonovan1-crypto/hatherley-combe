@@ -10,8 +10,8 @@ const farmAt = id => (typeof farmsList === 'function' && farmsList().some(f => f
 /* n: the name lettered on the plan. at: where the lettering sits, in hundredths of the sheet. pic: the aquatint shown on the place's paper. */
 /* at: where the name is hung, in hundredths of the sheet. by: which side of that point the label lies (a above, b below, l left, r right), so that however long a label grows it grows away from the thing it names. None: it is centred on open ground. */
 const PLACES = {
-  hall:{n:'Hatherley Hall', at:[54, 61.6], by:'b', pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
-  home:{n:'The Home Farm', at:[67, 45.3], by:'a', pic:() => 'places/estate-office'},
+  hall:{n:'Hatherley Hall', at:[55.2, 64], by:'r', pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
+  home:{n:'The Home Farm', at:[64.5, 44], by:'a', pic:() => 'places/estate-office'},
   longbarrow:{n:'Long Barrow', at:[43.5, 28], by:'a', farm:'longbarrow', pic:() => 'places/long-barrow-farm'},
   kennet:{n:'Kennet Bottom', at:[75, 67.9], by:'b', farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
   church:{n:'Church Farm', at:[29.4, 64.5], by:'l', farm:'church', pic:() => 'places/twelve-acres'},
@@ -19,13 +19,13 @@ const PLACES = {
   common:{n:'The Common', at:[22, 32], farm:'commonpiece', pic:() => farmAt('commonpiece') ? 'places/common-piece' : F('enclosed') ? 'places/common-enclosed' : 'places/common'},
   mill:{n:'The Mill', at:[62.4, 78.4], by:'r', pic:() => isBuilt('mill') ? 'places/mill-new' : 'places/mill-old'},
   lane:{n:'Kintbury Lane', at:[10, 51.2], by:'b', pic:() => isBuilt('road') ? 'places/kintbury-lane-mended' : 'places/kintbury-lane'},
-  copse:{n:'Cuckoo Copse', at:[75.5, 45], by:'b', pic:() => 'places/cuckoo-copse'},
+  copse:{n:'Cuckoo Copse', at:[76.5, 37.2], by:'a', pic:() => 'places/cuckoo-copse'},
   hanger:{n:'Hanger Wood', at:[58, 22.4], by:'b', pic:() => 'places/gallows-piece'},
   down:{n:'The Down', at:[48.6, 11.4], pic:() => 'places/down-beacon'},
   castle:{n:'Cullerne Castle', at:[89, 11.9], by:'b', pic:() => 'places/cullerne-castle'},
   london:{n:'London', at:[74.4, 9], by:'l', pic:() => 'places/london-season'},
-  wyvern:{n:'Wyvern', at:[89.6, 38.2], by:'l', under:true, pic:() => 'places/market-place'},
-  turnpike:{n:'The London Road', at:[88.8, 32.6], by:'l', pic:() => 'places/milestone'},
+  wyvern:{n:'Wyvern', at:[93.6, 45.8], by:'l', under:true, pic:() => 'places/market-place'},
+  turnpike:{n:'The London Road', at:[88.8, 30.4], by:'l', pic:() => 'places/milestone'},
   rooksnest:{n:'Rooksnest', at:[66, 31.6], by:'b', farm:'rooksnest', if:() => farmAt('rooksnest'), pic:() => 'places/rooksnest-farm'},
   coldharbour:{n:'Coldharbour', at:[79.3, 25.6], by:'l', farm:'coldharbour', if:() => farmAt('coldharbour'), pic:() => 'places/coldharbour-farm'},
   withymead:{n:'Withy Mead', at:[11.9, 74.5], by:'r', farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
@@ -209,6 +209,12 @@ function piecesOn(){ const on = [], y = S.year, est = footing();
   if (isLive('merino')) on.push('sheepwalk');
   if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
   if (est === 'splendid') on.push(isBuilt('front') ? 'parterre' : 'parterre-old'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push(isBuilt('front') ? 'carriage' : 'carriage-old');
+  /* the later years (PR 61) */
+  for (const id of ['clock', 'tower', 'hermitage', 'modelfarm', 'park', 'lodge']) if (isBuilt(id)) on.push(id);
+  if (isBuilt('modelfarm') && isBuilt('steam')) on.push('steam'); if (isBuilt('park') && isBuilt('obelisk')) on.push('obelisk');
+  for (const id of ['papermill', 'wharf', 'bridge', 'bellinn']) if (isLive(id)) on.push(id);
+  if (isLive('wharf') && isLive('barges')) on.push('barges');
+  if (isBuilt('wing')) { on.push(isBuilt('front') ? 'wing' : 'wing-old'); if (isBuilt('conservatory')) on.push(isBuilt('front') ? 'conservatory' : 'conservatory-old'); }
   if (y < 1802 || (y >= 1803 && y <= 1813) || (y === 1815 && S.season < 2)) on.push('camp');
   if (F('volunteers') && !F('enclosed')) on.push('butts');
   on.push(isBuilt('front') ? 'hall-front' : 'hall-old'); const lay = Object.keys(PLAN_BOX); return on.sort((a, b) => lay.indexOf(a) - lay.indexOf(b)); }
