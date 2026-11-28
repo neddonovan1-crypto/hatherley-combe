@@ -915,13 +915,13 @@ You pay ${pounds(70 * n)}, and sixty for the attorney.`; }}
 /* ---------- the rungs of credit, for the book ---------- */
 const timberLeft = () => S.timber === undefined ? 3 : S.timber;
 const timberNow = () => Math.round(75 * (1 + 0.035 * (S.year - FIRST_YEAR))) * 10;
-function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? '' : 'The books are closed.', n = S.annuities || 0, g = borrowGets();
+function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? '' : 'The books are closed.', n = S.annuities || 0, g = borrowGets(), off = Math.min(500, S.mortgage), last = off > 0 && off === S.mortgage;
   return [
     {id:'mortgage', name:'Borrow £500 on the land', line:'A lender advances money on the security of the estate. The deeds lie with his attorney until he is paid.', gets:g, verb:'Borrow', can:open && canBorrow(), why:shut || borrowWhy(), note:borrowNote(),
       effects:'Five per cent a year until it is paid off. The estate will carry ' + fmt(mortCap()) + ' in all.' + (g < 500 ? ' This year £50 of every £500 goes to the attorney who finds the lender.' : ''),
       fx:['+' + fmt(g), '−£25 a year in interest']},
-    {id:'repay', name:'Pay off £500 of the mortgage', line:'A draft on Tidmarsh’s bank for five hundred pounds goes to the lender. His attorney writes the payment on the deed.', gets:-500, verb:'Pay off', can:open && S.money >= 500 && S.mortgage >= 500, why:shut || (S.mortgage < 500 ? 'Nothing is owing.' : S.money < 500 ? 'There is not £500 in hand.' : ''), note:'',
-      effects:'Saves £25 a year in interest.', fx:['−£500', '+£25 a year saved']},
+    {id:'repay', name:last ? 'Pay off the last ' + fmt(off) + ' of the mortgage' : 'Pay off £500 of the mortgage', line:last ? 'A draft on Tidmarsh’s bank for the whole of what is left goes to the lender. His attorney sends back the deeds.' : 'A draft on Tidmarsh’s bank for five hundred pounds goes to the lender. His attorney writes the payment on the deed.', gets:-(off || 500), verb:last ? 'Pay it off' : 'Pay off', can:open && off > 0 && S.money >= off, why:shut || (!off ? 'Nothing is owing.' : S.money < off ? 'There is not ' + fmt(off) + ' in hand.' : ''), note:'',
+      effects:last ? 'Clears the estate of debt, and saves ' + fmt(Math.round(off / 20)) + ' a year in interest.' : 'Saves £25 a year in interest.', fx:[MINUS + fmt(off || 500), '+' + fmt(Math.round((off || 500) / 20)) + ' a year saved'].concat(last ? ['+ The deeds come home'] : [])},
     {id:'annuity', name:'Sell an annuity on your life', line:'A deed binding you to pay a hundred a year for life. The office has a surgeon examine you before it signs.', gets:700, verb:'Sell one', can:open && n < 4, why:shut || (n >= 4 ? 'Nobody will buy a fifth on one life.' : ''), note:n ? cap1(numWords(n)) + ' granted already' : '',
       effects:'A London office pays £700 down. You pay £100 a year for as long as you live. It is outside the usury law and needs no land.', fx:['+£700', '−£100 a year for life']},
     {id:'redeem', name:'Buy back an annuity', line:'The office names its price for giving up the deed. The parchment comes back with the seals cut off.', gets:-800, verb:'Buy it back', can:open && n > 0 && S.money >= 800, why:shut || (!n ? 'None is granted.' : S.money < 800 ? 'There is not £800 in hand.' : ''), note:'',
@@ -931,7 +931,7 @@ function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? 
   ]; }
 function takeCredit(id){ const x = creditList().find(r => r.id === id); if (!x || !x.can) return false; let did = x.name;
   if (id === 'mortgage') { S.mortgage += 500; S.money += x.gets; }
-  else if (id === 'repay') { S.mortgage -= 500; S.money -= 500; }
+  else if (id === 'repay') { const off = Math.min(500, S.mortgage); S.mortgage -= off; S.money -= off; if (!S.mortgage) did = 'Paid off the last ' + fmt(off) + ' of the mortgage'; }
   else if (id === 'annuity') { S.annuities = (S.annuities || 0) + 1; S.money += 700; add({standing:-1}); }
   else if (id === 'redeem') { S.annuities--; S.money -= 800; }
   else if (id === 'timber') { S.timber = timberLeft() - 1; add({money:x.gets, standing:-3}); }

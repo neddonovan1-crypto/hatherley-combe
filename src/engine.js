@@ -9,6 +9,8 @@ function meet(id){ S.chars[id].met = true; }
 function reg(id, n, note){ const c = S.chars[id]; c.met = true; c.r = clamp(c.r + n, -5, 5); if (note) c.notes.push(note + ', ' + S.year); }
 function later(id, delay){ S.queue.push({id, at: S.t + delay}); }
 
+/* How the prints style him: an esquire, until he is knighted or made a baronet. */
+const styled = () => { const h = id => typeof held === 'function' && typeof SOCIETY === 'object' && !!SOCIETY[id] && held(id); return h('baronet') ? 'Sir ' + S.name + ', Bart.' : h('knight') ? 'Sir ' + S.name + ', Knt.' : S.name + ', Esquire'; };
 function kittyRole(){ const k = S.flags.kitty || 'free';
   if (k === 'vane') return 'Mrs Vane, wherever the regiment is';
   if (k === 'pinch') return F('kittyWidow') ? 'Mr Pinch’s widow, and rich' : 'Mrs Pinch, at Clifton';
@@ -34,11 +36,11 @@ const PROJECTS = {
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act having had the Royal Assent, the three Commissioners sit in the vestry, with the surveyor’s map pinned to the table; and their clerk reads the award to as many of the parish as the room will hold.
 
-“To ${S.name}, Esquire, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To the cottagers, sixty plots of one acre each.”
+“To ${styled()}, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To the cottagers, sixty plots of one acre each.”
 
 He rolls up the map; and the common, which was green upon the old one, is upon this ruled into parcels, and numbered.` : `The Hatherley Inclosure Act has the Royal Assent, with those of forty other parishes in the same session; so that the Commissioners, who sit in the vestry with the surveyor’s map pinned to the table, have the business by heart, and their clerk reads the award without once looking at it.
 
-“To ${S.name}, Esquire, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To nineteen persons claiming by custom, who have produced no deed, nothing.”
+“To ${styled()}, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To nineteen persons claiming by custom, who have produced no deed, nothing.”
 
 Jem Pryor stands up at the back, with his hat in his hand, and says that there has been a cow of his name upon that common since Queen Anne.
 
@@ -859,12 +861,12 @@ function next(){
 }
 function finish(){ S.phase = 'end'; if (typeof strikeEnding === 'function') strikeEnding(); save(); render(); window.scrollTo({top:0}); }
 
-function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
+function mortgage(d){ const off = Math.min(500, S.mortgage); if (d < 0 && off > 0 && S.money >= off) { S.mortgage -= off; S.money -= off; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
   const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = []; const end = ending();
-  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
+  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${styled()}, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
     return {title:end.title, P, score:null, end}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
@@ -872,7 +874,7 @@ function reckoning(){
     P.push(`The Earl of Cullerne is expected to bid.`);
     return {title:end.title, P, score:null, end}; }
 
-  P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
+  P.push(`${styled()}, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
   if (T('captain')) P.push(F('crewGone') ? `He was a sea officer. He still goes down a staircase backwards. His old Dryads are afloat again. He follows their ships in the Navy List.` : `Dinner at the Hall is announced by a boatswain’s pipe. A guest who comes late is entered in the log.`);
   if (T('play')) P.push(`He is known at every card table between Reading and Bath. He is welcome at all of them. He loses.`);
   if (T('enemy')) P.push(S.chars.cullerne.r >= 1 ? `He and Lord Cullerne now speak. The matter of the pointer lay between them near fifty years.` : `Lord Cullerne has not forgiven the pointer. The dog has been dead forty years.`);
@@ -896,7 +898,7 @@ function reckoning(){
     oakes:`His daughter married the ${F('oakesVicar') ? 'curate. He is now the vicar' : 'curate. He is the curate still'}. She has five children and no carriage. She has not once said she is sorry.`,
     dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
     free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
-  P.push(kl[k]);
+  P.push(kl[k] || (typeof KITTY_END === 'object' && KITTY_END[k] ? KITTY_END[k]() : kl.free));
   if (F('privyChamber')) P.push(`He is a Gentleman of the Privy Chamber to the Prince Regent. There is no salary and no duty.`);
   else if (F('princeLoan')) P.push(`The Prince Regent owes him a thousand pounds.`);
   if (F('crimcon')) P.push(`The case of ${S.sur} against the Earl of Cullerne is in the law reports. Mrs ${S.sur} lives at Hatherley. They dine together.`);

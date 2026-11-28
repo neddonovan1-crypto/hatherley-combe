@@ -180,7 +180,7 @@ function meter(label, v, words, key, flag, trouble){ const m = typeof marks === 
     <ul class="fx"><li>Stands at ${Math.round(v)}, settles at ${at}</li>${m.why[key].map(t => `<li class="${signOf(t)}">${signOf(t) ? esc(t) : tinted(t)}</li>`).join('')}</ul></details>`; }
 
 function versoHTML(){
-  const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
+  const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(styled().replace(/, Esquire$/, ', Esq.'))}`);
   if (TAB === 'paper' && S.phase === 'event') return paperHTML();
   if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll${typeof farmsList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + farmsHTML();
   if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">Money put out at hazard. Some of it comes home every year and some is never seen again.</p>` + venturesHTML();
@@ -194,7 +194,7 @@ function versoHTML(){
   return head + `<h2 class="qtitle">${esc(QUARTER[S.season])} Quarter, ${S.year}</h2>
     ${accountHTML()}
     <dl class="bal purse"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing${typeof mortCap === 'function' ? `, limit ${fmt(mortCap())}` : ' on the mortgage'}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
-      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}${over || typeof creditList !== 'function' ? '' : creditHTML()}</dl>
+      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.mortgage > 0 && S.money >= Math.min(500, S.mortgage) ? '' : 'disabled'}>Pay off ${fmt(Math.min(500, S.mortgage) || 500)}</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}${over || typeof creditList !== 'function' ? '' : creditHTML()}</dl>
     <div class="wheatbox"><h3 class="orn">Wheat at Wyvern Market</h3><div>${chartHTML()}</div></div>
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}

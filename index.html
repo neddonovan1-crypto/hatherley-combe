@@ -985,6 +985,8 @@ function meet(id){ S.chars[id].met = true; }
 function reg(id, n, note){ const c = S.chars[id]; c.met = true; c.r = clamp(c.r + n, -5, 5); if (note) c.notes.push(note + ', ' + S.year); }
 function later(id, delay){ S.queue.push({id, at: S.t + delay}); }
 
+/* How the prints style him: an esquire, until he is knighted or made a baronet. */
+const styled = () => { const h = id => typeof held === 'function' && typeof SOCIETY === 'object' && !!SOCIETY[id] && held(id); return h('baronet') ? 'Sir ' + S.name + ', Bart.' : h('knight') ? 'Sir ' + S.name + ', Knt.' : S.name + ', Esquire'; };
 function kittyRole(){ const k = S.flags.kitty || 'free';
   if (k === 'vane') return 'Mrs Vane, wherever the regiment is';
   if (k === 'pinch') return F('kittyWidow') ? 'Mr Pinch’s widow, and rich' : 'Mrs Pinch, at Clifton';
@@ -1010,11 +1012,11 @@ const PROJECTS = {
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act having had the Royal Assent, the three Commissioners sit in the vestry, with the surveyor’s map pinned to the table; and their clerk reads the award to as many of the parish as the room will hold.
 
-“To ${S.name}, Esquire, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To the cottagers, sixty plots of one acre each.”
+“To ${styled()}, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To the cottagers, sixty plots of one acre each.”
 
 He rolls up the map; and the common, which was green upon the old one, is upon this ruled into parcels, and numbered.` : `The Hatherley Inclosure Act has the Royal Assent, with those of forty other parishes in the same session; so that the Commissioners, who sit in the vestry with the surveyor’s map pinned to the table, have the business by heart, and their clerk reads the award without once looking at it.
 
-“To ${S.name}, Esquire, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To nineteen persons claiming by custom, who have produced no deed, nothing.”
+“To ${styled()}, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To nineteen persons claiming by custom, who have produced no deed, nothing.”
 
 Jem Pryor stands up at the back, with his hat in his hand, and says that there has been a cow of his name upon that common since Queen Anne.
 
@@ -1835,12 +1837,12 @@ function next(){
 }
 function finish(){ S.phase = 'end'; if (typeof strikeEnding === 'function') strikeEnding(); save(); render(); window.scrollTo({top:0}); }
 
-function mortgage(d){ if (d < 0 && S.money >= 500 && S.mortgage >= 500) { S.mortgage -= 500; S.money -= 500; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
+function mortgage(d){ const off = Math.min(500, S.mortgage); if (d < 0 && off > 0 && S.money >= off) { S.mortgage -= off; S.money -= off; } if (d > 0 && canBorrow()) { S.mortgage += 500; S.money += borrowGets(); } save(); render(); }
 
 /* ---------- the reckoning ---------- */
 function reckoning(){
   const net = S.money - S.mortgage + ownLandValue(), k = S.flags.kitty || 'free', e = S.flags.edmund, P = []; const end = ending();
-  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${S.name}, Esquire, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
+  if (S.dead === 'duel') { P.push(`DIED, on Thursday last, on Hatherley Down, of a pistol ball, ${styled()}, of Hatherley Combe in this county, in the ${nth(S.year - 1795 + 46)} year of his age. The Coroner’s jury sat one quarter of an hour. Verdict, Misadventure while shooting rooks.`);
     P.push(`Captain Vane has gone abroad for his health. The estates pass to the widow. She is reported to have said that she told him so.`);
     return {title:end.title, P, score:null, end}; }
   if (S.dead === 'ruin') { P.push(`TO BE SOLD BY AUCTION, by Mr Skinner, at the George Inn, Wyvern, by order of the Mortgagees: the capital Freehold Estate of HATHERLEY COMBE, comprising a Mansion House of fifty-four windows, ${['no','one','two','three','four','five','six','seven','eight','nine'][(S.farms || []).length] || 'several'} Farm${(S.farms || []).length === 1 ? '' : 's'}, a Water Corn Mill${F('enclosed') ? ', and four hundred acres of newly inclosed Land' : ', with Rights over an extensive Common'}. Particulars of Mr Spurling, Attorney, Wyvern.`);
@@ -1848,7 +1850,7 @@ function reckoning(){
     P.push(`The Earl of Cullerne is expected to bid.`);
     return {title:end.title, P, score:null, end}; }
 
-  P.push(`${S.name}, Esquire, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
+  P.push(`${styled()}, has now held Hatherley Combe one-and-twenty years. This paper has made enquiry in the county.`);
   if (T('captain')) P.push(F('crewGone') ? `He was a sea officer. He still goes down a staircase backwards. His old Dryads are afloat again. He follows their ships in the Navy List.` : `Dinner at the Hall is announced by a boatswain’s pipe. A guest who comes late is entered in the log.`);
   if (T('play')) P.push(`He is known at every card table between Reading and Bath. He is welcome at all of them. He loses.`);
   if (T('enemy')) P.push(S.chars.cullerne.r >= 1 ? `He and Lord Cullerne now speak. The matter of the pointer lay between them near fifty years.` : `Lord Cullerne has not forgiven the pointer. The dog has been dead forty years.`);
@@ -1872,7 +1874,7 @@ function reckoning(){
     oakes:`His daughter married the ${F('oakesVicar') ? 'curate. He is now the vicar' : 'curate. He is the curate still'}. She has five children and no carriage. She has not once said she is sorry.`,
     dubreuil:`His daughter is Madame Dubreuil, of Saint-Malo. She keeps bees. Mrs Tamworth has begun to ask after her.`,
     free:F('kittyBotanist') ? `His daughter is unmarried. An orchid of her finding is figured in Sowerby’s English Botany. Her name is printed under it.` : `His daughter is unmarried and lives at home. She is thirty-eight. She is very good with the dogs.`};
-  P.push(kl[k]);
+  P.push(kl[k] || (typeof KITTY_END === 'object' && KITTY_END[k] ? KITTY_END[k]() : kl.free));
   if (F('privyChamber')) P.push(`He is a Gentleman of the Privy Chamber to the Prince Regent. There is no salary and no duty.`);
   else if (F('princeLoan')) P.push(`The Prince Regent owes him a thousand pounds.`);
   if (F('crimcon')) P.push(`The case of ${S.sur} against the Earl of Cullerne is in the law reports. Mrs ${S.sur} lives at Hatherley. They dine together.`);
@@ -9175,13 +9177,13 @@ You pay ${pounds(70 * n)}, and sixty for the attorney.`; }}
 /* ---------- the rungs of credit, for the book ---------- */
 const timberLeft = () => S.timber === undefined ? 3 : S.timber;
 const timberNow = () => Math.round(75 * (1 + 0.035 * (S.year - FIRST_YEAR))) * 10;
-function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? '' : 'The books are closed.', n = S.annuities || 0, g = borrowGets();
+function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? '' : 'The books are closed.', n = S.annuities || 0, g = borrowGets(), off = Math.min(500, S.mortgage), last = off > 0 && off === S.mortgage;
   return [
     {id:'mortgage', name:'Borrow £500 on the land', line:'A lender advances money on the security of the estate. The deeds lie with his attorney until he is paid.', gets:g, verb:'Borrow', can:open && canBorrow(), why:shut || borrowWhy(), note:borrowNote(),
       effects:'Five per cent a year until it is paid off. The estate will carry ' + fmt(mortCap()) + ' in all.' + (g < 500 ? ' This year £50 of every £500 goes to the attorney who finds the lender.' : ''),
       fx:['+' + fmt(g), '−£25 a year in interest']},
-    {id:'repay', name:'Pay off £500 of the mortgage', line:'A draft on Tidmarsh’s bank for five hundred pounds goes to the lender. His attorney writes the payment on the deed.', gets:-500, verb:'Pay off', can:open && S.money >= 500 && S.mortgage >= 500, why:shut || (S.mortgage < 500 ? 'Nothing is owing.' : S.money < 500 ? 'There is not £500 in hand.' : ''), note:'',
-      effects:'Saves £25 a year in interest.', fx:['−£500', '+£25 a year saved']},
+    {id:'repay', name:last ? 'Pay off the last ' + fmt(off) + ' of the mortgage' : 'Pay off £500 of the mortgage', line:last ? 'A draft on Tidmarsh’s bank for the whole of what is left goes to the lender. His attorney sends back the deeds.' : 'A draft on Tidmarsh’s bank for five hundred pounds goes to the lender. His attorney writes the payment on the deed.', gets:-(off || 500), verb:last ? 'Pay it off' : 'Pay off', can:open && off > 0 && S.money >= off, why:shut || (!off ? 'Nothing is owing.' : S.money < off ? 'There is not ' + fmt(off) + ' in hand.' : ''), note:'',
+      effects:last ? 'Clears the estate of debt, and saves ' + fmt(Math.round(off / 20)) + ' a year in interest.' : 'Saves £25 a year in interest.', fx:[MINUS + fmt(off || 500), '+' + fmt(Math.round((off || 500) / 20)) + ' a year saved'].concat(last ? ['+ The deeds come home'] : [])},
     {id:'annuity', name:'Sell an annuity on your life', line:'A deed binding you to pay a hundred a year for life. The office has a surgeon examine you before it signs.', gets:700, verb:'Sell one', can:open && n < 4, why:shut || (n >= 4 ? 'Nobody will buy a fifth on one life.' : ''), note:n ? cap1(numWords(n)) + ' granted already' : '',
       effects:'A London office pays £700 down. You pay £100 a year for as long as you live. It is outside the usury law and needs no land.', fx:['+£700', '−£100 a year for life']},
     {id:'redeem', name:'Buy back an annuity', line:'The office names its price for giving up the deed. The parchment comes back with the seals cut off.', gets:-800, verb:'Buy it back', can:open && n > 0 && S.money >= 800, why:shut || (!n ? 'None is granted.' : S.money < 800 ? 'There is not £800 in hand.' : ''), note:'',
@@ -9191,7 +9193,7 @@ function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? 
   ]; }
 function takeCredit(id){ const x = creditList().find(r => r.id === id); if (!x || !x.can) return false; let did = x.name;
   if (id === 'mortgage') { S.mortgage += 500; S.money += x.gets; }
-  else if (id === 'repay') { S.mortgage -= 500; S.money -= 500; }
+  else if (id === 'repay') { const off = Math.min(500, S.mortgage); S.mortgage -= off; S.money -= off; if (!S.mortgage) did = 'Paid off the last ' + fmt(off) + ' of the mortgage'; }
   else if (id === 'annuity') { S.annuities = (S.annuities || 0) + 1; S.money += 700; add({standing:-1}); }
   else if (id === 'redeem') { S.annuities--; S.money -= 800; }
   else if (id === 'timber') { S.timber = timberLeft() - 1; add({money:x.gets, standing:-3}); }
@@ -10952,7 +10954,7 @@ A shepherd coming over the Down with forty ewes takes off his hat; and the ewes 
 
   /* ---------- sold up: four ways out of the Hall ---------- */
   { id:'tenant', title:'A Tenant on His Own Land', did:'Sold up, and stayed in the parish.', if:() => S.dead === 'ruin' && S.goodwill >= 58,
-    news:() => `${S.name}, Esquire, late of that place, has taken the bailiff’s house at Church Farm, at a rent of twenty pounds.`,
+    news:() => `${styled()}, late of that place, has taken the bailiff’s house at Church Farm, at a rent of twenty pounds.`,
     text:() => `Upon the morning of the sale there are three wagons at the door, that nobody sent for; and into these the tenants load what Mr Skinner has left, and carry it to the bailiff’s house at Church Farm.
 
 The rent of the house is twenty pounds a year, and the purchaser’s agent, taking it at Lady Day, writes you a receipt.
@@ -10961,7 +10963,7 @@ On Sunday you walk to church, where the Hall pew is found to have a new lock upo
 
 “There’s room here, sir.”` },
   { id:'bath', title:'The Second Floor in Gay Street', did:'Sold up, and went to Bath on Henrietta’s money.', if:() => S.dead === 'ruin' && S.family >= 52 && !endAway(),
-    news:() => `${S.name}, Esquire, late of that place, has removed with his lady to Bath.`,
+    news:() => `${styled()}, late of that place, has removed with his lady to Bath.`,
     text:() => `Mrs Tamworth has the first floor in Gay Street, and you the second, to which there are forty-one stairs; and she has counted them for you.
 
 Henrietta’s settlement brings two hundred a year, and being beyond the reach of the creditors, has been mentioned by her as such to the landlady, and to the butcher.
@@ -10970,7 +10972,7 @@ You drink the waters at eight in the morning, when the Pump Room is empty; and i
 
 “We shall do,” she says.` },
   { id:'bench', title:'A Room in the King’s Bench', did:'Sold up, and taken for debt.', if:() => S.dead === 'ruin' && S.standing < 42 && S.goodwill < 45,
-    news:() => `${S.name}, Esquire, late of that place, is lodged in the King’s Bench Prison, at the suit of nine tradesmen of Wyvern and a coachmaker of Long Acre.`,
+    news:() => `${styled()}, late of that place, is lodged in the King’s Bench Prison, at the suit of nine tradesmen of Wyvern and a coachmaker of Long Acre.`,
     text:() => `The turnkey at the King’s Bench wants half a crown for the room, and a shilling for the key of it.
 
 There are two beds, the other being that of a hop factor from the Borough, who has been here since the Peace of Amiens; and who shows you the racket court, the pump, and the window where the beer is passed in.
@@ -10979,7 +10981,7 @@ There are two beds, the other being that of a hop factor from the Borough, who h
 
 Mr Spurling writes on Tuesday that the sale is made up, and that the creditors are to have fourteen shillings in the pound.` },
   { id:'soldup', title:'Sold Up', did:'Sold up, and crossed to the Isle of Man.', if:() => S.dead === 'ruin',
-    news:() => `${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`,
+    news:() => `${styled()}, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`,
     text:() => `The Liverpool packet lands you at Douglas with nine trunks, one of them holding the rent books.
 
 There are forty English gentlemen in the town, who meet upon the pier at ten; and each of them having asked what you owed, and been told, two of them bow lower the next morning.
@@ -12133,6 +12135,547 @@ No card comes back. But within the month a groom in the Windsor livery walks up 
     if (k.letter === 'sent' && S.seen.kingThanks === undefined && !S.queue.some(x => x.id === 'kingThanks')) later('kingThanks', 2);
     if (k.letter === 'given' && end === 'well' && !k.snubbed) { k.snubbed = true; k.snub = S.t + 2; }
     return text; }; } }
+/* The later years: what is offered when the first works are built and the first ventures have run out, the Brazil shares brought on to the Ventures page, and Mr Crabbe's opinion of his master.
+   Six ventures and three works are kept out of the book until their year comes; each is announced by a line in the memoranda the quarter it opens (S.newLots).
+   Sources for the dates: Ellman's Southdowns at Lewes fair; the Dunstable plait trade under the war duties on Leghorn; the Gas Light and Coke Company's charter of 1812;
+   the Charter Act of 1813, opening the India trade to private ships from April 1814; the Royal Jennerian Society of 1803; the Jubilee of 25 October 1809. */
+
+/* ---------- when each comes into the book ---------- */
+const merinoOver = () => S.year >= 1811 || (!!vent('merino') && !!vent('merino').ended);
+const LATE = {
+  southdown:{ when:() => S.year >= 1806 && merinoOver(),
+    news:() => `Mr Ellman of Glynde is to sell Southdown rams at Lewes fair this year; and Hartopp, who gave forty guineas for a merino, has written for the catalogue.` },
+  coach:{ when:() => S.year >= 1805,
+    news:() => `A coach called the Defiance is to run from the George at Wyvern to Ludgate Hill in nine hours; and the proprietors, wanting horses for the Hatherley stage, have a share to sell.` },
+  plait:{ when:() => S.year >= 1806 && S.year <= 1814,
+    news:() => `Leghorn hats being shut out by the war, the Dunstable makers will buy English plait at any price; and a woman who can teach it has asked the vestry for a room.` },
+  papermill:{ when:() => S.year >= 1807,
+    news:() => `A paper-maker from Thatcham has walked the Kennet below the mill with a level in his hand; and he says there is fall enough for a vat mill, if a gentleman will find the building.` },
+  gaslight:{ when:() => S.year >= 1812,
+    news:() => `The Gas Light and Coke Company has its charter; and Hartopp has the prospectus in his hat, having marked upon it the names of such proprietors as he has dined with.` },
+  indiaman:{ when:() => S.year >= 1814,
+    news:() => `The India trade being thrown open by the late Act, the owners of the Hetty have taken out her guns, and advertise her for Bombay in sixteenths.` },
+  vaccine:{ work:true, when:() => S.year >= 1803,
+    news:() => `The small-pox is at Newbury. The surgeon there has cow-pox matter of Dr Jenner’s own stock, and will come out to any parish that sends for him.` },
+  lodge:{ work:true, when:() => S.year >= 1806,
+    news:() => `Lord Cullerne has built a lodge at his east gate, in the Gothic taste, and put a man into it to open; the Hall drive being shut, as it was in your uncle’s time, by a hurdle.` },
+  park:{ work:true, when:() => S.year >= 1803,
+    news:() => `Mr Repton has been a week at Cullerne Castle with his theodolite, at five guineas a day; and he lets it be known in Wyvern that he has two days disengaged before he goes into Wiltshire.` },
+  wing:{ work:true, when:() => S.year >= 1805,
+    news:() => `The Tamworths have added a library to their house, of forty feet, with a bow; and their architect, who was a pupil of Mr Wyatt, has left his card at the Hall.` },
+  modelfarm:{ work:true, when:() => S.year >= 1806,
+    news:() => `Mr Coke has shown three hundred gentlemen over his new farmyard at Holkham; and Hartopp, who was one of them, has paced out the plan of it upon your lawn.` },
+  brewery:{ when:() => S.year >= 1804,
+    news:() => `Old Mr Sims, who has brewed at Wyvern these forty years, and owns nine of its public houses, is dead; and his widow will sell the copper, the houses and the goodwill together.` },
+  wharf:{ when:() => S.year >= 1810,
+    news:() => `The Kennet and Avon Canal is open from Newbury to Bath; and its engineer has ruled a line upon the map from the nearest pound to Hatherley Mill, of a mile and three furlongs.` },
+  clock:{ work:true, when:() => S.year >= 1809,
+    news:() => S.year === 1809 ? `Every parish in the county is to mark the King’s Jubilee in October. Kintbury has voted an ox, and Inkpen a clock; and Hatherley tower has shown ten minutes past four since your uncle’s time.`
+      : `The clock in Hatherley tower has shown ten minutes past four since your uncle’s time; and Thwaites of Clerkenwell will make a new one for a hundred and fifty pounds.` }
+};
+const lotOpen = id => !LATE[id] || !!(S.newLots && S.newLots[id] !== undefined);
+function lateTick(){ if (S.dead || S.phase === 'end') return; S.newLots = S.newLots || {};
+  for (const id in LATE) if (S.newLots[id] === undefined && LATE[id].when()) { S.newLots[id] = S.t; if (S.t > 0) S.notes.push(LATE[id].news()); } }
+
+/* ---------- three works ---------- */
+PROJECTS.vaccine = { fx:['+4 Goodwill'], effects:`Goodwill rises, and settles two higher.`, name:'Have the parish vaccinated for the cow-pox',
+  line:'A surgeon scratches the arm with a lancet dipped in matter from the cow-pox. Dr Jenner has shown that a person so treated does not take the small-pox.',
+  seasons:1, cost:() => 40, if:() => lotOpen('vaccine'),
+  blurb:`A shilling an arm, for every child in the parish and as many grown persons as will come.`, gain:'Goodwill',
+  done:() => { fl('vaccine'); add({goodwill:4});
+    return `The surgeon from Newbury sets up in the vestry, with the cow-pox matter dried upon ivory points in a tin box; and between ten and four he does a hundred and thirty-one children, and nine grown persons, at a shilling an arm.
+
+Old Dewey, who had the small-pox in ’61 and carries the marks of it, stands in the porch the whole day, to tell every mother going in that a child done at Kintbury has since been heard to low.
+
+At Michaelmas the small-pox is at Kintbury and at Inkpen, where it buries eleven; and it does not come up the lane.`; }};
+PROJECTS.lodge = { fx:['+4 Standing'], effects:`Standing rises, and settles two higher.`, name:'Build a lodge and iron gates on the London road',
+  line:'A keeper’s lodge of flint and brick where the drive meets the road. The gates are cast at Reading and hung between stone piers.',
+  seasons:2, cost:() => 280, if:() => lotOpen('lodge'),
+  blurb:`The drive is shut at present by a hurdle, which callers lift for themselves.`, gain:'Standing',
+  done:() => { fl('lodge'); add({standing:4});
+    return `The lodge stands finished where the drive meets the London road, eight-sided, of flint with brick at the corners, and one chimney rising out of the middle of the roof; and the gates, which came from the Reading foundry upon two wagons, are hung between stone piers, with your crest in iron at the top of each.
+
+A pensioner of the Berkshire Militia is put in with his wife, to open. In the first week he opens to the Tamworths’ carriage, to Lord Cullerne’s agent, and to the fishmonger’s cart; and to the fishmonger, as being the first of the three to arrive, he presents arms.`; }};
+PROJECTS.clock = { fx:['+3 Goodwill', '+2 Standing'], effects:`Goodwill and standing both rise, and each settles one higher.`, name:'A clock for the church tower',
+  line:'An eight-day clock by Thwaites of Clerkenwell, with one painted face to the street. It strikes the hours upon the tenor bell.',
+  seasons:1, cost:() => 150, if:() => lotOpen('clock'),
+  blurb:`The old clock stopped in your uncle’s time. The parish tells the hour by the sun, and by Mr Hartopp.`, gain:'Goodwill and standing',
+  done:() => { fl('clock'); add({goodwill:3, standing:2});
+    return `The clock is up in the church tower, by Thwaites of Clerkenwell, with one face to the street, a gilt hand, and a stroke upon the tenor bell that is heard at Long Barrow when the wind is south.
+
+Until this week the men in the fields have left off when the farmer told them it was six; and Hartopp has been over to you about it twice.
+
+“They stand and count it, sir. They count it aloud.”`; }};
+
+/* ---------- three great works, and two follies ----------
+   The great works open midway, and cost as much as a farm. The follies are listed from 1800, and may be built by a squire with four thousand pounds in hand or a rental of two thousand five hundred. */
+PROJECTS.park = { fx:['+6 Standing', '+3 Household'], effects:`Standing rises, and settles three higher. The household pleased.`, name:'Lay out the park after Mr Repton',
+  line:'Mr Repton paints the park as it is, and upon a flap of paper as it might be. A lake is dug, the kitchen garden is moved and four hundred trees are planted.',
+  seasons:4, cost:() => 1800, if:() => lotOpen('park'),
+  blurb:`He charges five guineas a day, and thirty more for the Red Book.`, gain:'Standing; the household',
+  done:() => { fl('park'); add({standing:6, family:3});
+    return `The park is finished to the Red Book. Where the cow pasture was there is a lake of nine acres, with an island in it; the kitchen garden has been carried a quarter of a mile off, behind a plantation; and the Wyvern road, which used to pass within sight of the windows, has been turned at your expense round the back of a hill.
+
+Mr Repton comes over to see it; and having lifted the flap of his own drawing, he compares the one with the other for some time.
+
+“The water is a little larger than I painted it, sir. I should charge the difference to Nature.”`; }};
+PROJECTS.wing = { fx:['+8 Standing', '+4 Household', '+2 Henrietta'], effects:`Standing rises a good deal, and settles four higher. Henrietta and the household pleased.`, name:'Build a new wing, with a library of forty feet',
+  line:'A wing upon the east side, of two storeys, in the same red brick. Below is a library with a bow window, and above it are four bedrooms.',
+  seasons:4, cost:() => 2400, if:() => lotOpen('wing'),
+  blurb:`The Hall has eleven bedrooms. The Tamworths have nineteen.`, gain:'Standing; Henrietta',
+  done:() => { fl('wing'); add({standing:8, family:4}); reg('henrietta',2,'You built her the new wing');
+    return `The new wing is roofed, glazed and papered: a library of forty feet below, with a bow to the park, and four bedrooms over it, so that the Hall has now fifteen. The books out of the old book-room, being set up in the new, fill one wall of it and a part of another; and the joiner desires to know what is to stand upon the rest.
+
+A London bookseller supplies two hundred and ten feet of divinity and county history, in calf, at fourteen shillings the foot.`; }};
+PROJECTS.modelfarm = { fx:['+ Home farm wheat an eighth more', '+ Every farm worth a twentieth more to let', '+3 Standing'], effects:`The home farm grows about an eighth more wheat, and every farm is worth a twentieth more to let. Standing rises, and settles one higher.`, name:'Rebuild the home farm as a model farmyard',
+  line:'A square of brick buildings round a paved yard: feeding houses, a granary upon staddles and stalls for forty beasts. The dung is kept under cover.',
+  seasons:3, cost:() => 1600, if:() => lotOpen('modelfarm'),
+  blurb:`After the yard at Holkham, where every beast is fed by the bushel and weighed.`, gain:'More wheat, and better rents; standing',
+  done:() => { fl('modelfarm'); S.improve += 2; add({standing:3});
+    return `The new yard at the home farm is finished, four-square, in brick, with a clock turret over the granary; and there are forty bullocks tied up in it, each having his name, his weight at Michaelmas, and what he has eaten since, chalked upon a board above his head.
+
+Gentlemen come from as far as Abingdon to walk round it. The bailiff, who has the boards to chalk, has asked for a boy that can write.`; }};
+const follyWhy = () => S.money >= 4000 || rentalNow() >= 2500 ? '' : 'A folly is for a man with £4,000 in his purse, or a rental of £2,500. You have ' + fmt(Math.max(0, Math.floor(S.money))) + ', and a rental of ' + fmt(Math.round(rentalNow())) + '.';
+const follyIf = () => S.year >= 1800 && !follyWhy(), follyEarly = () => S.year >= 1800 ? follyWhy() : '';
+PROJECTS.tower = { fx:['+6 Standing'], effects:`Standing rises, and settles two higher.`, name:'A Gothic tower upon the Down',
+  line:'Eighty feet of flint, with a stair, battlements and a room at the top to dine in. It is of no use, and is seen from three counties.',
+  seasons:3, cost:() => 1200, if:follyIf, early:follyEarly,
+  blurb:`Lord Cullerne has an obelisk. It is forty feet.`, gain:'Standing',
+  done:() => { fl('tower'); add({standing:6});
+    return `The tower stands finished upon the Down, eighty feet of flint and brick, with a stair of a hundred and thirty steps, and a room at the top where six may dine, if the dinner can be got up to them hot.
+
+From the leads upon a clear day there may be counted nine church spires, and the smoke of Reading. Lord Cullerne, who has had an obelisk of forty feet these thirty years, rides over to look; and having walked once round the foot of it, he asks the mason what it is for.
+
+“For the view, my lord.”
+
+“Ain’t there a hill?”`; }};
+PROJECTS.hermitage = { fx:['+4 Household', '+3 Standing'], effects:`The household pleased. Standing rises, and settles one higher.`, name:'A hermitage in Cuckoo Copse, and a hermit',
+  line:'A hut of roots and bark beside the spring, with a stone seat and a skull. A man is hired to live in it, and to be seen at a distance by company.',
+  seasons:1, cost:() => 350, if:follyIf, early:follyEarly,
+  blurb:`He is to have fifty pounds a year, a Bible, an hour-glass and a hair shirt, and is not to cut his nails.`, gain:'The household; standing',
+  done:() => { fl('hermitage'); add({family:4, standing:3});
+    return `The hermitage is built in Cuckoo Copse, of roots and bark, with a skull upon the table; and a hermit is found by advertisement in the Mercury, a man of sixty from Hungerford, who engages for seven years at fifty pounds, and is to wear a beard, speak to nobody, and be seen reading.
+
+He is shown to the Tamworths upon the first fine Sunday, at forty yards, and gives great satisfaction. In the third week Mudge reports that the beard has been seen in the tap of the Bell, with the hermit behind it; and the place is filled at Michaelmas by a second, who brings his own hour-glass.`; }};
+
+/* ---------- six ventures, and two great ones ---------- */
+const gasPrice = v => { v.px = v.px || {}; let p = 50;
+  for (let y = v.year + 1; y <= S.year; y++) { if (v.px[y] === undefined) v.px[y] = y === v.year + 1 ? Math.round(p - 22 + Math.random() * 24) : Math.max(15, Math.round(p - 8 + Math.random() * 44)); p = v.px[y]; }
+  return p; };
+Object.assign(VENTURES, {
+  southdown:{ fx:['+£55 a year in wool and draft ewes', MINUS + '£40 in a year of rot', '+£180 if sold'], risk:1, odds:{"well": 0.75, "dull": 0.15, "ill": 0.1}, effects:`About £55 a year. £40 lost in a wet year, if the rot comes. The flock sells for £180.`,
+    name:'A Southdown flock', line:'Mr Ellman’s breed from Glynde in Sussex, black in the face and short in the leg. You buy two rams and sixty ewes at Lewes fair.', where:'The Down', cost:260,
+    well:'Mutton that the London butchers ask for by name, and a fleece of three pounds.', ill:'A down sheep rots in a wet summer like any other.', state:v => 'On the Down since ' + v.year,
+    endLabel:'Sell the flock', end:() => { S.money += 180; return `The Southdowns are sold at Ilsley fair in one lot, and make £180.`; }},
+  coach:{ fx:['+£70 a year', MINUS + '£45 when a horse is lost', '+£300 if sold'], risk:1, odds:{"well": 0.75, "dull": 0.1, "ill": 0.15}, effects:`About £70 a year from the fares. A horse lost now and then, £45. The share sells for £300.`,
+    name:'A share in the Wyvern coach', line:'The Defiance runs from the George at Wyvern to the Bell Savage on Ludgate Hill in nine hours. Each proprietor finds the horses for one stage of the road.', where:'The London road', cost:400,
+    well:'Four insides and ten out, every day but Sunday, at fourpence a mile.', ill:'A coach horse lasts four years upon a fast stage.', state:v => 'Horsing the Hatherley stage since ' + v.year,
+    endLabel:'Sell the share', end:() => { S.money += 300; return `Your share in the Defiance, with the eight horses of the Hatherley stage, goes to the landlord of the George for £300.`; }},
+  plait:{ fx:['+£22 a year', '+2 Goodwill', MINUS + ' Ended by a peace'], risk:1, odds:{"well": 0.7, "dull": 0.3, "ill": 0}, effects:`About £22 a year while Italian straw is kept out by the war. Goodwill settles two higher while the school is kept. A peace ends it.`,
+    name:'A straw-plait school', line:'A room over the wheelwright’s, and a woman from Dunstable to teach. The girls split wheat straw and plait it by the score of yards for the hat-makers.', where:'Kintbury Lane', cost:60,
+    no:() => S.year >= 1815 ? 'The Dunstable dealers buy no English plait since the peace.' : '',
+    well:'A girl of nine can earn three shillings a week at it, and the school takes a penny in the shilling.', ill:'The trade lives upon the war.', state:v => 'Forty girls plaiting since ' + v.year,
+    endLabel:'Shut the school', end:() => `The plait school is shut, and the woman from Dunstable has her coach fare home.` },
+  papermill:{ fx:['+£110 a year while the war lasts', '+£150 a year in peace', MINUS + '£250 and the mill, if the drying loft takes fire', '+£600 if sold'], risk:2, odds:{"well": 0.65, "dull": 0.2, "ill": 0.15}, effects:`£110 a year while rags are at the war price, and £150 in peace. If the loft takes fire the mill is gone, and £250 with it. Sells for £600.`,
+    name:'A paper mill on the Kennet', line:'A vat mill below Hatherley Mill, with a rag-house and a drying loft. It makes writing paper, and the blue paper that sugar loaves are wrapped in.', where:'The Mill', cost:900,
+    well:'Every attorney between Reading and Bath writes upon somebody’s paper.', ill:'The loft is of deal, and is full of paper.', state:v => 'Making paper since ' + v.year,
+    endLabel:'Sell the mill', end:() => { S.money += 600; return `The paper mill is sold to the Thatcham maker for £600, with the vats, the moulds and eleven hundredweight of rags.`; }},
+  gaslight:{ fx:['No dividend as yet', '+ or ' + MINUS + ' the price of the day when sold'], risk:2, odds:{"well": 0.45, "dull": 0.25, "ill": 0.3}, effects:`Ten shares at £50. The company has paid no dividend. They sell at the price of the day, which may be above fifty or a good deal below.`,
+    name:'Ten shares in the Gas Light and Coke Company', line:'The company has the King’s charter to light London with gas made from coal. It is laying iron pipes under the streets of Westminster.', where:'Westminster', cost:500,
+    well:'Pall Mall has been lit with it, and nobody was killed.', ill:'Sir Humphry Davy asks whether they mean to take the dome of St Paul’s for a gasometer.',
+    state:v => 'Ten shares, at ' + gasPrice(v) + ' to-day',
+    endLabel:'Sell the shares', end:v => { const p = gasPrice(v) * 10; S.money += p; return `Mr Tidmarsh’s London agent has sold your ten gas shares at ${gasPrice(v)}. It comes to ${fmt(p)}.`; }},
+  brewery:{ fx:['+£380 a year', '+£120 a year more while you hold the malthouse', MINUS + '£150 in a year of famine prices', '+£2,400 if sold'], risk:2, odds:{"well": 0.7, "dull": 0.1, "ill": 0.2}, effects:`About £380 a year, and £120 more while the malthouse is yours. £150 lost in a year of famine prices. Sells for £2,400.`,
+    name:'Sims’s brewery at Wyvern', line:'The brewhouse in the Butts, with a copper of forty barrels and four drays. Nine public houses are tied to take its beer.', where:'Wyvern', cost:3500,
+    well:'Nine houses that may sell no beer but yours.', ill:'Malt is taxed and beer is taxed; and when bread is dear the labourer drinks water.', state:v => 'Brewing since ' + v.year,
+    endLabel:'Sell the brewery', end:() => { S.money += 2400; return `The brewery is sold to a Reading house for £2,400, with the copper, the drays and the nine public houses.`; }},
+  wharf:{ fx:['+£260 a year in tolls and wharfage', '+2 Goodwill', MINUS + '£90 in a dry summer'], risk:1, odds:{"well": 0.8, "dull": 0.05, "ill": 0.15}, effects:`About £260 a year in tolls and wharfage. Goodwill settles two higher, coal being cheaper. £90 lost when the cut is shut for want of water.`,
+    name:'A cut from the canal to Hatherley wharf', line:'A mile and three furlongs of canal, with two locks, from the Kennet and Avon to a wharf below the mill. Coal comes up it, and corn goes down.', where:'The Mill', cost:3000,
+    well:'Somerset coal upon the wharf at eighteen shillings the ton, which was thirty by wagon.', ill:'Two locks drink a great deal of water in August.', state:v => 'Open to barges since ' + v.year },
+  indiaman:{ fx:['+£1,100 if she comes home full', '+£520 if the market is dull', MINUS + ' The share lost if she does not come home'], risk:3, odds:{"well": 0.45, "dull": 0.35, "ill": 0.2}, effects:`One voyage to Bombay and home, about eighteen months. £1,100 if she comes home full, £520 if the market there is dull, and nothing if she is lost or condemned.`,
+    name:'A sixteenth of the Hetty, for Bombay', line:'The Bristol privateer, with her guns out and a new copper bottom. Since April any British ship may trade to India, which till now was the Company’s alone.', where:'The Hetty, 300 tons', cost:500,
+    no:() => S.year > 1814 || (S.year === 1814 && S.season === 3) ? 'She sailed with the September convoy, and takes no more owners until she is home.' : '',
+    well:'Cotton piece goods, pepper and indigo, bought at Bombay with Birmingham hardware.', ill:'She was built to chase luggers in the Channel.', state:() => 'Sailed for Bombay in 1814' }
+});
+const ventureTickLate = ventureTick;
+ventureTick = function(line){ ventureTickLate(line); lateTick(); brazSync(); if (!S.vent) return; const y = S.year, q = S.season, earn = (label, a) => { line(label, a); if (a > 0) S.yearIncome += Math.round(a); };
+  if (live('southdown') && q === 1 && y > vent('southdown').year) { if (WEATHER[y] <= 0.85 && chance(0.5)) { line('Southdowns lost by the rot', -40); S.notes.push('It has been a wet summer upon the Down, and the shepherd has buried nineteen of the Southdowns.'); } else earn('Southdown wool and draft ewes', 55); }
+  if (live('coach') && q === 3 && y > vent('coach').year) { if (chance(0.15)) { line('The Defiance: a wheeler dead in the collar', -45); S.notes.push('The Defiance came down Speen hill on Tuesday with a new coachman; and the near wheeler of your team, which was nine years old, fell dead at the George door.'); } else earn('Share of the Wyvern coach', 70); }
+  if (live('plait') && q === 1 && y > vent('plait').year) { if (y >= 1815) { earn('The plait school', 5); stopVenture('plait', 'Ended by the peace');
+      S.notes.push('Leghorn hats are in the London shops again since the peace, and at half the price; and the Dunstable dealer, who gave fourteenpence the score for Hatherley plait, has not called since March.'); }
+    else earn('The plait school', 22); }
+  if (live('papermill') && q === 3 && y > vent('papermill').year) { if (chance(0.05)) { stopVenture('papermill', 'Burnt'); line('The paper mill, burnt to the wheel', -250);
+      S.notes.push('The drying loft of the paper mill took fire on Thursday night from a candle, and burnt until morning; the Sun Fire Office, having read its policy, will pay for the wheel.'); }
+    else earn('The paper mill', y >= 1814 ? 150 : 110); }
+  if (live('brewery') && q === 3 && y > vent('brewery').year) { if (PRICES[y] >= 100) { line('The brewery, in a dear year', -150); S.notes.push('Bread being at famine price, the nine houses have drawn less beer in the year than in a common harvest month; and the brewery has cost you a hundred and fifty pounds to keep open.'); } else earn('Sims’s brewery, and the nine houses', 380 + (live('malthouse') ? 120 : 0)); }
+  if (live('wharf') && q === 2 && y > vent('wharf').year) { if (chance(0.15)) { line('The cut, shut six weeks for want of water', -90); S.notes.push('There has been no rain since June, and the cut to Hatherley wharf was shut six weeks, with nine barges of coal lying in it upon the mud.'); } else earn('Tolls and wharfage, Hatherley wharf', 260); }
+  if (live('indiaman') && y === 1815 && q === 2) { const v = vent('indiaman'), r = v.fate === undefined ? Math.random() : v.fate;
+    if (r < 0.45) { earn('A sixteenth of the Hetty’s cargo from Bombay', 1100); stopVenture('indiaman', 'Home from Bombay'); S.notes.push('The Hetty is in King Road from Bombay, in a hundred and thirty-one days, with cotton piece goods, pepper and indigo; and Bristol, which has had the Company’s prices for two hundred years, has bought the whole at the ship’s side.'); }
+    else if (r < 0.8) { earn('A sixteenth of the Hetty’s cargo from Bombay', 520); stopVenture('indiaman', 'Home from Bombay'); S.notes.push('The Hetty is home from Bombay; where, eleven other free traders having arrived in the same month with the same Birmingham hardware, she sold hers by the hundredweight.'); }
+    else { stopVenture('indiaman', 'Condemned at Bombay'); S.notes.push('The Bristol agents write that the Hetty was surveyed at Bombay after her passage, and condemned as unfit to come home; and her hull has been sold there to a Parsee, for a sum which does not reach to sixteenths.'); } }
+};
+const marksLate = marks;
+marks = function(){ const m = marksLate(), put = (k, n, t) => { if (n) { m.why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); m[k] = clamp(m[k] + n, 5, 95); } };
+  put('goodwill', F('vaccine') ? 2 : 0, 'The parish vaccinated'); put('standing', F('lodge') ? 2 : 0, 'The lodge and gates'); put('goodwill', F('clock') ? 1 : 0, 'The church clock'); put('standing', F('clock') ? 1 : 0, 'The church clock');
+  put('goodwill', live('plait') ? 2 : 0, 'The plait school'); put('goodwill', live('wharf') ? 2 : 0, 'Coal at Hatherley wharf');
+  put('standing', F('park') ? 3 : 0, 'Mr Repton’s park'); put('standing', F('wing') ? 4 : 0, 'The new wing'); put('standing', F('modelfarm') ? 1 : 0, 'The model farmyard'); put('standing', F('tower') ? 2 : 0, 'The tower upon the Down'); put('standing', F('hermitage') ? 1 : 0, 'The hermitage');
+  return m; };
+
+/* ---------- the Brazil Association, on the Ventures page ----------
+   The papers go on as they did (bubbleTip, bubbleRise, bubbleCall, bubbleEnd in estate.js) and S.bub is still the whole account.
+   This puts the shares in the book beside the Funds, where they may be bought and sold between papers at the price of the day.
+   Bought at the price and sold at two under it, and no proprietor is allotted above forty: so there is nothing to be made by turning them over in one quarter. */
+const brazPrice = () => { const b = bub(); return !b.rose ? 70 : !b.called ? 100 : b.fate === 'gone' ? 75 : 95; };
+VENTURES.brazil = { fx:() => ['+ or ' + MINUS + ' the price of the day when sold. It is ' + brazPrice() + ' now', MINUS + ' Calls upon every share, if the Directors make them'], risk:4, odds:{"well": 0.2, "dull": 0.45, "ill": 0.35},
+  effects:`Ten shares at the price of the day. They sell at two pounds under it. A proprietor answers for every call the Directors make.`,
+  name:'Ten shares in the Brazil Association', line:'Mr Quill’s company at the Jerusalem Coffee-house, for sending British goods to Rio. The Mercury prints the price of its shares on Saturdays.', where:'Cornhill',
+  get cost(){ return 10 * brazPrice(); },
+  no:() => { const b = bub(); return b.done ? 'The list is shut.' : b.shares >= 40 ? 'Mr Quill allots no proprietor above forty shares.' : ''; },
+  well:'A ship at sea, a list of Directors, and a price that has risen every Saturday.', ill:'It has no charter. Every proprietor answers for its debts with all he has.',
+  begin:() => { const b = S.bub, at = brazPrice(); b.shares += 10; b.paid = (b.paid || 0) + 10 * at; },
+  state:() => cap1(numWords(bub().shares)) + ' shares, at ' + brazPrice() + ' to-day',
+  get endLabel(){ return 'Sell them at ' + (brazPrice() - 2); },
+  canEnd:() => !bub().done, endWhy:'No broker will name a price until the Directors have met.',
+  end:() => { const b = S.bub, n = b.shares, at = brazPrice() - 2, p = at * n; b.shares = 0; S.money += p; fl('bubbleOut');
+    return `Mr Tidmarsh’s London agent has sold your ${numWords(n)} Brazil shares at ${at}. It comes to ${fmt(p)}.`; } };
+/* Keeps the page in step with the papers: shares taken by a paper appear in the book, and shares sold or forfeited by one leave it. */
+function brazSync(){ const b = S.bub; if (!b || !b.tipped) return; S.vent = S.vent || {}; const v = S.vent.brazil;
+  if (b.shares > 0 && (!v || v.ended)) S.vent.brazil = {year:S.year, t:S.t};
+  else if (b.shares <= 0 && v && !b.done && !b.kept) delete S.vent.brazil;
+  else if (b.shares <= 0 && v && !v.ended) { v.ended = S.year; v.how = b.kept ? 'Kept in the deed box' : F('bubbleMade') ? 'Paid off at £250 a share' : F('bubbleBurnt') ? 'Stopped payment' : 'Sold'; } }
+
+/* The book lists a late lot only from the quarter it was announced, and the Brazil shares only while there is a Brazil Association. */
+const venturesListAll = venturesList;
+venturesList = function(){ if (S) brazSync();
+  return venturesListAll().filter(v => (lotOpen(v.id) || v.state !== 'open') && (v.id !== 'brazil' || (S.bub && S.bub.tipped && (v.state !== 'open' || !S.bub.done)))); };
+
+/* ---------- Mr Crabbe's opinion of his master ----------
+   Until now nothing but a handful of papers moved it. He keeps the book, and judges by the book: a year that closes to the good, principal paid off, a rental that rises
+   and a master who rides his farms all count with him; tradesmen at the office door, new borrowing, annuities, felled oaks and money put out at hazard count against.
+   The points gather in S.stew, and at four (and two more for every step he already stands above Civil) he rises a step, and at three against him he falls one, with a line in the memoranda and a note against his name.
+   A steward who is Fond finds money in the tradesmen's bills at Lady Day; one who is Cold loses some. Mr Lark, who has no page among the Persons, is not reckoned. */
+const STEW_UP = {
+  gain:n => `Crabbe, having cast the year twice, and found it ${pounds(n)} to the good both times, has brought the book up to the library himself, and laid it open at the page.`,
+  paid:() => `Crabbe has written the payment into the mortgage account in red ink, which he keeps for that purpose; and Mrs Bunce says that he had to send to Wyvern for the bottle.`,
+  clear:() => `The deed box is come home from the lender’s attorney, with whom it has lain since your uncle’s time; and Crabbe, who carried it up from the gig himself, has asked leave to buy a new lock for it.`,
+  ride:() => `Crabbe, having ridden the round of the farms behind you, has taken a penknife to three figures in the rental, and written a larger over each.`,
+  rent:() => `The rental at Lady Day stands higher than Crabbe has ever had to write it; and he has written it this year upon a fresh skin, in the large hand.`,
+  works:() => `Crabbe has begun to walk strangers round the new works on a Sunday; and he tells them what each of them cost, to the shilling.` };
+const STEW_DOWN = {
+  red:() => `Crabbe has had the chandler, the saddler and the coal merchant in the estate office within the week; and when he brings the book up now, he lays it upon the table shut.`,
+  loss:n => `Crabbe has cast the year, and found it ${pounds(n)} to the bad; and he has left the figure in pencil.`,
+  borrow:() => `Crabbe, upon being told of the new mortgage, asks only for the lender’s name; which he writes at the head of a clean page, and rules the page for twenty years.`,
+  annuity:() => `The annuity office having sent down its surgeon to look at you, Crabbe walked the man back to the gate; and he has since asked Mrs Bunce twice how you slept.`,
+  timber:() => `Crabbe was at the felling in Hanger Wood from the first tree to the last, with the rental under his arm; and he has entered the oaks in it, by number, upon the side where he enters what is gone.`,
+  hazard:() => `Crabbe has entered the new venture in the book under “Sundries”; there being, he says, no other head that will take it.`,
+  rent:() => `The rental at Lady Day is less than it was a twelvemonth since; and Crabbe, who reads it out to you every year standing, has this year asked for a chair.` };
+const STEW_NOTE = { gain:'The year closed to the good', paid:'You paid off principal', clear:'You cleared the mortgage', ride:'You rode the farms with him', rent:'The rental rose', works:'You laid money out upon the land, and had it to lay',
+  red:'He answered the tradesmen for you', loss:'The year closed to the bad', borrow:'You borrowed again upon the land', annuity:'You sold an annuity upon your life', timber:'You felled the oaks', hazard:'You put money out at hazard' };
+const stewOn = () => !!S && !F('crabbeGone') && !S.dead && S.phase !== 'end';
+const stewOf = () => (S.stew = S.stew || {pts:0, up:'', down:'', n:0});
+function stewScore(n, kind, sum){ if (!stewOn()) return; const s = stewOf(); s.pts += n; if (n > 0) { s.up = kind; if (sum) s.n = sum; } else { s.down = kind; if (sum) s.n = sum; } }
+function stewSettle(){ if (!stewOn()) return; const s = stewOf(), c = S.chars.crabbe, need = 4 + 2 * Math.max(0, c.r);
+  if (s.pts >= need && c.r < 4) { const k = STEW_UP[s.up] ? s.up : 'gain'; s.pts = 0; reg('crabbe', 1, STEW_NOTE[k]); S.notes.push(STEW_UP[k](s.n || 300)); }
+  else if (s.pts <= -3 && c.r > -4) { const k = STEW_DOWN[s.down] ? s.down : 'red'; s.pts = 0; reg('crabbe', -1, k === 'rent' ? 'The rental fell' : STEW_NOTE[k]); S.notes.push(STEW_DOWN[k](s.n || 300)); }
+  s.pts = clamp(s.pts, -5, need + 2); }
+const stewWorth = () => Math.round(S.money - S.mortgage + ownLandValue());
+const regardQuarterStew = regardQuarter;
+regardQuarter = function(line){ regardQuarterStew(line); if (!stewOn()) return; const s = stewOf(), q = S.season, c = S.chars.crabbe;
+  if (S.money < 0) stewScore(estIdx() >= 2 ? -2 : -1, 'red');
+  if (q === 3) { const now = stewWorth(); if (s.y0 !== undefined) { const d = now - s.y0;
+      if (d >= 1000) stewScore(2, 'gain', Math.round(d / 50) * 50); else if (d >= 300) stewScore(1, 'gain', Math.round(d / 10) * 10); else if (d <= -300) stewScore(d <= -1000 ? -2 : -1, 'loss', Math.round(-d / 10) * 10); }
+    s.y0 = now; }
+  if (q === 0) { const r = Math.round(rentalNow()); if (s.r0 !== undefined) { if (r > s.r0 + 20) stewScore(1, 'rent'); else if (r < s.r0 - 20) stewScore(-1, 'rent'); } s.r0 = r;
+    if (c.r >= 3) { const a = 20 + 10 * c.r; line('Found by Mr Crabbe in the tradesmen’s bills', a, 'He goes through them twice for a master he thinks well of.'); }
+    else if (c.r <= -3 && !F('crabbeSkims') && !T('figures')) line('“Sundries” (Mr Crabbe)', -30, 'He does not go through the bills for a master he thinks ill of.', 1); }
+  stewSettle(); };
+{ const credit = takeCredit; takeCredit = function(id){ const ok = credit(id); if (ok) { if (id === 'repay') stewScore(S.mortgage ? 1 : 2, S.mortgage ? 'paid' : 'clear'); else if (id === 'mortgage') stewScore(-1, 'borrow'); else if (id === 'annuity') stewScore(-2, 'annuity'); else if (id === 'timber') stewScore(-1, 'timber'); else if (id === 'redeem') stewScore(1, 'paid'); save(); } return ok; };
+  const work = beginWork; beginWork = function(id){ const ok = work(id); if (ok) { const s = stewOn() && stewOf(); if (S.money < 0) stewScore(-1, 'red'); else if (s && s.built !== S.year) { s.built = S.year; stewScore(1, 'works'); } save(); } return ok; };
+  const venture = beginVenture; beginVenture = function(id){ const d = VENTURES[id], ok = venture(id); if (ok && d && d.risk >= 3) { stewScore(-1, 'hazard'); save(); } return ok; };
+  const ride = UNDERTAKINGS.find(u => u.id === 'ride'), go = ride.go; ride.go = function(){ const s = stewOn() && stewOf(); if (s && s.rode !== S.year) { s.rode = S.year; stewScore(1, 'ride'); } return go(); }; }
+/* Kitty's suitors. The first playtest launched her (a Drawing Room, Seasons in town, Paris in the peace) and saw two men in twenty years.
+   Four more come here, and they come because she has been seen: a neighbour's heir, a Viscount's eldest son met in town, a naturalist met at Paris, a post-captain met at Bath or in town.
+   Each time she is taken up to London, to Bath or to Paris counts (kittyLaunch); the more she is out, the sooner one calls, and the better the terms a great family will take.
+   Mr Lyde's history rests upon the decree of 2 Prairial, year XI (22 May 1803), by which British men in France between eighteen and sixty were made prisoners and sent to Verdun until 1814.
+   Written in the Hatherley hand (docs/voice/VOICE.md). Papers that put Henrietta in the room carry a second reading for when she is at Bath. */
+
+Object.assign(PEOPLE, {
+  purefoy: {name:'Mr Giles Purefoy', role:() => K() === 'purefoy' ? 'Your son-in-law, of Shalbourne' : 'Of Shalbourne. Harriers', r:0, met:false},
+  wray: {name:'Mr Augustus Wray', role:() => K() === 'wray' ? 'Your son-in-law, heir to Lord Stanmere' : 'Lord Stanmere’s eldest son', r:0, met:false},
+  lyde: {name:'Mr Ambrose Lyde', role:() => K() === 'lyde' ? 'Your son-in-law. Mosses' : F('lydeVerdun') && S.year <= 1813 ? 'A prisoner at Verdun' : 'Of Shropshire. Mosses', r:0, met:false},
+  peverell: {name:'Captain Peverell', role:() => K() === 'peverell' ? 'Your son-in-law, at sea' : 'Post-captain, ashore', r:0, met:false}
+});
+const atVerdun = () => F('kittyVerdun') && S.year <= 1813;
+PEOPLE.purefoy.bio = () => K() === 'purefoy' ? `Heir to Shalbourne, and to his father’s harriers; a young man of few words in a drawing-room, and of a great many in a kennel, who married Kitty in a frost.`
+  : `Heir to Shalbourne, to two thousand four hundred acres, and to a pack of harriers; who called at the Hall upon three different horses in one week, to ask after a cold.`;
+PEOPLE.wray.bio = () => K() === 'wray' ? `Your son-in-law, and heir to Viscount Stanmere; who stands six feet two, and is reading Mr Gibbon aloud of an evening, Kitty having chosen it.`
+  : `Eldest son of Viscount Stanmere, six feet two, and held by his own family to be the best-natured man in Hertfordshire; who left his card nine mornings together at your door in town.`;
+PEOPLE.lyde.bio = () => `A Shropshire gentleman of eighteen hundred a year, and a Fellow of the Linnean Society; so short-sighted that he gave you his hat, and so much in earnest upon the subject of moss that Kitty went four mornings to hear him.${F('lydeVerdun') && K() !== 'lyde' && S.year <= 1813 ? ' He is detained at Verdun.' : ''}`;
+PEOPLE.peverell.bio = () => `A post-captain, with eleven thousand pounds of Spanish prize money in the Funds, and a musket ball in his thigh; who taught Kitty to take the altitude of the sun, and found that she took it nearer than his lieutenants.`;
+
+/* What is said of Kitty herself, when she has married one of them. */
+const KITTY_ROLE = {
+  purefoy:() => 'Mrs Purefoy, at Shalbourne', wray:() => 'The Hon. Mrs Wray, at Stanmere', peverell:() => 'Mrs Peverell, at Gosport',
+  lyde:() => atVerdun() ? 'Mrs Lyde, a prisoner at Verdun' : 'Mrs Lyde, near Ludlow' };
+const KITTY_BIO = {
+  purefoy:() => `She married Giles Purefoy of Shalbourne; where she has the Lodge to keep, the kennel book to write up, and a husband who will ride eleven miles round to tell her what he has seen.`,
+  wray:() => `She married Lord Stanmere’s heir, and lives in a house of a hundred and four windows; where she dines at five, has her letters franked by her father-in-law, and chooses what her husband shall read next.`,
+  peverell:() => `She married Captain Peverell of the Navy, and lives at Gosport, with her windows towards Spithead; where she keeps his place upon a chart with a pin, and knows every frigate in the service by her topsails.`,
+  lyde:() => F('lydeLate') ? `She waited eleven years for Mr Lyde, with his letters in a deal box under her bed; and she married him in the month that he was let out of Verdun.`
+    : atVerdun() ? `She married Mr Lyde, and went with him to Paris in the spring of the year three; since when they are prisoners upon parole at Verdun, in two rooms over a pastry-cook, with two leagues of moss to walk in.`
+    : F('kittyVerdun') ? `She married Mr Lyde, and was eleven years a prisoner with him at Verdun; whence they are come home to Shropshire with four trunks, of which three are paper.`
+    : `She married Mr Lyde, and lives near Ludlow in a damp house; out of which there go to the Linnean Society, twice in the year, papers upon moss with her drawings to them.` };
+/* The Mercury's line upon her, at the reckoning. */
+const KITTY_END = {
+  purefoy:() => `His daughter is Mrs Purefoy, of Shalbourne. She keeps the kennel book. The young hounds have Latin names.`,
+  wray:() => `His daughter is the Honourable Mrs Wray. She will be Viscountess Stanmere. Her husband has read Mr Gibbon through, aloud.`,
+  peverell:() => `His daughter is Mrs Peverell, of Gosport. The Captain is upon half-pay since the peace. She can find a latitude within two miles.`,
+  lyde:() => F('lydeLate') ? `His daughter married Mr Lyde of Shropshire upon his release from Verdun. He had been eleven years a prisoner. She had his letters by date.`
+    : F('kittyVerdun') ? `His daughter is Mrs Lyde. She was eleven years a prisoner at Verdun with her husband. Their Flora of the Meuse is printing at Paris.`
+    : `His daughter is Mrs Lyde, of Shropshire. A paper upon the mosses of that county is printed under her name and her husband’s.` };
+{ const role = kittyRole; kittyRole = function(){ const k = K(); return KITTY_ROLE[k] ? KITTY_ROLE[k]() : role(); };
+  const bio = PEOPLE.kitty.bio; PEOPLE.kitty.bio = () => KITTY_BIO[K()] ? KITTY_BIO[K()]() : bio(); }
+
+/* ---------- how much she has been seen ---------- */
+const kTown = () => S.flags.kittyTown || 0, kBath = () => S.flags.kittyBath || 0;
+const kittyLaunch = () => kTown() + kBath() + (F('kittyPresented') ? 2 : 0) + (F('parisFamily') ? 1 : 0) + (held('townhouse') ? 1 : 0);
+const hallLady = () => (held('baronet') || held('knight') ? 'Lady ' : 'Mrs ') + S.sur;
+const wrayPortion = () => Math.max(1500, 3000 - (F('kittyPresented') ? 500 : 0) - (held('baronet') ? 1000 : held('knight') ? 500 : 0));
+const suitDue = id => S.seen[id] === undefined && !S.queue.some(x => x.id === id);
+const SUIT_OK = {
+  suitPurefoy:() => S.year >= 1798 && S.year <= 1807 && S.standing >= 38 && !F('cut'),
+  suitWray:() => S.year >= 1797 && S.year <= 1808 && kTown() >= 1,
+  suitPeverell:() => S.year >= 1803 && S.year <= 1811 && kTown() + kBath() >= 1 };
+function sendSuitor(id, delay){ if (K() !== 'free' || !suitDue(id) || !SUIT_OK[id]()) return false; later(id, delay); S.flags.kittySuit = S.t + delay; return true; }
+/* Every quarter that she is at home and unspoken for, somebody may make up his mind: seldom for a girl who has been nowhere, and oftener for every place she has been shown. */
+const regardQuarterSuit = regardQuarter;
+regardQuarter = function(line){ regardQuarterSuit(line);
+  if (K() !== 'free' || S.dead || F('lydeWrites') || F('dubreuilWaits') || S.t - (S.flags.kittySuit || 0) < 5) return;
+  if (!chance(Math.min(0.3, 0.07 + 0.035 * kittyLaunch()))) return;
+  const ok = Object.keys(SUIT_OK).filter(id => suitDue(id) && SUIT_OK[id]()); if (ok.length) sendSuitor(pick(ok), 0); };
+/* A Season in town with her, six weeks at Bath, and Paris in the peace. */
+{ const town = UNDERTAKINGS.find(u => u.id === 'town'), go = town.go; town.go = function(){ if (K() === 'free') { fl('kittyTown', kTown() + 1); if (chance(F('kittyPresented') ? 0.75 : 0.4)) sendSuitor('suitWray', 1) || (chance(0.5) && sendSuitor('suitPeverell', 2)); } return go(); };
+  const bath = byId('bath').choices[0], bgo = bath.go; bath.go = function(){ if (K() === 'free') { fl('kittyBath', kBath() + 1); if (chance(0.6)) sendSuitor('suitPeverell', 2); } return bgo(); };
+  const paris = byId('paris').choices[0], pgo = paris.go; paris.go = function(){ fl('parisFamily'); if (K() === 'free') { later('suitLyde', 2); S.flags.kittySuit = S.t + 2; } return pgo(); }; }
+const marksSuit = marks;
+marks = function(){ const m = marksSuit(), put = (k, n, t) => { if (n) { m.why[k].push('+' + n + ' ' + t); m[k] = clamp(m[k] + n, 5, 95); } };
+  put('standing', K() === 'wray' ? 3 : 0, 'Your daughter the Honourable Mrs Wray'); put('standing', K() === 'purefoy' ? 1 : 0, 'Your daughter at Shalbourne'); put('standing', K() === 'peverell' ? 1 : 0, 'A post-captain in the family');
+  return m; };
+
+/* ---------- a neighbour's heir ---------- */
+ev({ id:'suitPurefoy', follow:true, cond:() => K() === 'free', who:() => 'purefoy', title:'Three Horses in a Week',
+  text:() => { meet('purefoy'); return `Young Mr Giles Purefoy of Shalbourne, who is to have two thousand four hundred acres and a pack of harriers when his father dies, has called at the Hall three times since Sunday; upon a bay, upon a grey, and upon a chestnut with one white stocking; and each time he has asked after Miss Kitty’s cold, which nobody at Hatherley can recollect her having.
+
+This morning a groom brings over a letter in the father’s hand.
+
+“Shalbourne, Tuesday. Dear Sir, My son informs me that he has a mind to your daughter; which I had from his sister a month ago, and before that from his horses, which are never in the stable. He is a good lad, and will have this place. I can give them the Lodge, and six hundred a year; and I shall look to you for two thousand pounds with the young lady, to be settled upon herself. He has not, I believe, said a word to her, and is waiting, as I understand him, for a frost. I am, dear Sir, yours &c., JNO. PUREFOY.”
+
+Kitty reads it standing, and gives it back to you.
+
+“He has told me the name of every hound in the kennel, Papa, and I believe that he would know any one of them again in the dark. I am not certain that he would know me.”`; },
+  choices:[
+    {t:'Close with old Mr Purefoy at two thousand.', note:'£2,000', if:() => S.money >= 2000, go:() => { const ripe = kittyAge() >= 25; fl('kitty','purefoy'); add({money:-2000, standing:5, family:2}); reg('kitty', ripe ? 1 : -2, 'You married her to Shalbourne'); reg('henrietta',2,'You married Kitty to two thousand acres'); reg('purefoy',3,'You gave him Kitty');
+      return `You write to Shalbourne the same evening; and the settlements are drawn at Wyvern by Mr Spurling, upon three skins, within the fortnight.
+
+They are married at Hatherley upon the first Thursday of the frost. Giles Purefoy, who was never known to finish a sentence in a drawing-room, gets through the whole of his responses without a check; and coming down the church path with Kitty upon his arm, he stops to tell her which of the carriage horses is going lame.
+
+“The near one,” says Kitty. “I saw it in the lane.”
+
+He looks at her for some time, and forgets to shut the carriage door.`; }},
+    {t:'Tell Kitty that the answer is hers.', note:'£1,200 with her, if she takes him', go:() => { const yes = kittyAge() >= 25 || chance(0.3);
+      if (yes) { fl('kitty','purefoy'); add({money:-1200, standing:4, family:5}); reg('kitty',3,'You left Mr Purefoy’s suit to her'); reg('henrietta',1); reg('purefoy',3,'Kitty took him of her own will');
+        return `You tell her that it is hers to answer; and she is three days about it, upon one of which she walks to Shalbourne and back, eleven miles, without saying to anybody where she has been.
+
+“I have seen the kennel, Papa, and the Lodge, and the way he speaks to the old huntsman, who is past his work, and is kept. I will have him.”
+
+Old Mr Purefoy, upon learning that the young lady has been over his premises on foot, and unasked, declares that he will take twelve hundred with her and be thankful; and they are married in the frost.`; }
+      add({family:2}); reg('kitty',2,'You left Mr Purefoy’s suit to her'); reg('henrietta',-1,'Kitty refused Shalbourne, and you let her'); reg('purefoy',-1);
+      return `You tell her that it is hers to answer.
+
+She answers it on Thursday, at the gate, where Giles Purefoy has pulled up to ask after her cold; and it is seen from the laundry window that he hears her out with his hat in his hand, bows, and rides away upon the grey at a walk.
+
+Next morning there is a brace of pheasants at the kitchen door, with his compliments to the ladies; and before Christmas he is engaged to a Miss Bell of Froxfield, who has four thousand pounds, and has hunted since she was six.`; }},
+    {t:'Write that she is not to be hurried.', go:() => { add({family:-1}); reg('kitty',1); reg('henrietta',-1,'You let Shalbourne go by'); reg('purefoy',-1);
+      return `You write to Shalbourne that your daughter is young, and is not to be hurried; and old Mr Purefoy answers by return, that he never hurried a filly in his life, and that the lad may ask again in a twelvemonth.
+
+But within the twelvemonth there is a Miss Bell at Froxfield, who has four thousand pounds, and has hunted since she was six; and the bay, the grey and the chestnut go by your gate upon their way to her.`; }}
+  ]});
+
+/* ---------- a Viscount's eldest son ---------- */
+ev({ id:'suitWray', follow:true, cond:() => K() === 'free', who:() => 'wray', title:'A Card with the Corner Turned',
+  text:() => { meet('wray'); return `Mr Augustus Wray, who is the eldest son of Viscount Stanmere, and stands six feet two, danced twice with Kitty at Lady Salt’s; and upon each of the nine mornings that remained of your stay in town he left a card at the door, with one corner turned down, to show that he had brought it himself.
+
+To-day there gets down from the Bath coach a Mr Pettiward, of Lincoln’s Inn, who does his lordship’s business; and who, having been given a glass of sherry, lays a half-sheet upon the library table.
+
+“Heads of a Proposal. The Hon. Mr Wray to have £1,200 a Year during the Life of the Viscount. The Lady’s Jointure, £800. Pin-money, £200. The Lady’s Father to pay down ${fmt(wrayPortion())}, on or before the Day.”
+
+“His lordship has nine thousand a year, sir,” says Mr Pettiward. “I am not instructed to say what is charged upon it.”
+
+Kitty is sent for, and asked what she thinks of the gentleman.
+
+“He is very tall, Papa, and very good-natured; and he has read one book. He told me which it was.”`; },
+  choices:[
+    {t:'Pay down what his lordship asks.', note:() => fmt(wrayPortion()), if:() => S.money >= wrayPortion(), go:() => { const p = wrayPortion(); fl('kitty','wray'); add({money:-p, standing:9, family:4}); reg('henrietta',3,'You married Kitty to a Viscount’s heir'); reg('wray',3,'You gave him Kitty');
+      return `The draft is upon Tidmarsh’s; and Mr Pettiward, having read it once, folds it into his pocket-book.
+
+They are married within the quarter, at St George’s, by the Viscount’s brother, who is a Dean; and upon the Saturday the Morning Post has it among the fashionable intelligence.
+
+“MARRIED. On Thursday, at St George’s, Hanover-square, the Hon. Augustus Wray, eldest Son of the Lord Viscount Stanmere, to Miss ${S.sur}, only Daughter of ${styled()}, of Hatherley Combe, in the County of Berks.”
+
+${hh('Henrietta sends into Wyvern for twelve copies of the paper.', 'Henrietta writes from Gay Street for twelve copies of the paper.')} Kitty writes from Stanmere in the second week, that the house has a hundred and four windows; that her husband has begun upon a second book; and that she chose it.`; }},
+    {t:'Offer half, and bid him carry it to Stanmere.', note:() => fmt(wrayPortion() / 2) + ', if his lordship will take it', if:() => S.money >= wrayPortion() / 2, go:() => { const p = wrayPortion() / 2, yes = chance(Math.min(0.9, 0.2 + 0.12 * kittyLaunch()));
+      if (yes) { fl('kitty','wray'); add({money:-p, standing:9, family:4}); reg('henrietta',3,'You married Kitty to a Viscount’s heir'); reg('wray',3,'You gave him Kitty');
+        return `Mr Pettiward writes the figure upon his half-sheet, and goes back by the night coach.
+
+In ten days there is a letter from Stanmere, under the Viscount’s own frank, and of four lines; of which the first says that his lordship has a roof to mend, the second that his son has given up eating, and the third that he will take ${pounds(p)}.
+
+They are married at St George’s within the quarter. ${hh(`Henrietta, who has the fourth line by heart, repeats it to Mrs Tamworth upon the church steps: “Lady Stanmere will be happy to receive ${hallLady()}.”`, `The fourth line is sent on to Gay Street; and Henrietta reads it to Mrs Tamworth in the Pump Room: “Lady Stanmere will be happy to receive ${hallLady()}.”`)}`; }
+      add({standing:-1, family:-2}); reg('henrietta',-2,'You haggled a Viscount’s heir away'); reg('wray',-1);
+      return `Mr Pettiward writes the figure upon his half-sheet, and goes back by the night coach.
+
+No answer comes from Stanmere. But within the month the Morning Post has it that Mr Wray is gone into the county of Mayo, to look over the family’s estate there; and in the autumn, that he is to marry a Miss Ormandy of Liverpool, whose father is in cotton, and who brings him thirty thousand pounds.
+
+${hh('Henrietta reads the paragraph aloud at breakfast, twice, and gives the figure both times.', 'Henrietta cuts the paragraph out, and sends it to you from Gay Street, with a line drawn under the figure.')}`; }},
+    {t:'Send Mr Pettiward back with his paper.', go:() => { add({family:-1}); reg('kitty',2,'You would not buy her a Viscount'); reg('henrietta',-2,'You sent Lord Stanmere’s attorney away'); reg('wray',-1);
+      return `“My daughter, sir, is not to be had by the half-sheet.”
+
+Mr Pettiward bows, finishes his sherry, and desires to know at what hour the up coach goes through Wyvern.
+
+A tenth card comes by the post within the week, having upon the back of it, in pencil, “I am very sorry. A. W.”; and Kitty, who has asked leave to keep it, marks her place with it for a year afterwards.`; }}
+  ]});
+
+/* ---------- a naturalist, met at Paris in the peace ---------- */
+ev({ id:'suitLyde', follow:true, cond:() => K() === 'free' && (S.year === 1802 || (S.year === 1803 && S.season === 0)), who:() => 'lyde', title:'A Deal Box from Shropshire',
+  text:() => { meet('lyde'); return `It now appears that upon four mornings at Paris, when Kitty was understood to be at the milliner’s with the maid, she was at the Museum of Natural History in the Jardin des Plantes, looking at dried mosses; and that there was a gentleman at the next table.
+
+He is in the hall, having come out of Shropshire in a hired chaise, with a deal box upon his knees: a Mr Ambrose Lyde, of one-and-thirty, and a Fellow of the Linnean Society; who is so short-sighted that he has given his hat to you, and his card to the servant.
+
+“There are two hundred and six sheets in the box, sir, for Miss ${S.sur}’s cabinet. I have eighteen hundred a year, and a house near Ludlow, which is damp. I go back to Paris in April, Monsieur de Jussieu having promised me the run of his herbarium; and I should like, with your leave, to take your daughter there as my wife.”
+
+Kitty is upon the stairs, and has been there since the chaise turned in at the gate.`; },
+  choices:[
+    {t:'Consent, with a thousand pounds, and upon one condition.', note:'£1,000', if:() => S.money >= 1000, go:() => { fl('kitty','lyde'); add({money:-1000, family:6, standing:1}); reg('kitty',4,'You gave her Mr Lyde, and kept her out of France'); reg('lyde',3,'You gave him Kitty, and a thousand pounds');
+      return `“You shall have her, Mr Lyde, and a thousand pounds with her; but you shall not carry her out of England while Bonaparte has the keeping of the roads.”
+
+He looks at Kitty, and gives up Monsieur de Jussieu upon the spot.
+
+They are married by licence, and go into Shropshire. In May the war is renewed; and upon the second of June the Courier prints that every Englishman found in France, between the ages of eighteen and sixty, has been made a prisoner by order of the First Consul. Mr Lyde, to whom the paper is sent on at Ludlow, cuts the paragraph out, and encloses it to you in a sheet upon which nothing else is written.`; }},
+    {t:'Bid him ask again when he is come home from Paris.', go:() => { fl('lydeVerdun'); add({family:-3}); reg('kitty',-2,'You sent Mr Lyde back to Paris unanswered'); later('lydeLetter', 5);
+      return `“Go to your mosses, Mr Lyde, and ask me again in the autumn.”
+
+He goes in April. In May the war is renewed; and upon the second of June the Courier prints that every Englishman found in France, between the ages of eighteen and sixty, has been made a prisoner by order of the First Consul, and is to be sent to Verdun.
+
+Kitty reads it standing at the hall table. She carries the deal box up to her own room, where it is put under the bed; and the maid has orders not to dust it.`; }},
+    {t:'Call Kitty down, and let her answer him.', go:() => { fl('kitty','lyde'); fl('lydeVerdun'); fl('kittyVerdun'); add({family:-2}); reg('kitty',5,'You let her answer Mr Lyde herself'); reg('henrietta',-2,'Her daughter is a prisoner in France'); reg('lyde',4,'Kitty answered him herself');
+      return `Kitty comes down the last six stairs without touching the rail.
+
+“Yes,” she says; and Mr Lyde, who had got something further by heart, has no occasion for it.
+
+They are married by licence, with no settlement but his own; and in April they cross from Dover, deal box and all, to Monsieur de Jussieu. In May the war is renewed. Upon the second of June the Courier prints that every Englishman found in France has been made a prisoner by order of the First Consul; and in July there is a letter from Kitty, dated at Verdun upon the Meuse, where they are to live upon his parole, within two leagues of the walls, until there is a peace.
+
+“There is a great deal of moss inside two leagues, Papa. Do not let Mamma be frightened.”`; }}
+  ]});
+
+ev({ id:'lydeLetter', follow:true, cond:() => K() === 'free' && F('lydeVerdun') && S.year <= 1812, who:() => 'lyde', title:'A Letter from Verdun',
+  text:() => `A letter has come through Rotterdam, in eleven weeks, having been opened and sealed again by somebody upon the way.
+
+“Verdun, Department of the Meuse. Sir, I am detained here with some hundreds of my countrymen, upon my parole, and answer to my name every morning at the Citadel. We have a club, a pack of hounds, and three clergymen; and I have found upon the ramparts a Bryum which I believe to be new. There is no talk of exchange for those who are not officers. I therefore beg that Miss ${S.sur} will consider herself free of any understanding with me, and that she will keep the box. I am, Sir, your obliged servant, A. LYDE.”
+
+Kitty has known the hand upon the cover from the other end of the hall.`,
+  choices:[
+    {t:'Give her the letter.', go:() => { fl('lydeWrites'); add({family:1}); reg('kitty',2,'You gave her Mr Lyde’s letter from Verdun');
+      return `She reads it through at the window, and folds it small.
+
+“He has spelt the moss wrong,” she says; and she goes up to tell him so, upon the thinnest paper in the house, that it may travel under one cover to the banker Perregaux at Paris, through whom the prisoners have their letters.
+
+From that day she writes to him upon the first of every month; and one answer in four comes through.`; }},
+    {t:'Give it her, and send him fifty pounds by the bankers.', note:'£54', go:() => { fl('lydeWrites'); add({money:-54, family:2}); reg('kitty',3,'You sent money to Mr Lyde at Verdun'); reg('lyde',2,'You sent him fifty pounds at Verdun');
+      return `You write to Mr Tidmarsh, who writes to Coutts, who have a way of placing money with Perregaux at Paris for the use of the prisoners; and it costs you fifty pounds, and four pounds more for the sending of it.
+
+Kitty has the letter. Of the fifty pounds she says nothing until Sunday; when, coming out of church, she takes your arm as far as the gate.`; }},
+    {t:'Put it in the fire. He has released her.', go:() => { add({family:-2}); reg('kitty',-3,'You burnt Mr Lyde’s letter');
+      return `You put it in the fire, cover and all.
+
+Kitty asks at dinner whether there was not a foreign letter; and being told that it was a matter of business, she looks at you until the cloth is drawn, and asks nothing further.
+
+The deal box remains under her bed.`; }}
+  ]});
+
+ev({ id:'lydeReturns', from:1814, to:1815, weight:9, cond:() => K() === 'free' && F('lydeWrites'), who:() => 'lyde', title:'The Dover Coach',
+  text:() => { const late = S.year > 1814; return `The prisoners are let go from Verdun upon the entry of the Allies; and there gets down from the Dover coach at your gate, in a French coat, with a portmanteau in one hand and a tin case in the other, Mr Ambrose Lyde.
+
+He is ${late ? 'three' : 'two'}-and-forty, and grey; he has answered to his name at the Citadel every morning for eleven years; and he has in the tin case, as he tells you before he is well into the hall, four hundred and nineteen mosses of the Meuse.
+
+“I released Miss ${S.sur}, sir, in the year three. I have come to learn whether she took it.”
+
+Kitty is ${late ? 'seven' : 'six'}-and-thirty. She has every one of his letters in the deal box, by date.`; },
+  choices:[
+    {t:'Send up for Kitty.', go:() => { fl('kitty','lyde'); fl('lydeLate'); add({family:10, standing:1}); reg('kitty',4,'You sent up for her when Mr Lyde came home'); reg('lyde',4,'You sent up for Kitty');
+      return `Kitty comes down, and stops upon the last stair.
+
+“You spelt it wrong again in March,” she says.
+
+They are married at Hatherley within the month, by banns, with the whole parish in the churchyard; and they go into Shropshire, to the house near Ludlow, which has stood eleven years empty, and is damper than he remembered it.`; }},
+    {t:'Tell him that eleven years is an answer.', go:() => { fl('kitty','lyde'); fl('lydeLate'); add({family:-6}); reg('kitty',-4,'You sent Mr Lyde from the door after eleven years'); reg('lyde',-2);
+      return `“Eleven years, Mr Lyde, is an answer of itself.”
+
+He bows, takes up the portmanteau and the tin case, and walks back down the drive to wait for the up coach.
+
+Kitty, who saw him from the landing window, overtakes him at the gate without her bonnet. They are married at Ludlow by licence; and you have it from the Shrewsbury paper.`; }}
+  ]});
+
+/* ---------- a post-captain, ashore ---------- */
+const pevBath = () => kBath() > 0;
+ev({ id:'suitPeverell', follow:true, cond:() => K() === 'free', who:() => 'peverell', title:'Captain Peverell Takes an Altitude',
+  text:() => { meet('peverell'); return `Captain James Peverell, of the Navy, who was made post into the Sibyl frigate, and is ashore with a musket ball in his thigh which the surgeons decline to go after, was ${pevBath() ? 'at Bath' : 'in town'} when Kitty was; where upon three fine mornings he had her ${pevBath() ? 'up on Beechen Cliff' : 'up the hill at Greenwich'} with his sextant, taking the altitude of the sun.
+
+He has come ${pevBath() ? 'over from Bath' : 'down from town'} to-day in a post-chaise, and stands in the library with his weight upon the sound leg.
+
+“I am six-and-thirty, sir. I have eleven thousand pounds in the Three per Cents, out of a Spanish ship, and the promise of a frigate when I can walk a deck. I ask nothing with her. Miss ${S.sur} found the latitude of ${pevBath() ? 'Bath' : 'Greenwich'}, upon the third morning, within two miles; and I have had lieutenants who could not.”
+
+${hh('Henrietta, who had looked for land, desires to know in the passage what a sailor’s wife has to live upon when he is drowned.', 'Henrietta, who had looked for land, has written from Gay Street to know what a sailor’s wife has to live upon when he is drowned.')}`; },
+  choices:[
+    {t:'Give him your hand upon it.', go:() => { fl('kitty','peverell'); add({family:4, standing:2}); reg('kitty',4,'You gave her the Captain'); reg('henrietta',-1,'She had looked for land'); reg('peverell',3,'You gave him Kitty');
+      return `You give him your hand, and ring for Kitty; who, it turns out, is no further off than the other side of the door.
+
+They are married in three weeks, the Admiralty being expected to write in four. The letter comes upon the wedding day itself, and appoints him to a frigate fitting at Portsmouth; so that Kitty goes from the church door to a lodging at Gosport, with her trunks, his sea-chest, and the sextant upon her knee.`; }},
+    {t:'Consent, when the eleven thousand is settled upon her.', note:'£60 to the attorney', go:() => { fl('kitty','peverell'); fl('peverellSettled'); add({money:-60, family:6, standing:2}); reg('kitty',3,'You gave her the Captain, and saw her provided for'); reg('henrietta',1); reg('peverell',2,'You gave him Kitty');
+      return `“You shall have her, Captain, upon the day that the eleven thousand is in trustees’ hands, for her and her children.”
+
+“I had meant to do it, sir, and did not know how it was asked for.”
+
+Mr Spurling draws the deed, and has sixty pounds for it. ${hh('Henrietta reads it through; and coming to the word “survivor”, she lays it down, and says that she has always thought the Navy a very respectable service.', 'A copy goes to Gay Street; and Henrietta writes back that she has always thought the Navy a very respectable service.')}
+
+They are married within the month, and the Captain has his frigate before the quarter is out.`; }},
+    {t:'Decline. A sailor’s wife is a widow three years in four.', go:() => { add({family:-3}); reg('kitty',-3,'You refused her the Captain'); reg('peverell',-2,'You refused him Kitty');
+      return `“I will not give her to a man whom she is to see one year in four, Captain, and that year upon half-pay.”
+
+He takes it standing; says that he is obliged to you for a plain answer; and goes out to his chaise without the help of the servant.
+
+The sextant comes by the carrier a week afterwards, in its case, directed to Miss ${S.sur}. She takes the altitude of the sun from the leads upon every fine day until Michaelmas, and enters each in a book.`; }}
+  ]});
+
+/* ---------- her letters, when she is married ---------- */
+KITTY.push(
+  {id:'kitty-shalbourne', kind:'news', w:() => K() === 'purefoy', x:() => `There is a letter from Kitty, from Shalbourne.
+
+“My dear Papa, We have three-and-twenty couple of harriers, and I have the kennel book to keep, Mr Purefoy’s father having found that I can spell. The last litter wanted names; and as nobody could think of nine that began with one letter, I was applied to. They are Ranunculus, Rumex, Reseda, Rosa, and so forward. The huntsman calls the first of them Runner. Giles calls him by the whole of his name, across two fields, and takes off his hat to me when he has done it.”`},
+  {id:'kitty-stanmere', kind:'news', w:() => K() === 'wray', x:() => `There is a letter from Kitty, under a frank.
+
+“My dear Papa, There are a hundred and four windows, and the tax upon them is more than Mr Oakes has to live on. Lord Stanmere dines at five, and has spoken to me upon three occasions, each time of the weather in the year ’83. Augustus is at the fourth volume of Mr Gibbon. He reads it aloud to me in the evenings, with his finger under the line, and stops at the long words to see whether I am laughing. I am not. I find that I should be very angry with anybody who did.”`},
+  {id:'kitty-ludlow', kind:'news', w:() => K() === 'lyde' && !F('kittyVerdun'), x:() => `There is a letter from Kitty, from Shropshire.
+
+“My dear Papa, The house is as damp as he said. There is a moss upon the north wall of the dining-room, withinside, which Mr Lyde will not have touched until it has fruited. He has sent a paper to the Linnean Society upon the Bryums of the county, with eleven of my drawings; and they have printed it, drawings and all, under his name. He wrote to the Secretary by the same night’s post. It is to be under both names in the next part.”`},
+  {id:'kitty-verdun', kind:'news', w:() => K() === 'lyde' && atVerdun(), x:() => `There is a letter from Kitty, eleven weeks upon the road, and opened upon it.
+
+“My dear Papa, We have two rooms in the Rue Mazel, over a pastry-cook. Mr Lyde answers to his name at the Citadel every morning at nine, and is then at liberty for the day, within two leagues. The English here have a club, a race-course, and a pack of hounds, and have quarrelled about all three. We have the two leagues. I have drawn a hundred and ninety mosses; and we mean to print them at Paris, if there is ever anybody at Paris who will take an Englishman’s money.”`},
+  {id:'kitty-verdun-home', kind:'news', w:() => K() === 'lyde' && F('kittyVerdun') && S.year >= 1814, x:() => `There is a letter from Kitty, with an English postmark.
+
+“My dear Papa, We landed at Dover upon Tuesday, with four trunks, of which three are paper. The officer of the Customs had the first of them open, and turned over forty sheets of moss, looking, as he said, for lace; and he then desired to know what they were for. Mr Lyde told him. It took an hour and a quarter, and the packet behind us was not cleared until dark. We go into Shropshire on Monday, and come to you at Michaelmas.”`},
+  {id:'kitty-gosport', kind:'news', w:() => K() === 'peverell', x:() => `There is a letter from Kitty, from Gosport.
+
+“My dear Papa, The ship has been gone since March, and I have a chart pinned to the parlour wall, upon which I move him with a pin as the letters come. He writes that he has taken a polacre laden with oil, and that his share of her will new-roof Hatherley church, if ever it should want one. I have the windows towards Spithead; and I know every frigate in the service by her topsails, which the other captains’ wives think very odd in me, and ask me the names.”`}
+);
 /* Where each drawn piece sits on the plan: left, top, width, height, in hundredths of the sheet. The pieces are art/plan/f/<id>-<season>.webp.
    The order here is the order they are laid down, so the Hall covers the park and the carriage stands before the Hall. */
 const PLAN_BOX = {
@@ -12366,10 +12909,10 @@ const PLACES = {
   starveall:{n:'Starveall', at:[86, 60], by:'b', farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
 };
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
-const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', lbfold:'longbarrow', churchhouse:'church', coldyards:'coldharbour', coldclover:'coldharbour', starveburn:'starveall', starvepond:'starveall', cplime:'common', cpcloses:'common', rookdrain:'rooksnest', rookgranary:'rooksnest', withybank:'withymead', withybarn:'withymead', maddlehouse:'maddle', maddlesainfoin:'maddle', homeyards:'home', enclosure:'common', commonpiece:'common', pound:'common', cricket:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
-const VENT_AT = {dairy:'church', hops:'coldharbour', limekiln:'starveall', potatoes:'common', cherries:'rooksnest', osiers:'withymead', gallops:'maddle', gravel:'common', sheepfair:'common', warren:'common', plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london'};
+const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', lbfold:'longbarrow', churchhouse:'church', coldyards:'coldharbour', coldclover:'coldharbour', starveburn:'starveall', starvepond:'starveall', cplime:'common', cpcloses:'common', rookdrain:'rooksnest', rookgranary:'rooksnest', withybank:'withymead', withybarn:'withymead', maddlehouse:'maddle', maddlesainfoin:'maddle', homeyards:'home', enclosure:'common', commonpiece:'common', pound:'common', cricket:'common', vaccine:'vestry', clock:'vestry', lodge:'turnpike', modelfarm:'home', tower:'down', hermitage:'copse', bells:'vestry', churchroof:'vestry', pew:'vestry'};
+const VENT_AT = {dairy:'church', hops:'coldharbour', limekiln:'starveall', potatoes:'common', cherries:'rooksnest', osiers:'withymead', gallops:'maddle', gravel:'common', sheepfair:'common', warren:'common', plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london', brazil:'london', gaslight:'london', southdown:'down', coach:'turnpike', plait:'lane', papermill:'mill', wharf:'mill'};
 const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london', fishing:'mill', shooting:'hanger', underwood:'hanger'};
-const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
+const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike', purefoy:'wyvern', wray:'london', lyde:'turnpike', peverell:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
 /* A board stands at every farm held without a lease, as one stands at a farm for sale; and a farm under lease carries the year it runs to. */
@@ -12613,8 +13156,7 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
   if (id === 'castle' && typeof castleList === 'function') { sec('castle', 'What Is Owed the Castle', castleHTML('owed')); sec('castle2', 'What May Be Had There', castleHTML('had')); }
   if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
-  const brazils = id === 'london' && S.bub && S.bub.shares > 0 ? `<div class="lots"><div class="lot done"><b>The Brazil Association</b><span>${S.bub.shares} shares</span></div></div>` : '';
-  if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it') + brazils);
+  if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
   if (id === 'london' && typeof creditList === 'function' && S.phase !== 'end') sec('ann', 'Life Annuities', raiseHTML(['annuity', 'redeem'], true));
   /* What is bought in town is found in London; what is bought in the county, at Wyvern. */
   if ((id === 'london' || id === 'wyvern') && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house && COUNTY_LOTS.has(r.id) === (id === 'wyvern')), true, 'beginSociety', 'endSociety', 'Pay for it'));
@@ -12860,7 +13402,7 @@ function meter(label, v, words, key, flag, trouble){ const m = typeof marks === 
     <ul class="fx"><li>Stands at ${Math.round(v)}, settles at ${at}</li>${m.why[key].map(t => `<li class="${signOf(t)}">${signOf(t) ? esc(t) : tinted(t)}</li>`).join('')}</ul></details>`; }
 
 function versoHTML(){
-  const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
+  const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(styled().replace(/, Esquire$/, ', Esq.'))}`);
   if (TAB === 'paper' && S.phase === 'event') return paperHTML();
   if (TAB === 'farms') return head + `<h2 class="qtitle">The Rent Roll${typeof farmsList === 'function' ? '' : '<sup>specimen</sup>'}</h2>` + farmsHTML();
   if (TAB === 'ventures') return head + `<h2 class="qtitle">Ventures${typeof venturesList === 'function' ? '' : '<sup>specimen</sup>'}</h2><p class="lede">Money put out at hazard. Some of it comes home every year and some is never seen again.</p>` + venturesHTML();
@@ -12874,7 +13416,7 @@ function versoHTML(){
   return head + `<h2 class="qtitle">${esc(QUARTER[S.season])} Quarter, ${S.year}</h2>
     ${accountHTML()}
     <dl class="bal purse"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing${typeof mortCap === 'function' ? `, limit ${fmt(mortCap())}` : ' on the mortgage'}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>
-      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.money >= 500 && S.mortgage >= 500 ? '' : 'disabled'}>Pay off £500</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}${over || typeof creditList !== 'function' ? '' : creditHTML()}</dl>
+      ${over || typeof creditList === 'function' ? '' : `<div class="mort" role="group" aria-label="Mortgage"><button class="inkbtn" onclick="mortgage(-1)" ${S.mortgage > 0 && S.money >= Math.min(500, S.mortgage) ? '' : 'disabled'}>Pay off ${fmt(Math.min(500, S.mortgage) || 500)}</button><button class="inkbtn" onclick="mortgage(1)" ${(typeof canBorrow === 'function' ? canBorrow() : S.mortgage < 9000) ? '' : `disabled title="${esc(typeof borrowWhy === 'function' ? borrowWhy() : '')}"`}>Borrow £500</button></div>`}${over || typeof creditList !== 'function' ? '' : creditHTML()}</dl>
     <div class="wheatbox"><h3 class="orn">Wheat at Wyvern Market</h3><div>${chartHTML()}</div></div>
     <div class="memo"><h3 class="orn">${esc('Mr ' + steward())}’s memoranda</h3>
       ${meter('Standing in the county', S.standing, STANDING_W, 'standing', 'cut', 'Cut by the county')}
