@@ -13,7 +13,9 @@
    the bill of some £30,000 and the first night in Ascot week 1815 are true.)
 
    Flags: prMet (he has spoken to you), prHost (he breakfasted at Hatherley), prPlate, prBrighton, prSide ('whig', 'court' or 'none'), prLibel ('bound', 'bought' or 'let'),
-   prPaid, prPortrait, prList, prTemple, prCottage. princeLoan is put down when the bond is given up. */
+   prPaid, prPortrait, prList, prTemple, prCottage, prSwans ('kept', 'resigned' or 'sold').
+   Favour at Court (the trait, swans()) has a paper of its own, prSwans, and a reading in the Castle dinner, in We Are In and under the verandah. Invented: Captain Bloomer,
+   the slip under the seal, the Levee and the hamper. From memory: that the Regent, in his first year, could grant places only during pleasure. princeLoan is put down when the bond is given up. */
 const prAge = () => ['seven-and-thirty', 'eight-and-thirty', 'nine-and-thirty', 'forty'][clamp(S.year - 1799, 0, 3)];
 /* An outcome in which he is in the room has its own cut, where one is drawn. */
 const prCut = k => { if (typeof artURL === 'function' && artURL('events/' + k)) S.plateCut = 'events/' + k; };
@@ -21,7 +23,7 @@ const prBondYear = () => S.seen.royalBond === undefined ? 1806 : FIRST_YEAR + Ma
 
 /* The papers are sent for by the calendar, so that the luck of the draw cannot lose them. One that is put off by a dated paper, and has missed its season, is sent for again the next year. */
 const PR_WHEN = {prCastle:() => S.season === 2 && [1799, 1801, 1802].includes(S.year), prBrighton:() => S.season === 1 && S.year >= 1807 && S.year <= 1809,
-  prIn:() => S.year === 1811 && S.season === 0, prAdonis:() => S.year === 1812 && S.season === 0, prPurse:() => (S.year === 1812 && S.season >= 2) || S.year === 1813, prLots:() => S.year === 1814 && S.season === 3, prCottage:() => S.year === 1815 && S.season >= 2};
+  prIn:() => S.year === 1811 && S.season === 0, prAdonis:() => S.year === 1812 && S.season === 0, prPurse:() => (S.year === 1812 && S.season >= 2) || S.year === 1813, prSwans:() => S.year === 1811 && S.season >= 2, prLots:() => S.year === 1814 && S.season === 3, prCottage:() => S.year === 1815 && S.season >= 2};
 const ventureTickPrince = ventureTick;
 ventureTick = function(line){ ventureTickPrince(line);
   for (const id in PR_WHEN) { const e = byId(id); if (PR_WHEN[id]() && S.seen[id] === undefined && !S.queue.some(x => x.id === id) && (!e.cond || e.cond())) later(id, 0); } };
@@ -53,7 +55,7 @@ ${hh(`Henrietta, who heard the horse from the morning-room, is at the head of th
 
 His Royal Highness is ${prAge()}, and something over seventeen stone; he has the finest bow in Europe, and makes it to the curate. He eats of everything. He sends his compliments down the table to whoever bred the mutton; he sings, when the cloth is drawn, the bass part in a glee, and sings it true; and towards two in the morning, a gentleman of his suite having named the Lord Chancellor, he becomes the Lord Chancellor, with a napkin for a wig, until Lord Cullerne is obliged to be helped from his chair. A small man with a red face, who sits at the foot of the table and drinks nothing, has by that hour written the name of every gentleman present into a pocket-book.
 
-${F('royalKnown') ? `“${S.sur}? You are the man with my father’s ram.” He looks at you with his head upon one side, and his chin drawn in. “What? What? Stands the wet, hey?”
+${F('royalKnown') || swans() ? `${F('royalKnown') ? `“${S.sur}? You are the man with my father’s ram.” He looks at you with his head upon one side, and his chin drawn in. “What? What? Stands the wet, hey?”` : `“${S.sur}? You are my father’s swan-keeper, who held the horse.” He looks at you with his head upon one side, and his chin drawn in. “What? What? Shown you a swan yet, hey?”`}
 
 It is the King to the life; and the whole of that end of the table waits to see whether the King’s friend will laugh.` : `“Hatherley. I shall remember Hatherley.” He says it across four people, with his glass lifted; and the small man at the foot of the table turns back a leaf.`}
 
@@ -131,7 +133,9 @@ His lordship does not sit. He has in one hand a list, in Lord Grey’s writing a
 
 He looks you over. “You’ve dined with him yourself.”` : ''}${F('mp') ? `
 
-“And you’ve a vote. He’ll want every vote.”` : ''}
+“And you’ve a vote. He’ll want every vote.”` : ''}${swans() ? `
+
+“You’ve a place of the old man’s, besides. Ninety pound. Sign, and I’ll see you keep it.”` : ''}
 
 The county, it appears, is to address the Regent upon his coming to the government, and to hope that he will call to his councils men who have his confidence. The address lies at the Castle, with his lordship’s name to it, and forty lines ruled beneath; and the friends of the new Ministry are putting down two hundred pounds apiece towards a dinner at the Crown and Anchor.
 
@@ -305,7 +309,7 @@ It rains the whole of the week following. In Mill Lane a bed is moved against th
 
 The cottage is longer than the Hall. It has a verandah the whole length of it, upon rustic posts, with a honeysuckle trained up every one; and under the verandah, in a chair made for the purpose, sits a gentleman of three-and-fifty in a green silk gown, watching the thatchers.
 
-${F('prHost') ? `“Hatherley. You gave me a turtle, and I told you something disagreeable about a picture.” He says it before the page has done with your name. “I was right about the picture.”` : F('prMet') ? `“I know that face. It was at Cullerne’s, and there was a napkin.” He appears to recollect the napkin with satisfaction, and Lord Cullerne not at all.` : F('princeLoan') ? `“Mr ${S.sur}. McMahon tells me that we are very old friends.” He says nothing of how the friendship was contracted.` : `“Berkshire straw. I am obliged to you, sir. I am obliged to the whole county; it leaves me alone.”`}
+${F('prSwans') === 'kept' ? `“My swan-keeper. You see that I am a man of my word, sir; I said that somebody should keep them.” He looks about the lawn, as if one might be upon it.` : F('prHost') ? `“Hatherley. You gave me a turtle, and I told you something disagreeable about a picture.” He says it before the page has done with your name. “I was right about the picture.”` : F('prMet') ? `“I know that face. It was at Cullerne’s, and there was a napkin.” He appears to recollect the napkin with satisfaction, and Lord Cullerne not at all.` : F('princeLoan') ? `“Mr ${S.sur}. McMahon tells me that we are very old friends.” He says nothing of how the friendship was contracted.` : `“Berkshire straw. I am obliged to you, sir. I am obliged to the whole county; it leaves me alone.”`}
 
 He has you sit. He asks what a labourer’s cottage costs to thatch, and is told four pounds; and for some time afterwards he looks up at his own roof, where six men are at work.
 
@@ -320,4 +324,47 @@ A footman brings cherry brandy at eleven in the forenoon, and again at twelve. Y
 Mr Crouch looks at the straw, and then at you, and writes a line in his book; and he has his forty loads within the week of Mr Tamworth, at two guineas and a half.
 
 The thatcher is nine days in Mill Lane, at eighteen pounds for the four roofs. Upon the tenth it rains from morning until dark; and walking down the lane in the evening, you are asked in at three doors of the four, to look at a dry floor.`; }}
+  ]});
+
+/* ---------- Michaelmas 1811: Favour at Court, under a Regent ---------- */
+
+ev({ id:'prSwans', follow:true, hen:false, at:'hall', who:() => null, cond:() => S.year === 1811 && swans(), title:'During Pleasure',
+  text:() => `The King’s servants, since February, are the Regent’s to keep or to change; and the summer has gone by at Windsor without the swans being taken up, there having been nobody to command it. Now Mr Meux writes, and not from Windsor.
+
+“Carlton House, the 9th of September.
+
+“Sir, The Prince Regent, acting in the name and on the behalf of His Majesty, has been pleased to direct that the lesser offices of the Household be laid before him, with the names of those who hold them, and by whose favour. I find you entered as Deputy Keeper of the Swans upon the Thames, at £90, during pleasure; and against your name, in my predecessor’s hand, the words ‘Held the horse.’
+
+“His Royal Highness will receive at his Levee on Thursday se’nnight such gentlemen as desire to be continued. I am to mention that a Captain Bloomer, of the Tenth Hussars, has been named to me for the first vacancy.
+
+“I have the honour to be, Sir, your most obedient humble servant, Jno. Meux, Clerk.”
+
+Under the seal there is a slip in another hand, not signed. “The Captain would give six hundred guineas for a resignation in his favour.”
+
+${steward()} has turned back through the Christmas books. Sixteen years at ninety pounds are fourteen hundred and forty; and in sixteen years nobody has shown you a swan.`,
+  choices:[
+    {t:'Go up to the Levee, and be continued.', note:'£31', go:() => { fl('prSwans', 'kept'); const knew = F('prMet'); fl('prMet'); add({money:-31, standing:2}); prCut('prSwans-levee');
+      return `It is thirty-one pounds, with the fees of the door; and you stand in the line at Carlton House between a Welsh judge and the Hereditary Grand Falconer, in the scarlet coat of your office, let out under the arms.
+
+The Regent comes down the line in a field-marshal’s uniform, and Mr Meux reads the name from a card.
+
+${knew ? `“The Swans. But I know you, sir; I have dined off your uncle’s plate, or you have eaten my breakfast, I forget which.”` : `“The Swans. You are the gentleman who held my father’s horse.”`}
+
+“I had the honour to hold His Majesty’s horse, sir.”
+
+“For forty minutes, I am told. I never could hold his attention for five.” He says it very pleasantly, and to the Welsh judge. “Keep your swans, Mr ${S.sur}. Somebody should.”
+
+The place is continued, during pleasure, in a new book; and Captain Bloomer has the next vacancy, which proves to be in the Tower, among the lions.`; }},
+    {t:'Answer that you held it of the King, and will hold it of nobody else.', note:'−£90 a year', go:() => { fl('prSwans', 'resigned'); fl('courtLost'); fl('kingsMan'); add({goodwill:4, standing:1});
+      return `You write that you had the place from His Majesty’s own mouth, across the neck of a horse; and that when His Majesty is well enough to take it back, he shall find it where he left it.
+
+Mr Meux does not reply. The Gazette of the Saturday has Captain Bloomer, and the salary stops at Michaelmas.
+
+It is known in Wyvern by market day what was written, ${steward()} having been asked by eleven persons, and having told nine. At the Bell they drink the King’s health, and yours after it; and old Dewey, who never saw either a swan or a King, gives it as his opinion that it was very well said.
+
+In November a hamper comes by the Windsor carrier, with no letter in it. There are two swans, plucked and trussed; and a ticket is tied to the leg of one. “By desire of the Queen.”`; }},
+    {t:'Resign in the Captain’s favour.', note:'+£630', go:() => { fl('prSwans', 'sold'); fl('courtSold'); add({money:630, standing:-3});
+      return `Six hundred guineas are paid in at the bank by a Mr Cox, of Craig’s Court, upon the day that your resignation is entered; and the Gazette has Captain Bloomer, of the Tenth Hussars, to be Deputy Keeper of the Swans, vice ${S.sur}, resigned.
+
+The Captain goes down to Windsor with the barge the July following. He is the first Deputy Keeper in forty years to be bitten; and he writes to you from the Castle Inn, with his left hand, to enquire whether the scarlet coat was included.`; }}
   ]});
