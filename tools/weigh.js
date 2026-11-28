@@ -12,7 +12,7 @@ srv.listen(0, async () => { const url = 'http://127.0.0.1:' + srv.address().port
     p.on('response', async r => { if (r.status() === 404) miss.push(r.url()); try { let d = await r.body(); if (/html/.test(r.headers()['content-type'] || '')) d = zlib.gzipSync(d); n++; bytes += d.length; const k = r.url().slice(url.length).split('?')[0].split('/').slice(0, -1).join('/') || 'page'; by[k] = (by[k] || 0) + d.length; } catch (err) {} });
     const say = what => console.log(`${tag.padEnd(5)} ${what.padEnd(22)} ${String(n).padStart(4)} files ${(bytes / 1048576).toFixed(2).padStart(6)} MB`);
     await p.goto(url); await p.waitForTimeout(4000); say('the will is read'); console.log('      ' + Object.entries(by).sort((a, b) => b[1] - a[1]).map(([k, v]) => k + ' ' + Math.round(v / 1024) + 'K').join(', '));
-    await p.click('#takeit'); await p.waitForTimeout(4000); say('the estate is taken');
+    await p.click('#keys'); await p.waitForTimeout(300); await p.click('#takeit'); await p.waitForTimeout(4000); say('the estate is taken');
     await p.click('#cart .act'); await p.waitForTimeout(600); await p.click('#cart .act'); await p.waitForTimeout(2500); say('the first paper opens');
     if (miss.length) console.log(tag, 'not found:', miss);
     await c.close(); }

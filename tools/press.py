@@ -24,7 +24,7 @@ RULES = [
     ('plan/s/*',       .65, .4),     # strips of frames, drawn half as large again as the sheet can show them
     ('plan/*',         None, .6),    # the sheet and everything laid on it
     ('events/*',       900, 720), ('undertakings/*', 900, 720), ('ventures/*', 900, 720), ('honours/*', 900, 720), ('frontispiece.*', 900, 720),
-    ('endings/*',      1500, 1000),
+    ('endings/*',      1500, 1000), ('opening/*', 1500, 1000),
     ('places/*',       1000, 720),
     ('seasons/*',      1000, 720),
     ('portraits/*',    None, 480),

@@ -5,6 +5,7 @@
 const fs = require('fs'), path = require('path');
 const SRC = path.join(__dirname, '..', 'src');
 const FILES = ['events1.js', 'events2.js', 'events3.js', 'events4.js', 'events5.js', 'castle.js', 'traits.js', 'data.js', 'engine.js', 'estate.js', 'common.js', 'farmworks.js', 'endings.js', 'ventpapers.js', 'honours.js', 'king.js', 'ui.js'].filter(f => fs.existsSync(path.join(SRC, f)));
+if (fs.existsSync(path.join(SRC, 'opening.js'))) FILES.push('opening.js');   // the two plates before the first quarter
 const showAll = process.argv.includes('--all');
 
 // Hard rules. These fail the run.

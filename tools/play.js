@@ -6,7 +6,7 @@ for (const [tag,vp] of [['d',{width:1360,height:900}],['m',{width:400,height:800
  const p=await b.newPage({viewport:vp});p.on('pageerror',e=>errs.push(tag+': '+e.message));p.on('console',m=>{if(m.type()==='error')errs.push(tag+' console: '+m.text())});
  await p.goto('file://' + require('path').resolve(__dirname, '..', 'index.html'));await p.waitForTimeout(1500);
  await p.screenshot({path:`${d}/${tag}0-intro.png`,fullPage:true});
- await p.click('#takeit');await p.waitForTimeout(400);
+ await p.click('#keys'); await p.waitForTimeout(300); await p.click('#takeit');await p.waitForTimeout(400);
  await p.screenshot({path:`${d}/${tag}1-plan.png`});
  await p.evaluate(()=>openBook());await p.waitForTimeout(400);
  await p.screenshot({path:`${d}/${tag}2-ledger.png`,fullPage:true});
