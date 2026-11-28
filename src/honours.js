@@ -178,10 +178,10 @@ ${hh('Henrietta has the address unrolled upon the hall table, and is counting th
       return `You beg to be excused. The Under-Sheriff bows, and rolls up the vellum; but he observes, with his foot in the stirrup, that an address will keep, and that the High Sheriff’s feet being what they are, there is nobody else whom the county is of a mind to send. It will lie at the Bell, in its tin case, until you choose to call for it.`; }}
   ]});
 
-ev({ id:'honOfferBaronet', follow:true, at:'hall', who:() => null, cond:() => honourOpen('baronet'), title:'A Name to be Laid before the King',
+ev({ id:'honOfferBaronet', follow:true, at:'hall', who:() => null, cond:() => honourOpen('baronet'), get title(){ return 'A Name to be Laid before the ' + (S && S.year >= 1811 ? 'Regent' : 'King'); },
   text:() => `A letter comes from Downing Street, under the Minister’s own frank.
 
-“Sir, ${F('mp') ? 'Your steady attendance in the House of Commons' : 'The consequence which you hold in the County of Berks'} has not passed unobserved; and I am to acquaint you that, should it be agreeable to you, your name will be laid before the King, with some others, for the dignity of a Baronet of ${S.year < 1801 ? 'Great Britain' : 'the United Kingdom'}. I am to add, that the fees upon the patent, which are payable at the several offices through which it must pass, are understood to amount to twelve hundred pounds.
+“Sir, ${F('mp') ? 'Your steady attendance in the House of Commons' : 'The consequence which you hold in the County of Berks'} has not passed unobserved; and I am to acquaint you that, should it be agreeable to you, your name will be laid before ${S.year < 1811 ? 'the King' : 'His Royal Highness the Prince Regent'}, with some others, for the dignity of a Baronet of ${S.year < 1801 ? 'Great Britain' : 'the United Kingdom'}. I am to add, that the fees upon the patent, which are payable at the several offices through which it must pass, are understood to amount to twelve hundred pounds.
 
 “I have the honour to be, Sir, your most obedient humble servant,”
 
