@@ -56,7 +56,7 @@ He takes out of his coat a letter from Cooke and Weddell, of Craven Street, and 
 
 His hat is in both hands, and Mrs Lyle is waiting in the chaise at the lodge.`; },
   choices:[
-    {t:'Strike off the half-year and bring the rent down.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. Rent to ' + fmt(five(0.85 * lettingValue(grange(), S.year))) + ' a year', go:() => { const f = grange(), a = f.rent / 2; f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.3 * f.rent; fl('captainPeace'); fl('captainPath', 'kept'); add({goodwill:3, standing:1}); later('captainAfter', S.year <= 1802 ? 6 : 3);
+    {t:'Strike off the half-year and bring the rent down.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. ' + (d => d < 0 ? '−' + fmt(-d) + ' a year in rent' : d > 0 ? '+' + fmt(d) + ' a year in rent' : 'The rent as it stands')(five(0.85 * lettingValue(grange(), S.year)) - grange().rent), go:() => { const f = grange(), a = f.rent / 2; f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.3 * f.rent; fl('captainPeace'); fl('captainPath', 'kept'); add({goodwill:3, standing:1}); later('captainAfter', S.year <= 1802 ? 6 : 3);
       return `${steward()} draws his pen through ${fmt(a)}, and you write the new rent upon the margin of the lease, and put your initials to it.
 
 The Captain, having read the figure, folds the paper in four.

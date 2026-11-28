@@ -188,8 +188,9 @@ table.acct tr.total .n{font-size:1.3rem}
 .lots details.off > summary b, .lots details.off > summary .amt, .lots details.off .fx li{color:var(--muted);opacity:.6} .lots details.off > summary b{text-decoration:line-through;text-decoration-thickness:1px}
 .bal dd small{font-family:var(--caps);font-size:.72rem;letter-spacing:.08em;color:var(--muted);margin-left:8px;white-space:nowrap}
 .choice em .amt{font-size:1.08rem}
-.amt{font-variant-numeric:tabular-nums;white-space:nowrap} .amt.pos{color:var(--good)} .amt.neg{color:var(--bad)}
-.inkbtn:disabled .amt{color:inherit}
+/* A gain is green and a loss red wherever it is printed; tinted() in ui.js sets the class. */
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.amt{font-variant-numeric:tabular-nums;white-space:nowrap}
 .lots .fx{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:.98rem;line-height:1.35} .lots .fx .pos{color:var(--good)} .lots .fx .neg{color:var(--bad)}
 .lots .hazard{display:flex;align-items:center;gap:5px;font-family:var(--caps);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)} .lots .hazard > span:first-child{margin-right:3px}
 .hazard .pip{width:9px;height:9px;border:1px solid var(--ink);border-radius:50%} .hazard .pip.on{background:var(--bad);border-color:var(--bad)}
@@ -353,7 +354,7 @@ details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--d
 .bal .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:flex-end;margin-left:auto}
 .bal .creditbox button{display:flex;justify-content:space-between;gap:12px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 10px;font-family:var(--display);font-size:1rem;line-height:1.3;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
 .bal .creditbox button:hover:not(:disabled), .bal .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)} .bal .creditbox button:active:not(:disabled){background:#e9dfbf;box-shadow:inset 0 1px 3px rgba(40,30,20,.35)}
-.bal .creditbox button:disabled{opacity:.4;cursor:not-allowed} .bal .creditbox button:disabled .amt{color:inherit}
+.bal .creditbox button:disabled{opacity:.4;cursor:not-allowed}
 .wheatbox > div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px;align-items:end} .wheatbox .wheat{font-size:.95rem;max-width:9.5rem;line-height:1.25} .wheatbox .wheat b{display:block;font-size:2.6rem} .wheatbox .chart{max-height:96px}
 table.acct tbody tr:not(.neg) td.n{color:var(--good)}
 .bal.purse{gap:8px 20px;flex-wrap:nowrap} .bal.purse dd{font-size:clamp(1.7rem,2.6vw,2.4rem);white-space:nowrap} .bal .creditbox button{font-size:.94rem;white-space:nowrap;padding:3px 8px}
@@ -428,7 +429,7 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
 #cart img{mix-blend-mode:multiply}
 #cart .day{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:12px;border-bottom:3px double rgba(43,29,16,.55)} #cart .day img{width:64px;height:64px;object-fit:cover;border-radius:50%} #cart .day b{font-family:var(--hand);font-weight:400;font-size:2.3rem;line-height:1.05}
 #cart .day span, #cart .purse span, #cart .vig span{font-family:var(--caps);font-size:.72rem;letter-spacing:.1em;color:var(--muted)}
-#cart .purse{display:flex;flex-direction:column;align-items:center} #cart .purse b{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1.1;font-variant-numeric:tabular-nums} #cart .purse i{font-style:normal;color:var(--bad)} #cart .neg{color:var(--bad)}
+#cart .purse{display:flex;flex-direction:column;align-items:center} #cart .purse b{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1.1;font-variant-numeric:tabular-nums} #cart .purse i{font-style:normal;color:var(--bad)} #cart .neg, #cart .purse .neg{color:var(--bad)} #cart .purse .pos{color:var(--good)}
 #cart .vigs{display:flex;flex-direction:column;gap:9px;padding-block:12px;border-block:1px solid rgba(43,29,16,.4);text-align:left}
 #cart .vig{display:grid;grid-template-columns:34px minmax(0,1fr) auto;column-gap:9px;row-gap:3px;align-items:baseline} #cart .vig img{grid-row:1/3;align-self:center;width:34px;height:34px;object-fit:cover;border-radius:50%}
 #cart .vig b{font-family:var(--hand);font-weight:400;font-size:1.3rem;line-height:1;white-space:nowrap}
@@ -530,7 +531,7 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* the mortgage is paid down or added to from the table of the quarter, under the sum owing */
 #cart .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:stretch;margin-top:7px}
 #cart .creditbox button{display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 9px;font-family:var(--display);font-size:.94rem;line-height:1.3;color:var(--ink);white-space:nowrap;cursor:pointer}
-#cart .creditbox button:hover:not(:disabled), #cart .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink)} #cart .creditbox button:disabled{opacity:.4;cursor:not-allowed} #cart .creditbox button:disabled .amt{color:inherit}
+#cart .creditbox button:hover:not(:disabled), #cart .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink)} #cart .creditbox button:disabled{opacity:.4;cursor:not-allowed}
 @media (max-width:1080px), (orientation:portrait){ #cart .creditbox{flex-direction:row;align-self:flex-end;margin-top:3px} #cart .creditbox button{padding:1px 6px;font-size:.78rem;gap:6px} }
 /* the ledger is shut from its corner as well as from the foot of the quarter's leaf */
 #bookx{position:absolute;top:-12px;right:calc(var(--edge) * -.5 - 9px);z-index:6;width:38px;height:38px;background:none;border:0;font-family:var(--display);font-size:2.3rem;line-height:1;color:var(--ink);cursor:pointer} #bookx:hover, #bookx:focus-visible{color:var(--madder)} body.intro #bookx{display:none}
@@ -5846,7 +5847,7 @@ He has a barometer, a cold fowl, and a cat.`,
 ${kittyAtHome() ? 'Kitty' : 'Henrietta'} asks what the cat was for. It was to see whether a cat minds; and it minds.
 
 The balloon goes to Wyvern upon a wagon, in a heap. The cat stays at the Hall, and will not go near a basket of any kind.`; }},
-    {t:'Charge him for the barley.', note:'£6 to you', go:() => { add({money:6});
+    {t:'Charge him for the barley.', note:'+£6 to you', go:() => { add({money:6});
       return `Mr ${stew()} walks the barley, and puts it at six pounds; and Mr Finch pays in Oxford notes.
 
 He says that the Dean of Christ Church never charged him, and that the Dean had less barley.
@@ -6057,7 +6058,7 @@ There are four wagons stopped behind him, and the Bristol mail. His keeper asks 
 It is an hour, with the parish upon the bank, before Mr Polito’s man gets him out with a loaf.
 
 ${stew()} measures the footprints, each of which is a foot and a half across, and nine inches deep; and counting two hundred and twelve, he puts it at eight pounds of hay.`; }},
-    {t:'Four guineas for the meadow. One a foot.', note:'£4 to you', go:() => { add({money:3});
+    {t:'Four guineas for the meadow. One a foot.', note:'+£4 to you', go:() => { add({money:3});
       return `“Four guineas. One a foot.”
 
 Mr Polito pays in gold; and the elephant goes through the river, and up the far bank, taking a gate with him.
@@ -7370,13 +7371,13 @@ Having looked at your stables through the gate, he offers forty pounds apiece fo
 “They go by the Kennet to Bristol, sir, and they are in Lisbon in a month. Lord Wellington’s horses are eating chopped straw.”
 
 Henrietta drives to church behind the bays.`,
-    o:[{t:'Sell him the oats and the three horses.', note:'£190 to you', go:() => { add({money:190, family:-4, standing:1}); reg('henrietta',-1,'You sold her carriage horses to the army');
+    o:[{t:'Sell him the oats and the three horses.', note:'+£190 to you', go:() => { add({money:190, family:-4, standing:1}); reg('henrietta',-1,'You sold her carriage horses to the army');
       return `It is a hundred and twenty for the horses, and seventy for the oats; and the Treasury bills are paid to the day.
 
 The bays go down the drive behind Mr Fisk’s man, and at the lodge one of them looks round.
 
 On Sunday the carriage goes to church behind two plough-horses, who stop of themselves at every gate.`; }},
-    {t:'The oats only.', note:'£70 to you', go:() => { add({money:70});
+    {t:'The oats only.', note:'+£70 to you', go:() => { add({money:70});
       return `You have seventy pounds for the oats, and by Thursday the granary is swept bare.
 
 By March there is not an oat to be had in the county under forty shillings; and you buy back twenty quarters for your own horses, of a dealer at Newbury.
@@ -7450,7 +7451,7 @@ Your tenants pay at Michaelmas, in Tidmarsh’s notes. But your uncle left a sto
 The tenants cannot get gold, and they pay in notes, a fifth over; which comes to a hundred and fifty pounds.
 
 In July Parliament passes an Act, brought in by Lord Stanhope, that a note is to be taken for what it says upon it; and he named Lord King. Your name is mentioned at the Wyvern farmers’ ordinary, and not by a lord.`; }},
-    {t:'Sell Levi the stocking.', note:'£90 over the face of them', go:() => { add({money:90, standing:-1});
+    {t:'Sell Levi the stocking.', note:'+£90 over the face of them', go:() => { add({money:90, standing:-1});
       return `It is three hundred guineas, at twenty-seven shillings, in Bank paper, being ninety pounds over the face of them. Levi counts in the scullery, with the door shut, and weighs every one; and eleven being light, he takes those at twenty-two.
 
 The guineas go to Harwich in a cheese, and by Christmas are paying Lord Wellington’s muleteers; as Levi tells you himself, when he comes back to ask if there is another brick.`; }},
@@ -9406,7 +9407,7 @@ He takes out of his coat a letter from Cooke and Weddell, of Craven Street, and 
 
 His hat is in both hands, and Mrs Lyle is waiting in the chaise at the lodge.`; },
   choices:[
-    {t:'Strike off the half-year and bring the rent down.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. Rent to ' + fmt(five(0.85 * lettingValue(grange(), S.year))) + ' a year', go:() => { const f = grange(), a = f.rent / 2; f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.3 * f.rent; fl('captainPeace'); fl('captainPath', 'kept'); add({goodwill:3, standing:1}); later('captainAfter', S.year <= 1802 ? 6 : 3);
+    {t:'Strike off the half-year and bring the rent down.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. ' + (d => d < 0 ? '−' + fmt(-d) + ' a year in rent' : d > 0 ? '+' + fmt(d) + ' a year in rent' : 'The rent as it stands')(five(0.85 * lettingValue(grange(), S.year)) - grange().rent), go:() => { const f = grange(), a = f.rent / 2; f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.3 * f.rent; fl('captainPeace'); fl('captainPath', 'kept'); add({goodwill:3, standing:1}); later('captainAfter', S.year <= 1802 ? 6 : 3);
       return `${steward()} draws his pen through ${fmt(a)}, and you write the new rent upon the margin of the lease, and put your initials to it.
 
 The Captain, having read the figure, folds the paper in four.
@@ -10340,13 +10341,13 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
     ${secs.map(([k, t, h]) => `<details class="sec" name="sec" ${k === open ? 'open' : ''} ontoggle="if(this.open)SEC='${k}'"><summary>${t}</summary><div>${h}</div></details>`).join('')}`; }
 /* What is owed at the Castle, and what may be had there: three standing matters set one of three ways, and the deeds his lordship will or will not sign. */
 function castleHTML(part){ const k = castleList(), fig = n => n ? amt(n, -1) : fmt(0), yr = n => n ? `<span class="yr">${amt(n, -1)} <small>a year</small></span>` : '';
-  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; };
+  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${tinted(y.why)}</em></p>` : ''; };
   const dials = k.dials.map(d => d.off ? `<div class="dial off"><b>${esc(d.name)}</b><p class="terms"><em>${esc(d.gone)}</em></p></div>`
-    : `<div class="dial"><b>${esc(d.name)}</b><div class="seg n3">${d.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setCastle('${d.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b>${yr(l.yearly)}<small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>${whyOf(d.levels)}</div>`).join('');
-  const lots = k.lots.map(v => { const what = `<div class="rung what">${v.line ? `<small>${esc(v.line)}</small>` : ''}</div>`;
-    const seg = v.state === 'done' ? `${what}<div class="rung what"><b>${esc(v.note)}</b></div>`
+    : `<div class="dial"><b>${esc(d.name)}</b><div class="seg n3">${d.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setCastle('${d.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b>${yr(l.yearly)}<small>${tinted(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>${whyOf(d.levels)}</div>`).join('');
+  const lots = k.lots.map(v => { const what = `<div class="rung what">${v.line ? `<small>${tinted(v.line)}</small>` : ''}</div>`;
+    const seg = v.state === 'done' ? `${what}<div class="rung what"><b>${tinted(v.note)}</b></div>`
       : `${what}<button type="button" class="rung" onclick="takeCastle('${v.id}')" ${v.can ? '' : 'disabled'}${v.why ? ` title="${esc(v.why)}"` : ''}><b>${esc(v.verb)}</b><span class="yr">${fig(v.cost)}</span>${fxList(v.fx)}</button>`;
-    return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && (v.why || v.note) ? `<p class="terms"><em>${esc(v.why || v.note)}</em></p>` : ''}</div>`; }).join('');
+    return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && (v.why || v.note) ? `<p class="terms"><em>${tinted(v.why || v.note)}</em></p>` : ''}</div>`; }).join('');
   return `<div class="hh lots flat castle"><p class="hhsum"><b>${esc(k.word)}</b><small>Lord Cullerne</small></p>${k.debt ? `<p class="terms"><em>His lordship holds your mortgage of ${fmt(k.owing)}.</em></p>` : ''}
     ${k.said ? `<div class="prose said">${paras(k.said)}</div>` : ''}${part === 'owed' ? dials : lots}</div>`; }
 /* The model of the Hall is fetched only when asked for. */
@@ -10467,7 +10468,7 @@ const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '�
 function picksHTML(){ const left = pointsLeft(pickList());
   return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${'●'.repeat(Math.max(0, left))}<i>${'○'.repeat(Math.max(0, TRAIT_POINTS - Math.max(0, left)))}</i></b><small>An advantage spends them. A burden earns them back.</small></p>
     ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
-      const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${t[0] === '+' ? 'pos' : 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
+      const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${signOf(t) || 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
       return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
         <div class="opts" role="listbox">${opt('', plain, 0, '')}${[1, -1].map(sg => `<div>${TRAITS.filter(t => t.group === g && Math.sign(t.cost) === sg).map(t => opt(t.id, t.name, t.cost, t.fx)).join('')}</div>`).join('')}</div></details>
         <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
@@ -10480,15 +10481,30 @@ function resume(){ const s = load(); if (s) { S = s; render(); } }
 const runhead = (l, r, m) => `<p class="runhead"><span>${l}</span>${m ? `<span>${m}</span>` : ''}<span>${r}</span></p>`;
 /* A choice's sum: a plus or "Saves" or a sale is money in and goes green; a bare sum is money out and goes red. Rents on a letting are money in. */
 const RENT_PAPERS = new Set(['leaseFalls', 'cannotPay']);
-/* What an undertaking touches: gains in green with a plus, losses in red with a minus. */
+/* Every gain and loss on the page is coloured by this one hand, so that whatever is written hereafter with a plus or a minus before it follows the rule without being told.
+   A plus goes green and a minus red, the sign together with the sum or the name that follows it: "+£80", "−Goodwill", "+2 Standing", "−1 Lord Cullerne".
+   bare says how a sum with no sign is to be read: 1 a receipt, -1 a cost, 0 left in ink. debt turns the colours about, for a plus upon a mortgage is no gain. */
+const SUM_RE = '£\\d+(?:,\\d{3})*|\\d+ guineas?|\\d+s\\.(?: \\d+d\\.)?', NAME_RE = '[A-Z][\\w’]*(?: (?:[A-Z][\\w’]*|of the \\w+|regard))*';
+const SIGN_RE = new RegExp('(^|[^\\w£+−-])([+−]|-(?=[£\\d]))((?:' + SUM_RE + ')|(?:\\d+)?(?: ?' + NAME_RE + ')?)|(' + SUM_RE + ')', 'g');
+const signOf = t => /^\+/.test(t) ? 'pos' : /^(−|-(?=[£\d ]))/.test(t) ? 'neg' : '';
+function tinted(t, bare, debt){ const sums = new RegExp('^(?:' + SUM_RE + ')$');
+  return esc(t == null ? '' : t).replace(SIGN_RE, (m, pre, sign, body, sum, at, all) => {
+    if (sum && /^ owed to you/.test(all.slice(at + m.length))) return sum; /* a debt owing to the squire is neither come in nor gone out */
+    if (sum) return bare ? `<span class="amt ${bare > 0 ? 'pos' : 'neg'}">${bare > 0 ? '+' : '−'}${sum}</span>` : sum;
+    const up = (sign === '+') !== !!debt;
+    return `${pre}<span class="${sums.test(body) ? 'amt ' : ''}${up ? 'pos' : 'neg'}">${sign === '+' ? '+' : '−'}${body}</span>`; }); }
+/* A list of effects, one to a line. A line that opens with a sign is coloured whole; any other is searched for signs within it. */
+const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => signOf(t) ? `<li class="${signOf(t)}">${esc(t)}</li>` : `<li>${tinted(t)}</li>`).join('')}</ul>` : '';
+const fxHTML = v => fxList(v.fx);
+/* What an undertaking touches. "Costs Standing and Goodwill" is a loss of each; a bare name is a gain. */
 function hintHTML(h){ if (!h) return ''; const m = /^Costs (.+)$/.exec(h);
-  const bits = m ? m[1].split(' and ').map(x => '−' + x) : h.split(', ');
-  return `<small class="fxs">${bits.map(b => /^−/.test(b) ? `<b class="neg">${esc(b)}</b>` : `<b class="pos">+${esc(b.replace(/^\+/, ''))}</b>`).join(' ')}</small>`; }
-function noteOf(c){ if (!c.note) return ''; const n = typeof c.note === 'function' ? c.note() : c.note, M = /[+−-]?(£[\d,]+|\d+ guineas?|\d+s\.(?: \d+d\.)?)/g;
-  if (/^Mortgage /.test(n) || !n.match(M)) return `<em>${esc(n)}</em>`;
+  const bits = m ? m[1].split(' and ').map(x => '−' + x) : h.split(', ').map(x => /^[+−]/.test(x) ? x : '+' + x);
+  return `<small class="fxs">${bits.map(b => `<b class="${signOf(b)}">${esc(b)}</b>`).join(' ')}</small>`; }
+/* A choice's note. A sum with a plus, or after "Saves", or from a sale, is money in; a bare sum is money out. Rents on a letting are money in. A sum laid upon the mortgage is debt, and goes red though it carries a plus. */
+function noteOf(c){ if (!c.note) return ''; const n = typeof c.note === 'function' ? c.note() : c.note;
+  if (/^Mortgage /.test(n)) return `<em>${tinted(n, 0, true)}</em>`;
   const rent = S.phase === 'event' && RENT_PAPERS.has(S.pending) && / a year/.test(n) && !/^Strike/.test(n);
-  const gain = /^(\+|Saves|About)/.test(n) || rent;
-  return `<em>${esc(n).replace(M, (m, a) => { const g = /^\+/.test(m) ? true : /^[−-]/.test(m) ? false : gain; return `<span class="amt ${g ? 'pos' : 'neg'}">${g ? '+' : '−'}${a}</span>`; })}</em>`; }
+  return `<em>${tinted(n, /^(\+|Saves|About)/.test(n) || rent ? 1 : -1)}</em>`; }
 
 function accountHTML(){ let rows = '', tot = 0;
   const cells = a => `<td class="n l">${a < 0 ? '<span class="sr">paid </span>' : ''}${Math.abs(a).toLocaleString('en-GB')}</td><td class="n z">0</td><td class="n z">0</td>`;
@@ -10552,7 +10568,7 @@ function meter(label, v, words, key, flag, trouble){ const m = typeof marks === 
   const bar = `<i><u style="width:${v}%"></u>${at === null ? '' : `<s style="left:${at}%" title="Settles at ${at}"></s>`}</i>`, bad = flag && F(flag) ? `<em>${trouble}</em>` : '';
   if (!m) return `<div class="meter${v < 40 ? ' low' : ''}"><span>${label}</span>${bar}<b>${esc(band(v, words))}</b></div>`;
   return `<details name="lot" class="meter${v < 40 ? ' low' : ''}"><summary><span>${label}${bad}</span>${bar}<b>${esc(band(v, words))}</b></summary>
-    <ul class="fx"><li>Stands at ${Math.round(v)}, settles at ${at}</li>${m.why[key].map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul></details>`; }
+    <ul class="fx"><li>Stands at ${Math.round(v)}, settles at ${at}</li>${m.why[key].map(t => `<li class="${signOf(t)}">${signOf(t) ? esc(t) : tinted(t)}</li>`).join('')}</ul></details>`; }
 
 function versoHTML(){
   const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
@@ -10579,8 +10595,7 @@ function versoHTML(){
 
 /* Money in the lists: green with a plus where it comes in, red with a minus where it goes out. */
 const amt = (n, sign) => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${fmt(Math.abs(n))}</span>`;
-const tint = (t, sign) => esc(t).replace(/£[\d,]+/g, m => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${m}</span>`);
-const fxHTML = v => v.fx && v.fx.length ? `<ul class="fx">${v.fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
+const tint = (t, sign) => tinted(t, sign);
 function hazardHTML(v){
   if (v.odds) { const o = v.odds, pc = x => Math.round((x || 0) * 100); return `<span class="hazard"><span>Hazard</span><span class="oddsbar" role="img" aria-label="${pc(o.well)} in 100 well, ${pc(o.dull)} middling, ${pc(o.ill)} ill"><i class="w" style="flex:${pc(o.well)}"></i><i class="d" style="flex:${pc(o.dull)}"></i><i class="l" style="flex:${pc(o.ill)}"></i></span></span>`; }
   if (!Number.isFinite(v.risk)) return '';
@@ -10590,12 +10605,12 @@ function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id =
   return `<div class="creditbox">${b(by('mortgage'), 'Borrow more')}${b(by('repay'), 'Pay off principal')}</div>`; }
 /* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
 function raiseHTML(ids, bare){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
-  return `${bare ? '' : '<h3 class="orn">Raising money</h3>'}<div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
+  return `${bare ? '' : '<h3 class="orn">Raising money</h3>'}<div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${tinted(c.note || '')}${c.why && !c.can ? ` <em>${tinted(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
 function worksHTML(at){ const list = worksList().filter(w => !at || at(w.id)), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
     ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
-    ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${w.line ? `<p class="line">${esc(w.line)}</p>` : ''}${fxHTML(w) || `<p>${esc(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
+    ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${w.line ? `<p class="line">${esc(w.line)}</p>` : ''}${fxHTML(w) || `<p>${tinted(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${tinted(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
     ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${at && !at('timber') ? '' : raiseHTML(['timber'])}`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
@@ -10638,7 +10653,7 @@ function farmsHTML(only){ const live = typeof farmsList === 'function', list = l
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
 function lotsHTML(list, live, begin, end, verb){
   const row = v => v.state === 'ended' ? `<div class="lot done"><b>${esc(v.name)}</b><span>${esc(v.note || 'Ended')}</span></div>`
-    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${esc(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
+    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${tinted(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
       ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="${end}('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${tint(v.endLabel, end === 'endSociety' ? 1 : -1)}</button>` : '') : `<button class="inkbtn" onclick="${begin}('${v.id}')" ${v.can ? '' : 'disabled'}>${esc(v.verb || verb)}</button>`}</div></details>`;
   return `<div class="lots">${list.map(row).join('')}</div>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function'; return lotsHTML(live ? venturesList() : DRAFT_VENTURES, live, 'beginVenture', 'endVenture', 'Venture it'); }
@@ -10652,17 +10667,16 @@ const DRAFT_SOCIETY = [
 function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList().filter(r => !r.house || typeof householdList !== 'function') : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
 
 /* The Household: the footing the house is kept on, what its people are paid, and what is kept in it. */
-const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
 function householdHTML(){ const h = householdList(), yearly = t => /a year/.test(t), pounds = t => { const m = /^([+−-])£([\d,]+)/.exec(t); return m ? (m[1] === '+' ? 1 : -1) * +m[2].replace(/,/g, '') : 0; };
   const rest = fx => fxList((fx || []).filter(t => !yearly(t) && t !== 'No change')), fig = n => n > 0 ? amt(n, 1) : n < 0 ? amt(n, -1) : fmt(0);
-  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; };
+  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${tinted(y.why)}</em></p>` : ''; };
   const total = -(h.total === undefined ? h.cost : h.total);
-  const est = `<div class="seg n${h.establishment.length}">${h.establishment.map(e => `<button type="button" class="rung${e.now ? ' now' : ''}" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}${e.why ? ` title="${esc(e.why)}"` : ''}><b>${esc(e.name)}</b><span class="yr">${fig(-(e.table === undefined ? e.cost : e.table))}</span>${e.line ? `<small>${esc(e.line)}</small>` : ''}${e.now ? '' : rest(e.fx)}</button>`).join('')}</div>${whyOf(h.establishment)}`;
+  const est = `<div class="seg n${h.establishment.length}">${h.establishment.map(e => `<button type="button" class="rung${e.now ? ' now' : ''}" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}${e.why ? ` title="${esc(e.why)}"` : ''}><b>${esc(e.name)}</b><span class="yr">${fig(-(e.table === undefined ? e.cost : e.table))}</span>${e.line ? `<small>${tinted(e.line)}</small>` : ''}${e.now ? '' : rest(e.fx)}</button>`).join('')}</div>${whyOf(h.establishment)}`;
   const wages = h.wages.map(w => { const cur = w.levels.find(l => l.now), money = l => pounds((l.fx || []).find(yearly) || '');
-    return `<div class="dial${w.off ? ' off' : ''}"><b>${esc(w.name)}</b><div class="seg n3">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'} ${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><span class="yr">${fig(l.yearly === undefined ? money(l) : -l.yearly)}</span><small>${esc(l.name)}</small>${rest(l.fx)}</button>`).join('')}</div>${whyOf(w.levels)}</div>`; }).join('');
+    return `<div class="dial${w.off ? ' off' : ''}"><b>${esc(w.name)}</b><div class="seg n3">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'} ${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><span class="yr">${fig(l.yearly === undefined ? money(l) : -l.yearly)}</span><small>${tinted(l.name)}</small>${rest(l.fx)}</button>`).join('')}</div>${whyOf(w.levels)}</div>`; }).join('');
   const lots = h.lots.map(v => { const fx = rest(v.fx), keep = v.keep ? `<small>${fmt(v.keep)} a year to keep</small>` : '';
-    const what = `<div class="rung what">${v.line ? `<small>${esc(v.line)}</small>` : ''}${keep}</div>`;
-    const seg = v.state === 'ended' ? `<div class="rung what"><b>${esc(v.note || 'Sold')}</b></div>`
+    const what = `<div class="rung what">${v.line ? `<small>${tinted(v.line)}</small>` : ''}${keep}</div>`;
+    const seg = v.state === 'ended' ? `<div class="rung what"><b>${tinted(v.note || 'Sold')}</b></div>`
       : v.state === 'inHand' ? `${what}<button type="button" class="rung" onclick="endSociety('${v.id}')" ${v.canEnd ? '' : 'disabled'}><b>${v.sell ? 'Sell' : 'Give up'}</b>${v.sell ? `<span class="yr">${amt(v.sell, 1)}</span>` : ''}</button>`
       : `${what}<button type="button" class="rung" onclick="beginSociety('${v.id}')" ${v.can ? '' : 'disabled'}${v.why ? ` title="${esc(v.why)}"` : ''}><b>Buy</b><span class="yr">${v.cost ? amt(v.cost, -1) : fmt(0)}</span>${fx}</button>`;
     return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && v.why ? `<p class="terms"><em>${esc(v.why)}</em></p>` : ''}</div>`; }).join('');

@@ -184,8 +184,9 @@ table.acct tr.total .n{font-size:1.3rem}
 .lots details.off > summary b, .lots details.off > summary .amt, .lots details.off .fx li{color:var(--muted);opacity:.6} .lots details.off > summary b{text-decoration:line-through;text-decoration-thickness:1px}
 .bal dd small{font-family:var(--caps);font-size:.72rem;letter-spacing:.08em;color:var(--muted);margin-left:8px;white-space:nowrap}
 .choice em .amt{font-size:1.08rem}
-.amt{font-variant-numeric:tabular-nums;white-space:nowrap} .amt.pos{color:var(--good)} .amt.neg{color:var(--bad)}
-.inkbtn:disabled .amt{color:inherit}
+/* A gain is green and a loss red wherever it is printed; tinted() in ui.js sets the class. */
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.amt{font-variant-numeric:tabular-nums;white-space:nowrap}
 .lots .fx{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:.98rem;line-height:1.35} .lots .fx .pos{color:var(--good)} .lots .fx .neg{color:var(--bad)}
 .lots .hazard{display:flex;align-items:center;gap:5px;font-family:var(--caps);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)} .lots .hazard > span:first-child{margin-right:3px}
 .hazard .pip{width:9px;height:9px;border:1px solid var(--ink);border-radius:50%} .hazard .pip.on{background:var(--bad);border-color:var(--bad)}
@@ -349,7 +350,7 @@ details.meter .fx{list-style:none;margin:4px 0 6px;padding:0;font-family:var(--d
 .bal .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:flex-end;margin-left:auto}
 .bal .creditbox button{display:flex;justify-content:space-between;gap:12px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 10px;font-family:var(--display);font-size:1rem;line-height:1.3;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
 .bal .creditbox button:hover:not(:disabled), .bal .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)} .bal .creditbox button:active:not(:disabled){background:#e9dfbf;box-shadow:inset 0 1px 3px rgba(40,30,20,.35)}
-.bal .creditbox button:disabled{opacity:.4;cursor:not-allowed} .bal .creditbox button:disabled .amt{color:inherit}
+.bal .creditbox button:disabled{opacity:.4;cursor:not-allowed}
 .wheatbox > div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px;align-items:end} .wheatbox .wheat{font-size:.95rem;max-width:9.5rem;line-height:1.25} .wheatbox .wheat b{display:block;font-size:2.6rem} .wheatbox .chart{max-height:96px}
 table.acct tbody tr:not(.neg) td.n{color:var(--good)}
 .bal.purse{gap:8px 20px;flex-wrap:nowrap} .bal.purse dd{font-size:clamp(1.7rem,2.6vw,2.4rem);white-space:nowrap} .bal .creditbox button{font-size:.94rem;white-space:nowrap;padding:3px 8px}
