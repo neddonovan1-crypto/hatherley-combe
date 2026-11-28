@@ -47,7 +47,7 @@ body.intro .desk{display:none}
   #opening .print .mark{padding:8px 8px 6px} #opening .print .pn{display:none} #opening .print figcaption{padding-top:5px} #opening .print figcaption small{display:none}
   #opening .pside, #opening.heir .pside{max-height:none;gap:10px} #opening .pside .sheet{padding:12px 14px 14px;gap:6px} #opening .pside .sheet::before, #opening .sheet .kicker{display:none} #opening .prose p{font-size:.86rem;line-height:1.44;margin-bottom:.55em}
   #opening .answer{position:sticky;bottom:0;z-index:2;padding:8px 12px}
-  #opening.heir .print{width:auto;transform:none} #opening.heir .print img{aspect-ratio:5/2;object-position:50% 44%}
+  #opening.heir .print{width:auto;transform:none} #opening.heir .print img{aspect-ratio:5/2;object-position:50% 34%}
   .signed input, .signed b, #namefit{font-size:1.9rem}
   .ohead{grid-template-columns:minmax(0,1fr) auto;padding:3px 12px 3px;min-height:42px;gap:0 12px} .ohead > span:first-child{grid-column:1/-1} .ohead b{font-size:1.05rem}
   #opening .pickblurb{display:none} #opening #picks{gap:4px} #opening .favours{margin:0}
