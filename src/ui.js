@@ -323,6 +323,7 @@ function journalHTML(){
 function askWipe(b){ if (b.dataset.sure) return wipe(); b.dataset.sure = 1; b.textContent = 'Certain? Press again to give it all up'; }
 
 /* A reader who comes back, or whose telephone has reloaded the page behind him, is set down where he left off. The opening page is for a new estate only. */
-function boot(data){ indexEvents(); if (data && data.S) S = data.S; else S = load(); render(); }
+let RESUMED = false;
+function boot(data){ indexEvents(); if (data && data.S) S = data.S; else { S = load(); RESUMED = !!S; } render(); }
 if (window.claude && window.claude.hot && window.claude.hot.snapshot) { try { window.claude.hot.snapshot(() => ({S})); } catch (err) {} }
 if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(boot); else boot((window.claude && window.claude.hot && window.claude.hot.data) || {});
