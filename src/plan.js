@@ -115,16 +115,47 @@ const imprint = pub => `Publish’d as the Act directs, ${esc(pub)}`;
 function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').replace(/<[^>]+>/g, '')); if (!m) return ''; let q = m[1].trim();
   if (q.length > 96) { const cut = /^(.{12,96}?[.!?])(\s|$)/.exec(q); if (!cut) return ''; q = cut[1]; }
   return q.replace(/,$/, '.'); }
-/* The balloon issues from the speaker's mouth. SAY_AT holds where that is on each cut, in hundredths; a cut with nobody on it gets no balloon. */
+/* The balloon hangs in whatever empty sky, wall or foliage lies nearest the speaker, and its tail runs to the mouth. SAY_AT holds where the mouth is on each cut,
+   in hundredths; a cut with nobody on it gets no balloon. SAY_ROOM holds how much is drawn in each of 24 by 16 squares of the cut, from 0 for bare sky to 7 for a face. */
+const ROOM_W = 24, ROOM_H = 16, ROOM_ABC = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', ROOM_COST = [0, 1, 2, 4, 7, 14, 45, 200];
+function roomOf(src){ const s = typeof SAY_ROOM === 'object' && SAY_ROOM[src] || '', g = new Uint8Array(ROOM_W * ROOM_H);
+  for (let i = 0; i < s.length && 2 * i + 1 < g.length; i++) { const v = Math.max(0, ROOM_ABC.indexOf(s[i])); g[2 * i] = v >> 3; g[2 * i + 1] = v & 7; } return g; }
 function balloonHTML(src, say){ const at = say && ART.has('ui/balloon.png') && typeof SAY_AT === 'object' ? SAY_AT[src] : null; if (!at) return '';
-  const [mx, my] = at, k = 497 / 900 * 1.5, want = Math.max(30, Math.min(48, 26 + say.length * .24)), w = Math.max(25, Math.min(want, Math.max(38, (my - 3) / k))), h = w * k, flip = mx > 56;
-  const left = flip ? Math.max(1, mx - 1.5 - w) : Math.min(99 - w, mx + 1.5), top = Math.max(1, my - 1.5 - h);
-  return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span><i>${esc(say)}</i></span></q>`; }
-/* The words are set in the largest size the balloon will hold. */
-function fitBalloons(){ for (const box of document.querySelectorAll('.balloon span')) { const t = box.firstElementChild, W = box.clientWidth, H = box.clientHeight; if (!t || !W) continue;
+  const k = 497 / 900 * 1.5, want = Math.max(30, Math.min(48, 26 + say.length * .24)), w = Math.max(25, Math.min(want, Math.max(38, (at[1] - 3) / k)));
+  return `<q class="balloon" data-src="${esc(src)}" data-w="${w.toFixed(1)}"><b><span><i>${esc(say)}</i></span></b><svg viewBox="0 0 300 200" preserveAspectRatio="none" aria-hidden="true"><path/></svg></q>`; }
+/* Where a balloon bw by bh (hundredths of the cut) does least harm: it must cover no face, should cover as little drawing as it can, and should not stray far from the mouth, nor hang below it. */
+function balloonSeat(g, mx, my, bw, bh){ let best = null;
+  const lv = (x, y) => x < 0 || y < 0 || x >= 100 || y >= 100 ? 0 : g[Math.floor(y / 100 * ROOM_H) * ROOM_W + Math.floor(x / 100 * ROOM_W)], at = (x, y) => ROOM_COST[lv(x, y)];
+  for (let y = 1; y <= 99 - bh; y += 1.5) for (let x = 1; x <= 99 - bw; x += 1) { const cx = x + bw / 2, cy = y + bh / 2; let c = 0, n = 0, faces = 0;
+    for (let j = 0; j < 7; j++) for (let i = 0; i < 11; i++) { const u = (i + .5) / 11 * 2 - 1, v = (j + .5) / 7 * 2 - 1; if (Math.abs(u) ** 3 + Math.abs(v) ** 3 > 1.08) continue;
+      const px = cx + u * bw / 2, py = cy + v * bh / 2, hx = px - mx, hy = (py - my + 5) / 1.5; n++; if (lv(px, py) === 7) faces++; c += at(px, py) + (hx * hx + hy * hy < 42 ? 150 : 0); }
+    c = c / n + faces * 60; if (c >= (best ? best.c : 1e9)) continue;
+    const nx = clamp(mx, x + bw * .2, x + bw * .8), ny = clamp(my, y + bh * .25, y + bh * .75), d = Math.hypot(nx - mx, (ny - my) / 1.5) - Math.min(bw * .2, bh / 6);
+    c += .22 * Math.max(0, d - 8) + (d < 3 ? 40 : 0) + Math.max(0, cy - my) * 1.2 + (y > my ? 10 : 0);
+    for (let t = .4; t < .95; t += .15) c += .05 * at(mx + (nx - mx) * t, my + (ny - my) * t);
+    if (!best || c < best.c) best = {x, y, c}; }
+  return best || {x:1, y:1, c:1e9}; }
+/* The tail: a horn from the edge of the balloon to just short of the mouth, in the 300 by 200 of the cut. */
+function balloonTail(mx, my, x, y, bw, bh){ const M = [mx * 3, my * 2], C = [(x + bw / 2) * 3, (y + bh / 2) * 2], a = bw * 1.5, b = bh, out = p => Math.abs((p[0] - C[0]) / a) ** 3 + Math.abs((p[1] - C[1]) / b) ** 3 > 1;
+  const P = [clamp(M[0], C[0] - a * .55, C[0] + a * .55), clamp(M[1], C[1] - b * .5, C[1] + b * .5)], on = t => [P[0] + (M[0] - P[0]) * t, P[1] + (M[1] - P[1]) * t]; if (!out(M)) return '';
+  let lo = 0, hi = 1; for (let n = 0; n < 14; n++) { const m = (lo + hi) / 2; if (out(on(m))) hi = m; else lo = m; }
+  const B = on(lo * .94), L = Math.hypot(M[0] - B[0], M[1] - B[1]); if (L < 4) return '';
+  const u = [(M[0] - B[0]) / L, (M[1] - B[1]) / L], nrm = [-u[1], u[0]], T = [M[0] - u[0] * Math.min(3, L * .15), M[1] - u[1] * Math.min(3, L * .15)], hw = clamp(L * .13, 3, 6), sway = L * .13 * (M[0] < C[0] ? 1 : -1);
+  const mid = [(B[0] + T[0]) / 2 + nrm[0] * sway, (B[1] + T[1]) / 2 + nrm[1] * sway], pt = (p, k) => (p[0] + nrm[0] * k).toFixed(1) + ' ' + (p[1] + nrm[1] * k).toFixed(1);
+  return `M${pt(B, hw)}Q${pt(mid, hw * .5)} ${pt(T, 0)}Q${pt(mid, -hw * .5)} ${pt(B, -hw)}`; }
+/* The words keep the size they had in the old balloon, which was as large as it would hold; the balloon is then drawn close about them, in whichever of two or three shapes finds the clearest seat. */
+function fitBalloons(){ for (const q of document.querySelectorAll('.balloon')) { const b = q.firstElementChild, box = b.firstElementChild, t = box.firstElementChild, CW = q.clientWidth, CH = q.clientHeight, at = SAY_AT[q.dataset.src]; if (!CW || !CH || !at) continue;
+    const w0 = q.dataset.w / 100 * CW, W = Math.round(w0 * .75), H = w0 * 497 / 900 * .64, sc = q.getBoundingClientRect().width / CW || 1;
+    b.style.cssText = 'left:0;top:0;visibility:hidden'; box.style.width = W + 'px';
     let lo = 5, hi = Math.max(6, H / 1.6); for (let n = 0; n < 9; n++) { const m = (lo + hi) / 2; t.style.fontSize = m + 'px'; if (t.offsetHeight <= H && t.scrollWidth <= W) lo = m; else hi = m; }
-    /* kept as a share of the balloon's breadth, so that it holds when the cut loads or the window is resized; and a little under the limit, since a line may break otherwise at another size */
-    t.style.fontSize = (.93 * lo / box.parentNode.clientWidth * 100).toFixed(2) + 'cqw'; } }
+    const F = .93 * lo, g = roomOf(q.dataset.src), R = document.createRange(); t.style.fontSize = F + 'px'; let best = null;
+    for (const [i, s] of [1, 1.45, 2].entries()) { const w = Math.min(W * s, CW * .6); box.style.width = w + 'px'; R.selectNodeContents(t); let l = 1e9, r = -1e9; for (const c of R.getClientRects()) { l = Math.min(l, c.left); r = Math.max(r, c.right); }
+      const th = t.offsetHeight; if (i && th > best.last - 1) continue;
+      let pw = (r - l) / sc / .78 + F * .5, ph = th / .7; if (pw > ph * 3.6) ph = pw / 3.6; if (pw < ph * 1.3) pw = ph * 1.3;
+      const bw = pw / CW * 100, bh = ph / CH * 100, seat = balloonSeat(g, at[0], at[1], bw, bh); if (!best || seat.c + i * .6 < best.c) best = {...seat, c:seat.c + i * .6, bw, bh, w}; best.last = th; }
+    b.style.cssText = `left:${best.x.toFixed(1)}%;top:${best.y.toFixed(1)}%;width:${best.bw.toFixed(2)}%;height:${best.bh.toFixed(2)}%;visibility:visible`; box.style.width = (best.w / (best.bw / 100 * CW) * 100).toFixed(1) + '%';
+    /* kept as a share of the cut's breadth, so that it holds when the window is resized */
+    t.style.fontSize = (F / CW * 100).toFixed(3) + 'cqw'; q.lastElementChild.firstElementChild.setAttribute('d', balloonTail(at[0], at[1], best.x, best.y, best.bw, best.bh)); } }
 addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the italic is fetched when first set, and is broader than what stood in for it */
 if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
