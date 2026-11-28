@@ -12,7 +12,7 @@ const {chromium, devices} = require('playwright');
   p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errs.push('c: ' + m.text()); });
   await p.goto('http://localhost:8765/'); await p.waitForTimeout(1200);
   const key = () => p.evaluate(() => {
-    if (!S) return 'none';
+    if (!S) return 'none|' + (typeof OPENAT === 'string' ? OPENAT : '');   // the opening has two plates, and no estate behind either
     const pl = document.querySelector('#plate'), lp = document.getElementById('lastplate');
     return [S.t, S.phase, S.pending, S.used, PLATEUP, SHEET, VIEW, pl ? pl.innerText.length : 0, lp ? lp.hidden : ''].join('|');
   });
