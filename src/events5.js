@@ -698,3 +698,346 @@ You go on as before, and the ’75 goes on with you. The last bottle of it is dr
 
 Mr Dolby’s account is rendered at Christmas. It is for ten dozen in the spring, ten at Midsummer, and twelve at Michaelmas; and against the last he has written, in a clerkly hand, “Customer’s health enquired after.”`; }}
   ]});
+
+/* ================= Batch two: more places where a past, a marriage or a fortune tells ================= */
+
+/* before(): a paragraph at the head of a paper, for matter that must be known before the first line. */
+function before(id, fn){ const e = byId(id); if (!e) return; const t0 = e.text;
+  const t = () => { const x = fn(); return x ? x + '\n\n' + t0() : t0(); };
+  t.toString = () => String(t0) + String(fn); e.text = t; e.hen = undefined; }
+const coldT = () => (farm('coldharbour') || {tenant:'Mr Buckeridge'}).tenant;
+
+after('defence', () => T('soldier') ? `You have made such a return before. In the year ’81 it was Lord Cornwallis who desired to be informed what your company had of shoes; and the answer, which you wrote upon a drum-head in North Carolina, was eleven pairs among forty men.` : '');
+after('clarke', () => T('soldier') ? `Your own ensigncy was bought in the year ’78 at Mr Cox’s, in Craig’s Court, for four hundred pounds; which were counted upon a mahogany counter at noon, with the street door open, and a stamped receipt given for them.` : '');
+
+also('jubilee', {t:'Carry the parish’s address to Windsor in your own hand.', note:'£25', if:() => T('court'), go:() => { add({money:-25, standing:5, goodwill:3});
+  return `The address is engrossed by the schoolmaster upon a skin of parchment, and signed by ninety-four of the parish, of whom sixty make their mark; and you are upon the Terrace with it at Windsor on the Sunday evening, when the band plays, and the King walks between two of the Princesses with a stick.
+
+An equerry gives your name. His Majesty stops, and turns his face a little to one side of where you stand.
+
+“${S.sur}? The horse! You held the horse. What do they grow now? Wurzel? Do they grow it, what?”
+
+You tell him that there is not a farm upon the Kennet without its acre. He has the address put into his own hand, and feels for the seal with his thumb; and he carries it himself the whole length of the Terrace, though the Princess Augusta twice offers to take it from him.`; }});
+
+after('oakes', () => T('oxford') ? `Of the two men in the room, it is the one with forty pounds a year who is a Master of Arts; and Mr Oakes, though he has had your history from Dr Gall at every tithe dinner, has never in your hearing said the word Oriel.` : '');
+
+after('vaneBall', () => T('lovematch') ? `Henrietta’s own mother, at the Newbury assembly in the year ’73, did not lay down her fan until the fourth dance; and you observe that Henrietta, to whom the same recollection has come at the same moment, has taken hers up again.` : T('brother') ? `Captain Vane is known in the family already. Frederick, writing in the spring from Northampton, called him the best fellow in the service; and it was to settle with the best fellow in the service that eleven of the forty pounds were wanted.` : '');
+
+also('paris', {t:'Go with her yourself.', note:'£300', if:() => T('lovematch') && !F('henriettaAway'), go:() => { fl('paris'); add({money:-300, family:8}); reg('henrietta',2,'You took her to Paris yourself, and danced with her at Tivoli');
+  return `Selina is told that she is not wanted; and you cross from Dover with Henrietta in the packet, eleven hours, in a gale, neither of you being well enough to take any notice of the other.
+
+You are five weeks at an hotel in the Rue de la Loi. You see the First Consul review his Guard in the Carrousel, upon a white horse that is too large for him; you see the Apollo and the Laocoön, which he has had brought from Rome in wagons; and at Frascati’s, where the women wear what would not at Newbury be thought sufficient for a night-gown, Henrietta desires you to look at the ices.
+
+On the last evening there is dancing at Tivoli, under coloured lamps. She stands up with you four times; and a Frenchwoman behind you is heard to ask her neighbour whether that is the custom in England.`; }});
+
+after('windows', () => T('portion') ? `Four of the eleven are garret windows, in the roof that was slated in the year ’75; and Henrietta, who has been round the house after him without a pencil, is able to say from memory what each of the four cost her.` : '');
+after('pinchSuit', () => T('portion') ? `Henrietta has not left the drawing-room. But she has had the figure through the open door; and you hear her tell Kitty, without any lowering of her voice, that her own father began at eight.` : '');
+
+before('henPorch', () => T('lawsuit') ? `As no Tamworth has spoken to a ${S.sur} within sight of the pew since the year ’61, when it went to law, you are half-way down the aisle before you understand that the lady behind you means to break the rule.` : '');
+
+after('royalRegency', () => T('connexions') && !F('princeLoan') && !F('kingsMan') ? `The card for Hatherley, when you turn it over, has a note in pencil upon the back: “Loft connexion. S.”` : '');
+
+after('newmarket', () => T('play') ? `You are in a condition to confirm the paragraph; for you had twenty guineas upon Burgage yourself, with the landlord of the George, who has not yet sent up for them.` : '');
+also('vaneDines', {t:'Send for the cards: piquet, and his two hundred upon the game.', note:'£200, if he wins', if:() => T('play'), go:() => {
+  if (chance(0.45)) { fl('vaneDone'); add({family:2, standing:1}); reg('vane',-3,'You found the knave of clubs in his sleeve'); reg('kitty',-1);
+    return `The cards are brought, and you play six games by two candles. He is the better player; but he is also, as you find at the third game, the thirstier, and at the sixth he discards to a point of five with the knave of clubs in his sleeve, where you are able to direct his attention to it.
+
+He looks at the knave for some time.
+
+“I think, sir, that I had better join my regiment.”
+
+“I think so too, Captain.”
+
+He is gone from the George by Thursday, with the slate unpaid; and Kitty, who is told only that he was called away, asks you a week afterwards what it is that a gentleman does with a card in his sleeve.`; }
+  add({money:-200}); reg('vane',2,'Won two hundred pounds of you at piquet'); later('elope', 2);
+  return `The cards are brought. You have played piquet since the year ’70, at Bath, at Brooks’s, and in the back parlour of the Pelican; and Captain Vane, who is five-and-twenty, repiques you twice in the first hour, and capots you in the second.
+
+You write him a draft for two hundred pounds upon Tidmarsh, which he folds small. He is very civil about it, and hopes that he may give you your revenge; and he goes up to the drawing-room before you, with a better colour than he brought down.`; }});
+
+after('chinese', () => T('taste') ? `The drawings were not sent upon chance. They are directed to Henrietta by name; and the man in Bond Street, in his covering letter, has the honour to thank her for her favour of the 3rd.` : '');
+
+after('incomeTax', () => T('jointure') && !F('jointureOut') ? `The hundred and twenty pounds that go each year to Cheltenham may be set down upon the fourth page as a charge; and the Act allows you to keep back twelve of them from your aunt for Mr Pitt, provided that you are the person to tell her so.` : '');
+
+after('bank', () => T('legacy') ? `Miss Venables’s twelve hundred pounds went up those steps not two years ago, in Bath notes, in your own hand; and you were given a glass of sherry in the back parlour while they were counted.` : '');
+after('royalBond', () => T('debts') ? `You have received such a gentleman once already. He came to your uncle’s funeral for seven hundred pounds, and stood through the service; and he also carried his paper in his hat.` : '');
+after('castleMortgage', () => T('clear') ? `It is the half of the debt which your uncle did not pay off in ’89. He grudged the other half to a banker every Lady Day until he died; and as he never in his life sent so much as a brace of partridges to the Castle, you are able to hear his opinion of sending it a half-year’s interest.` : '');
+after('canal', () => T('coldharbour') && farm('coldharbour') ? `The line upon the engraving crosses the turnpike a furlong below Coldharbour; and ${coldT()}, who has had the prospectus a week, has already been to ask what a wharf would let for.` : '');
+
+/* ---- A wife with a taste for town ---- */
+ev({ id:'tTaste', from:1799, to:1807, weight:5, cond:() => T('taste') && S.season === 3, who:() => 'henrietta', title:'Madame Lanchester’s Account',
+  text:() => `The bills come in at Christmas, under cover to Henrietta; but this year the direction of one has been written by a new girl in the shop, and it is brought to you upon the same salver as the newspaper.
+
+“Mme LANCHESTER, Milliner and Dress-Maker, No. 17, New Bond Street. Mrs ${S.sur}, of Hatherley, Dr. To a Robe of white Crape over Satin, trimmed with Bugles, 14l. 14s.; to a Pelisse of Kerseymere, lined with Sarsnet, 9l. 9s.; to a Turban à la Mameluke, 3l. 13s. 6d.; to altering a Spencer, 12s.; to Account rendered, Christmas last, 61l. In all, 89l. 8s. 6d. An early Settlement will oblige.”
+
+Henrietta comes down to breakfast in the pelisse.`,
+  choices:[
+    {t:'Pay it, and lay the receipt by her plate.', note:'£89', go:() => { add({money:-89, family:4}); reg('henrietta',1,'You paid Madame Lanchester, and asked no questions');
+      return `A draft for eighty-nine pounds eight and sixpence goes up to New Bond Street by the night mail; and on the Thursday the account comes down again, with “Recd. with thanks, E. Lanchester” written across the stamp, and is laid under Henrietta’s tea-cup while she is out of the room.
+
+She finds it when she lifts the cup. She reads the direction upon the cover, and then the receipt; and having folded the two together, she puts them into her sleeve.
+
+“It was to have gone to me.”
+
+“It came to me.”
+
+“Then I am glad it was the small one,” says Henrietta; and gives you your tea.`; }},
+    {t:'Ask to see the others.', note:'£141 owing, as it proves', go:() => { fl('tasteAllow'); add({money:-141, family:-2}); reg('henrietta',-1,'Her milliners’ bills go to the steward’s room');
+      return `She goes up without a word, and is some time gone; and what she brings down is a bandbox with “Lanchester” upon the lid, in which there was once a hat.
+
+It holds the Christmases of nine years: Bond Street, Milsom Street, a Frenchwoman in the Orange Grove, a stay-maker, two glovers, and a man at Reading who has cleaned her feathers since ’96 and never been paid. ${steward()} is two days at the library table with it; at the end of which he reports the whole owing at a hundred and forty-one pounds, and desires to know under what head of the estate he is to enter a turban.
+
+It is settled between you, before he has shut the book, that she shall have eighty pounds a year, paid at the quarter, and that the bills shall come to the steward’s room. Henrietta agrees to it; and for the remainder of the winter she wears, upon every occasion when the county is to be met, the gown in which she was married.`; }},
+    {t:'Pay it; and write that she will in future be dressed at Newbury.', note:'£89', go:() => { fl('tasteNewbury'); add({money:-89, family:-8, standing:-1}); reg('henrietta',-3,'You took her from Bond Street, and put her into brown stuff from Newbury');
+      return `You pay the eighty-nine pounds, and write beneath the draft that Mrs ${S.sur} will give no further orders.
+
+Madame Lanchester regrets it in the third person, and in French. Miss Pocock of Northbrook Street, who has made for the clergy of Newbury these twenty years, is sent for with her patterns; and Henrietta stands to be measured for a gown of brown stuff as she would stand to be bled.
+
+It is worn to church upon the first Sunday of the year. Mrs Tamworth, in the porch, is so good as to admire the colour; and Henrietta, upon coming home, gives the pelisse to her maid.`; }}
+  ]});
+
+/* ---- Her brother borrows ---- */
+ev({ id:'tBrother', from:1797, to:1808, weight:5, cond:() => T('brother') && !F('fredAbroad'), who:() => null, title:'Frederick Is Detained in Town',
+  text:() => `The letter is charged double, and is dated from no town that Frederick was ever quartered in.
+
+“At Mr Hemp’s, Cursitor Street, Tuesday.
+
+My dear ${S.sur}, You will be surprised at my direction. I came up on Friday upon regimental business, and was walking down the Strand as innocent as a lamb, when a fellow touched me upon the shoulder in the matter of a tailor at Colchester. I am therefore with Mr Hemp, who is an officer of the Sheriff, and a very civil man, and who charges me fourteen shillings a day for a room with bars to it, and five for a fowl.
+
+The Colonel believes me to be with a sick aunt. If I am not upon parade on Monday se’nnight, he will enquire for her.
+
+Do not tell Hetty. Your affectionate brother, Fredk. Venn.”
+
+The sum is upon the second sheet. It is a hundred and eighty-six pounds; and beneath it, in a different ink, he has added Mr Hemp’s fowls.`,
+  choices:[
+    {t:'Pay the hundred and eighty-six pounds, and the fowls.', note:'£191', go:() => { add({money:-191, family:3}); reg('henrietta',1,'You fetched Frederick out of Cursitor Street, and did not tell her');
+      return `Mr Spurling’s London agent carries the money to Cursitor Street upon the Saturday, and is kept waiting in the passage while Frederick finishes a rubber with Mrs Hemp.
+
+He is upon parade on the Monday se’nnight. The Colonel asks after the aunt; and Frederick, by his own account, answers with so much feeling that he is given two days’ further leave in which to bury her, and spends them at Epsom.
+
+He writes to thank you from Chelmsford, upon a single sheet. Henrietta is not told; but at Lady Day she asks you across the table whether Frederick has been ill, his last letter to her having been so very dutiful.`; }},
+    {t:'Pay it; and buy him into a regiment that lies at Ceylon.', note:'£351', go:() => { fl('fredAbroad'); add({money:-351, family:-3}); reg('henrietta',-1,'You sent Frederick to Ceylon');
+      return `It costs a hundred and ninety-one pounds to open Mr Hemp’s door, and a hundred and sixty more at Mr Cox’s, in Craig’s Court, to turn a captain of Militia into an ensign of the 19th Foot; which regiment is at Colombo, and wants officers faster than the climate can be got to spare them.
+
+He sails from Portsmouth in the Walmer Castle, Indiaman, having borrowed his mess-money of the purser.
+
+Henrietta does not speak to you for a week. Frederick writes each spring, as he always did; but a letter from Ceylon is seven months upon the water, the sum upon the second sheet is in pagodas, and Mr Tidmarsh, upon being shown it, declares that his house has no correspondent nearer to Colombo than Leadenhall Street.`; }},
+    {t:'Send the letter on to her brother James, at Lincoln’s Inn.', go:() => { add({family:-3}); reg('henrietta',-1,'Frederick wrote to her that he had not thought it of you');
+      return `James Venn has the letter by the next post, with a line from you upon the cover.
+
+He is a conveyancer, and does nothing in a hurry. He waits upon the tailor’s attorney; he takes exception to the affidavit; he discovers that the writ was made returnable upon a Sunday; and on the nineteenth day Frederick is let out of Cursitor Street without paying anybody but Mr Hemp, to whom he by that time owes thirteen pounds six shillings for his board.
+
+The Colonel has enquired for the aunt. Frederick is put under arrest for a week, and reprimanded at the head of the regiment; and he writes to Henrietta, upon two sheets, that he had not thought it of you.`; }}
+  ]});
+
+/* ---- A lawsuit with the Tamworths ---- */
+ev({ id:'tLawsuit', from:1797, to:1809, weight:5, cond:() => T('lawsuit') && !F('pewEnded'), who:() => null, title:'The Pew Comes On',
+  text:() => `Mr Spurling has brought one of the two deed boxes out from Wyvern in his gig, and has it upon the justice-room table with the lid up.
+
+The cause of ${S.sur} against Tamworth, which was begun by your grandfather in the year 1761, and has been put off at Salisbury in every term since, is at last set down to be heard in the Consistory Court upon the fourteenth. It concerns the square pew next the pulpit, six feet by seven, with a door, which your grandfather claimed as belonging to the Dower House, and old Mr Tamworth to Marsh Court; and the Archdeacon having ordered in 1763 that neither party should sit in it until judgment, it has ever since been occupied by the parish bier.
+
+“We have the churchwardens’ book of 1702, sir,” says Mr Spurling, “and they have a faculty. I should not like to say which of the two the Chancellor will prefer. The proctors’ fees will be a hundred and twenty pounds.”
+
+The Tamworths dine with you on Tuesday.`,
+  choices:[
+    {t:'Go to Salisbury, and have judgment.', note:'£120', go:() => { fl('pewEnded');
+      if (chance(0.5)) { add({money:-40, standing:5});
+        return `You are four days at the White Hart at Salisbury. The Chancellor of the diocese, who is eighty-one, hears the churchwardens’ book read through, and the faculty after it; he enquires twice what a bier is; and upon the fourth morning he pronounces for the plaintiff, with costs, which are taxed at eighty pounds.
+
+The bier is carried out to the belfry on Saturday. On Sunday your servants file into the pew next the pulpit, Mudge leading; and Mr Tamworth, looking down from the gallery, where his family have sat since his father’s time, is observed to follow the whole of the Litany with his eyes upon the top of Mudge’s head.
+
+They dine with you upon the Tuesday notwithstanding. The pew is not mentioned; but Mrs Tamworth, who has always taken soup at Hatherley, declines it.`; }
+      add({money:-200, standing:-3});
+      return `You are four days at the White Hart at Salisbury. The Chancellor of the diocese, who is eighty-one, hears the churchwardens’ book read through, and the faculty after it; he enquires twice what a bier is; and upon the fourth morning he pronounces for the faculty, the plaintiff to pay both sets of proctors, which comes to two hundred pounds.
+
+The bier is carried out to the belfry on Saturday. On Sunday the Tamworths come down from the gallery, where they have sat since his father’s time, and take their seats under the pulpit, the six of them, upon new hassocks.
+
+They dine with you on the Tuesday. Mr Tamworth is in great good humour, and praises the mutton; and at Christmas, for the first time in the memory of the estate, there is no bill from Mr Spurling.`; }},
+    {t:'Settle it with Tamworth on Tuesday, over the port.', note:'£31', go:() => { fl('pewEnded'); add({money:-31, standing:2, goodwill:3});
+      return `When the ladies are gone up, you ask Tamworth whether he has any great wish to sit under the pulpit. He has none. ${F('gallDead') ? 'The sermon is seldom under forty minutes' : 'Dr Gall preaches fifty minutes'}, and from the gallery a man may sleep unobserved; it was his father who wanted the pew, and his father has been in the chancel vault since ’79.
+
+You find, upon comparing, that neither of you can say what the two families have laid out upon it. It is agreed before the second bottle is done that the suit shall be withdrawn, each side paying its own proctors; that the pew shall go to the parish, for the use of the singers; and that the bier shall be kept in the belfry.
+
+Mr Spurling draws the agreement, and charges thirty-one pounds for it. Upon the Sunday when the singers first go in, he is seen to be looking at them from the free seats as a man looks at people who are living in his house.`; }},
+    {t:'Put it off, as your father did.', go:() => {
+      return `Mr Spurling writes to the proctor, and the proctor moves the Chancellor; and the cause, there being no objection from the other side, stands over to the Michaelmas term.
+
+The deed box goes back to Wyvern in the gig. Upon Tuesday the Tamworths dine; and Tamworth, over the port, observes that he hears the pew was to have come on, and that for his own part he should hardly know what to do without it.`; }}
+  ]});
+
+/* ---- His uncle's widow has her jointure ---- */
+ev({ id:'tJointure', from:1798, to:1808, weight:5, cond:() => T('jointure') && !F('jointureOut') && !F('auntMarried'), who:() => null, title:'Your Aunt Has Been Valued',
+  text:() => `“Cheltenham, the 3rd.
+
+My dear Nephew, I am assured by the physician here that I have the constitution of a woman of thirty, and may look to draw upon you for forty years. I mention it because I am going to be married. Major Hogan, late of the 88th, has a wound, a pension of seventy pounds, and a plan for a pump-room at Leamington, which wants only capital.
+
+I have therefore had my jointure valued by a gentleman from the Equitable office, who makes it eleven hundred pounds. The Major knows a person in the City who will give that for it tomorrow. But I had rather it stayed in the family; and so, I am sure, would your poor uncle.
+
+I walked to Prestbury and back before I sat down to this. Your affectionate aunt, Lavinia ${S.sur}.”`,
+  choices:[
+    {t:'Buy it in at eleven hundred pounds.', note:'£1,100; no more jointure', go:() => { fl('jointureOut'); fl('auntMarried'); add({money:-1100});
+      return `Mr Spurling draws the release. Your aunt signs it at Cheltenham before two witnesses, of whom the Major is one; and eleven hundred pounds go down to her by a draft upon Tidmarsh.
+
+She is married on the Thursday, in a bonnet of the Major’s choosing. The pump-room at Leamington is begun in the spring, and by Michaelmas has four walls; and you have at Christmas a letter from Mrs Hogan, who has that morning walked to Warwick and back, to say that she is very well, and that it is a great comfort to her to be no longer a burden upon anybody.`; }},
+    {t:'Offer her eight hundred, and remind her of your uncle.', note:'£800, if she takes it', go:() => { fl('auntMarried');
+      const head = `Your letter is three sides. It speaks of your uncle, of the roof, of the price of wheat, and of the hazards of Leamington; and it encloses the opinion of Mr Tidmarsh, that no office in London would give above seven years’ purchase for a lady who walks.
+
+She answers by return.
+
+`;
+      if (chance(T('silver') ? 0.65 : 0.4)) { fl('jointureOut'); add({money:-800});
+        return head + `“My dear Nephew, The Major says that I am robbed. I say that it is in the family. Send the eight hundred. L. ${S.sur}.”`; }
+      add({standing:-1});
+      return head + `“My dear Nephew, The Major’s friend gave eleven hundred this morning, in notes. You will in future pay your hundred and twenty pounds to Mr Blizard, of Throgmorton Street, who desires me to say that he likes it upon the day. L. Hogan.”
+
+Mr Blizard writes upon the twenty-sixth of March, the half-year being then one day behind.`; }},
+    {t:'Wish her joy, and go on paying.', go:() => { fl('auntMarried');
+      return `You wish her joy upon half a sheet.
+
+The Major’s friend in the City sends a surgeon down to Cheltenham to look at her; and the surgeon, having been taken to Prestbury and back before breakfast, advises his principal to decline the purchase at any price. She is married notwithstanding; and the hundred and twenty pounds, which have for some years maintained one person in excellent health, are from Lady Day found to maintain two.`; }}
+  ]});
+
+/* ---- His uncle bought Coldharbour ---- */
+ev({ id:'tColdharbour', from:1795, to:1800, weight:6, cond:() => T('coldharbour') && !!farm('coldharbour'), who:() => null, title:'Nine Stones upon the Table',
+  text:() => `A man in a leather apron has walked up from the turnpike with a canvas bag; and being shown into the justice room, he empties it upon the table.
+
+There are nine stones. He is Zebedee Moon, of Radstock in Somerset, mineral surveyor; and he has with him an agreement, signed by your uncle in the spring of ’91, by which he was to bore for coal in the Ten Acres at Coldharbour, at a guinea the yard. He is down a hundred and forty feet. Your uncle died thirty-one pounds in his debt; and ${coldT()}, as it now appears, has for these several years been ploughing round a shed with a hole in it.
+
+“Chalk, sir. Chalk. Flint. Blue clay.” He comes to the ninth stone, which is black, and no larger than a walnut. “And that is smut, sir, at a hundred and thirty-eight. Where there is smut, there is coal under it; and where there is coal, a gentleman does not let his land at a pound an acre.”
+
+${steward()} takes up the ninth stone, and smells it. He is of opinion that it came out of somebody’s kitchen grate.
+
+Your uncle gave five thousand pounds for Coldharbour in the same spring.`,
+  choices:[
+    {t:'Pay him, and let him go down another sixty feet.', note:'£52', go:() => { add({money:-52});
+      const head = `He has his engine at work again by Thursday: three men, a triangle of fir poles, and an iron rod that is let fall four hundred times in the hour.
+
+`;
+      if (chance(0.6)) { const f = farm('coldharbour'); if (f) f.rent += 15; add({goodwill:2});
+        return head + `At a hundred and seventy-one feet the rod goes down of itself. Moon is observed to take off his hat; and by the time that you have ridden over, there is water standing in the hole within nine feet of the grass, as cold as a key, and enough of it to fill a bucket while a man counts twenty.
+
+No coal is found. But Coldharbour, which has carted its water from the Kennet in every dry summer since King Charles’s time, has a well at the back door; and ${coldT()}, having tasted it twice, makes no difficulty at the audit about fifteen pounds more upon his rent.`; }
+      return head + `He goes down the sixty feet, and brings up chalk; and at two hundred he brings up chalk again, with a flint in it, which he lays upon your table beside the others.
+
+“We are very near it, sir. I never saw chalk look more like going off. Another hundred feet.”
+
+You pay him his fifty-two pounds, and have the shed pulled down. The ninth stone is left behind in the bag; and Mrs Bunce, finding it in the justice room upon the Saturday, puts it on the fire, where it burns for twenty minutes.`; }},
+    {t:'Pay him his thirty-one pounds, and have the hole stopped.', note:'£31', go:() => { add({money:-31, goodwill:1});
+      return `Moon takes the thirty-one pounds, and counts them twice. He says that it is a pity; that he never left a hole with more regret; and that a gentleman at Shepton Mallet stopped at a hundred and forty also, whose neighbour now keeps a carriage.
+
+The rods go back to Radstock upon a wagon. ${coldT()} has the shed for a calf-house, and a millstone rolled over the hole; and in the spring he ploughs the Ten Acres straight through, for the first time since he had the farm.`; }},
+    {t:'Tell him that your uncle’s bargains were buried with him.', go:() => { add({goodwill:-3, standing:-1});
+      return `He puts the stones back into the bag, one at a time, with the black one last.
+
+He is four nights at the Bell before he goes home, where he drinks upon credit, and shows the agreement to whoever will read it; and as the Ten Acres never had a name that anybody liked, it is called from that week the Squire’s Colliery, first at the Bell, then by ${coldT()}’s carters, and at last, in the rate book, by the overseer.`; }}
+  ]});
+
+/* ---- Good connexions ---- */
+ev({ id:'tMarquess', from:1798, to:1810, weight:5, cond:() => T('connexions'), who:() => null, title:'Four Horses for Eleven o’Clock',
+  text:() => `The landlord of the George has sent his boy up to the Hall with a message: that the Marquess of Stanmore, going down to Bath, has bespoke four horses for eleven o’clock on Thursday, and will not alight.
+
+It has been known in Wyvern since Tuesday. Mrs Tamworth has discovered that she wants ribbon; Lady Cullerne’s carriage is ordered for the saddler’s; and the Mayor has had the pump painted.
+
+Your mother spoke of her cousin the Marquess at every dinner for forty years. She never in that time saw him nearer than across the Rotunda at Ranelagh; ${S.seen && S.seen.tConnexions !== undefined ? 'and you have yourself had one letter from him, which was to ask a favour' : 'and he has not, in the same forty years, written one line to Hatherley'}.`,
+  choices:[
+    {t:'Be at the George at eleven, and go up to the chaise window.', go:() => {
+      const head = `The chaise comes in at ten minutes past, with the blinds half down. You go up to the window before the ostlers have the traces off, and give your name, and your mother’s.
+
+`;
+      if (chance(0.3 + S.standing / 150)) { add({standing:7}); reg('cullerne',1,'The Marquess gave you two fingers before the whole of Wyvern');
+        return head + `A hand in a grey glove lets down the glass.
+
+“Loft? Sally Loft’s boy? She had a nose. You have it.” He looks at you for some time through a glass of his own. “My compliments to your wife, sir. I never go into houses.”
+
+He gives you two fingers, which you shake; the fresh horses are put to; and the chaise goes out under the arch at a trot. It was seen from the saddler’s, and from the ribbon shop, and by the Mayor; and Lady Cullerne, who had only a bow, sends on Friday to ask you both to dine.`; }
+      add({standing:-4, goodwill:1});
+      return head + `A hand in a grey glove lets down the glass one inch.
+
+“Four, I said; and the greys are not to go leaders. And tell your wife that the sheets at Marlborough were damp.”
+
+The glass is put up. The landlord of the George, for whom the message was intended, is standing at your elbow, and has heard it; so have the saddler, the ribbon shop, and the Mayor. The chaise is gone under the arch before you have your hat on again; and for the remainder of the winter any man who calls for a pot of beer at the Bell is told that the greys are not to go leaders.`; }},
+    {t:'Send down a basket of grapes from the hot-house, with your card.', go:() => { add({standing:2});
+      return `Mudge carries the basket down, and hands it up to the chaise window himself; and the county, through a gap in the blind, sees a grey glove come out, and take the basket in.
+
+The horses are changed in six minutes, and nothing is said. But when the chaise is gone, the landlord finds upon the step your own card, turned over, with a line in pencil upon the back: “Obliged. The Lofts always had good glass. S.”
+
+He sends it up to the Hall; having first, as you afterwards learn, kept it a day in the bar window.`; }},
+    {t:'Stay at home.', go:() => { add({standing:3});
+      return `You spend Thursday morning with ${steward()} upon the half-year’s accounts.
+
+The Marquess changes horses in seven minutes, and speaks to nobody. Mrs Tamworth sees a grey glove; Lady Cullerne sees a blind; and the Mayor, who had a speech, delivers the first sentence of it to the hind wheel.
+
+It is remarked in every shop that Mr ${S.sur}, alone of the county, was not there. By Sunday it is understood that he had no occasion to be, being in the habit of seeing his cousin in town; and Lady Cullerne enquires in the porch whether the Marquess looked well when you were last in Piccadilly.`; }}
+  ]});
+
+/* ---- A gambling man ---- */
+ev({ id:'tPlayLuck', from:1797, to:1809, weight:5, cond:() => T('play') && S.season === 3, who:() => null, title:'Nine Mains Together',
+  text:() => `It is the morning after the coursing meeting, and you have slept at the Pelican.
+
+Upon the dressing-table, under your watch, there lies a half-sheet which you do not at first recollect. “I promise to pay Mr ${S.sur} or Bearer Four Hundred Pounds. H. Tamworth.” There was hazard in the back parlour after supper; you held the box from eleven until near two, and threw in nine mains together; and young Harry Tamworth, who is not of age, and who had lost his ready money by midnight, went on upon paper.
+
+It is the first night since the year ’83 upon which you have risen a winner.
+
+The boy is in the yard already, walking a horse up and down that nobody has asked him to walk.`,
+  choices:[
+    {t:'Carry the note to his father.', note:'+£400', go:() => { add({money:400, standing:-3});
+      return `Mr Tamworth receives you in his book-room, and reads the half-sheet standing.
+
+He pays it. He writes the draft without sitting down, sands it, and holds it out to you at the full length of his arm; and he desires to be informed, while you are putting it into your pocket-book, at what hour his son was first allowed the box, and who it was that allowed him.
+
+Harry is sent to a tutor in Cumberland. The four hundred pounds are at Tidmarsh’s by Friday; and Mrs Tamworth, upon the Sunday, has the misfortune not to see you in the porch.`; }},
+    {t:'Call him up, and burn it before him.', go:() => { add({standing:3, goodwill:1});
+      return `He comes up with his hat in his hand, and stands just inside the door.
+
+You hold the half-sheet to the candle, and let it go when the flame has reached his name.
+
+“I was nineteen when I first held the box, Harry. I am not clear of that night yet. Go home.”
+
+He goes home. Nothing is said by either of you; but old Tamworth has it within the week from the waiter at the Pelican, and sends you, without a line, a dozen of his father’s Madeira, of which there are known to be but two dozen left.`; }},
+    {t:'Offer him his revenge: double or quits, upon one throw.', note:'£800, or nothing', go:() => {
+      if (chance(0.5)) { add({money:800, standing:-6});
+        return `The box is sent for. He calls seven, and throws crabs upon the breakfast cloth.
+
+He writes a second half-sheet at the corner of the table, for eight hundred, and his hand is steadier than yours. It cannot be kept from his father, there being no other person in the family who has eight hundred pounds; and Mr Tamworth pays it at Lady Day, Midsummer and Michaelmas, in three drafts, each sent up by a groom who has orders not to wait for an answer.
+
+The county has the story from the waiter. It is told with the boy’s age in it.`; }
+      add({family:1});
+      return `The box is sent for. He calls seven, and throws eleven upon the breakfast cloth, which nicks it.
+
+He looks at the dice for some time, as though there might be more to come. Then he takes up his own note from the dressing-table, tears it across, and puts the pieces into his waistcoat pocket.
+
+You ride home with what you set out with, to a shilling. It has not happened since 1783; and upon your mentioning it at dinner, as a thing that may interest her, Henrietta asks to see the shilling.`; }}
+  ]});
+
+/* ---- A love match ---- */
+ev({ id:'tLoveBaronet', from:1797, to:1807, weight:5, cond:() => T('lovematch') && S.season === 3, who:() => 'henrietta', title:'The Baronet Her Mother Meant',
+  text:() => `Wyvern Lodge is let for the hunting season to Sir Hugo Mallinder, of Mallinder Park in Northamptonshire; and upon his second day in the county he calls.
+
+He is the baronet whom Mrs Venn had in view in the year ’74. Since that time he has buried two wives, come into eleven thousand a year, and lost sight of his own knees; he sits forty minutes upon the yellow sofa; and he tells Henrietta three times that she is not in the least altered, having upon being shown in enquired of her whether her mistress was at home.
+
+Upon going he asks you both to dine on Thursday. There is to be a turtle, which has come from Bristol alive, in a tub.
+
+Henrietta watches the carriage down the avenue.
+
+“I had forgot the laugh,” she says.`,
+  choices:[
+    {t:'Dine with him, and hear what he remembers.', go:() => { add({family:4}); reg('henrietta',1,'Sir Hugo told the table about the blacksmith');
+      return `The turtle is dressed three ways, and Sir Hugo is helped to each.
+
+At the dessert he grows historical. He tells the table that he was to have danced the two first with Miss Venn at the Newbury assembly in the year ’73; that his horse cast a shoe at Thatcham; that he sat an hour and ten minutes in a smith’s shop, in pumps; and that when he came into the room she was standing up for the fourth time with a young man whose name nobody could tell him.
+
+“The fellow never knew what he owed to that blacksmith, madam.”
+
+“He has been told since,” says Henrietta.
+
+In the chaise she takes your arm; and you are as far as the turnpike before she lets it go, to find the sixpence.`; }},
+    {t:'Send Henrietta with Mrs Tamworth, and dine at home.', go:() => { add({family:5}); reg('henrietta',1,'Came home from the turtle, and asked for your chop');
+      return `She goes in Mrs Tamworth’s carriage, in the grey silk, and is brought home at eleven.
+
+You have had a chop in the library. She sits down upon the fender in her cloak, and gives you the dinner in its order: that he ate of the turtle three times; that he told a story about a blacksmith, which she did not follow; that he proposed the King, and the Craven Hunt, and “the ladies of Berkshire in the year ’73”, looking at her; and that before the tea came in he was asleep, with his mouth open, between Mrs Tamworth and the fire.
+
+“Mamma would have had me sit opposite that for thirty years.” She gets up. “Is there any of the chop?”`; }},
+    {t:'Decline for both. You have nothing to say to him.', go:() => { add({family:-3}); reg('henrietta',-1,'You kept her from Sir Hugo’s turtle');
+      return `You decline in the third person, upon the ground of a previous engagement, and dine at home upon cold mutton.
+
+Henrietta says nothing about it at the time. But the turtle is talked of in the porch on Sunday, at the saddler’s on Monday, and at the Tamworths’ for the rest of the week; and upon the Saturday she observes, while she is pouring out your tea, that she had not until now supposed you to be afraid of a baronet.`; }}
+  ]});
