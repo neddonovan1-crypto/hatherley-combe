@@ -171,6 +171,38 @@ Dewey puts the ears away, and touches his hat to ${steward()}, and then to you.`
 
 /* ---- his fortune ---- */
 
+/* A cousin's money, which falls in during some lives and not others. The lot is drawn once and kept. */
+const COKER = [1500, 2500, 4000];
+function cokerLot(){ if (S.coker === undefined) S.coker = chance(0.4) ? 1 + Math.floor(Math.random() * COKER.length) : 0; return S.coker; }
+function coker(){ const gross = COKER[(S.coker || 1) - 1], rate = S.year < 1805 ? 3 : 4, duty = gross * rate / 100; return {gross, rate, duty, net:gross - duty - 21}; }
+ev({ id:'cokerLegacy', from:1797, to:1811, weight:3, cond:() => cokerLot() > 0, title:'A Black Seal',
+  text:() => { const c = coker();
+    return `The letter has a black seal, and is charged double at the post office, being two sheets from London.
+
+“Gray’s Inn, the 9th instant. Sir, It is my duty to acquaint you that Mr Josiah Coker, late of Fort St George in the East Indies, and since of Cheltenham, departed this life upon the 2nd; and that by his Will, which I drew, and of which I am sole Executor, he has bequeathed to you, as the son of his cousin Anne, the sum of ${fmt(c.gross)}. The Legacy Duty, at ${c.rate} pounds in the hundred, is ${fmt(c.duty)}; my own account is twenty guineas; and I shall be happy to receive your directions as to the balance.
+
+“I have the honour to be, Sir, your most obedient servant, Thos. Pargeter.”
+
+You saw Mr Coker once, at nine years old, when he gave you a rupee, and told you not to spend it.
+
+Upon the second sheet Mr Pargeter adds, that a Mrs Dodd, who kept the deceased’s house eleven years, and nursed him through the last two of them, is not named in the Will.`; },
+  choices:[
+    {t:'Write for the whole.', note:() => '+' + fmt(coker().net), go:() => { const c = coker(); add({money:c.net});
+      return `You write for the whole; and in nine days a draft upon Messrs Child comes down by the mail, for ${pounds(c.net)}, with Mr Pargeter’s receipt for his own twenty guineas pinned to the corner.
+
+${steward()} enters it upon the credit side, where it has a page to itself.`; }},
+    {t:'Have Mr Tidmarsh take it against the mortgage.', note:() => 'Mortgage −' + fmt(Math.min(coker().net, S.mortgage)), if:() => S.mortgage > 0, go:() => { const c = coker(), pay = Math.min(c.net, S.mortgage), over = c.net - pay; S.mortgage -= pay; add({money:over});
+      return `Mr Tidmarsh, being directed to receive the money, writes off ${pounds(pay)} of the principal; and sends back the old bond, cancelled, ${S.mortgage > 0 ? `with a new one for ${pounds(S.mortgage)} to be signed in its place` : `with a line to say that there is nothing left to secure`}${over >= 1 ? `, and a draft for the ${pounds(over)} that remain` : ''}.
+
+The old bond has your uncle’s name upon it, and a wafer where his seal was.`; }},
+    {t:'Write for it, and direct that Mrs Dodd have five hundred.', note:() => '+' + fmt(coker().net - 500) + '. +Standing; +Household', go:() => { const c = coker(); add({money:c.net - 500, standing:2, family:2});
+      return `Mr Pargeter is directed to pay Mrs Dodd five hundred pounds out of the legacy, and to say from whom.
+
+She answers from Cheltenham, upon a sheet which she has ruled in pencil, that Mr Coker always said the family were proud; and that she begs leave to say he was mistaken.
+
+The remainder, being ${pounds(c.net - 500)}, comes down by the mail.`; }}
+  ]});
+
 ev({ id:'tLegacy', from:1795, to:1797, weight:7, cond:() => T('legacy'), title:'The Residuary Legatee',
   text:() => `A hamper comes by the Bath coach, carriage unpaid, three and fourpence, with a letter tied to the handle.
 
