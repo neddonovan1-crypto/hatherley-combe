@@ -207,6 +207,9 @@ function versoHTML(){
 const amt = (n, sign) => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${fmt(Math.abs(n))}</span>`;
 const tint = (t, sign) => esc(t).replace(/£[\d,]+/g, m => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${m}</span>`);
 const fxHTML = v => v.fx && v.fx.length ? `<ul class="fx">${v.fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
+/* What an honour asks for, each requisite marked as had or wanting. */
+function needsHTML(v){ if (!v.needs || !v.needs.length) return '';
+  return `<span class="hazard"><span>Requisites</span></span><ul class="needs">${v.needs.map(n => `<li class="${n.ok ? 'ok' : 'no'}"><i>${n.ok ? 'Had' : 'Wanting'}</i>${esc(n.t)}</li>`).join('')}</ul>`; }
 function hazardHTML(v){
   if (v.odds) { const o = v.odds, pc = x => Math.round((x || 0) * 100); return `<span class="hazard"><span>Hazard</span><span class="oddsbar" role="img" aria-label="${pc(o.well)} in 100 well, ${pc(o.dull)} middling, ${pc(o.ill)} ill"><i class="w" style="flex:${pc(o.well)}"></i><i class="d" style="flex:${pc(o.dull)}"></i><i class="l" style="flex:${pc(o.ill)}"></i></span></span>`; }
   if (!Number.isFinite(v.risk)) return '';
@@ -264,7 +267,7 @@ function farmsHTML(only){ const live = typeof farmsList === 'function', list = l
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
 function lotsHTML(list, live, begin, end, verb){
   const row = v => v.state === 'ended' ? `<div class="lot done"><b>${esc(v.name)}</b><span>${esc(v.note || 'Ended')}</span></div>`
-    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${esc(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
+    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${esc(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}${needsHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why && !(v.needs && v.needs.some(n => !n.ok)) ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
       ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="${end}('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${tint(v.endLabel, end === 'endSociety' ? 1 : -1)}</button>` : '') : `<button class="inkbtn" onclick="${begin}('${v.id}')" ${v.can ? '' : 'disabled'}>${esc(v.verb || verb)}</button>`}</div></details>`;
   return `<div class="lots">${list.map(row).join('')}</div>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function'; return lotsHTML(live ? venturesList() : DRAFT_VENTURES, live, 'beginVenture', 'endVenture', 'Venture it'); }
