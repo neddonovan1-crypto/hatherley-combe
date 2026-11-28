@@ -8573,7 +8573,7 @@ const VENTURES = {
 const ventFarm = (id, d) => d.farm || d.of || '';
 function ventNo(id, d){ const fid = ventFarm(id, d);
   if (fid && !farm(fid)) { const nm = landFor(fid).name, sale = typeof farmsForSale === 'function' && farmsForSale().find(f => f.id === fid);
-    return sale ? nm + ' is not yours. It is to be bought for ' + fmt(sale.price) + ', and this may be begun the day it is conveyed.' : nm + ' is not yours, and is not at present to be bought.'; }
+    return sale ? nm + ' is not yours. It is to be bought for ' + fmt(sale.price) + ', and this may be begun the day it is conveyed.' : fid === 'commonpiece' ? 'Common Piece is not yet a farm. The common must first be inclosed, and your allotment of it fenced.' : nm + ' is not yours, and nobody at present offers it for sale.'; }
   if (d.no) return d.no();
   return d.if && !d.if() ? 'Not to be had this year.' : ''; }
 function venturesList(){ const open = S.phase !== 'end' && !S.dead;
