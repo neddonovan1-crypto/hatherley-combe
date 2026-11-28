@@ -177,3 +177,4 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
   #cart .purse{align-items:flex-start} #cart .creditbox{align-self:stretch}
 }
 @media (max-width:1080px) and (orientation:landscape) and (max-height:520px){ #tabs{grid-template-columns:repeat(5, minmax(0,1fr))} }
+.purse .of{white-space:nowrap}

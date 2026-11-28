@@ -250,7 +250,7 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<p class="rk"><span>${label}</span><b${band(v, words).length > 14 ? ' class="long"' : ''}>${esc(band(v, words))}</b></p><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
-    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <span class="of"><i>${fmt(S.mortgage)}</i>${typeof mortCap === 'function' ? ` of ${fmt(mortCap())}` : ''}</span></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${typeof RESUMED !== 'undefined' && RESUMED ? `<p class="resumed"><b>Your estate, as you left it</b><span>${esc(QUARTER[S.season])} ${S.year}. Nothing is lost.</span></p>` : ''}
     ${cueHTML()}
