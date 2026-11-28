@@ -1340,24 +1340,60 @@ I was aboard of her this morning. He was upon the quarter-deck in a round hat, i
 
 I have a full-dress coat. It was made at Halifax${F('navWound') ? ', and it has been let out since Haslar' : ''}, and has been six years in a chest with the charts. The tailor upon the Hard asks forty guineas for a new one with the hat; and he asks for them before he will cut.”`; },
   choices:[
-    {t:'Send the forty guineas, and go down to see it.', note:'£70', go:() => { fl('clarenceReview'); add({money:-70, standing:3, family:4}); reg('edmund',2,'You came to Spithead to see him stand behind the Duke');
+    {t:'Send the forty guineas, and go down to see it.', note:'£70', go:() => { fl('clarenceReview'); later('navOrder', 1); add({money:-70, standing:3, family:4}); reg('edmund',2,'You came to Spithead to see him stand behind the Duke');
       return `You have a window at Southsea for nine guineas, and a boat for three${hh('; and Henrietta has the glass', '')}.
 
 The Emperor goes off at eleven in the Duke’s barge; and the whole line, from the Impregnable to the last brig, fires together, so that for a quarter of an hour there is no sea to be seen. When the smoke lifts, there is upon her poop a stout figure, pointing; two taller ones, who look where he points; and behind the three, with a telescope under his arm that is not his own, Edmund.
 
 He tells you at supper what was said. The King of Prussia asked how many guns she carried. His Royal Highness told him; and he then told him how Lord Nelson was married.`; }},
-    {t:'Send the forty guineas, and stay at Hatherley.', note:'£42', go:() => { fl('clarenceReview'); add({money:-42, standing:2, family:1}); reg('edmund',1);
+    {t:'Send the forty guineas, and stay at Hatherley.', note:'£42', go:() => { fl('clarenceReview'); later('navOrder', 1); add({money:-42, standing:2, family:1}); reg('edmund',1);
       return `The coat is made in four days; and you have the rest by letter.
 
 “I carried his telescope, sir, from eleven until five. The Emperor is a tall, fair man, who bows to the seamen. Marshal Blücher was given grog at the fore-hatch, and asked for it again. The King of Prussia inquired what she carried; and the Duke told him, and went from that to Lord Nelson’s wedding, the King saying ‘So’ wherever there was room.
 
 At the last the Duke named me to the Emperor, as an officer whom the Board had used infamously. I do not know that it has. The Emperor shook me by the hand.”`; }},
-    {t:'Tell him to go in the coat that he has.', go:() => { fl('clarenceReview'); add({standing:1}); reg('edmund',1);
+    {t:'Tell him to go in the coat that he has.', go:() => { fl('clarenceReview'); fl('reviewCoat'); later('navOrder', 1); add({standing:1}); reg('edmund',1);
       return `You write that the Emperor of Russia may see a new coat upon any tailor’s son in Petersburgh.
 
 “I went in the old one, sir. The Duke looked at it; and at the ${F('navWound') ? 'darn in the skirt, which the splinter made' : 'left cuff, which was scorched at a gun'}; and he asked where I got that. I told him. He put me at his right hand for the whole of the day, and said to the Emperor in a voice that was heard in the waist, ‘That, sir, is what the service wears when it is at work.’
 
 Marshal Blücher desired to buy the coat.”`; }}
+  ]});
+
+/* The Emperor's cross follows the review. edmOrder: worn, box. */
+const regentsMan = () => F('privyChamber') || F('princeLoan') || S.flags.prSide === 'court';
+ev({ id:'navOrder', follow:true, hen:false, at:'hall', who:() => null, cond:() => F('clarenceReview') && !F('edmundDead') && !S.flags.edmOrder, title:'A Red Box from the Pulteney Hotel',
+  text:() => `A hired chaise and four comes up the avenue at three, with a bearded man upon the box whom the lodge-keeper’s children follow as far as the sweep. There gets down from it a very tall officer in green, with a star, and a plume of cock’s feathers a foot long; and he sends in a card, which says in French that he is Colonel the Baron Rehbinder, Aide-de-camp to His Majesty the Emperor of All the Russias.
+
+He has English, which he had of a Scotch governess at Reval; and he has a box of red morocco, which he will put into no hand but yours.
+
+“It is the Order of Saint Anne, sir, of the second class. I am to give it to the father, the son being with his ship. ${F('reviewCoat') ? 'His Imperial Majesty has spoken of the coat at three dinners, and at one of them to the Prince Regent, who did not understand him.' : 'His Imperial Majesty remarked that the young officer held the glass of His Royal Highness for six hours, and listened the whole of that time; and he said that he has Generals who could not do it.'}”
+
+In the box there lies a cross of gold, enamelled red, upon a red riband with a yellow edge; and under it a parchment in the Russian character, with a French version, in which Edmund is called Monsieur de ${S.sur}.
+
+The Baron dines. He drinks a bottle and a half of your port, and is in no way altered by it; ${hh('he kisses Henrietta’s hand at coming and at going, and once between; ', '')}and with his foot upon the step of the chaise he tells you one thing more. An English officer, he understands, may not wear the Emperor’s cross until he has the leave of his own Prince. “With us, sir, the Emperor gives, and one wears. With you, I am told, one pays.”
+
+Mr Spurling finds that it is so. The Regent’s licence, the fees at the Heralds’ College, and the line in the Gazette, come to thirty-eight pounds.`,
+  choices:[
+    {t:'Pay the fees, and ask the Regent’s licence.', note:'£38', go:() => { fl('edmOrder', 'worn'); add({money:-38, standing:3, family:2}); reg('edmund',2,'You paid for the Regent’s leave to wear the Emperor’s cross');
+      const wait = regentsMan() ? 'The licence is eleven days in coming, which Mr Spurling says was never known; and he is of opinion that somebody at Carlton House has recollected your name.' : F('kingsMan') || F('foxite') || S.flags.prSide === 'whig' ? 'The licence is nine months in coming. Mr Spurling writes for it three times; and to the third letter a clerk replies, that the name is perfectly well known at Carlton House.' : 'The licence is three months in coming, and is signed by a clerk for a Secretary, for the Regent, for the King.';
+      return `${wait}
+
+The Gazette has it between a bankrupt of Leeds and a dissolution of partnership: that His Royal Highness has been pleased to permit ${NAVY_RANK[navRank()] === 'Master’s mate' ? 'Mr' : NAVY_RANK[navRank()]} Edmund ${S.sur}, of the Royal Navy, to accept and wear the insignia of the second class of the Order of Saint Anne of Russia.
+
+He wears it at Hatherley church, at the neck, upon the first Sunday that he is at home. The clerk loses his place in the psalm; and old Hannah Gurney, who has seen nothing like it since the Bishop, curtsies to it in the porch.`; }},
+    {t:'Write to Colonel McMahon, who has your bond.', if:() => F('princeLoan'), go:() => { fl('edmOrder', 'worn'); add({standing:3, family:2}); reg('edmund',2,'You had the Regent’s leave for his cross by return of post');
+      return `You write four lines to Carlton House, and you name the bond in the third of them.
+
+The licence comes down by return of post, with the fees remitted; and it is the first interest that you have had upon the thousand pounds.
+
+Edmund wears the cross at Hatherley church, at the neck, upon the first Sunday that he is at home. The clerk loses his place in the psalm; and old Hannah Gurney, who has seen nothing like it since the Bishop, curtsies to it in the porch.`; }},
+    {t:'Let it lie in its box.', go:() => { fl('edmOrder', 'box'); add({family:1}); reg('edmund',-1);
+      return `You write to Edmund that he has the Emperor’s cross, and that eight-and-thirty pounds is a great deal to give for leave to hang it out.
+
+He answers that he is of your mind; and he begs that you will keep it for him, where his mother may show it.
+
+${hh('It is kept in the drawing-room, in the cabinet with the shells, and is shown to every caller between the hours of one and three. Henrietta opens the box herself. She has not yet let anybody else take it out.', 'It is kept in the book-room, in the drawer with his letters. Henrietta, when she is over from Bath, asks for the key before she has her bonnet off.')}`; }}
   ]});
 
 byId('navPeace').choices.splice(2, 0, {t:'Write to the Duke of Clarence for a ship.', if:() => F('clarenceReview'), go:() => { const r = navRank(); fl('navPeaceShip'); add({family:-2}); reg('edmund',2,'The Duke of Clarence got him a ship in the peace');
