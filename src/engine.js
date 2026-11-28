@@ -169,7 +169,7 @@ function beginSeason(){
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
   if (F('wages')) line('Home farm wages above the common rate', -30);
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
-  if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
+  if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160, 'Standing rises a point each quarter while you sit.');
   if (F('kittyAllowance') && q === 0) line('Mrs Vane, her allowance', -80);
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }

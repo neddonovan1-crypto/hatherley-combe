@@ -1,2 +1,3 @@
 docs/voice/corpus/full/
 tools/balloons/.cache/
+tools/balloons/__pycache__/
