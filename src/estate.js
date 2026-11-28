@@ -989,7 +989,7 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   let st = EST[i].standing; why.standing.push(EST[i].standing + ' ' + cap1(EST[i].name));
   st += put('standing', societyMark(), 'Society'); st += put('standing', -6 * (S.settledSold || 0), 'Settled land sold');
   st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down'); st += put('standing', F('hallPew') ? 1 : 0, 'The Hall pew'); st += put('standing', F('mp') ? 4 : 0, 'Member for Wyvern, and a point more each quarter you sit'); st += put('standing', F('churchRoof') ? 1 : 0, 'The church roof');
-  st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 2) ? -4 : 0, 'Not seen in the county this half-year'); st += put('standing', S.money < 0 ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
+  st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 2) ? -4 : 0, 'Not seen in the county this half-year'); st += put('standing', S.money < 0 && S.red ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
   let g = 44; why.goodwill.push('44 The parish as you found it');
   const rack = S.farms.filter(f => f.level === 'rack').length, easy = S.farms.filter(f => f.level === 'easy').length;
   g += put('goodwill', -4 * Math.min(4, rack), 'Rack rents'); g += put('goodwill', 2 * Math.min(4, easy), 'Easy rents'); g += put('goodwill', idle('ride', 2) ? -5 : 0, 'The tenants have not seen you this half-year');
@@ -1001,7 +1001,7 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   let fm = 45; why.family.push('45 The house as you found it'); fm += put('family', idle('home', 1) ? -6 : 0, 'You have not kept at home this quarter');
   fm += put('family', 3 * S.chars.henrietta.r, 'Henrietta’s regard'); fm += put('family', F('edmundDead') ? 0 : S.chars.edmund.r, 'Edmund’s regard');
   fm += put('family', [-8, 0, 4, 7][i], cap1(EST[i].name)); fm += put('family', F('newFront') ? 3 : 0, 'The new front'); fm += put('family', F('icehouse') ? 2 : 0, 'The ice-house');
-  fm += put('family', S.money < 0 ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
+  fm += put('family', S.money < 0 && S.red ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
   for (const dial in HOUSE) { const h = houseOf(dial), nm = HOUSE[dial].name + ', ' + h.label.toLowerCase(); st += put('standing', h.standing || 0, nm); g += put('goodwill', h.goodwill || 0, nm); fm += put('family', h.family || 0, nm); }
   if (typeof castleMark === 'function') for (const [k, n, t] of castleMark()) { const v = put(k, n, t); if (k === 'standing') st += v; else if (k === 'goodwill') g += v; else fm += v; }
   // what the squire was born or married to stays with him: each choice at the start moves its mark for good by what its card says

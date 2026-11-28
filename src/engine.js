@@ -183,7 +183,10 @@ function beginSeason(){
     if (T('gout') && !F('goutEased')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household goes on tiptoe. You shout at them for creeping.'); }
     if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1), 'For the year.'); }
   }
-  if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
+  // Long bills were the common rhythm of a gentleman's year. Credit up to a year's rental costs interest alone;
+  // it tells against him only when he is deeper than that, or still short on a rent day with the rents in.
+  S.red = S.money < 0 && (q === 0 || q === 2 || S.money < -(typeof rentalNow === 'function' ? rentalNow() : 1100));
+  if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); if (S.red) { add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); } }
   // Nothing keeps without tending: regard, like a hedge, grows out.
   if (S.t > 0) { const dear = P >= 95 && !F('soup') && !F('wages') && house('labour') !== 'high';
     regardQuarter(line);

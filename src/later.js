@@ -244,7 +244,7 @@ function stewSettle(){ if (!stewOn()) return; const s = stewOf(), c = S.chars.cr
 const stewWorth = () => Math.round(S.money - S.mortgage + ownLandValue());
 const regardQuarterStew = regardQuarter;
 regardQuarter = function(line){ regardQuarterStew(line); if (!stewOn()) return; const s = stewOf(), q = S.season, c = S.chars.crabbe;
-  if (S.money < 0) stewScore(estIdx() >= 2 ? -2 : -1, 'red');
+  if (S.money < 0 && S.red) stewScore(estIdx() >= 2 ? -2 : -1, 'red');
   if (q === 3) { const now = stewWorth(); if (s.y0 !== undefined) { const d = now - s.y0;
       if (d >= 1000) stewScore(2, 'gain', Math.round(d / 50) * 50); else if (d >= 300) stewScore(1, 'gain', Math.round(d / 10) * 10); else if (d <= -300) stewScore(d <= -1000 ? -2 : -1, 'loss', Math.round(-d / 10) * 10); }
     s.y0 = now; }
