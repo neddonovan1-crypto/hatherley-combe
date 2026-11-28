@@ -18,9 +18,9 @@ function kittyRole(){ const k = S.flags.kitty || 'free';
 function edmundRole(){ const e = S.flags.edmund, y = S.year;
   if (F('edmundDead')) return S.flags.edmundRoleDead || 'Killed at Waterloo, June 1815';
   if (!e) return 'Your son, ' + (19 + y - 1795);
-  if (e === 'army') return (F('major') ? 'Major' : y < 1800 ? 'Ensign' : y < 1807 ? 'Lieutenant' : 'Captain') + ', 52nd Foot';
-  if (e === 'navy') return (y < 1801 ? 'Master’s mate' : y < 1811 ? 'Lieutenant' : 'Commander') + ', Royal Navy';
-  if (e === 'church') return F('edmundVicar') ? 'Vicar of Hatherley' : y < 1800 ? 'Reading for orders at Oriel' : 'A curate in Hampshire, waiting';
+  if (e === 'army') return (F('major') ? 'Major' : ARMY_RANK[armRank()]) + ', 52nd Foot';
+  if (e === 'navy') return NAVY_RANK[navRank()] + ', Royal Navy';
+  if (e === 'church') return churchRole();
   if (e === 'militia') return 'Captain, Berkshire Militia';
   if (e === 'farmer') return 'Farming Kennet Bottom';
   return 'At home, learning the estate'; }
@@ -171,6 +171,7 @@ function beginSeason(){
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
   if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160, 'Standing rises a point each quarter while you sit.');
   if (F('kittyAllowance') && q === 0) line('Mrs Vane, her allowance', -80);
+  if (F('edmAllowance') && q === 0 && S.flags.edmund === 'church' && !F('edmundDead') && !F('edmundVicar') && !F('edmRector')) line('Edmund, his allowance', -50);
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
   if (q === 3) {
@@ -905,7 +906,10 @@ function reckoning(){
   if (F('edmundDead') && S.flags.edmundTomb) P.push(S.flags.edmundTomb);
   else if (F('edmundDead')) P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur} of the 52nd, lies in the orchard of a farm in Brabant. There is a tablet in Hatherley church. His mother has had the pew moved to face it.`);
   else if (e === 'army') P.push(`His son, ${F('major') ? 'Major' : 'Captain'} ${S.sur}, ${S.flags.edmundFate || 'served through the Peninsula'}. He is home on half-pay. He has the Volunteers’ old serjeant out on the lawn at six, learning the new drill.`);
+  else if (e === 'navy' && navRank() === 3) P.push(`His son is a Post-Captain. The Calliope is paid off, and he is ashore at Hatherley. There are seven hundred names above his in Steel’s List. He reads the Deaths first.`);
+  else if (e === 'navy' && navRank() < 2) P.push(`His son is a Lieutenant on half-pay, at five shillings a day. He is ashore at Hatherley. He has the Thetis in a bottle, upon the library chimney-piece.`);
   else if (e === 'navy') P.push(`His son commands a sloop of war. She is laid up. He is ashore at Hatherley. He walks the terrace eight paces each way.`);
+  else if (e === 'church' && F('edmRector')) P.push(F('edmundVicar') ? `His son is vicar of the parish, and Rector of Upton Monachorum besides. He keeps a curate there at ${S.flags.chCurate === 75 ? 'seventy-five' : 'fifty'} pounds. His sermons are twelve minutes.` : `His son is Rector of Upton Monachorum, in Wiltshire. He farms his own glebe. He tolled the bell three times.`);
   else if (e === 'church') P.push(F('edmundVicar') ? `His son is vicar of the parish. His sermons are twelve minutes.` : `His son is in orders, in Hampshire. He writes on Sundays.`);
   else if (e === 'farmer') P.push(`His son farms Kennet Bottom. There are three grandchildren. One of them bites.`);
   else if (e === 'militia') P.push(`His son came home from the Militia a captain. He brought a wife with him from Dover.`);

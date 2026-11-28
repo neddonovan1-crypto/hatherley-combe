@@ -132,7 +132,7 @@ Your servant, R. Lyle.`; },
   choices:[
     {t:() => S.year >= 1803 && S.year <= 1813 ? 'Write him joy of the ship, and send a ham.' : 'Send him a brace of pheasants and your compliments.', note:'+2 Standing', if:() => S.flags.captainPath !== 'lent', go:() => { fl('captainEnded'); add({standing:2, goodwill:1});
       return `The ham goes to Portsmouth by the coach, in a cloth, with a letter; and the Madeira being opened at Christmas, ${steward()} is asked to take a glass, and drinks it standing.`; }},
-    {t:'Ask him to take Edmund for his Lieutenant.', note:'+Edmund’s regard, +Household', if:() => S.flags.captainPath !== 'lent' && at('navy') && !F('edmundDead'), go:() => { fl('captainEnded'); add({family:3, standing:1}); reg('edmund', 2, 'The Captain took him as First Lieutenant');
+    {t:'Ask him to take Edmund for his Lieutenant.', note:'+Edmund’s regard, +Household', if:() => S.flags.captainPath !== 'lent' && at('navy') && navRank() === 1 && !F('edmundDead'), go:() => { fl('captainEnded'); befriend(); add({family:3, standing:1}); reg('edmund', 2, 'The Captain took him as First Lieutenant');
       return `The Captain answers by return of post. “I have a vacancy for a First Lieutenant. I should be glad of a Hatherley.” Edmund is appointed in a fortnight, and writes from the ship that he has a cabin the size of a hip-bath, and a Captain who talks to the barometer.`; }},
     {t:'Enter it in the book.', if:() => S.flags.captainPath === 'lent', go:() => { fl('captainEnded'); const back = S.capRepays ? Math.round(S.capDebt * 1.05) : Math.round(S.capDebt / 4);
       add({money:back, goodwill:1, standing:S.capRepays ? 1 : 0});

@@ -191,5 +191,77 @@
    34.5,
    19.5
   ]
+ },
+ "events/edmund-berth": {
+  "m": [
+   45.5,
+   39
+  ]
+ },
+ "events/edmund-huddersfield": {
+  "m": [
+   68,
+   41
+  ]
+ },
+ "events/edmund-hunter": {
+  "m": [
+   42,
+   41
+  ]
+ },
+ "events/edmund-ram": {
+  "m": [
+   22.5,
+   38
+  ]
+ },
+ "events/edmund-gun": {
+  "m": [
+   61,
+   54
+  ]
+ },
+ "events/edmundDuel": {
+  "m": [
+   25.5,
+   50
+  ]
+ },
+ "events/nore": {
+  "m": [
+   41,
+   55
+  ]
+ },
+ "events/edmund-cantonments": {
+  "m": [
+   51,
+   42
+  ]
+ },
+ "events/edmund-drains": {
+  "m": [
+   31,
+   43
+  ]
+ },
+ "events/edmund-thirty": {
+  "m": [
+   65,
+   35
+  ]
+ },
+ "events/edmund-outfit": {
+  "m": [
+   27,
+   29
+  ]
+ },
+ "events/edmund-settle-room": {
+  "m": [
+   40,
+   44
+  ]
  }
 }
