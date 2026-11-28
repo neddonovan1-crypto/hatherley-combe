@@ -84,6 +84,10 @@ table.acct .n.l{width:5rem;border-left:3px double var(--redrule)}
 table.acct th.n{padding:5px 8px;font-size:.8rem;font-family:var(--caps)}
 table.acct .z{color:#7c786c}
 table.acct tr.neg td{color:var(--bad)}
+table.acct td small{font-family:var(--body, inherit);font-size:.74rem;line-height:1.2;letter-spacing:.01em;color:var(--muted);margin-left:.5em}
+table.acct tr.dear td small{color:var(--ink)} table.acct tr.dear .n.l{font-weight:700;background:rgba(143,36,34,.09)}
+table.acct .hand{font-style:normal;font-size:1.1rem;line-height:1;margin-right:5px;color:var(--bad)}
+.bal.slim .due{margin-left:auto;text-align:right} .bal.slim .due dd{font-size:1.35rem;line-height:1.3} .bal.slim .due.dry dt{color:var(--ink)}
 table.acct tr.total td{border-bottom:0;border-top:1px solid var(--ink)}
 table.acct tr.total td:first-child{font-family:var(--caps);font-size:1rem;letter-spacing:.08em;padding:8px 0}
 table.acct tr.total .n{font-size:1.3rem}
@@ -191,6 +195,8 @@ details:not([open]) > :not(summary){display:none}
 .amt{font-variant-numeric:tabular-nums;white-space:nowrap}
 .lots .fx{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:.98rem;line-height:1.35} .lots .fx .pos{color:var(--good)} .lots .fx .neg{color:var(--bad)}
 .lots .hazard{display:flex;align-items:center;gap:5px;font-family:var(--caps);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)} .lots .hazard > span:first-child{margin-right:3px}
+.lots .needs{list-style:none;margin:2px 0 6px;padding:0;font-size:.9rem;line-height:1.35} .lots .needs li{display:grid;grid-template-columns:4.6em 1fr;gap:8px;margin:3px 0} .lots .needs i{font-family:var(--caps);font-style:normal;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding-top:.2em}
+.lots .needs li.ok{color:var(--good)} .lots .needs li.no{color:var(--bad)}
 .hazard .pip{width:9px;height:9px;border:1px solid var(--ink);border-radius:50%} .hazard .pip.on{background:var(--bad);border-color:var(--bad)}
 .hazard .oddsbar{display:flex;width:120px;height:8px;border:1px solid var(--ink)} .oddsbar .w{background:var(--good)} .oddsbar .d{background:var(--wash)} .oddsbar .l{background:var(--bad)}
 .lots.flat{border-top:0} .lots .lv{display:flex;gap:4px 6px} .lots .lv button{background:none;border:1px solid transparent;border-radius:50%;padding:1px 12px;font-family:var(--hand);font-size:1.3rem;line-height:1.1} .lots .lv button.on{border-color:var(--ink)}

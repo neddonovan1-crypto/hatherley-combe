@@ -46,7 +46,7 @@ const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ?
 /* Where a work is not yet built, or a venture not yet tried, a small roundel of each stands beside the name. */
 function toDoAt(){ const w = new Set(), v = new Set(), shut = S.phase === 'end' || S.dead; if (shut) return {w, v};
   if (typeof worksList === 'function') for (const x of worksList()) if (x.state === 'open' && !x.off) w.add(workAt(x.id));
-  if (typeof venturesList === 'function') for (const x of venturesList()) if (x.state === 'open' && !x.off && x.why !== 'Not to be had at present.') v.add(ventAt(x.id));
+  if (typeof venturesList === 'function') for (const x of venturesList()) if (x.state === 'open' && !x.off && !x.notYet) v.add(ventAt(x.id));
   return {w, v}; }
 function goLease(id){ const open = SHEET === id && !WHO; WHO = ''; ROUND = false; if (open && LEASING === PLACES[id].farm) { LEASING = ''; SHEET = ''; drawPlan(); return; }
   SHEET = id; SEC = 'farm'; LEASING = LOT = PLACES[id].farm; drawPlan(); showOnPlan(id); }

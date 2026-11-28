@@ -174,10 +174,10 @@ The household line becomes a choice of four establishments, which standing then 
 
 | Establishment | A year in 1795 | Standing settles near |
 |---|---|---|
-| Retrenched | £800 | 25 |
-| Plain | £1,100 | 42 |
-| Handsome | £1,500 | 60 |
-| Splendid | £2,100 | 80 |
+| Retrenched | £700 | 25 |
+| Plain | £1,000 | 42 |
+| Handsome | £1,400 | 60 |
+| Splendid | £2,000 | 80 |
 
 Its prices rise three per cent a year to 1813, because everything did. Going up a grade is easy. Coming down costs the family and the county's opinion at once, so the squire who went Handsome on the rents of 1811 is stuck in 1815.
 

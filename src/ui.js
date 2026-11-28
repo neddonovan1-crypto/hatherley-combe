@@ -133,15 +133,17 @@ function noteOf(c){ if (!c.note) return ''; const n = typeof c.note === 'functio
 
 function accountHTML(){ let rows = '', tot = 0;
   const cells = a => `<td class="n l">${a < 0 ? '<span class="sr">paid </span>' : ''}${Math.abs(a).toLocaleString('en-GB')}</td><td class="n z">0</td><td class="n z">0</td>`;
-  for (const [l, a] of S.ledger){ tot += a; rows += `<tr class="${a < 0 ? 'neg' : ''}"><td>${esc(l)}</td>${cells(a)}</tr>`; }
+  for (const [l, a, why, mark] of S.ledger){ tot += a; rows += `<tr class="${a < 0 ? 'neg' : ''}${mark ? ' dear' : ''}"><td>${mark ? '<i class="hand" aria-hidden="true">☞</i>' : ''}${esc(l)}${why ? `<small>${esc(why)}</small>` : ''}</td>${cells(a)}</tr>`; }
   rows += `<tr class="total${tot < 0 ? ' neg' : ''}"><td>Carried to the purse</td>${cells(tot)}</tr>`;
   return `<div class="tablewrap"><table class="acct"><thead><tr><th>Particulars</th><th class="n l">£</th><th class="n">s.</th><th class="n">d.</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
 
 /* The right-hand leaf, under the plate: what the quarter came to, and what was lately done. */
 function digestHTML(){ let inn = 0, out = 0; for (const [, a] of S.ledger) { if (a > 0) inn += a; else out -= a; }
   const net = inn - out, last = S.journal.slice(0, 3);
-  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div></dl>
+  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div>${rentsDueHTML()}</dl>
     ${last.length ? `<h3 class="orn">Lately</h3><ol class="daybook">${last.map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : ''}</div>`; }
+function rentsDueHTML(){ const r = typeof rentsNext === 'function' && !S.dead ? rentsNext() : null;
+  return r && r.sum ? `<div class="due${r.dry ? ' dry' : ''}"><dt>Rents due at ${esc(r.day)}</dt><dd>${amt(r.sum, 1)}</dd></div>` : ''; }
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
@@ -221,6 +223,9 @@ function versoHTML(){
 /* Money in the lists: green with a plus where it comes in, red with a minus where it goes out. */
 const amt = (n, sign) => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${fmt(Math.abs(n))}</span>`;
 const tint = (t, sign) => tinted(t, sign);
+/* What an honour asks for, each requisite marked as had or wanting. */
+function needsHTML(v){ if (!v.needs || !v.needs.length) return '';
+  return `<span class="hazard"><span>Requisites</span></span><ul class="needs">${v.needs.map(n => `<li class="${n.ok ? 'ok' : 'no'}"><i>${n.ok ? 'Had' : 'Wanting'}</i>${esc(n.t)}</li>`).join('')}</ul>`; }
 function hazardHTML(v){
   if (v.odds) { const o = v.odds, pc = x => Math.round((x || 0) * 100); return `<span class="hazard"><span>Hazard</span><span class="oddsbar" role="img" aria-label="${pc(o.well)} in 100 well, ${pc(o.dull)} middling, ${pc(o.ill)} ill"><i class="w" style="flex:${pc(o.well)}"></i><i class="d" style="flex:${pc(o.dull)}"></i><i class="l" style="flex:${pc(o.ill)}"></i></span></span>`; }
   if (!Number.isFinite(v.risk)) return '';
@@ -278,7 +283,7 @@ function farmsHTML(only){ const live = typeof farmsList === 'function', list = l
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
 function lotsHTML(list, live, begin, end, verb){
   const row = v => v.state === 'ended' ? `<div class="lot done"><b>${esc(v.name)}</b><span>${esc(v.note || 'Ended')}</span></div>`
-    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${tinted(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
+    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${tinted(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}${needsHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why && !(v.needs && v.needs.some(n => !n.ok)) ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
       ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="${end}('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${tint(v.endLabel, end === 'endSociety' ? 1 : -1)}</button>` : '') : `<button class="inkbtn" onclick="${begin}('${v.id}')" ${v.can ? '' : 'disabled'}>${esc(v.verb || verb)}</button>`}</div></details>`;
   return `<div class="lots">${list.map(row).join('')}</div>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function'; return lotsHTML(live ? venturesList() : DRAFT_VENTURES, live, 'beginVenture', 'endVenture', 'Venture it'); }

@@ -130,8 +130,9 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 #cart .creditbox button:hover:not(:disabled), #cart .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink)} #cart .creditbox button:disabled{opacity:.4;cursor:not-allowed}
 @media (max-width:1080px), (orientation:portrait){ #cart .creditbox{flex-direction:row;align-self:flex-end;margin-top:3px} #cart .creditbox button{padding:1px 6px;font-size:.78rem;gap:6px} }
 /* the ledger is shut from its corner as well as from the foot of the quarter's leaf */
-#bookx{position:absolute;top:-12px;right:calc(var(--edge) * -.5 - 9px);z-index:6;width:38px;height:38px;background:none;border:0;font-family:var(--display);font-size:2.3rem;line-height:1;color:var(--ink);cursor:pointer} #bookx:hover, #bookx:focus-visible{color:var(--madder)} body.intro #bookx{display:none}
-@media (max-width:1080px){ #bookx{top:0;right:2px;font-size:1.9rem} #stage .runhead{padding-right:30px} }
+#bookx{position:absolute;top:2px;left:calc(100% + var(--edge) * .1 + 6px);z-index:6;width:44px;height:44px;display:grid;place-items:center;padding:0 0 4px;background:var(--ink);border:2px solid var(--gilt);border-radius:50%;box-shadow:0 3px 8px rgba(0,0,0,.55), inset 0 0 0 1px rgba(0,0,0,.5);font-family:var(--display);font-size:2.1rem;font-weight:700;line-height:1;color:var(--sheet);cursor:pointer;transition:background .12s, transform .12s} #bookx[hidden]{display:none} #bookx:hover, #bookx:focus-visible{background:var(--madder);transform:scale(1.08)} #bookx:active{transform:scale(.96)} body.intro #bookx{display:none}
+.book:has(#bookx:not([hidden])) #tabs{top:56px}
+@media (max-width:1080px){ #bookx{top:4px;left:auto;right:4px;width:38px;height:38px;font-size:1.8rem} #stage .runhead{padding-right:46px} .book:has(#bookx:not([hidden])) #tabs{top:auto} }
 
 /* the Castle: what was last done there, and the yearly figure on a rung */
 .castle .said{border-left:3px double var(--ink);padding:2px 0 2px 10px;margin:2px 0 4px} .castle .said p{margin:0 0 6px;font-size:1rem;line-height:1.35} .castle .said p:last-child{margin-bottom:0}
