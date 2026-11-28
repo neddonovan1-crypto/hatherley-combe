@@ -1089,7 +1089,6 @@ const edmR = () => S.chars.edmund.r;
 const yr = (a, b) => S.year >= a && S.year <= b;
 const at = (...w) => w.includes(edmWhere());
 const lbAtStake = () => farm('longbarrow') && !F('soldLongBarrow') && !F('lbWord') && (S.mortgage >= 6000 || S.money < 0);
-const armyRank = () => F('major') ? 'Major' : S.year < 1800 ? 'Ensign' : S.year < 1807 ? 'Lieutenant' : 'Captain';
 
 const EDMUND = [
   /* ---------- the Army: 52nd Foot ---------- */

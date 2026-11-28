@@ -43,11 +43,6 @@ body.intro #verso::after, body.reading #verso::after{content:none}
 /* the flyleaf: marbled endpaper facing the title page */
 body.intro #tabs, body.intro #ribbon{display:none}
 body.intro .page{min-height:0;gap:10px}
-.bookplate{width:min(100%, 21rem);background:var(--sheet);background-image:var(--grain);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.4);outline:1px solid var(--ink);outline-offset:-7px;border:1px solid var(--ink)}
-.bookplate .plate{width:100%}
-.bookplate b{font-family:var(--hand);font-weight:400;font-size:2.5rem;line-height:1}
-.bookplate span{font-family:var(--caps);font-size:.8rem;letter-spacing:.14em;color:var(--muted)}
-.bookplate i{font-family:var(--display);font-size:.95rem}
 
 /* plates, tipped in */
 .plate{position:relative;margin:0;border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:3px;background:#dcd8c4;overflow:hidden;line-height:0}
@@ -71,7 +66,6 @@ h3{font-family:var(--caps);font-weight:400;letter-spacing:.12em;font-size:.86rem
 h3.orn{display:flex;align-items:center;gap:12px;color:var(--ink)}
 h3.orn::before, h3.orn::after{content:"";flex:1;height:5px;background:var(--ink)}
 h3.orn::before{clip-path:polygon(0 50%, 100% 0, 100% 100%)} h3.orn::after{clip-path:polygon(0 0, 100% 50%, 0 100%)}
-.swell{height:5px;background:var(--ink);clip-path:polygon(0 50%, 50% 0, 100% 50%, 50% 100%);margin:2px 12%;flex:none}
 
 /* the account */
 .tablewrap{overflow-x:auto;flex:none}   /* never squeezed: the page scrolls before the account loses its total */
@@ -106,10 +100,6 @@ table.acct tr.total .n{font-size:1.3rem}
 .meter u{position:absolute;left:0;bottom:1px;height:5px;background:var(--ink);transition:width .6s}
 .meter b{font-family:var(--hand);font-weight:400;font-size:1.45rem;line-height:1;text-align:right;white-space:nowrap}
 .meter.low b{color:var(--bad)} .meter.low u{background:var(--bad)}
-.rents{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:auto;border-top:1px solid var(--ink);padding-top:8px}
-.rents button{background:transparent;border:2px solid transparent;border-radius:50%;padding:4px 16px;min-height:44px;font-family:var(--hand);font-size:1.6rem;line-height:1}
-.rents button.on{border-color:var(--ink);transform:rotate(-2deg)}
-.rents button:hover:not(.on){background:var(--wash)}
 .fine{font-size:.85rem;color:var(--muted);margin:0;font-style:italic} .fine b{font-style:normal;color:var(--ink)}
 .born{line-height:1.45}
 
@@ -183,8 +173,6 @@ table.acct tr.total .n{font-size:1.3rem}
 .lots details > div{padding:0 0 12px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .lots details p{margin:0;font-size:.95rem;line-height:1.4} .lots .terms{color:var(--muted);font-size:.86rem} .lots .terms em{color:var(--bad)}
 .lots .tag{font-family:var(--caps);font-style:normal;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:7px} .lots b small{display:inline-block;font-size:.8rem;color:var(--muted);margin-left:6px;white-space:nowrap}
-.lots details.more > summary span{font-family:var(--caps);font-size:.78rem;color:var(--muted)} .lots details.more > summary span::after{content:" \25BE"} .lots details.more[open] > summary span::after{content:" \25B4"}
-.lots details.more > .lots{padding:0 0 0 18px;border-top:0;gap:0;align-items:stretch} .lots details.more > .lots > details:last-child > summary, .lots details.more > .lots > details:last-child > div{border-bottom:0}
 .lots details.off > summary b, .lots details.off > summary .amt, .lots details.off .fx li{color:var(--muted);opacity:.6} .lots details.off > summary b{text-decoration:line-through;text-decoration-thickness:1px}
 .bal dd small{font-family:var(--caps);font-size:.72rem;letter-spacing:.08em;color:var(--muted);margin-left:8px;white-space:nowrap}
 .choice em .amt{font-size:1.08rem}
@@ -203,21 +191,8 @@ details:not([open]) > :not(summary){display:none}
 .lots .acts{display:flex;flex-wrap:wrap;gap:8px} .lots .inkbtn{min-height:38px;padding:6px 12px}
 .bal.slim dd{white-space:nowrap}
 .qtitle sup{font-family:var(--caps);font-size:.72rem;letter-spacing:.12em;color:var(--madder);margin-left:10px;vertical-align:top}
-table.roll .lv{display:flex;flex-wrap:wrap;gap:4px 6px;padding:2px 0 6px} table.roll .lv button{background:none;border:1px solid transparent;border-radius:50%;padding:1px 10px;font-family:var(--hand);font-size:1.2rem;line-height:1.1} table.roll .lv button.on{border-color:var(--ink)} table.roll .lv button:last-child:not([aria-pressed]){font-family:var(--caps);font-size:.74rem;letter-spacing:.06em;border:1px solid var(--ink);border-radius:0;padding:4px 8px}
 .prose > img{float:right;width:46%;aspect-ratio:3/2;object-fit:cover;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.1);margin:4px 0 6px 14px;outline:1px solid var(--ink);outline-offset:2px}
 @media (max-width:520px){ .prose > img{float:none;width:100%;margin:0 0 10px} }
-.works{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.works li{border-bottom:1px solid var(--rule);padding:9px 0 8px}
-.works li div{display:flex;justify-content:space-between;gap:12px;align-items:center}
-.works b{font-family:var(--display);font-weight:400;font-size:1.2rem;line-height:1.2;min-width:0}
-.works .inkbtn{flex:none}
-.works small{display:block;color:var(--muted);font-size:.86rem;line-height:1.35;padding-top:2px} .works small.why{color:var(--bad);font-style:italic}
-.works q{display:block;font-style:italic;font-size:.9rem;line-height:1.4;margin-top:3px;quotes:none}
-.works.done b{color:var(--muted)}
-.works .cost{flex:none;font-family:var(--display);font-size:1.15rem}
-table.roll td:first-child small{display:block;font-family:var(--body);font-size:.86rem;line-height:1.3;color:var(--muted)}
-table.roll td:first-child em{display:block;font-family:var(--display);font-size:.88rem;line-height:1.3;padding-bottom:4px}
-table.roll .n{width:4rem;vertical-align:top;padding-top:10px} table.roll tr.total .n{padding-top:6px}
 .chart{width:100%;height:auto;display:block} .chart rect{fill:var(--ink)} .chart rect.now{fill:var(--madder)}
 .chart .rule{stroke:var(--redrule);stroke-dasharray:3 3;stroke-width:1} .chart .axis{stroke:var(--ink);stroke-width:1}
 .chart text{fill:var(--muted);font-family:var(--caps);font-size:9px;letter-spacing:.05em}
@@ -369,14 +344,13 @@ details.pick .opts button small i{display:block;font-style:normal;font-family:va
 details.pick .opts{max-height:min(30rem, 80vh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);left:auto;width:min(35rem, calc(100vw - 60px))} details.pick .opts > button{grid-column:1/-1;border-bottom:1px solid var(--rule)!important}
 details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details.pick .opts > div + div{border-left:1px solid var(--rule)} details.pick .opts > div button:last-child{border-bottom:0}
 @media (max-width:1080px){ details.pick .opts{left:0;width:auto;grid-template-columns:minmax(0,1fr)} details.pick .opts > div + div{border-left:0;border-top:1px solid var(--rule)} }
-.lots .rungs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-self:stretch}
 .lots .rung{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:6px 9px;color:var(--ink);cursor:pointer;transition:background .12s, box-shadow .12s}
 .lots .rung b{font-family:var(--caps);font-size:.82rem;letter-spacing:.08em} .lots .rung small{font-size:.8rem;line-height:1.25;color:var(--muted)} .lots .rung .fx{font-size:.9rem;line-height:1.25}
 .lots .rung:hover:not(:disabled):not(.what):not(.now), .lots button.rung:focus-visible{background:var(--sheet);border-color:var(--ink);box-shadow:1px 3px 7px rgba(40,30,20,.25)}
 .lots .rung.now{background:var(--sheet);border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--madder);cursor:default} .lots .rung:disabled:not(.now){opacity:.5;cursor:not-allowed}
 .lots .rung.now b::before{content:"\261E\FE0E  ";color:var(--madder)}
 .lots.flat > h3.orn{margin:10px 0 2px} .lots summary span .tag{margin-right:9px}
-@media (max-width:520px){ .lots .rungs{grid-template-columns:minmax(0,1fr)} #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
+@media (max-width:520px){ #tabs{grid-template-columns:repeat(5,minmax(0,1fr))} #tabs button{font-size:.68rem;letter-spacing:.02em} #tabs button img{display:none} }
 .favours #pts i{font-style:normal;color:var(--muted);opacity:.7}
 
 /* the household: every dial a row of toggles with its figure beside the name */
