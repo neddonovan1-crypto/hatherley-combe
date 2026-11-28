@@ -179,7 +179,8 @@ function letting(){ while (S.letQueue && S.letQueue.length){ const x = S.letQueu
 function owing(){ while (S.payQueue && S.payQueue.length){ const f = farm(S.payQueue[0]); if (f && !f.void && f.arrears >= 1) return f; S.payQueue.shift(); } return null; }
 function sign(f, type, years, level, rent){ f.lease = type === 'will' ? {type:'will'} : {type, ends:S.year + years, years, level}; f.level = level; if (rent) f.rent = rent; if (!f.since) f.since = 1788; S.letQueue.shift(); }
 /* What a choice on the letting paper does to the rent now paid: the change, not the rent itself, which the squire has already. */
-const rentNote = (f, r, tail) => { const d = r - f.rent; return (d > 0 ? '+' + fmt(d) + ' a year' : d < 0 ? '−' + fmt(-d) + ' a year' : 'The rent as it stands') + ', ' + tail; };
+/* The rent itself, and after it what that is against the rent now paid. */
+const rentNote = (f, r, tail) => { const d = r - f.rent; return fmt(r) + ' a year (' + (d > 0 ? '+' + fmt(d) : d < 0 ? '−' + fmt(-d) : 'as it stands') + '), ' + tail; };
 const willNext = f => { const v = lettingValue(f, S.year); return five(v > f.rent ? Math.min(v, f.rent * 1.12) : Math.max(v, f.rent * 0.9)); };
 const cornNow = f => five(0.86 * f.base * farmF(f) * (0.5 * means(S.year - 1) + 0.5 * market(S.year)));
 const LONG_LEASE = 0.96;   // fourteen years are bought with a twenty-fifth off the rent
