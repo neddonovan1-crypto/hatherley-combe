@@ -44,7 +44,7 @@ function render(){
     stage.innerHTML = `<figure class="plate band${artURL('frontispiece') ? ' has' : ''}">${sceneSVG(1)}${platePic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
     const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
     $('verso').innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>'; $('verso').appendChild(told);
-    $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
+    $('tabs').innerHTML = ''; if (typeof drawPlan === 'function') drawPlan(); syncTraits(); fitLeaf(); window.scrollTo({top:0}); return; }
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }
