@@ -8,28 +8,29 @@ const footing = () => typeof establishment === 'function' ? establishment().id :
 const farmAt = id => (typeof farmsList === 'function' && farmsList().some(f => f.id === id)) || (typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id));
 
 /* n: the name lettered on the plan. at: where the lettering sits, in hundredths of the sheet. pic: the aquatint shown on the place's paper. */
+/* at: where the name is hung, in hundredths of the sheet. by: which side of that point the label lies (a above, b below, l left, r right), so that however long a label grows it grows away from the thing it names. None: it is centred on open ground. */
 const PLACES = {
-  hall:{n:'Hatherley Hall', at:[50.5, 58.6], pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
-  home:{n:'The Home Farm', at:[67, 45], pic:() => 'places/estate-office'},
-  longbarrow:{n:'Long Barrow', at:[42.5, 27.2], farm:'longbarrow', pic:() => 'places/long-barrow-farm'},
-  kennet:{n:'Kennet Bottom', at:[75.5, 68.4], farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
-  church:{n:'Church Farm', at:[33.5, 68.6], farm:'church', pic:() => 'places/twelve-acres'},
-  vestry:{n:'The Church', at:[21.5, 40.6], pic:() => 'places/church-and-vestry'},
-  common:{n:'The Common', at:[15, 33.5], farm:'commonpiece', pic:() => farmAt('commonpiece') ? 'places/common-piece' : F('enclosed') ? 'places/common-enclosed' : 'places/common'},
-  mill:{n:'The Mill', at:[65, 80.5], pic:() => isBuilt('mill') ? 'places/mill-new' : 'places/mill-old'},
-  lane:{n:'Kintbury Lane', at:[8.6, 51.2], pic:() => isBuilt('road') ? 'places/kintbury-lane-mended' : 'places/kintbury-lane'},
-  copse:{n:'Cuckoo Copse', at:[75.5, 46.4], pic:() => 'places/cuckoo-copse'},
-  hanger:{n:'Hanger Wood', at:[61, 21.6], pic:() => 'places/gallows-piece'},
+  hall:{n:'Hatherley Hall', at:[50.5, 56.4], by:'b', pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
+  home:{n:'The Home Farm', at:[67, 45.3], by:'a', pic:() => 'places/estate-office'},
+  longbarrow:{n:'Long Barrow', at:[43.5, 28], by:'a', farm:'longbarrow', pic:() => 'places/long-barrow-farm'},
+  kennet:{n:'Kennet Bottom', at:[75, 67.9], by:'b', farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
+  church:{n:'Church Farm', at:[29.4, 64.5], by:'l', farm:'church', pic:() => 'places/twelve-acres'},
+  vestry:{n:'The Church', at:[21, 41], by:'a', pic:() => 'places/church-and-vestry'},
+  common:{n:'The Common', at:[22, 32], farm:'commonpiece', pic:() => farmAt('commonpiece') ? 'places/common-piece' : F('enclosed') ? 'places/common-enclosed' : 'places/common'},
+  mill:{n:'The Mill', at:[62.4, 78.4], by:'r', pic:() => isBuilt('mill') ? 'places/mill-new' : 'places/mill-old'},
+  lane:{n:'Kintbury Lane', at:[10, 51.2], by:'b', pic:() => isBuilt('road') ? 'places/kintbury-lane-mended' : 'places/kintbury-lane'},
+  copse:{n:'Cuckoo Copse', at:[75.5, 45], by:'b', pic:() => 'places/cuckoo-copse'},
+  hanger:{n:'Hanger Wood', at:[58, 22.4], by:'b', pic:() => 'places/gallows-piece'},
   down:{n:'The Down', at:[48.6, 11.4], pic:() => 'places/down-beacon'},
-  castle:{n:'Cullerne Castle', at:[88.6, 14.4], pic:() => 'places/cullerne-castle'},
-  london:{n:'London', at:[77.5, 6.6], pic:() => 'places/london-season'},
-  wyvern:{n:'Wyvern', at:[93.2, 41.2], pic:() => 'places/market-place'},
-  turnpike:{n:'The London Road', at:[92.6, 27], pic:() => 'places/milestone'},
-  rooksnest:{n:'Rooksnest', at:[66, 26.2], farm:'rooksnest', if:() => farmAt('rooksnest'), pic:() => 'places/rooksnest-farm'},
-  coldharbour:{n:'Coldharbour', at:[82.5, 22.6], farm:'coldharbour', if:() => farmAt('coldharbour'), pic:() => 'places/coldharbour-farm'},
-  withymead:{n:'Withy Mead', at:[10.5, 68.6], farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
-  maddle:{n:'Maddle Farm', at:[20.5, 20.6], farm:'maddle', if:() => farmAt('maddle'), pic:() => 'places/maddle-farm'},
-  starveall:{n:'Starveall', at:[86, 62], farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
+  castle:{n:'Cullerne Castle', at:[89, 11.9], by:'b', pic:() => 'places/cullerne-castle'},
+  london:{n:'London', at:[74.4, 9], by:'l', pic:() => 'places/london-season'},
+  wyvern:{n:'Wyvern', at:[89.6, 38.2], by:'l', under:true, pic:() => 'places/market-place'},
+  turnpike:{n:'The London Road', at:[88.8, 32.6], by:'l', pic:() => 'places/milestone'},
+  rooksnest:{n:'Rooksnest', at:[66, 31.6], by:'b', farm:'rooksnest', if:() => farmAt('rooksnest'), pic:() => 'places/rooksnest-farm'},
+  coldharbour:{n:'Coldharbour', at:[79.3, 25.6], by:'l', farm:'coldharbour', if:() => farmAt('coldharbour'), pic:() => 'places/coldharbour-farm'},
+  withymead:{n:'Withy Mead', at:[11.9, 74.5], by:'r', farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
+  maddle:{n:'Maddle Farm', at:[18.4, 24.6], by:'r', farm:'maddle', if:() => farmAt('maddle'), pic:() => 'places/maddle-farm'},
+  starveall:{n:'Starveall', at:[86, 60], by:'b', farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
 };
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
 const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', lbfold:'longbarrow', churchhouse:'church', coldyards:'coldharbour', coldclover:'coldharbour', starveburn:'starveall', starvepond:'starveall', cplime:'common', cpcloses:'common', rookdrain:'rooksnest', rookgranary:'rooksnest', withybank:'withymead', withybarn:'withymead', maddlehouse:'maddle', maddlesainfoin:'maddle', homeyards:'home', enclosure:'common', commonpiece:'common', pound:'common', cricket:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
@@ -199,10 +200,14 @@ function landLblHTML(){
   const caller = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : '';
   const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
   const todo = toDoAt();
+  const by = p => p.by ? ' by-' + p.by : '';
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
-    if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
-    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : p.farm && toLet(p.farm) ? `onclick="goLease('${id}')"` : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : p.farm && toLet(p.farm) && caller !== id ? '<em class="let">Negotiate lease</em>' : ''}<span>${esc(p.n)}</span>${todo.w.has(id) ? `<i class="todo" title="Works to be put in hand">${pic('icons/todo-works', 'Works to be put in hand')}</i>` : ''}${todo.v.has(id) ? `<i class="todo" title="Ventures untried">${pic('icons/todo-ventures', 'Ventures untried')}</i>` : ''}${heldAs(p.farm)}</button>`; }).join('');
-  return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
+    if (caller !== id && !placeHas(id)) return `<span class="lbl mute${by(p)}" data-k="${id}" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
+    return `<button class="lbl tag${by(p)}${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" data-k="${id}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : p.farm && toLet(p.farm) ? `onclick="goLease('${id}')"` : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 || p.by === 'b' || p.under ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : p.farm && toLet(p.farm) && caller !== id ? '<em class="let">Negotiate lease</em>' : ''}<span>${esc(p.n)}</span>${todo.w.has(id) ? `<i class="todo" title="Works to be put in hand">${pic('icons/todo-works', 'Works to be put in hand')}</i>` : ''}${todo.v.has(id) ? `<i class="todo" title="Ventures untried">${pic('icons/todo-ventures', 'Ventures untried')}</i>` : ''}${heldAs(p.farm)}</button>`; }).join('');
+  return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}${keyHTML()}`; }
+/* The surveyor's explanation of his marks, in the corner of the sheet where there is nothing but meadow. */
+function keyHTML(){ const row = (mark, words) => `<p>${mark}<span>${words}</span></p>`;
+  return `<div class="key" data-k="key"><b>Explanation</b>${row(`<i>${pic('icons/todo-works', '')}</i>`, 'Works not yet in hand')}${row(`<i>${pic('icons/todo-ventures', '')}</i>`, 'Ventures not yet tried')}${row(`<i>${pic('icons/ride', '')}</i>`, 'Business for the season')}${row('<em>For sale</em>', 'Land to be bought')}${row('<em class="let">Negotiate lease</em>', 'A farm without a lease')}</div>`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
 function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${line}</p><button class="act" onclick="${act}"><span>${label}</span></button></div>`;
@@ -272,21 +277,39 @@ function turnHall(){ ROUND = true; if (!window.customElements || !customElements
 
 let LANDKEY = '';
 /* A new sheet is laid over the old only when every picture on it is ready to be shown, so the plan is never seen bare between quarters. */
-function layArt(el, h){ if (!el.firstChild) { el.innerHTML = h; return; }
+function laySwap(el, h){ if (!el.firstChild) { el.innerHTML = h; return; }
   const d = document.createElement('div'), tok = el._tok = {}; d.innerHTML = h;
   const lay = () => { if (el._tok !== tok) return; el._tok = null; el.replaceChildren(...d.childNodes); };
   Promise.all([...d.querySelectorAll('img')].map(i => i.decode ? i.decode().catch(() => {}) : 0)).then(lay); setTimeout(lay, 4000); }
+/* And it is laid over by degrees: one season's colouring goes out as the next comes in, and a thing newly built comes up out of the paper. */
+const LAYSECS = 1.8;
+function layArt(el, h){ const d = document.createElement('div'); d.className = 'lay'; d.innerHTML = h; if (!el.firstChild) { el.appendChild(d); return; }
+  const tok = el._tok = {};
+  const lay = () => { if (el._tok !== tok) return; el._tok = null; const old = [...el.children], calm = CALM(); if (!calm) d.classList.add('in'); el.appendChild(d); setTimeout(() => old.forEach(o => o.remove()), calm ? 0 : LAYSECS * 1000 + 100); };
+  Promise.all([...d.querySelectorAll('img')].map(i => i.decode ? i.decode().catch(() => {}) : 0)).then(lay); setTimeout(lay, 4000); }
+/* The names, the marks and the moving things are never swept off and set out afresh. Each is kept where it stands and only what has changed about it is altered, so that nothing on the sheet blinks when a paper is taken up or put down.
+   A thing with a data-k is known by it and mended in place; anything else is known by its own writing. fade: what is new comes in by degrees and what is gone goes out so. */
+function patchKids(el, h, fade){ const d = document.createElement('div'); d.innerHTML = h; const old = new Map(); for (const o of el.children) if (!o._out) old.set(o._k, o);
+  for (const n of [...d.children]) { const src = n.outerHTML, k = n.dataset.k || src, o = old.get(k);
+    if (o && o.tagName === n.tagName) { old.delete(k); if (o._src === src) continue; o._src = src;
+      for (const a of ['class', 'style', 'onclick', 'title']) { const v = n.getAttribute(a); if (v === null) o.removeAttribute(a); else if (o.getAttribute(a) !== v) o.setAttribute(a, v); }
+      const inn = n.innerHTML; if (o._in !== inn) { o._in = inn; laySwap(o, inn); } continue; }
+    if (o) { old.delete(k); o.remove(); }
+    n._k = k; n._src = src; n._in = n.innerHTML; if (fade && !CALM()) { n.classList.add('in'); setTimeout(() => n.classList.remove('in'), LAYSECS * 1000 + 100); } el.appendChild(n); }
+  for (const o of old.values()) { if (fade && !CALM()) { o._out = true; o.classList.add('out'); setTimeout(() => o.remove(), LAYSECS * 1000); } else o.remove(); } }
+/* A part of the page is written again only when its words have changed. */
+function setHTML(el, h){ if (el._h === h && el.firstChild) return false; el._h = h; el.innerHTML = h; return true; }
 function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.toggle('planview', on); $('plan').hidden = !on; drawPlate(); if (!on) { LANDKEY = ''; return; }
   const land = $('land'), sheet = $('sheet'), p = PLACES[SHEET];
   /* the sheet itself is redrawn only when what is on it changes, so the moving picture does not start again at every touch */
   const key = JSON.stringify([S.season, piecesOn(), armsOf(), S.phase, S.pending, PLATEUP, SHEET, Object.keys(PLACES).filter(placeOn)]);
   if (!$('landart')) land.innerHTML = '<div id="landart"></div><div id="landmot"></div><div id="landlbl"></div>';
-  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { el._h = h; if (k === 'landart') layArt(el, h); else el.innerHTML = h; } }
+  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { const fresh = el._h === undefined; el._h = h; if (k === 'landart') layArt(el, h); else patchKids(el, h, k === 'landmot' && !fresh); } }
   if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key;
     const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
-  $('cart').innerHTML = cartHTML();
+  setHTML($('cart'), cartHTML());
   whenIdle(warmQuarter);
   const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
   sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
-  sheet.innerHTML = SHEET ? sheetHTML() : ''; sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
+  const sh = SHEET ? sheetHTML() : ''; if (sheet._h !== sh) { sheet._h = sh; sheet.innerHTML = sh; } sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
 addEventListener('keydown', e => { if (e.key !== 'Escape' || !S) return; if (PROGRESS >= 0) shutProgress(); else if (SHEET && VIEW === 'plan' && !PLATEUP) shutSheet(); });

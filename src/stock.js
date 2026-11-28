@@ -11,6 +11,11 @@ const STRIPS = {
   horse:{n:21, walk:10, down:5, nib:6, r:105 / 160, w:3.7, beat:1.7, stride:.36},
   sheep:{n:19, walk:8, down:5, nib:6, r:59 / 110, w:2.3, beat:1.3, stride:.3},
   coach:{n:8, walk:8, r:118 / 360, w:6.8, beat:.5},
+  /* The coach again, as it is seen on a road that runs down the sheet: coming on and going away, at a slant (q, r) and nearly end on (f, a). */
+  coachq:{n:8, walk:8, r:199 / 300, w:5.6, beat:.5},
+  coachr:{n:8, walk:8, r:212 / 300, w:5.6, beat:.5},
+  coachf:{n:8, walk:8, r:347 / 130, w:2.1, beat:.5},
+  coacha:{n:8, walk:8, r:345 / 130, w:2.1, beat:.5},
   wagon:{n:10, walk:10, r:108 / 320, w:5.1, beat:1.4}
 };
 /* Herds. s: the strip. at: the middle of their ground. reach: how far they stray from it. k: how many. on: when they are out. */
@@ -26,10 +31,13 @@ const HERDS = [
   {s:'horse', at:[48.5, 89.5], reach:5, k:1, on:() => S.season < 3}
 ];
 /* Roads. Each is walked one way, then after a wait the other, and the thing fades at either end where the road leaves the sheet or goes into a yard.
-   pts: left, top, in hundredths. grow: breadth at the far end over breadth at the near, for a road coming down the sheet. secs: a journey. */
+   pts: left, top, in hundredths. grow: breadth at the far end over breadth at the near, for a road coming down the sheet. secs: a journey.
+   views: the drawings of the thing. side is drawn travelling left. q comes on down the sheet to the left and r goes away up it to the right, both at about ROAD_SLANT degrees; f comes straight down and a goes straight up.
+   Whichever lies nearest the road is shown, and turned the few degrees that remain, so that a carriage always points the way it goes. */
+const ROAD_SLANT = 28;
 const ROADS = [
-  {s:'coach', secs:34, grow:[.5, 1], wait:[14, 50], pts:[[93.6, 19.4], [94.9, 22.4], [94.3, 25.4], [92.2, 28.4], [90.7, 31.6], [90.1, 35.4], [90.5, 39.4], [91.6, 43.4], [93.2, 47.2], [95.6, 50.4]]},
-  {s:'wagon', secs:62, grow:[1, 1], wait:[20, 70], pts:[[93.4, 48.9], [88, 50.5], [82, 52], [77, 52.1], [71, 50.4], [68.2, 48.4]]}
+  {s:'coach', views:{side:'coach', q:'coachq', r:'coachr', f:'coachf', a:'coacha'}, secs:34, grow:[.5, 1], wait:[14, 50], pts:[[93.6, 19.4], [94.9, 22.4], [94.3, 25.4], [92.2, 28.4], [90.7, 31.6], [90.1, 35.4], [90.5, 39.4], [91.6, 43.4], [93.2, 47.2], [95.6, 50.4]]},
+  {s:'wagon', views:{side:'wagon'}, secs:62, grow:[1, 1], wait:[20, 70], pts:[[93.4, 48.9], [88, 50.5], [82, 52], [77, 52.1], [71, 50.4], [68.2, 48.4]]}
 ];
 /* Ground the stock must keep off: whatever has been built or set going, save the pieces that are themselves grass. */
 const STOCK_FREE = ['london', 'common', 'sheepwalk', 'meadows', 'drain', 'paddock', 'hall-old', 'hall-front', 'parterre', 'carriage'];
@@ -45,10 +53,24 @@ function stockSpot(h, from){ for (let i = 0; i < 24; i++) { const a = rnd(0, 6.2
     return p; } return null; }
 function stockHTML(calm){ let h = '';
   HERDS.forEach((g, gi) => { if ((g.on && !g.on()) || !ART.has('plan/s/' + g.s + '-walk.webp')) return; for (let i = 0; i < g.k; i++) h += stockEl(g.s, 'h' + gi + '.' + i); });
-  ROADS.forEach((g, gi) => { if (!calm && ART.has('plan/s/' + g.s + '-walk.webp')) h += stockEl(g.s, 'r' + gi); });
+  ROADS.forEach((g, gi) => { if (!calm && ART.has('plan/s/' + g.s + '-walk.webp')) h += roadEl(g, 'r' + gi); });
   return h; }
 /* Each creature has two faces laid one upon the other, looking left and looking right, and only one is shown. Turning it by a transform made some browsers draw the strip afresh, and the beast went out for a moment as it turned. */
 const stockEl = (s, id) => { const t = STRIPS[s], face = `style="background-image:url(art/plan/s/${s}-walk.webp);background-size:${t.n * 100}% 100%"`; return `<i class="stock" data-b="${id}" style="aspect-ratio:${(1 / t.r).toFixed(3)}"><b ${face}></b><b class="r" ${face}></b></i>`; };
+const stockFace = (s, t) => `style="background-image:url(art/plan/s/${s}-walk.webp);background-size:${t.n * 100}% 100%"`;
+const roadViews = g => Object.values(g.views).filter(s => STRIPS[s] && ART.has('plan/s/' + s + '-walk.webp'));
+const roadEl = (g, id) => `<i class="stock road" data-b="${id}">${roadViews(g).map(s => `<b data-s="${s}" ${stockFace(s, STRIPS[s])}></b><b class="r" data-s="${s}" ${stockFace(s, STRIPS[s])}></b>`).join('')}</i>`;
+/* Which drawing suits a heading, whether it is to be shown in the glass, and how far it must be turned. vx, vy: the way it goes across the sheet, right and down. */
+function roadView(g, vx, vy){ const have = roadViews(g), steep = Math.atan2(Math.abs(vy), Math.abs(vx)) * 57.2958, right = vx > 0, down = vy > 0, turn = (down ? 1 : -1) * (right ? 1 : -1);
+  const end = down ? g.views.f : g.views.a, slant = down ? g.views.q : g.views.r;
+  if (steep > 52 && have.includes(end)) return {s:end, flip:false, rot:(90 - steep) * (down ? -1 : 1) * (right ? 1 : -1), foot:56};
+  if (steep > 18 && have.includes(slant)) return {s:slant, flip:down ? right : !right, rot:Math.max(-24, Math.min(24, steep - ROAD_SLANT)) * turn, foot:74};
+  return {s:g.views.side, flip:right, rot:Math.min(steep, 20) * turn, foot:94}; }
+function roadShow(el, v, x, y, frame, size, fade){ const t = STRIPS[v.s], st = el.style;
+  st.left = x.toFixed(2) + '%'; st.top = y.toFixed(2) + '%'; st.width = (t.w * size).toFixed(2) + '%'; st.aspectRatio = (1 / t.r).toFixed(3); st.translate = '-50% -' + v.foot + '%'; st.rotate = v.rot.toFixed(1) + 'deg';
+  const at = (t.n > 1 ? frame / (t.n - 1) * 100 : 0) + '%';
+  for (const b of el.children) { const on = b.dataset.s === v.s && b.classList.contains('r') === v.flip; if (on) b.style.backgroundPositionX = at; b.style.opacity = on ? 1 : 0; }
+  st.opacity = fade; st.visibility = 'visible'; }
 const stockFar = y => .74 + y * .0042;
 function stockShow(el, t, x, y, frame, left, size, fade){ const st = el.style;
   st.left = x.toFixed(2) + '%'; st.top = y.toFixed(2) + '%'; st.width = (t.w * size).toFixed(2) + '%';
@@ -71,11 +93,17 @@ function stockRoad(o, g, t, dt){
   if (!o.len) { o.seg = []; o.len = 0; for (let i = 1; i < g.pts.length; i++) { const d = Math.hypot(g.pts[i][0] - g.pts[i - 1][0], (g.pts[i][1] - g.pts[i - 1][1]) * 1.5); o.seg.push(d); o.len += d; } o.u = rnd(0, 1); o.back = Math.random() < .5; o.wait = 0; o.c = 0; }
   if (o.wait > 0) { o.wait -= dt; return false; }
   o.c += dt; o.u += dt / g.secs;
-  if (o.u >= 1) { o.u = 0; o.back = !o.back; o.wait = rnd(g.wait[0], g.wait[1]); return false; }
+  if (o.u >= 1) { o.u = 0; o.v = null; o.back = !o.back; o.wait = rnd(g.wait[0], g.wait[1]); return false; }
   const u = o.back ? 1 - o.u : o.u; let d = u * o.len, i = 0; while (i < o.seg.length - 1 && d > o.seg[i]) d -= o.seg[i++];
   const a = g.pts[i], b = g.pts[i + 1], k = o.seg[i] ? d / o.seg[i] : 0;
   o.p = [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]; o.size = g.grow[0] + (g.grow[1] - g.grow[0]) * u;
+  /* its heading is taken a little before and a little behind, so that it comes round a bend by degrees */
+  const p0 = roadAt(o, g, u * o.len - 1.3), p1 = roadAt(o, g, u * o.len + 1.3), way = o.back ? -1 : 1, v = roadView(g, (p1[0] - p0[0]) * 1.5 * way, (p1[1] - p0[1]) * way);
+  /* and it does not change one drawing for another, and back, upon a road that lies between the two */
+  if (!o.v || o.v.s === v.s) { o.v = v; o.hold = 0; } else if ((o.hold += dt) > .7) { o.v = v; o.hold = 0; }
   o.fade = Math.min(1, o.u / .06, (1 - o.u) / .06); o.left = !o.back; o.f = Math.floor(o.c / t.beat * t.walk) % t.walk; return true; }
+function roadAt(o, g, d){ d = Math.max(0, Math.min(o.len, d)); let i = 0; while (i < o.seg.length - 1 && d > o.seg[i]) d -= o.seg[i++];
+  const a = g.pts[i], b = g.pts[i + 1], k = o.seg[i] ? Math.min(1, d / o.seg[i]) : 0; return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]; }
 let STOCK_AT = 0;
 function stockTick(now){ requestAnimationFrame(stockTick);
   const dt = Math.min(.5, (now - STOCK_AT) / 1000); if (dt < .08) return; STOCK_AT = now; stockStep(dt); }
@@ -87,5 +115,5 @@ function stockStep(dt){
   for (const el of els) { const id = el.dataset.b, road = id[0] === 'r', g = (road ? ROADS : HERDS)[parseInt(id.slice(1))], t = STRIPS[g.s]; let o = STOCK.get(id); if (!o) STOCK.set(id, o = {});
     const up = road ? stockRoad(o, g, t, dt) : stockBeast(o, g, t, calm ? 0 : dt);
     if (!up) { el.style.visibility = 'hidden'; continue; }
-    stockShow(el, t, o.p[0], o.p[1], o.f || 0, o.left, road ? o.size : stockFar(o.p[1]), road ? o.fade : 1); } }
+    if (road) roadShow(el, o.v, o.p[0], o.p[1], o.f || 0, o.size, o.fade); else stockShow(el, t, o.p[0], o.p[1], o.f || 0, o.left, stockFar(o.p[1]), 1); } }
 if (typeof requestAnimationFrame === 'function') requestAnimationFrame(stockTick);
