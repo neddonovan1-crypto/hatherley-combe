@@ -92,9 +92,9 @@ At half past five this morning, being Thursday, a chaise and four from London lo
 
 “It was on Sunday, sir, at a place called Waterloo. Bonaparte is beat, and his army is gone.”
 
-He lets you read the paper while he eats. A hundred and fifty guns are taken, and two eagles, which were put out at the windows of a post-chaise in St James’s Square last night at eleven. He means, when he has a wheel, to go through Wyvern standing up in the chaise, and to cry it at every turnpike as far as Bristol.
+He lets you read the paper while he eats: a hundred and fifty guns taken, and two eagles, which were put out at the windows of a post-chaise in St James’s Square last night at eleven. He means, when he has a wheel, to go through Wyvern standing up in the chaise, and to cry it at every turnpike as far as Bristol.
 
-The wheelwright says an hour. Tidmarsh opens at nine; and until the chaise is upon the road again, nobody in the county but yourself and two post-boys knows what the Captain has in his pocket${hadShutters() ? `. Upon the Down, where the Admiralty put Lieutenant Tregear back into his hut in April, the six shutters stand open to the first of the light, and nothing has yet come down from London` : ''}.`,
+The wheelwright says an hour; Tidmarsh opens at nine; and until the chaise is upon the road again, nobody in the county but yourself and two post-boys knows what the Captain has in his pocket${hadShutters() ? `. Upon the Down, where the Admiralty put Lieutenant Tregear back into his hut in April, the six shutters stand open to the first of the light, and nothing has yet come down from London` : ''}.`,
   choices:[
     {t:'Bid the wheelwright take till noon, and be at Tidmarsh’s counter at nine.', note:() => 'Lays out ' + fmt(newsStake()), if:() => S.money >= 300, go:() => { const stake = newsStake(), gain = Math.round(stake * .35 / 10) * 10, known = chance(.5); add({money:gain}); S.flags.waterloo = known ? 'known' : 'bought'; S.flags.waterlooGain = gain;
       if (known) { add({standing:-5}); reg('hartopp', -2, 'You bought his Omnium upon the morning of the news'); }
@@ -139,3 +139,49 @@ function hazardNotes(){ const P = [], f = S.flags;
 /* The officer's breakfast comes before the Gazette, and both in the summer of 1815: the one is put in front of the other when it is drawn, and the Gazette is opened when the breakfast is done. */
 { const pick = pickEvent; pickEvent = function(){ const id = pick(); if (id === 'waterloo' && !S.seen.waterloo1815) { S.flags.gazetteAt = S.t; return 'waterloo1815'; } return id; };
   const go = next; next = function(){ if (S.phase === 'outcome' && !S.dead && S.flags.gazetteAt === S.t && S.seen.waterloo1815 === S.t && S.seen.waterloo === undefined) { const e = byId('waterloo'); if (e && (!e.cond || e.cond())) { S.pending = 'waterloo'; S.phase = 'event'; save(); render(); window.scrollTo({top:0, behavior:'smooth'}); return; } } go(); }; }
+
+/* ---------- a toll bridge at the Mill, by private Act (Ned, 28 Nov 2026: "like the turnpike which is a bridge toll, through buying an act of parliament") ----------
+   Of record: private bridge Acts and their tolls (Swinford, 1767; Whitchurch, 1792, both upon the Thames and both taking toll yet); the fees paid at every stage of a private Bill;
+   the clause forbidding any ferry within a distance of the bridge; the freedom from toll of persons going to their parish church, which the old Acts did not give to a meeting-house.
+   Invented: Ruddle, Zion Chapel and Mr Bunce, the sums and the tolls. */
+const bridgeCost = () => F('mp') ? 950 : 1100;
+VENTURES.bridge = { fx:["+£95 a year in tolls", "+1 Standing", MINUS + "2 Goodwill", MINUS + "£110 when a flood shakes a pier", "+£800 if sold"], risk:1, odds:{"well": 0.85, "dull": 0.05, "ill": 0.1}, effects:`About £95 a year in tolls. Standing rises a little. Goodwill falls a little while the halfpenny is taken. A flood may cost £110 in a pier. The bridge and its tolls sell for £800. A Member carries his own Bill, and saves £150 of the fees.`,
+  name:'A toll bridge at the Mill, by Act of Parliament', line:'Three arches of brick where the ford is, and a house with a bar at the Hatherley end. A private Act gives you the tolls for ever, and stops the ford.', where:'The Mill',
+  get cost(){ return bridgeCost(); },
+  well:'Every cart for Wyvern market must cross the Kennet somewhere.', ill:'The Kennet comes down brown in February, and carries timber.', state:v => 'Taking toll since ' + v.year,
+  endLabel:'Sell the bridge', end:() => { S.money += 800; return `The bridge is sold to a Newbury brewer for £800, with the house, the bar, the board of tolls and the Act.`; }};
+VENT_PAPERS.bridge = { title:'An Act for Building a Bridge',
+  text:() => `The Bill for building a bridge over the Kennet at Hatherley Mill has been eleven weeks in Parliament, and has paid at every door it went through: to the clerks of the Commons, and to those of the Lords; to the doorkeepers of each House; for the ingrossing, by the skin of parchment; and to a gentleman in the Speaker’s chamber, of whose services to the measure your agent can give no particular account. It has the Royal Assent upon the same afternoon as an Act for paving Shoreditch, and another for the divorce of a Mr Campbell.
+
+The bridge is of brick, with three arches and a hump, and stands forty yards below the mill, where the ford was; and at the Hatherley end of it there is a house of one room, a bar that lifts, and old Ruddle the bargeman, who has the tolls at a shilling in the pound.
+
+“Twopence for the horse, Mr Pocock; and the ford is stopped by Act of Parliament.”
+
+It is stopped with a chain and two posts, the Act having laid down that no person shall carry passengers or cattle over the river for hire within a mile above the bridge, or a mile below it. The miller, whose own flour must now cross to reach the Bath road, pays; reads the board through from the top; and observes that a foot passenger is a halfpenny.
+
+“For every Horse or other Beast drawing any Carriage, 2d. For every Horse, laden or unladen, and not drawing, 1d. For every Score of Oxen, 10d.; of Sheep, 5d. For every Foot Passenger, ½d.”
+
+Upon the first Saturday three hundred and twelve persons cross on foot to Wyvern market; and Ruddle, who cannot write, keeps the tale of them in peas, which he drops into a jug.` };
+VENT_AFTER.bridge = {ev:'ventBridge', wait:3};
+ev({ id:'ventBridge', follow:true, at:'mill', who:() => null, cond:() => live('bridge'), title:'Sunday Toll',
+  text:() => `Upon Sunday forenoon you find Ruddle with his bar down, his jug in his hand, and forty persons standing before him in their best clothes.
+
+“They say it is church, sir, and church goes free; and they are every one for Zion.”
+
+The Act frees from toll any person going to his parish church upon a Sunday, or returning from it; and upon the subject of a meeting-house it is silent. Zion Chapel, which is of brick, with a tin chimney, was opened at Kintbury wharf at Lady Day by a Mr Bunce, a cooper; and the forty are your own cottagers, who went over to it by the ford every Sunday until the ford was chained.
+
+${endVicar()}, crossing the other way to his own church with nothing to pay, has stopped upon the crown of the bridge to hear how it ends.`,
+  choices:[
+    {t:'A meeting-house is a place of worship. Lift the bar.', note:MINUS + '£8 a year', go:() => { fl('bridgeFree'); add({goodwill:3, standing:-1});
+      return `Ruddle lifts the bar, and counts the forty over without his jug. ${endVicar()} walks on to his church, and says nothing; but it is observed in the vestry that upon the Tuesday he paid his own halfpenny at the bridge with a sixpence, and stood for the change.`; }},
+    {t:'The Act says church. A halfpenny a head.', go:() => { add({goodwill:-3, standing:1});
+      return `Thirty-one of the forty pay, and Ruddle has their halfpence in the jug before the first hymn can have been given out at Zion. The other nine go down the bank below the chain, take off their shoes and stockings, and wade it; the cooper, who is one of them, carrying his Bible across upon his head.`; }},
+    {t:'Let them over this once, and take your attorney’s opinion.', note:'£3', go:() => { add({money:-3, goodwill:-2});
+      return `Your attorney at Wyvern is a fortnight with the Act, and three guineas; and he is of opinion that the word is church, that a court would so read it, and that a gentleman who takes toll under an Act of Parliament has no power to forgive one man what he does not forgive to all. Ruddle, having had the opinion read to him twice, puts his bar down upon the next Sunday, and takes nineteen pence.`; }}
+  ]});
+{ const tick = ventureTick;
+  ventureTick = function(line){ tick(line); if (S.dead || S.phase === 'end' || !S.vent || !live('bridge')) return; const y = S.year, q = S.season, v = vent('bridge'); if (y <= v.year) return;
+    if (q === 1) { const a = 95 - (F('bridgeFree') ? 8 : 0); line('Tolls at Hatherley bridge', a); S.yearIncome += a; }
+    if (q === 0 && chance(0.1)) { line('The bridge: a pier underpinned after the flood', -110); S.notes.push('The Kennet came down in February with half a hay-rick and an elm upon it, which lay two days across the middle arch of your bridge; and the mason, who has been under it in a punt, asks a hundred and ten pounds to make the pier good.'); } };
+  const m0 = marks; marks = function(){ const m = m0(), put = (k, n, t) => { if (n) { m.why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); m[k] = clamp(m[k] + n, 5, 95); } };
+    put('standing', live('bridge') ? 1 : 0, 'Hatherley bridge'); put('goodwill', live('bridge') ? -2 : 0, 'The halfpenny at the bridge'); return m; }; }
