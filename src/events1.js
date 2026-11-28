@@ -107,7 +107,7 @@ ev({ id:'fenn', fixed:'1795-3', title:'A Citizen at the Bell',
 
 Every evening at seven he gets upon a settle and reads Tom Paine to the carters. He reads slowly; and whenever he comes to a long word he stops, and tells them what it means.
 
-Crabbe, who has been down to look, stands in your library with his notebook open.
+${F('crabbeGone') ? 'Lark' : 'Crabbe'}, who has been down to look, stands in your library with his notebook open.
 
 “The new Act says fifty, sir. Fifty persons at a political meeting, and they must have a magistrate’s licence. I counted forty-nine. I counted on three nights.” He turns a page. “Forty-nine each night. The fiftieth waits in the yard.”`,
   choices:[

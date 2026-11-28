@@ -382,7 +382,7 @@ details.pick .opts > div{display:flex;flex-direction:column;min-width:0} details
 @media (max-width:520px){ .hh .rung .fx{font-size:.76rem} .hh .rung b{font-size:.74rem;letter-spacing:.04em} }
 
 /* notice to quit: shut until asked for, its cost set out before the button */
-details.evict{margin-top:10px;border-top:1px solid rgba(43,29,16,.3);padding-top:6px} details.evict > summary{list-style:none;cursor:pointer;font-family:var(--caps);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad)} details.evict > summary::-webkit-details-marker{display:none} details.evict .fx{margin:6px 0 8px}
+details.evict{margin-top:10px;border-top:1px solid rgba(43,29,16,.3);padding-top:6px} details.evict > summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;min-height:38px;padding:6px 12px;background:rgba(255,255,255,.25);border:1px solid var(--bad);box-shadow:inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--bad);font-family:var(--caps);font-size:.82rem;letter-spacing:.06em;color:var(--bad);transition:background .15s} details.evict > summary:hover{background:var(--wash)} details.evict > summary::-webkit-details-marker{display:none} details.evict .fx{margin:6px 0 8px}
 
 .hh .rung small{display:block;font-family:var(--display);font-size:.92rem;line-height:1.25;color:var(--muted);margin:2px 0 3px;letter-spacing:0;text-transform:none}
 .hh .rung.what{cursor:default;background:none;display:flex;flex-direction:column;justify-content:center} .hh .rung.what small{color:var(--ink)}

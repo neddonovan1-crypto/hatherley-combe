@@ -27,14 +27,14 @@ const PLACES = {
   turnpike:{n:'The London Road', at:[92.6, 27], pic:() => 'places/milestone'},
   rooksnest:{n:'Rooksnest', at:[66, 26.2], farm:'rooksnest', if:() => farmAt('rooksnest'), pic:() => 'places/rooksnest-farm'},
   coldharbour:{n:'Coldharbour', at:[82.5, 22.6], farm:'coldharbour', if:() => farmAt('coldharbour'), pic:() => 'places/coldharbour-farm'},
-  withymead:{n:'Withy Mead', at:[29, 79], farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
-  maddle:{n:'Maddle Farm', at:[11.5, 22.8], farm:'maddle', if:() => farmAt('maddle'), pic:() => 'places/maddle-farm'},
-  starveall:{n:'Starveall', at:[88, 58.6], farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
+  withymead:{n:'Withy Mead', at:[10.5, 68.6], farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
+  maddle:{n:'Maddle Farm', at:[20.5, 20.6], farm:'maddle', if:() => farmAt('maddle'), pic:() => 'places/maddle-farm'},
+  starveall:{n:'Starveall', at:[86, 62], farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
 };
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
-const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'down', enclosure:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
-const VENT_AT = {plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry'};
-const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london'};
+const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', lbfold:'longbarrow', churchhouse:'church', coldyards:'coldharbour', coldclover:'coldharbour', starveburn:'starveall', starvepond:'starveall', cplime:'common', cpcloses:'common', rookdrain:'rooksnest', rookgranary:'rooksnest', withybank:'withymead', withybarn:'withymead', maddlehouse:'maddle', maddlesainfoin:'maddle', homeyards:'home', enclosure:'common', commonpiece:'common', pound:'common', cricket:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
+const VENT_AT = {dairy:'church', hops:'coldharbour', limekiln:'starveall', potatoes:'common', cherries:'rooksnest', osiers:'withymead', gallops:'maddle', gravel:'common', sheepfair:'common', warren:'common', plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london'};
+const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london', fishing:'mill', shooting:'hanger', underwood:'hanger'};
 const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
@@ -56,15 +56,29 @@ const SIGNS = [[/Kennet/, 'kennet'], [/Long Barrow/, 'longbarrow'], [/Church Far
 function eventPlace(e){ const k = S.t + ':' + e.id; if (k === CALLKEY) return CALLAT; CALLKEY = k;
   const hit = t => { for (const [re, at] of SIGNS) if (re.test(t) && placeOn(at)) return at; return ''; };
   if (BILLS.has(e.id)) return CALLAT = 'wyvern';
-  const text = e.text(), who = whoOf(e.title + ' ' + text);
+  const text = e.text(), who = e.who ? e.who() : whoOf(e.title + ' ' + text);
   return CALLAT = hit(e.title) || (who && livesAt(who) !== 'hall' ? livesAt(who) : '') || hit(text.slice(0, 320)) || 'hall'; }
 
 /* ---------- which view is up ---------- */
-function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; return; }
+/* Pictures are sent for before they are wanted, and the last of them kept in hand, so that no frame is shown empty and the sheet is never bare. */
+const WARM = new Map();
+function warm(list){ for (const u of list) { if (!u || WARM.has(u)) continue; const i = new Image(); i.decoding = 'async'; i.src = u; if (i.decode) i.decode().catch(() => {}); WARM.set(u, i); }
+  while (WARM.size > 120) WARM.delete(WARM.keys().next().value); }
+const whenIdle = f => (window.requestIdleCallback || (g => setTimeout(g, 200)))(f);
+/* While the will is being read: the sheet for the season the game opens in (or was left in), with everything that may stand on it. */
+function warmIntro(){ let q = 0, first = 'events/speen'; try { const s = load(); if (s) { q = s.season; first = ''; } } catch (err) {}
+  warm([artURL('plan/' + q), artURL('arms/esquire'), artURL('plan/hand'), artURL('plan/wheel'), artURL('ui/book-leaf'), artURL('ui/seal'), artURL(first)]
+    .concat([...ART].filter(a => a.startsWith('plan/s/') || (a.startsWith('plan/f/') && a.includes('-' + q + '.')) || a.startsWith('icons/')).map(a => 'art/' + a))); }
+/* In the quarter: the view of every place on the sheet, the cut of whatever is waiting, and next quarter's sheet. */
+function warmQuarter(){ if (!S || S.phase === 'end') return; const q = (S.season + 1) % 4, e = S.phase === 'event' && S.pending && byId(S.pending);
+  const cut = e ? eventCut(e) : '';
+  warm([artURL(cut), artURL('ui/balloon')].concat(Object.keys(PLACES).filter(placeOn).map(id => artURL(PLACES[id].pic())), [artURL('plan/' + q)],
+    piecesOn().map(id => { for (const p of ['plan/f/' + id + '-' + q, 'plan/f/' + id, 'plan/' + id + '-' + q, 'plan/' + id.replace('hall-', '') + '-' + q]) { const u = artURL(p); if (u) return u; } return ''; }))); }
+function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; whenIdle(warmIntro); return; }
   if (!S.plates) S.plates = [];
   const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; PSTEP = k;
   VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
-  if (PLATEUP || VIEW === 'book') { SHEET = ''; WHO = ''; }
+  if (PLATEUP || VIEW === 'book' || (SHEET === 'season' && S.phase !== 'undertake')) { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
 function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
@@ -80,7 +94,7 @@ function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('la
 const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
 const placeCut = at => { const p = PLACES[at]; return (p && p.pic && artURL(p.pic()) && p.pic()) || 'seasons/' + S.season; };
 /* An outcome is struck off once, with its number, and kept for the Progress. */
-function strike(){ const key = S.t + ':' + S.phase; if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
+function strike(){ const key = S.t + ':' + S.phase + (S.phase === 'undone' ? ':' + (S.rides || 0) : ''); if (S.plates.length && S.plates[S.plates.length - 1].key === key) return;
   const o = S.outcome, j = S.journal[0] || {}, under = S.phase === 'undone';
   const src = under ? (o.cut && artURL('undertakings/' + o.cut) ? 'undertakings/' + o.cut : placeCut('hall')) : (S.plateCut || placeCut('hall'));
   S.plates.push({key, title:o.title, src, did:j.did || '', pub:quarterDay(), say:sayOf(o.text)}); delete S.plateCut; save(); }
@@ -91,12 +105,19 @@ function sayOf(text){ const m = /“([^”]{8,})”/.exec(String(text || '').rep
   return q.replace(/,$/, '.'); }
 /* The balloon issues from the speaker's mouth. SAY_AT holds where that is on each cut, in hundredths; a cut with nobody on it gets no balloon. */
 function balloonHTML(src, say){ const at = say && ART.has('ui/balloon.png') && typeof SAY_AT === 'object' ? SAY_AT[src] : null; if (!at) return '';
-  const [mx, my] = at, k = 497 / 900 * 1.5, w = Math.max(36, Math.min(42, (my - 3) / k)), h = w * k, flip = mx > 56;
+  const [mx, my] = at, k = 497 / 900 * 1.5, want = Math.max(30, Math.min(48, 26 + say.length * .24)), w = Math.max(25, Math.min(want, Math.max(38, (my - 3) / k))), h = w * k, flip = mx > 56;
   const left = flip ? Math.max(1, mx - 1.5 - w) : Math.min(99 - w, mx + 1.5), top = Math.max(1, my - 1.5 - h);
-  return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span>${esc(say)}</span></q>`; }
+  return `<q class="balloon${flip ? ' flip' : ''}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${w.toFixed(1)}%"><span><i>${esc(say)}</i></span></q>`; }
+/* The words are set in the largest size the balloon will hold. */
+function fitBalloons(){ for (const box of document.querySelectorAll('.balloon span')) { const t = box.firstElementChild, W = box.clientWidth, H = box.clientHeight; if (!t || !W) continue;
+    let lo = 5, hi = Math.max(6, H / 1.6); for (let n = 0; n < 9; n++) { const m = (lo + hi) / 2; t.style.fontSize = m + 'px'; if (t.offsetHeight <= H && t.scrollWidth <= W) lo = m; else hi = m; }
+    /* kept as a share of the balloon's breadth, so that it holds when the cut loads or the window is resized; and a little under the limit, since a line may break otherwise at another size */
+    t.style.fontSize = (.93 * lo / box.parentNode.clientWidth * 100).toFixed(2) + 'cqw'; } }
+addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the italic is fetched when first set, and is broader than what stood in for it */
+if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
 function plateViewHTML(){
-  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
+  if (S.phase === 'event') { const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : e.who ? e.who() : whoOf(e.title + ' ' + text), cs = e.choices.filter(c => !c.if || c.if());
     const src = eventCut(e) || placeCut(eventPlace(e)); S.plateCut = src;
     return `${printHTML(S.plates.length + 1, src, e.title, quarterDay(), sayOf(text))}
       <div class="pside"><article class="sheet${bill ? ' bill' : ''}">${who ? `<div class="from">${medal(who)}<p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p></div>` : `<p class="kicker">${esc(stamp())}</p>`}<div class="prose">${paras(text)}</div></article>
@@ -119,7 +140,7 @@ function drawPlate(){ const el = $('plate'), up = S && (PROGRESS >= 0 || (VIEW =
   el.hidden = !up; document.body.classList.toggle('plateup', !!up); if (!up) { el.innerHTML = ''; return; }
   const key = PROGRESS >= 0 ? 'p' : PSTEP;
   el.className = PROGRESS >= 0 ? 'gallery' : S.phase === 'event' ? 'asks' : 'tells';
-  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`;
+  el.innerHTML = `<div class="pcard">${PROGRESS >= 0 ? progressHTML() : plateViewHTML()}</div>`; fitBalloons();
   if (el.dataset.key !== key) { el.dataset.key = key; el.scrollTop = 0; const s = el.querySelector('.pside'); if (s) s.scrollTop = 0; const b = el.querySelector('.choice, .go'); if (b) b.focus({preventScroll:true}); } }
 
 /* ---------- the sheet of the plan ---------- */
@@ -129,6 +150,13 @@ function piecesOn(){ const on = [], y = S.year, est = footing();
   if (F('enclosed')) on.push('common');
   for (const id of ['drain', 'fourcourse', 'mill', 'cottages', 'school', 'road', 'pinery', 'oaks', 'icehouse', 'meadows', 'barns', 'chalk']) if (isBuilt(id)) on.push(id);
   for (const id of ['plough', 'merino', 'peat', 'thresher', 'brickkiln', 'malthouse', 'spa', 'turnpike', 'racecourse', 'telegraph']) if (isLive(id)) on.push(id);
+  for (const id of ['lbfold', 'churchhouse', 'coldyards', 'coldclover', 'starvepond', 'rookgranary', 'withybank', 'withybarn', 'maddlesainfoin', 'cricket']) if (isBuilt(id)) on.push(id);
+  for (const id of ['hops', 'limekiln', 'cherries', 'osiers', 'gravel', 'sheepfair', 'warren']) if (isLive(id)) on.push(id);
+  if (isBuilt('pound') && !F('enclosed')) on.push('pound');
+  for (const id of ['rookdrain', 'starveburn', 'homeyards']) if (isBuilt(id)) on.push(id);
+  for (const id of ['gallops', 'dairy']) if (isLive(id)) on.push(id);
+  if (F('enclosed')) { for (const id of ['cplime', 'cpcloses']) if (isBuilt(id)) on.push(id); if (isLive('potatoes')) on.push('potatoes'); }
+  for (const id of ['maddle', 'withymead', 'starveall']) if (farmAt(id)) on.push('farm-' + id);
   if (isLive('merino')) on.push('sheepwalk');
   if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
   if (est === 'splendid') on.push('parterre'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push('carriage');
@@ -140,22 +168,12 @@ const armsOf = () => isKept('baronet') ? 'baronet' : isKept('knight') ? 'knight'
 /* The sheet is laid in three layers, each redrawn only when its own contents change, so that the moving things do not start again at every touch. */
 const CALM = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function landArtHTML(){ const q = S.season;
-  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
+  const pieces = piecesOn().map(id => { const u = pieceURL(id), b = PLAN_BOX[id]; return u && b ? `<img class="piece p-${id}" src="${u}" alt="" style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%" onerror="this.remove()">` : ''; }).join('');
   return `<img class="base" src="${artURL('plan/' + q)}" alt="A plan of the manor of Hatherley Combe" draggable="false">${pieces}`; }
-/* Stock and traffic. s: the drawing. at: where its feet stand. w: its breadth in hundredths of the sheet. f: faces right. go: how it moves. */
+/* What stands still or drifts. The beasts and the carriages are in stock.js. s: the drawing. at: where its feet stand. w: its breadth in hundredths of the sheet. go: how it moves. */
 const BEASTS = [
-  {s:'sheep5', at:[19.5, 28], w:3.5, go:'graze', on:() => openCommon()},
   {s:'shepherd', at:[23, 27.4], w:2, on:() => openCommon()},
-  {s:'sheep3', at:[9.5, 37.5], w:2.7, f:1, go:'graze', on:() => openCommon()},
-  {s:'sheep5', at:[33, 17.2], w:2.6, f:1, go:'graze'},
-  {s:'sheep3', at:[44.5, 21.6], w:2.1, go:'graze'},
-  {s:'cow1', at:[79, 78.4], w:2.6, go:'graze', on:() => S.season < 3},
-  {s:'cow2', at:[83.6, 80.4], w:2.6, f:1, go:'graze', on:() => S.season < 3},
-  {s:'cow1', at:[62.6, 70.6], w:2.4, f:1, go:'graze', on:() => S.season < 3},
-  {s:'horse', at:[74.5, 34.6], w:2.4, go:'graze', on:() => S.season < 3},
-  {s:'boat', at:[73, 86], w:3.7, go:'drift', on:() => S.season < 3},
-  {s:'coach', at:[90.3, 37], w:4.8, go:'coach'},
-  {s:'wagon', at:[80, 51.7], w:4.3, go:'wagon'}
+  {s:'boat', at:[73, 86], w:3.7, go:'drift', on:() => S.season < 3}
 ];
 const openCommon = () => !F('enclosed') && !farmAt('commonpiece');
 function landMotHTML(){ const calm = CALM();
@@ -163,7 +181,7 @@ function landMotHTML(){ const calm = CALM();
   const moving = calm ? '' : ['smoke'].concat(isBuilt('front') ? [] : ['rooks']).map(id => { const b = PLAN_BOX[id]; return b && ART.has('plan/' + id + '.mp4') ? `<video class="mot" src="art/plan/${id}.mp4" autoplay muted loop playsinline disablepictureinpicture style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"></video>` : ''; }).join('');
   /* The mill wheel is a drawing turned by the page, laid over the wheel on the sheet. The new mill has its own wheel in another place, so it stops. */
   const wheel = ART.has('plan/wheel.webp') && !isBuilt('mill') ? `<i class="wheel${calm ? ' calm' : ''}"><img src="art/plan/wheel.webp" alt=""></i>` : '';
-  const beasts = BEASTS.map((b, i) => (b.on && !b.on()) || !ART.has('plan/s/' + b.s + '.webp') ? '' : `<img class="beast${b.go && !calm ? ' ' + b.go : ''}" src="art/plan/s/${b.s}.webp" alt="" style="left:${b.at[0]}%;top:${b.at[1]}%;width:${b.w}%;--f:${b.f ? -1 : 1};animation-delay:-${(i * 7.3) % 40}s;animation-duration:${b.go === 'graze' ? 38 + (i * 11) % 30 + 's' : ''}">`).join('');
+  const beasts = BEASTS.map(b => (b.on && !b.on()) || !ART.has('plan/s/' + b.s + '.webp') ? '' : `<img class="beast${b.go && !calm ? ' ' + b.go : ''}" src="art/plan/s/${b.s}.webp" alt="" style="left:${b.at[0]}%;top:${b.at[1]}%;width:${b.w}%">`).join('') + stockHTML(calm);
   return wheel + beasts + moving; }
 function landLblHTML(){
   const arms = artURL('arms/' + armsOf());
@@ -171,7 +189,7 @@ function landLblHTML(){
   const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
     if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
-    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
   return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
@@ -184,7 +202,7 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
-    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span></div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${cueHTML()}
     <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
@@ -209,11 +227,14 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   sec('under', 'The season’s undertaking', underHTML(id));
   if (p.farm && farmAt(p.farm)) sec('farm', 'The Rent Roll', farmsHTML(p.farm));
   if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
+  if (id === 'castle' && typeof castleList === 'function') { sec('castle', 'What Is Owed the Castle', castleHTML('owed')); sec('castle2', 'What May Be Had There', castleHTML('had')); }
   if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
-  if (vents.length) sec('vents', 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
+  const brazils = id === 'london' && S.bub && S.bub.shares > 0 ? `<div class="lots"><div class="lot done"><b>The Brazil Association</b><span>${S.bub.shares} shares</span></div></div>` : '';
+  if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it') + brazils);
+  if (id === 'london' && typeof creditList === 'function' && S.phase !== 'end') sec('ann', 'Life Annuities', raiseHTML(['annuity', 'redeem'], true));
   /* What is bought in town is found in London; what is bought in the county, at Wyvern. */
   if ((id === 'london' || id === 'wyvern') && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house && COUNTY_LOTS.has(r.id) === (id === 'wyvern')), true, 'beginSociety', 'endSociety', 'Pay for it'));
-  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>${raiseHTML(['annuity', 'redeem'])}`); }
+  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>`); }
   if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
   const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
   const glb = id === 'hall' ? (isBuilt('front') && ART.has('hall/hall-front.glb') ? 'hall-front' : ART.has('hall/hall-old.glb') ? 'hall-old' : '') : '';
@@ -221,19 +242,36 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
     : `<figure class="plate has">${platePic(p.pic && artURL(p.pic()) ? p.pic() : 'seasons/' + S.season, p.n)}${glb ? `<button class="turn" onclick="turnHall()">In the round</button>` : ''}</figure>`;
   return `${shut}<h2>${esc(p.n)}</h2>${view}
     ${secs.map(([k, t, h]) => `<details class="sec" name="sec" ${k === open ? 'open' : ''} ontoggle="if(this.open)SEC='${k}'"><summary>${t}</summary><div>${h}</div></details>`).join('')}`; }
+/* What is owed at the Castle, and what may be had there: three standing matters set one of three ways, and the deeds his lordship will or will not sign. */
+function castleHTML(part){ const k = castleList(), fig = n => n ? amt(n, -1) : fmt(0), yr = n => n ? `<span class="yr">${amt(n, -1)} <small>a year</small></span>` : '';
+  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; };
+  const dials = k.dials.map(d => d.off ? `<div class="dial off"><b>${esc(d.name)}</b><p class="terms"><em>${esc(d.gone)}</em></p></div>`
+    : `<div class="dial"><b>${esc(d.name)}</b><div class="seg n3">${d.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setCastle('${d.id}', '${l.id}')" ${l.can ? '' : 'disabled'}${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b>${yr(l.yearly)}<small>${esc(l.name)}</small>${fxList(l.fx)}</button>`).join('')}</div>${whyOf(d.levels)}</div>`).join('');
+  const lots = k.lots.map(v => { const what = `<div class="rung what">${v.line ? `<small>${esc(v.line)}</small>` : ''}</div>`;
+    const seg = v.state === 'done' ? `${what}<div class="rung what"><b>${esc(v.note)}</b></div>`
+      : `${what}<button type="button" class="rung" onclick="takeCastle('${v.id}')" ${v.can ? '' : 'disabled'}${v.why ? ` title="${esc(v.why)}"` : ''}><b>${esc(v.verb)}</b><span class="yr">${fig(v.cost)}</span>${fxList(v.fx)}</button>`;
+    return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && (v.why || v.note) ? `<p class="terms"><em>${esc(v.why || v.note)}</em></p>` : ''}</div>`; }).join('');
+  return `<div class="hh lots flat castle"><p class="hhsum"><b>${esc(k.word)}</b><small>Lord Cullerne</small></p>${k.debt ? `<p class="terms"><em>His lordship holds your mortgage of ${fmt(k.owing)}.</em></p>` : ''}
+    ${k.said ? `<div class="prose said">${paras(k.said)}</div>` : ''}${part === 'owed' ? dials : lots}</div>`; }
 /* The model of the Hall is fetched only when asked for. */
 function turnHall(){ ROUND = true; if (!window.customElements || !customElements.get('model-viewer')) { const s = document.createElement('script'); s.type = 'module'; s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'; s.onerror = () => { ROUND = false; drawPlan(); }; document.head.appendChild(s); } drawPlan(); }
 
 let LANDKEY = '';
+/* A new sheet is laid over the old only when every picture on it is ready to be shown, so the plan is never seen bare between quarters. */
+function layArt(el, h){ if (!el.firstChild) { el.innerHTML = h; return; }
+  const d = document.createElement('div'), tok = el._tok = {}; d.innerHTML = h;
+  const lay = () => { if (el._tok !== tok) return; el._tok = null; el.replaceChildren(...d.childNodes); };
+  Promise.all([...d.querySelectorAll('img')].map(i => i.decode ? i.decode().catch(() => {}) : 0)).then(lay); setTimeout(lay, 4000); }
 function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.toggle('planview', on); $('plan').hidden = !on; drawPlate(); if (!on) { LANDKEY = ''; return; }
   const land = $('land'), sheet = $('sheet'), p = PLACES[SHEET];
   /* the sheet itself is redrawn only when what is on it changes, so the moving picture does not start again at every touch */
   const key = JSON.stringify([S.season, piecesOn(), armsOf(), S.phase, S.pending, PLATEUP, SHEET, Object.keys(PLACES).filter(placeOn)]);
   if (!$('landart')) land.innerHTML = '<div id="landart"></div><div id="landmot"></div><div id="landlbl"></div>';
-  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { el._h = h; el.innerHTML = h; } }
+  for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { el._h = h; if (k === 'landart') layArt(el, h); else el.innerHTML = h; } }
   if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key;
     const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
   $('cart').innerHTML = cartHTML();
+  whenIdle(warmQuarter);
   const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
   sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
   sheet.innerHTML = SHEET ? sheetHTML() : ''; sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }

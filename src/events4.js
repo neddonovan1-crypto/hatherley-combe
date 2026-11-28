@@ -10,7 +10,7 @@ const peaceTime = () => S.year === 1802 || (S.year === 1814 && S.season >= 2) ||
 
 ev({ id:'captainTakes', from:1797, to:1812, weight:3, title:'A Captain in Want of a House',
   cond:() => (S.year <= 1800 || S.year >= 1804) && S.t >= 4 && !F('captainIn') && !farm('grange') && S.farms.length < MAX_FARMS,
-  text:() => `Crabbe sends up from Wyvern a letter that has been round the town twice, being addressed to “The Proprietor of Hatherley Grange, near Newbury”.
+  text:() => `${steward()} sends up from Wyvern a letter that has been round the town twice, being addressed to “The Proprietor of Hatherley Grange, near Newbury”.
 
 Bath, Tuesday.
 
@@ -20,20 +20,20 @@ I will give ${fmt(capOffer(1.3))} a year for seven years, the first half-year pa
 
 I am, Sir, your obedient servant, Roper Lyle, Captain, R.N.
 
-Crabbe has pinned a slip to the foot.
+${steward()} has pinned a slip to the foot.
 
 “The Naval Chronicle puts his eighth at six thousand pounds, sir. The agents are Cooke and Weddell, of Craven Street. I do not know them. The house is worth ${fmt(lettingValue(landFor('grange'), S.year))} to a farmer.”`,
   choices:[
     {t:'Let him have it at his figure.', note:() => '+' + fmt(capOffer(1.3)) + ' a year, seven years', go:() => { const r = capOffer(1.3), f = addFarm('grange', {own:false, tenant:'Captain Lyle', rent:r, K:3 * r, flush:true, lease:{type:'term', ends:S.year + 7, years:7, level:'fair'}, since:S.year});
       fl('captainIn'); add({standing:2, money:Math.round(r / 2)});
-      return f ? `Crabbe writes to Bath that the house is the Captain’s from Midsummer, and the half-year comes by return, in a draft upon Child’s.
+      return f ? `${steward()} writes to Bath that the house is the Captain’s from Midsummer, and the half-year comes by return, in a draft upon Child’s.
 
 Four chaises arrive at the Grange upon a Thursday, the first being full of dishes, and the second having in it a ship’s bell, wrapped in a quilt. The bell is hung over the stable arch, and rung at eight, at noon, and at dusk; and the Wyvern carriers set their watches by it.` : `The house is let to somebody else before the letter is answered.`; }},
     {t:'Ask him for more. He has the Spaniard’s money.', note:() => '+' + fmt(capOffer(1.55)) + ' a year, seven years', go:() => { const r = capOffer(1.55), f = addFarm('grange', {own:false, tenant:'Captain Lyle', rent:r, K:3 * r, flush:true, lease:{type:'term', ends:S.year + 7, years:7, level:'fair'}, since:S.year});
       fl('captainIn'); add({standing:2, money:Math.round(r / 2)});
       return f ? `You write back ${fmt(r)}, and the answer is one line. “Agreed. R. L.”
 
-Crabbe, having read it over the rent book, says nothing, and enters the Grange at ${fmt(r)}; and the Captain’s wagon is at the door the week after, with a stuffed turtle upon the tail-board.` : `The house is let to somebody else before the letter is answered.`; }},
+${steward()}, having read it over the rent book, says nothing, and enters the Grange at ${fmt(r)}; and the Captain’s wagon is at the door the week after, with a stuffed turtle upon the tail-board.` : `The house is let to somebody else before the letter is answered.`; }},
     {t:'Refuse. A farmer would pay less and go on paying.', go:() => { add({goodwill:1});
       return `You send word that the Grange is promised to a tenant from the parish, though it is not; and Mr Skinner puts a board up at the gate. By Michaelmas a Reading maltster, having bought the house over the Captain’s head at Bath, writes to ask whose the pew is.`; }}
   ]});
@@ -42,7 +42,7 @@ Crabbe, having read it over the rent book, says nothing, and enters the Grange a
 ev({ id:'captainHalfPay', from:1802, to:1815, weight:60, title:'Half-Pay at the Grange',
   cond:() => peaceTime() && F('captainIn') && !F('captainPeace') && !!grange() && !!grange().flush,
   text:() => { const f = grange();
-    return `Crabbe lays the rent book upon the library table, and puts his finger upon a line.
+    return `${steward()} lays the rent book upon the library table, and puts his finger upon a line.
 
 “Lyle, at the Grange. The half-year was due Tuesday.”
 
@@ -57,15 +57,15 @@ He takes out of his coat a letter from Cooke and Weddell, of Craven Street, and 
 His hat is in both hands, and Mrs Lyle is waiting in the chaise at the lodge.`; },
   choices:[
     {t:'Strike off the half-year and bring the rent down.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. Rent to ' + fmt(five(0.85 * lettingValue(grange(), S.year))) + ' a year', go:() => { const f = grange(), a = f.rent / 2; f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.3 * f.rent; fl('captainPeace'); fl('captainPath', 'kept'); add({goodwill:3, standing:1}); later('captainAfter', S.year <= 1802 ? 6 : 3);
-      return `Crabbe draws his pen through ${fmt(a)}, and you write the new rent upon the margin of the lease, and put your initials to it.
+      return `${steward()} draws his pen through ${fmt(a)}, and you write the new rent upon the margin of the lease, and put your initials to it.
 
 The Captain, having read the figure, folds the paper in four.
 
 “I had a gunner once who kept a book of what he was owed,” he says. “It was a thin book.”
 
-He bows to Crabbe as well as to you, and goes out to the chaise.`; }},
+He bows to ${steward()} as well as to you, and goes out to the chaise.`; }},
     {t:'Lend him two hundred pounds on his bond, and let the arrears wait on the dividend.', note:() => '−£200. ' + fmt(Math.round(grange().rent / 2) + 200) + ' owed to you', if:() => S.money >= 200, go:() => { const f = grange(), a = f.rent / 2; S.capDebt = Math.round(a) + 200; S.capRepays = chance(0.6); f.arrears = 0; f.rent = five(0.85 * lettingValue(f, S.year)); f.flush = false; f.K = 0.4 * f.rent; fl('captainPeace'); fl('captainPath', 'lent'); add({money:-200, goodwill:2}); later('captainAfter', S.year <= 1802 ? 8 : 4);
-      return `Crabbe draws a bond upon a half-sheet, and the Captain signs it standing, at the corner of the table, in the same round hand as his letters; by which he is bound to pay ${fmt(S.capDebt)} with interest at five per cent out of the first money to come from Craven Street.
+      return `${steward()} draws a bond upon a half-sheet, and the Captain signs it standing, at the corner of the table, in the same round hand as his letters; by which he is bound to pay ${fmt(S.capDebt)} with interest at five per cent out of the first money to come from Craven Street.
 
 You count out two hundred pounds, and he puts them in his coat without counting them again.`; }},
     {t:'Write to Lord Cullerne for a ship for him.', note:'Lord Cullerne must be your friend. A ship is not sure', if:() => S.chars.cullerne.r >= 0, go:() => { const f = grange(), war = S.year === 1802, p = war ? 0.7 : 0.45; reg('cullerne', -1, 'You asked him for a ship for a half-pay Captain'); f.flush = false; fl('captainPeace');
@@ -82,7 +82,7 @@ He rides over to say so, having put the lace back upon his coat. Mrs Lyle stays 
 
 You send the Captain the answer, and he sends back a note of thanks, and a second half-year’s rent with a gap where it should be.`; }},
     {t:'Give him notice at Michaelmas, and forgive what he owes.', note:() => 'Lose ' + fmt(Math.round(grange().rent / 2)) + ' owed. The house falls in hand', go:() => { const f = grange(), p = pro(f); fl('captainPeace'); fl('captainPath', 'left'); f.flush = false; f.arrears = 0; quit(f); add({goodwill:-1, standing:-1});
-      return `The notice is written by Crabbe, and delivered by hand; and the Captain reads it at the gate, with Mrs Lyle at his elbow.
+      return `The notice is written by ${steward()}, and delivered by hand; and the Captain reads it at the gate, with Mrs Lyle at his elbow.
 
 They are gone by Michaelmas to a small house at Dinan, in Brittany, where the Captain has heard that claret is fourpence the bottle. The ship’s bell is taken down from the stable arch, and the bracket left.`; }},
     {t:'Distrain for the rent.', note:() => 'About ' + fmt(Math.round(grange().rent / 2 / 5) * 5) + ' from the sale. The house falls in hand', go:() => { const f = grange(), got = Math.round(Math.min(f.rent / 2, 0.7 * f.rent) / 5) * 5; fl('captainPeace'); fl('captainPath', 'sold'); f.flush = false; add({money:got, goodwill:-7, standing:-3}); quit(f);
@@ -115,7 +115,7 @@ Your servant, R. Lyle.`;
     return war
       ? `Portsmouth, Friday.
 
-Sir, I am appointed to the Blanche, thirty-six, and am to sail upon the first fair wind. I take my plate to sea; but I leave Mrs Lyle and the girls at the Grange, and she will pay the rent from my Navy Office remittance, half-yearly, to Mr Crabbe.
+Sir, I am appointed to the Blanche, thirty-six, and am to sail upon the first fair wind. I take my plate to sea; but I leave Mrs Lyle and the girls at the Grange, and she will pay the rent from my Navy Office remittance, half-yearly, to Mr ${steward()}.
 
 I send by the carrier half a pipe of Madeira, taken by me off a Dutchman. I am obliged to you. I am not used to it.
 
@@ -131,10 +131,10 @@ I have put my name down at the Admiralty every Tuesday. I am told there are two 
 Your servant, R. Lyle.`; },
   choices:[
     {t:() => S.year >= 1803 && S.year <= 1813 ? 'Write him joy of the ship, and send a ham.' : 'Send him a brace of pheasants and your compliments.', note:'+2 Standing', if:() => S.flags.captainPath !== 'lent', go:() => { fl('captainEnded'); add({standing:2, goodwill:1});
-      return `The ham goes to Portsmouth by the coach, in a cloth, with a letter; and the Madeira being opened at Christmas, Crabbe is asked to take a glass, and drinks it standing.`; }},
+      return `The ham goes to Portsmouth by the coach, in a cloth, with a letter; and the Madeira being opened at Christmas, ${steward()} is asked to take a glass, and drinks it standing.`; }},
     {t:'Ask him to take Edmund for his Lieutenant.', note:'+Edmund’s regard, +Household', if:() => S.flags.captainPath !== 'lent' && at('navy') && !F('edmundDead'), go:() => { fl('captainEnded'); add({family:3, standing:1}); reg('edmund', 2, 'The Captain took him as First Lieutenant');
       return `The Captain answers by return of post. “I have a vacancy for a First Lieutenant. I should be glad of a Hatherley.” Edmund is appointed in a fortnight, and writes from the ship that he has a cabin the size of a hip-bath, and a Captain who talks to the barometer.`; }},
     {t:'Enter it in the book.', if:() => S.flags.captainPath === 'lent', go:() => { fl('captainEnded'); const back = S.capRepays ? Math.round(S.capDebt * 1.05) : Math.round(S.capDebt / 4);
       add({money:back, goodwill:1, standing:S.capRepays ? 1 : 0});
-      return `Crabbe writes ${fmt(back)} upon the credit side, and carries the rest, if any, to the page headed “Doubtful”. ${S.capRepays ? 'The bond is returned across the table, and Mr Tidmarsh tears it in two.' : 'The bond stays in the drawer.'}`; }}
+      return `${steward()} writes ${fmt(back)} upon the credit side, and carries the rest, if any, to the page headed “Doubtful”. ${S.capRepays ? 'The bond is returned across the table, and Mr Tidmarsh tears it in two.' : 'The bond stays in the drawer.'}`; }}
   ]});

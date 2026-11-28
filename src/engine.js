@@ -155,6 +155,7 @@ function beginSeason(){
   if (q === 2) { const qtrs = Math.round(140 * WEATHER[y] * (1 + 0.06 * S.improve) * (1 + houseOf('labour').wheat)); const v = qtrs * P / 20; line('Home farm wheat, ' + qtrs + ' qrs at ' + P + 's.', v); S.yearIncome += v; }
   if (S.canal && y >= 1810) { line('Kennet & Avon dividend', 7 * S.canal); }
   householdQuarter(line); homeFarmCosts(line);
+  if (typeof castleQuarter === 'function') castleQuarter(line);
   if (S.mortgage > 0) line('Interest on the mortgage', -S.mortgage * (F('cheapCredit') ? 0.04 : 0.05) / 4);
   if (F('skrine')) line('Miss Skrine’s sixth per cent', -5);
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
@@ -255,6 +256,52 @@ const gouty = () => T('gout') && !F('goutEased');
 const swans = () => T('court') && !F('courtLost') && !F('courtSold');
 
 const OUTCOMES = {
+  fishing:[
+    {id:'fishing-club', x:() => `Six tradesmen of Reading, who dine together once a month as the Friends of the Angle, give ten pounds a rod for the water between the mill tail and Kennet bridge; and Mudge, by the terms of the paper, nails up a board at either end of it.
+
+They come out upon the Saturday in two gigs, with a ham, and a boy to carry the landing net; and by evening they have killed fourteen trout, the largest of two pounds, and have turned off the bank the miller’s two sons, who have fished the mill tail since they could stand.
+
+On Sunday morning the board at the bridge is found in the river.`},
+    {id:'fishing-attorney', x:() => `A gentleman of Lincoln’s Inn takes the water for May and June at sixty pounds, puts up at the George, and is upon the bank each morning by six, in a coat of nine pockets, with a fly of his own tying.
+
+On the fourth day he finds that he is not alone there; and as you are the nearest magistrate, and it is your river, he brings into the justice room, before you have breakfasted, a boy of nine, and one dace upon a hazel twig.
+
+“I ask only for the law, sir.”
+
+The Act lies open upon the table. You fine the boy a shilling; and his mother, who has waited in the yard, pays it in halfpence.`}],
+  grazing:[
+    {id:'grazing-bullocks', x:() => `For seventy pounds, paid down in Reading notes, a butcher of that town has the grass of the park until Michaelmas; and upon the Monday he turns into it sixty Welsh bullocks, which have walked from Brecon, and which discover, by Wednesday, the one place in the sunk fence where a bullock may get up.
+
+Henrietta receives her morning callers in the breakfast parlour, upon the north side of the house.
+
+“We are grown quite a Smithfield,” she tells Mrs Loveday; and at noon she has the drawing-room blinds drawn down.`},
+    {id:'grazing-horses', x:() => `A dealer of Reading, who buys for the cavalry, has seventy young horses to summer before they are fit to be shown to a colonel; and as he gives a pound a head for the park, and pays it before a hoof is through the gate, the bargain is struck in the stable yard in a quarter of an hour.
+
+They bark four of the limes your uncle planted. Upon the Thursday, the gate of the drying ground having been left open by somebody whom nobody will name, they are found among the week’s wash; from which Mrs Bunce recovers eleven of the twelve damask napkins.`}],
+  shooting:[
+    {id:'shooting-deputation', x:() => `Mr Sheldrake, a wine merchant of Mark Lane, gives a hundred pounds for the season’s shooting; and as the law allows no man to kill a pheasant who has not a hundred a year in land, you sign a deputation, by which he becomes, for the purposes of the Act, your gamekeeper.
+
+He comes down by the Bath coach with two friends, a hamper, and a gun in a green baize bag; and on the first of October, between Hanger Wood and the turnpike, in yellow gaiters, the three of them kill nine brace.
+
+“That fellow in the gaiters,” says Lord Cullerne, at Wyvern market. “Whose is he?”
+
+“He has taken my shooting, my lord.”
+
+“Taken it. Has he.”
+
+His card for the battue does not come.`},
+    {id:'shooting-post', x:() => `The Morning Post has it upon the Tuesday, between a cure for the scurvy and a pair of carriage horses:
+
+“TO BE LET, for the Season, the SHOOTING over a Gentleman’s Estate in Berkshire, of Two Thousand Acres, well stocked with Pheasants and Hares; Fifty-eight Miles from Hyde Park Corner. Apply to Mr Skinner, at the George, Wyvern. None but Principals will be treated with.”
+
+It is taken within the week, at a hundred pounds, by two brothers in the Russia trade. But every gentleman within ten miles takes in the Morning Post, and can reckon fifty-eight miles from Hyde Park Corner as well as another; so that at the Sessions dinner you are asked by four persons, one after the other, whether the house goes with it.`}],
+  underwood:[
+    {id:'underwood-hurdles', x:() => `Eleven acres of hazel in Cuckoo Copse, being of twelve years’ growth, are sold standing to a hurdle-maker of Hungerford for eighty pounds; and he brings six men, who cut it to the stool, and tie up everything thicker than a finger.
+
+The women of the lane have had their firing out of that copse by leave of three squires. They come upon the Monday with their aprons, and find it in faggots, counted, and marked with raddle; and the hurdle-maker’s price, which he tells them very civilly, is four shillings the hundred.`},
+    {id:'underwood-poles', x:() => `The ash poles under the oaks in Hanger Wood go to a hop-planter from Farnham, at eighty pounds for the fall; and he sends for them, in the first week of a wet December, three waggons of four horses each.
+
+They go out by the Kintbury lane, loaded, nine times in the fortnight. When they have done, the lane is such that Mudge leads his pony along the top of the bank; and the Kintbury carrier, having looked at it from his seat, sets down the parish’s parcels a mile and a half off, at the turnpike.`}],
   ride:[
     {id:'ride-cider', x:() => `You ride round the tenancies in a day and a half, and are given cider, and then perry, and a cold pie, and cider again. At the last farm the tenant lifts your horse’s off fore, and tells you what he would do; and at the mill you are given a dog.`},
     {id:'ride-thatch', w:() => tenantOf('kennet') && tenantOf('kennet').tenant === 'Widow Harris', x:() => `At Kennet Bottom the Widow Harris takes you up her stairs, to show you the hole in the thatch; and while you stand under it, it comes on to rain.
@@ -745,6 +792,11 @@ const UNDERTAKINGS = [
   { id:'sessions', t:'Sit on the bench at Quarter Sessions', hint:'Standing', go:() => { duty('county'); const g = pick([-1, 0, 0, 1]); add({standing: T('silver') ? 3 : 2, goodwill:g}); return outcome('sessions'); }},
   { id:'home', t:'Keep at home with the family', hint:'Household', go:() => { duty('home'); add({family:3}); return outcome('home'); }},
   { id:'town', t:'Go up to London for the Season', note:'£350', hint:'Standing, Household', if:() => S.season === 0, go:() => { duty('county'); duty('home'); add({money:-350, standing:3, family:3}); reg('henrietta',1); return outcome('town'); }},
+  /* Four ways of raising a little money off the estate, one to each season, and each paid for in somebody's good opinion. */
+  { id:'fishing', t:'Let the fishing in the Kennet', note:'+£60', hint:'Costs Standing and Goodwill', if:() => S.season === 0, go:() => { add({money:60, standing:-1, goodwill:-2}); return outcome('fishing'); }},
+  { id:'grazing', t:'Let the grass of the park', note:'+£70', hint:'Costs Household', if:() => S.season === 1, go:() => { add({money:70, family:-3}); return outcome('grazing'); }},
+  { id:'shooting', t:'Let the shooting to a London man', note:'+£100', hint:'Costs Standing', if:() => S.season === 2, go:() => { add({money:100, standing:-3}); reg('cullerne', -1, 'You let your shooting for money'); return outcome('shooting'); }},
+  { id:'underwood', t:'Sell a fall of underwood', note:'+£80', hint:'Costs Goodwill', if:() => S.season === 3, go:() => { add({money:80, goodwill:-3}); return outcome('underwood'); }},
   { id:'retrench', t:'Retrench', note:'+£130', hint:'Costs Standing and Household', go:() => { add({money:130, standing:-3, family:-3}); return pick([
       `You sell the second carriage and two hunters. You sell the claret your uncle laid down for a christening. There was no christening.
 
@@ -772,8 +824,11 @@ function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
   S.outcome = {title:u.t, text, d:deltas(b), cut:LAST_CUT}; S.phase = 'undone'; save(); render(); }
 
+/* A paper waits from quarter day until it is answered, and the squire may sell the farm or clear the debt it speaks of in the meantime. A paper that has lost its occasion is withdrawn. */
+function pendingStands(){ const e = S.pending && byId(S.pending); if (!e) return false; if (e.follow && e.cond && !e.cond()) return false;
+  try { e.text(); e.choices.filter(c => !c.if || c.if()).forEach(c => { lab(c); if (typeof c.note === 'function') c.note(); }); } catch (err) { return false; } return true; }
 function next(){
-  if (S.phase === 'ledger') { if (S.dead) return finish(); S.phase = S.pending ? 'event' : 'undertake'; }
+  if (S.phase === 'ledger') { if (S.dead) return finish(); if (S.pending && !pendingStands()) S.pending = null; S.phase = S.pending ? 'event' : 'undertake'; }
   else if (S.phase === 'outcome') { if (S.dead) return finish(); S.phase = 'undertake'; }
   else if (S.phase === 'undone' && ridesLeft() > 0 && !S.dead) S.phase = 'undertake';
   else if (S.phase === 'undone') { S.rides = 0; S.rode = []; S.t++; if (S.t >= (LAST_YEAR - FIRST_YEAR + 1) * 4) return finish(); S.year = FIRST_YEAR + Math.floor(S.t / 4); S.season = S.t % 4; beginSeason(); }

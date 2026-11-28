@@ -2,9 +2,9 @@
 # Stitches src/ into one index.html. Pictures stay beside it in art/ and are listed for the page in ART.
 set -e
 cd "$(dirname "$0")"
-JS="src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js src/estate.js src/events4.js src/endings.js src/planart.js src/sayat.js"
+JS="src/data.js src/traits.js src/engine.js src/events1.js src/events2.js src/events3.js src/estate.js src/common.js src/farmworks.js src/events4.js src/castle.js src/endings.js src/planart.js src/sayat.js"
 ART="const ART = new Set([$( [ ! -d art ] || find art -type f \( -name '*.jpg' -o -name '*.webp' -o -name '*.png' -o -name '*.mp4' -o -name '*.glb' \) | sed 's#^art/##' | sort | sed "s/.*/'&'/" | paste -sd, - )]);"
-script() { cat $JS; echo "$ART"; cat src/plan.js src/ui.js src/sound.js; }
+script() { cat $JS; echo "$ART"; cat src/stock.js src/plan.js src/ui.js src/sound.js; }
 {
   cat src/head.html
   echo '<style>'; cat src/style.css src/plan.css src/endings.css; echo '</style>'
