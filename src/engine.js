@@ -892,6 +892,7 @@ function reckoning(){
   P.push(net > 4000 ? `He is a richer man than his uncle was. The estate stands clear by some ${fmt(net)}.`
     : net > -1500 ? `His affairs balance. Set the mortgage against the purse and there is ${net >= 0 ? fmt(net) + ' to the good' : fmt(-net) + ' wanting'}. Few landed gentlemen can show as much at the end of this war.`
     : `His debts are put at ${fmt(-net)}, secured upon every acre. The clerks at Tidmarsh’s take off their hats when he passes the Bank.`);
+  if (typeof hazardNotes === 'function') P.push(...hazardNotes());
   P.push(S.goodwill >= 68 ? `In Hatherley they call him a fair man. We could not learn that they say it of any other gentleman living.`
     : S.goodwill >= 42 ? `In Hatherley hats are touched to him. We heard no harm of him there and no great good.`
     : `In Hatherley there is a song about him. It has nine verses. It is not sung when he is by.`);
