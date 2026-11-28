@@ -11,8 +11,17 @@ const BILLS = new Set(['speen','flour','powder','bank','defence','incomeTax','de
 const quarterDay = () => QUARTER[S.season] + ' ' + S.year;
 
 // Pictures. build.sh lists what is in art/; anything missing falls back to an ornament drawn here.
-const artURL = p => { for (const x of ['.jpg', '.webp', '.png']) if (ART.has(p + x)) return 'art/' + p + x; return ''; };
-const pic = (p, alt) => { const u = artURL(p); return u ? `<img src="${u}" alt="${esc(alt || '')}" onerror="this.remove()">` : ''; };
+/* On a site laid out by tools/site.sh the pictures have been pressed into p/ (tools/press.py) and PRESS says where each went: a desk size, and a small size
+   for a telephone or a small laptop, which are sent nothing larger than they can show. Opened from the folder, the page takes them from art/ as they are. */
+const PRESSED = typeof PRESS === 'object' && PRESS ? PRESS : null;
+const SMALLART = Math.max(screen.width, screen.height) * Math.min(window.devicePixelRatio || 1, 2) < 1900;
+const artAt = rel => { const v = PRESSED && PRESSED.f[rel]; return v ? 'p/' + rel.replace(/\.\w+$/, '.') + (v.includes('.') ? v : v + (SMALLART ? '.s.webp' : '.webp')) : 'art/' + rel; };
+const artURL = p => { for (const x of ['.jpg', '.webp', '.png']) if (ART.has(p + x)) return artAt(p + x); return ''; };
+/* The icons come on one sheet where there is one, and each is shown through a window upon it. */
+const ICONS = PRESSED && PRESSED.i, BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+const pic = (p, alt) => { const k = ICONS && p.startsWith('icons/') ? ICONS.n.indexOf(p.slice(6)) : -1, n = k < 0 ? 0 : ICONS.n.length;
+  if (n) return `<img src="${BLANK}" alt="${esc(alt || '')}" style="background:url(p/${ICONS.u}) ${n > 1 ? (k / (n - 1) * 100).toFixed(3) : 0}% 0/${n * 100}% 100% no-repeat">`;
+  const u = artURL(p); return u ? `<img src="${u}" alt="${esc(alt || '')}" onerror="this.remove()">` : ''; };
 function medal(id, big){ const n = PEOPLE[id].name; return `<span class="medal${big ? ' big' : ''}"><span aria-hidden="true">${esc(n.split(' ').pop()[0])}</span>${pic('portraits/' + id, n)}</span>`; }
 function whoOf(text){ let best = null, at = Infinity;
   for (const id in PEOPLE){ if (!S.chars[id]) continue; const i = text.indexOf(PEOPLE[id].name.split(' ').pop()); if (i >= 0 && i < at) { at = i; best = id; } }
@@ -32,7 +41,6 @@ function sceneSVG(q){ const C = [['#cddfdd','#b6cc9c','#98b97f','#7c9f69'], ['#c
     ${tree(112, 206, 1.6)}${tree(176, 196, 1.1)}${tree(528, 192, 1.25)}${tree(612, 208, 1.75)}</svg>`; }
 const platePic = (src, cap) => { const u = artURL(src); return u ? `<img src="${u}" alt="${esc(cap || '')}" onerror="this.parentNode.classList.remove('has');this.remove()">` : ''; };
 function plateHTML(q, src, cap){ const i = platePic(src, cap); return `<figure class="plate${i ? ' has' : ''}">${sceneSVG(q)}${i}</figure>`; }
-[0, 1, 2, 3].forEach(i => { const u = artURL('seasons/' + i); if (u) new Image().src = u; });
 
 let STEP = '', LEAFUP = true;
 function render(){
