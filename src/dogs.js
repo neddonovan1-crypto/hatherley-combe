@@ -647,6 +647,7 @@ The cook will not have him over the dresser. She hangs him in her own room, off 
    Marshal Junot, Duke of Abrantes, who threw himself from a window at Montbard in July 1813. */
 const beastYears = t => { const n = Math.max(1, Math.floor((S.t - (F(t) || S.t)) / 4)); return numWords(n) + (n === 1 ? ' year' : ' years'); };
 const apeBed = () => F('ape') === 'stable' ? 'the stall beyond the cob’s' : 'the settle by the kitchen fire';
+const apeAt = () => F('ape') === 'stable' ? 'in the stall beyond the cob’s' : 'upon the settle by the kitchen fire';
 const APE_IDS = ['apeComes', 'apeWig', 'apeSpy', 'apeWinter', 'apeAudit', 'apeMeet', 'apeSpoons', 'apeMilitia', 'apeSage', 'apeShow', 'apeBoney', 'apeOld'];
 const PARROT_IDS = ['parrotComes', 'parrotCry', 'parrotBugle', 'parrotVoice', 'parrotOrder', 'parrotDacey', 'parrotEgg', 'parrotParole', 'parrotNews', 'parrotWill'];
 const beastLast = ids => Math.max(0, ...ids.map(i => S.seen[i] === undefined ? 0 : S.seen[i]));
@@ -725,7 +726,7 @@ ev({ id:'apeSpoons', follow:true, hen:false, at:'hall', who:() => null, cond:ape
 
 She has made up her mind as to the person. The new under-housemaid, who came from Hungerford with a character of only nine months, was seen upon the back stairs with a candle at an hour when she had no business there; her box has been looked into, in her absence, and nothing found in it, which Mrs Bunce considers to be worse; and the girl is at this moment in the scullery with her apron over her head. A constable can be had from Wyvern by four o’clock.
 
-Muley is not in ${apeBed()}. He was seen at breakfast-time upon the roof of the dove-house, going in at the top.`,
+Muley is not ${apeAt()}. He was seen at breakfast-time upon the roof of the dove-house, going in at the top.`,
   choices:[
     {t:'Send Mudge up the dove-house with a ladder.', note:'+Household', go:() => { add({family:2, goodwill:1});
       return `Mudge comes down the ladder with his hat full. There are in it the eleven tea-spoons, the sugar-tongs, and the cream-jug; a silver thimble; four-and-sixpence in halfpence; the key of the tea-chest; a pair of spectacles, which are claimed by ${steward()}; the Archdeacon’s snuff-box, for which a letter was written to three inns; and one walnut.
@@ -851,7 +852,7 @@ He will not stay before it. He has got up, by the next evening, into the window 
   ]});
 
 ev({ id:'apeDeath', follow:true, hen:false, at:'hall', who:() => null, cond:apeKept, title:'The Red Jacket',
-  text:() => `The frost came upon Tuesday. Upon Thursday morning Muley is not at the kitchen door for his bread and milk; and he is found in ${apeBed()}, under ${F('ape') === 'stable' ? 'the horse-rug' : 'the cook’s shawl'}, with his knees drawn up, and his jacket buttoned to the neck.
+  text:() => `The frost came upon Tuesday. Upon Thursday morning Muley is not at the kitchen door for his bread and milk; and he is found ${apeAt()}, under ${F('ape') === 'stable' ? 'the horse-rug' : 'the cook’s shawl'}, with his knees drawn up, and his jacket buttoned to the neck.
 
 “He went in the night, sir. He’d his hand out from the rug, as if he had a mind to shake with somebody.”
 
