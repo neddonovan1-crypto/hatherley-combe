@@ -921,6 +921,10 @@ function reckoning(){
   else if (e === 'farmer') P.push(`His son farms Kennet Bottom. There are three grandchildren. One of them bites.`);
   else if (e === 'militia') P.push(`His son came home from the Militia a captain. He brought a wife with him from Dover.`);
   else P.push(`His son is at home still. He is forty. He manages everything. He waits.`);
+  if (S.flags.edmWife && !F('edmundDead')) P.push(`His son married ${S.flags.edmWife}${/Houzelle/.test(S.flags.edmWife) ? ', the daughter of a clock-maker of Verdun' : ''}.${S.flags.edmSon ? ` There is a grandson, ${S.flags.edmSon}. The button-maker of Birmingham has left off asking about the chimneys.` : ''}`);
+  if (S.flags.edmCuckoo === 'kept' || S.flags.edmCuckoo === 'told') P.push(`His son has a daughter, Lucy, born at Michaelmas. Nobody at Hatherley has ever counted upon his fingers in her hearing.`);
+  if (S.flags.edmCuckoo === 'apart') P.push(`His son’s wife lives at her father’s, upon sixty pounds a year.`);
+  if (S.flags.edmWife && F('edmundDead') && S.flags.edmSon) P.push(`His son left a widow, and a boy named ${S.flags.edmSon}, upon whom the land is settled.`);
   if (F('oaks')) P.push(`He planted forty acres of oak on Gallows Piece for the Navy. The trees do not yet reach the keeper’s shoulder.`);
   if (F('soldLiving')) P.push(`He sold the living of Hatherley to a wine merchant. The Bishop has not dined at the Hall since.`);
   if (F('vaccinated')) P.push(`He had his arm scratched for the cow-pox on a kitchen chair on the green, before the whole parish. There has been no smallpox in Hatherley since.`);

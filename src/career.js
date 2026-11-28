@@ -608,7 +608,7 @@ const taken = () => { if (E() === 'prisoner') return; const k = E(); fl('edmHeld
 const setPlan = (k, p) => { fl('edmPlan', k); fl('edmPlanP', p); later('edmOut', 3 + Math.floor(Math.random() * 3)); };
 const outRoll = () => { if (S.flags.edmOut) return S.flags.edmOut; const k = S.flags.edmPlan, ok = chance(S.flags.edmPlanP || 0);
   fl('edmOut', !ok ? 'held' : k === 'bribe' ? 'parole' : 'free'); if (!ok && k === 'escape') fl('edmBitche');
-  if (!ok) { add({family:-6}); if (S.year < 1813 && !F('edmHeldPapers')) { fl('edmHeldPapers'); later('edmHeldHen', 3); later('edmHeldBill', 7); } } else { fl('edmFreeAt', S.year); add({family:8}); }
+  if (!ok) { add({family:-6}); if (S.year < 1813 && !F('edmHeldPapers')) { fl('edmHeldPapers'); later('edmHeldHen', 3); later('edmHeldLove', 5); later('edmHeldBill', 7); } } else { fl('edmFreeAt', S.year); add({family:8}); }
   return S.flags.edmOut; };
 const backToIt = () => fl('edmund', wasIn());
 const hisCorps = () => wasIn() === 'navy' ? 'his ship' : 'the regiment';
@@ -723,7 +723,8 @@ The stockings fit.”`; };
 ev({ id:'edmOut', follow:true, hen:false, at:'hall', who:() => 'edmund', cond:() => E() === 'prisoner' && !F('edmundDead') && !!S.flags.edmPlan,
   cut:() => outRoll() === 'held' ? (S.flags.edmPlan === 'escape' ? 'edmOut-bitche' : 'edmTaken') : 'edmOut',
   get title(){ const o = S.flags.edmOut, k = S.flags.edmPlan; return o === 'held' ? (k === 'escape' ? 'Fifty Steps Down' : 'No Answer from Paris') : o === 'parole' ? 'For the Re-establishment of His Health' : k === 'exchange' ? 'Man for Man' : k === 'jenner' ? 'He Could Refuse Nothing to That Man' : 'The Dover Coach'; },
-  text:() => { const o = outRoll(); return o === 'free' ? OUT_FREE() : o === 'parole' ? OUT_PAROLE() : OUT_HELD(); },
+  text:() => { const o = outRoll(), t = o === 'free' ? OUT_FREE() : o === 'parole' ? OUT_PAROLE() : OUT_HELD();
+    return o !== 'held' && frenchWife() ? t + `\n\nHe is come alone. Madame is to follow by the next cartel, the Commandant having kept back her passport for a second fee.` : t; },
   choices:[
     {t:() => `Let him go back to ${hisCorps()}.`, if:() => S.flags.edmOut === 'free', go:() => { backToIt(); befriend(); add({family:-1, standing:2}); reg('edmund',2,'You let him go back, after Verdun');
       return `He is at home for five weeks, in which he eats, and sleeps, and is measured for a coat.
@@ -834,7 +835,11 @@ ev({ id:'edmFreed', follow:true, hen:false, at:'hall', who:() => 'edmund', cut:(
 
 “They marched us out ${F('edmBitche') ? 'of Bitche' : 'of Verdun'} in January, sir, before the Russians; eleven days, in the snow, to Blois. And at Blois, one morning in April, there was nobody to call our names. We stood in the square until ten. Then a Midshipman said that he supposed it was peace, and we went to breakfast.”
 
-He has been ${inWords(n)} ${n > 1 ? 'years' : 'year'} a prisoner. He has a French coat, a German pipe, and ${F('edmBitche') ? 'a cough, which he has brought up out of the rock' : 'a flute, upon which he is forbidden to play before ten'}; and he walks about the house touching things.
+He has been ${inWords(n)} ${n > 1 ? 'years' : 'year'} a prisoner. He has a French coat, a German pipe, and ${F('edmBitche') ? 'a cough, which he has brought up out of the rock' : 'a flute, upon which he is forbidden to play before ten'}; and he walks about the house touching things.${frenchWife() ? `
+
+Mrs Edmund ${S.sur} is with him, in a grey pelisse that was made at Verdun. She has brought her father’s second-best clock in her arms from Blois; and having curtsied to ${hh('Henrietta', 'you')}, she asks in very fair English where it may stand.` : S.flags.edmClem === 'wait' ? (wed('Mademoiselle Clémence Houzelle', true), `
+
+He is not come alone. He was married at Blois, upon the morning after the gates were opened, to Mademoiselle Clémence Houzelle; who has brought her father’s second-best clock in her arms, and having curtsied to ${hh('Henrietta', 'you')}, asks in very fair English where it may stand.`) : ''}
 
 ${wasIn() === 'navy' ? `The Navy has paid off four hundred ships since Easter. His name stands in Steel’s List where it stood upon the day that he was taken, ${navRank() ? 'a Lieutenant’s' : 'a Mate’s'}, with those of forty boys above it who were not then at sea.` : `The 52nd is at Hythe. Three men have had the company since he had it; and the last, who bought, would be glad to know what Captain ${S.sur} intends.`}`; },
   choices:[
@@ -856,6 +861,211 @@ On the first of every month he is found to have written to Blois, to the widow w
 He is upon the Down by six. He is seen from the lodge at noon, lying in the grass at the top of Twelve Acres, with his hat over his face; and he walks into Wyvern upon market days, where he stands at the Cross for an hour together, and buys nothing.
 
 In August he asks ${steward()} whose wheat that is under the Down, and what it will fetch.`; }}
+  ]});
+
+/* ================= He marries =================
+   The young ladies are pieces of the letter pool in events2.js (kind 'girl'); four more are added here, one to each path, and a fifth at
+   Verdun. The answers there are wrapped so that the bride is remembered (edmWife, edmWedAt) and what a marriage brings is queued:
+   edmBride (the wife left alone, navy and army), edmHeir (a grandson; edmSon is his name, and bars the cousin from Birmingham),
+   edmAsksAgain (two years after a refusal; edmJilt is the lady). */
+const wed = (lady, quiet) => { if (S.flags.edmWife) return; fl('edmundMarried'); fl('edmWife', lady); fl('edmWedAt', S.year); if (!quiet) later('edmBride', 3); later('edmHeir', 6 + Math.floor(Math.random() * 4)); };
+const frenchWife = () => /Houzelle/.test(S.flags.edmWife || '');
+const brideFirst = () => (S.flags.edmWife || S.flags.edmJilt || '').split(' ')[1];
+const brideSur = () => (S.flags.edmWife || '').split(' ').pop();
+const richBride = () => /Tremain|Harbord|Tamworth|Finnis/.test(S.flags.edmWife || '');
+{ const el = byId('edmundLetter');
+  el.choices.forEach(c => { if (!/edmKind\('girl'\)/.test(String(c.if))) return; const g0 = c.go, forbid = /Forbid/.test(c.t);
+    c.go = () => { const pc = edmNow(), was = F('edmundMarried'), t = g0();
+      if (!was && F('edmundMarried')) wed(pc.lady, !at('navy', 'army')); else if (!F('edmundMarried')) { fl('edmJilt', pc.lady); if (forbid && !S.flags.edmAsked) { fl('edmAsked'); later('edmAsksAgain', 8); } }
+      return t; };
+    c.go.toString = () => String(g0); });
+  const eh = byId('edmundHome'), ch = eh && eh.choices.find(c => /Miss Loveday/.test(c.t));
+  if (ch) { const g0 = ch.go; ch.go = () => { const t = g0(); fl('edmWife', 'Miss Sophia Loveday'); fl('edmWedAt', S.year); return t; }; ch.go.toString = () => String(g0); }
+  const h = byId('heir'); if (h) { const c0 = h.cond; h.cond = () => c0() && !S.flags.edmSon; } }
+
+EDMUND.push(
+  {id:'edmund-miss-halifax', kind:'girl', lady:'Miss Phoebe Tremain', father:'Mr Tremain', w:() => at('navy') && navRank() >= 2 && yr(1810, 1814) && !F('edmundMarried') && !F('navPeaceShip'), x:() => `“Halifax. My dear Father, There is a Mr Tremain here, who came from Boston a loyalist in the year ’83, with one trunk, and has now a wharf, eleven vessels, and the agency for half the prizes that are brought in. His daughter, Miss Phoebe, is nineteen, and skates. I never before saw a lady skate. She crossed the North-West Arm upon the ice on Tuesday, in the time that it took me to fall down twice. Mr Tremain will give six thousand pounds with her, in dollars; and he asks only whether a ${NAVY_RANK[navRank()]}’s father in Berkshire will receive a girl who was born in a colony, and says ‘I guess’.”`},
+  {id:'edmund-miss-lisbon', kind:'girl', lady:'Miss Eliza Harbord', father:'Mr Harbord', w:() => at('army') && yr(1809, 1813) && !F('edmundMarried'), x:() => `“Lisbon. My dear Father, I have been three weeks here upon a Board of clothing, and have dined eleven times at one house. Mr Harbord is of the English Factory, and ships wine. He stayed when the French came, and sold it to them; and he stayed when they went, and sells it to us. His daughter, Miss Eliza, is twenty. She speaks Portuguese to the servants, French to the prisoners, and to me the English of a governess out of Bath. She is to have eight thousand pounds. Her father says that he has no objection to a soldier, provided that the soldier’s father has none to port.”`},
+  {id:'edmund-miss-rectory', kind:'girl', lady:'Miss Augusta Poyntz', father:'Dr Poyntz', w:() => at('church') && !F('edmRector') && yr(1803, 1813) && !F('edmundMarried'), x:() => `“My dear Father, My Rector has come down from Bath, for the first time these four years, to look at the roof of his tithe barn; and he has brought his daughter. Miss Augusta Poyntz is one-and-thirty, and reads Hebrew. She heard me preach upon Sunday, and sent me on Monday eleven corrections, of which nine were just. Dr Poyntz has a second living, in Dorsetshire, of three hundred a year, in his own gift, and no son. He told me over his wine, that a curate who marries into a family is seldom left a curate by it; and then he talked about the barn. I do not know whether I have been made an offer. I know that I should be glad to have her opinion of my next sermon.”`},
+  {id:'edmund-miss-tamworth', kind:'girl', lady:'Miss Caroline Tamworth', father:'Colonel Tamworth', w:() => at('home') && yr(1803, 1815) && !F('edmundMarried'), x:() => `Colonel Tamworth rides over before breakfast, which he has not done since the year of the invasion; and having walked twice round the sundial with you, he comes to it.
+
+“My girl Caroline has something from her grandmother, ${S.sur}, and Marsh Court marches with you for a mile and a quarter. She rides straighter than Harry. Your boy has danced with her at three assemblies running, and said nothing; and I am come to ask whether that is your doing, or his.”
+
+Edmund, upon being sent for, turns exceedingly red, and says that it is his.`});
+
+ev({ id:'edmHeldLove', follow:true, hen:false, at:'hall', who:() => 'edmund', cond:() => E() === 'prisoner' && !F('edmundDead') && !F('edmundMarried') && !F('edmBitche') && S.year < 1814, title:'The Clock-maker’s Daughter',
+  text:() => `There is a letter with the Paris post-mark, charged four and tenpence; and it is of three sheets, which no letter of his from Verdun has been before.
+
+“My dear Father, I have told you that I lodge over a clock-maker’s. I have not told you that Monsieur Houzelle has a daughter, because for the first year there was nothing to tell.
+
+Mademoiselle Clémence is two-and-twenty. She keeps her father’s books, winds forty clocks upon every Saturday, and has taught me what French I have, by correcting it. When I was fined for missing the roll-call, it was she who went to the gendarme. I do not know what she said to him; but he took off his hat to me for a month.
+
+She is a Catholic, and I am a prisoner, and her father thinks ill of both. Eleven of our officers have married in this town. The Commandant makes no difficulty, there being a fee.
+
+I am of age, and want nobody’s leave. I find that I cannot do it without yours.”
+
+${hh(`Henrietta reads the three sheets twice, and asks you what a clock-maker is, in France.`, `You send it on to Gay Street; and the answer is one line: “Is she kind to him?”`)}`,
+  choices:[
+    {t:'Give your consent, and tell him to bring her home.', go:() => { wed('Mademoiselle Clémence Houzelle', true); add({family:3, standing:-2}); reg('edmund',3,'You gave him leave to marry at Verdun');
+      return `You write that a woman who can make a gendarme take off his hat will do for Hatherley; and you send it by the cartel, in two copies, by two ships.
+
+They are married twice in the one morning: before the Mayor of Verdun, in his sash; and before the Reverend Mr Lee, a prisoner since the year ’03, in the back room of the less noisy club, with a Midshipman to give the bride away.
+
+Monsieur Houzelle gives with her a clock, which strikes the quarters, and four hundred francs. ${F('gallDead') ? 'In Wyvern it is said that young Mr ' + S.sur + ' has married a Papist, and a Frenchwoman, and a shop.' : 'Dr Gall preaches upon the daughters of Heth; and in Wyvern it is said that young Mr ' + S.sur + ' has married a Papist, a Frenchwoman, and a shop.'}`; }},
+    {t:'Tell him to wait for the peace, and ask her in England.', go:() => { fl('edmClem', 'wait'); add({family:1}); reg('edmund',1);
+      return `You write that you forbid nothing; that a man who is not free to walk three leagues is not free to marry; and that he is to ask her again upon the day that he may ask her anywhere.
+
+His answer is seven months in coming.
+
+“I read her your letter, sir, putting it into French as I went. She said that it was the letter of a man who has kept accounts; and that she has waited for a clock to be paid for before now.”`; }},
+    {t:'Forbid it.', go:() => { fl('edmJilt', 'Mademoiselle Clémence Houzelle'); add({family:-3}); reg('edmund',-3,'You forbade the clock-maker’s daughter'); reg('henrietta',-1);
+      return `You write that a prisoner has no business to marry, nor a ${S.sur} to marry a shop in an enemy’s town.
+
+Five months go by; and then there is half a sheet.
+
+“Sir, I have moved my lodging. I am in the Rue Mazel, over a baker’s, where there is no clock. I am in good health. I have nothing further to communicate.”`; }}
+  ]});
+
+const BRIDE_AT = () => ({Pott:'Hythe', Hallett:'Gosport', Tremain:'Halifax', Harbord:'Lisbon'})[brideSur()] || 'Gosport';
+ev({ id:'edmBride', follow:true, at:'hall', who:() => null, cond:() => F('edmundMarried') && !!S.flags.edmWife && !F('edmundDead') && at('navy', 'army') && !frenchWife(), title:'Mrs Edmund',
+  text:() => { const navy = at('navy');
+    return `There is a letter upon the hall table in a small upright hand; and it is directed to you, and not to Henrietta.
+
+“${BRIDE_AT()}. My dear Sir, I do not know how a daughter writes to a father whom she has never seen, and so I shall write as I keep my accounts.
+
+${richBride() ? `I am in my father’s house, where I am a daughter again; and I am asked every morning at breakfast whether I have heard from my husband, by people who know very well that I have not.` : `Edmund’s pay you know. My lodging here is fourteen shillings a week, with coals; and I have turned his second coat.`} ${navy ? 'His ship has been nineteen days in port in the last twelvemonth, and he was ashore upon six of them.' : 'The regiment has marched eleven times since Lady Day, and I have seen him upon four of the days between.'} I am to be confined in the spring.
+
+I do not ask for money. Edmund has forbidden me to ask for it, and I should not have done so without. I ask what you would have me do; for he is not here to be asked, and when he is, he says, ‘Whatever you think best, my dear,’ and goes to look at the weather.
+
+Your dutiful daughter, ${brideFirst()} ${S.sur}.”`; },
+  choices:[
+    {t:'Have her to Hatherley, to lie in at the Hall.', go:() => { fl('edmWifeAt', 'hall'); add({family:4}); reg('edmund',2,'You took his wife in at the Hall'); reg('henrietta',F('henriettaAway') ? 0 : -1);
+      return `She comes by the Reading coach, with two trunks, and a canary.
+
+${hh(`Henrietta has her into the blue room, and for a fortnight is all kindness. In the third week Mrs Edmund is found to have counted the linen; in the fourth, to have told Mrs Bunce that the copper wants tinning, which it does; and upon the fifth Sunday the two ladies go to church in the one carriage, each looking out at her own window.`, `There being no mistress in the house, she becomes one by Thursday. The linen is counted; the copper is sent to be tinned; and Mrs Bunce, who has not been told a thing these four years, is told eleven in one morning, and is seen afterwards to sit down.`)}
+
+She writes to Edmund upon every Sunday, four sides, and reads you the parts that are about the estate; and it is not long before you find that she has the price of wheat more exactly than you.`; }},
+    {t:'Send her eighty pounds, and let her stay where she is.', note:'£80', go:() => { add({money:-80, family:2}); reg('edmund',1);
+      return `You send a draft for eighty pounds; and you write that Edmund forbade her to ask, but that nobody has forbidden you to send.
+
+Her answer is an account. She has laid out ${richBride() ? 'none of it, her father having heard of the draft, and doubled his own allowance to be even with you; and she holds the eighty pounds, therefore, at your disposal, or the child’s' : 'eleven pounds upon a cradle, linen, and a month’s nurse; four upon coals; and has put sixty-five into the Savings Bank, in the child’s name, which she will fill in when she knows it'}.
+
+There is a postscript. “${at('navy') ? 'He was ashore on Tuesday for two hours' : 'He rode in on Tuesday for two hours'}. I told him what you had done, and he went to look at the weather.”`; }},
+    {t:() => `Tell her that she married a ${at('navy') ? 'sailor' : 'soldier'}.`, go:() => { add({family:-2}); reg('edmund',-2,'You told his wife that she had married a ' + (at('navy') ? 'sailor' : 'soldier'));
+      return `You write that she knew his calling when she took him, and that half the women in ${BRIDE_AT()} are as she is.
+
+She thanks you for your letter, in three lines, and troubles you with no other.
+
+Edmund’s next is to his mother. He says nothing of the matter in it, and it is from that that you know he has been told.`; }}
+  ]});
+
+const sonNames = () => { const f = S.name.split(' ')[0]; return [f, at('navy') || S.flags.edmWas === 'navy' ? 'Horatio' : at('army') || S.flags.edmWas === 'army' ? 'Arthur' : 'Edmund', brideSur()]; };
+ev({ id:'edmHeir', follow:true, at:'hall', who:() => null, cond:() => F('edmundMarried') && !!S.flags.edmWife && !F('edmundDead') && !at('farmer') && E() !== 'prisoner' && !S.flags.edmSon, title:'The Name of the Child',
+  text:() => { const away = at('navy', 'army') && S.flags.edmWifeAt !== 'hall', here = S.flags.edmWifeAt === 'hall' || !edmAway();
+    return `${here ? `Mr Ferris is in the house from Tuesday night; and at four upon the Wednesday morning Mrs Edmund is brought to bed of a boy, who is carried down to you in a flannel, and observed to have the ${S.sur} nose.` : `An express comes in from ${frenchWife() ? 'Verdun, by the cartel' : at('navy', 'army') ? BRIDE_AT() : 'the parsonage'}: Mrs Edmund was brought to bed of a boy upon the Wednesday, at four in the morning, and both are well.`}
+
+Hatherley is settled upon heirs male. There was Edmund, and after Edmund a button-maker of Birmingham; and there is now between the button-maker and the land a person of eight pounds’ weight.
+
+${at('navy', 'army') ? `His father, who is ${at('navy') ? 'at sea' : 'with the regiment'}, will not hear of it for six weeks. The child must be named before then; and his mother writes, or sends down, to know your wishes.` : `Edmund comes to the book-room with the question that he has been two days in asking.`}
+
+“${at('navy', 'army') ? 'Edmund said before he went that it was to be as his father pleased. I had rather it were not ' + sonNames()[2] + ', sir, though my own father has asked it.' : 'What is he to be called, sir? ' + brideFirst() + ' says that it is for you to say. Her father has asked for ' + sonNames()[2] + ', and I had rather it were not.'}”`; },
+  choices:[
+    {t:() => `Let him be ${sonNames()[0]}, and stand godfather yourself.`, note:'£100', go:() => { fl('edmSon', sonNames()[0]); add({money:-100, family:6, standing:1}); reg('edmund',2,'You stood godfather to his son'); reg('henrietta',1);
+      return `He is christened ${sonNames()[0]} ${S.sur}, in the font where you were christened yourself${F('gallDead') ? '' : ', by Dr Gall, who holds him as a man holds a ferret'}.
+
+You give a silver mug, with the arms upon it, and lay a hundred pounds in the Funds in his name. The ringers have a barrel; and the tenants, who have for some years been making their own reckoning of the button-maker, drink the child’s health with more meaning than is usual.
+
+${hh(`Henrietta has had the cradle down from the attic, in which Edmund lay, and Kitty after him. It wants one rocker.`, `Henrietta comes over from Bath for the day, and stays nine.`)}`; }},
+    {t:() => `${sonNames()[1]}, as the times are.`, if:() => sonNames()[1] !== sonNames()[0], go:() => { fl('edmSon', sonNames()[1]); add({family:4}); reg('edmund',2);
+      return `He is christened ${sonNames()[1]}${sonNames()[1] === 'Horatio' ? `; as were, by the clerk’s register, four other boys in this parish since the year ’98, of whom one is the blacksmith’s` : sonNames()[1] === 'Arthur' ? `; as were, by the clerk’s register, three other boys in this parish since Talavera, of whom one is the blacksmith’s` : `, after his father, there having been an Edmund at Hatherley in every generation since the Restoration but one`}.
+
+${at('navy', 'army') ? `Edmund’s letter upon it is seven weeks in coming. “I am told that I have a son, and what he is called. I have told ${at('navy') ? 'the gunroom' : 'the mess'}, who drank him in my wine; and I find that I walk about with my hat on one side.”` : `Edmund carries him the length of the gallery and back, and shows him the portraits; and stops for some time before the one that was the button-maker’s grandfather.`}`; }},
+    {t:() => `Let her father have his ${sonNames()[2]}.`, go:() => { fl('edmSon', sonNames()[2]); add({family:2}); reg('edmund',-1);
+      return `You say that a grandfather who has asked ought not to be refused, and that the child will have ${S.sur} to come after it, whatever goes before.
+
+He is christened ${sonNames()[2]} ${S.sur}. ${brideSur() === 'Pott' ? 'Major Pott has it put into the regimental orders.' : brideSur() === 'Houzelle' ? 'Monsieur Houzelle, upon being written to, sends a clock.' : sonNames()[2] === 'Tamworth' ? 'Colonel Tamworth gives a dinner, and tells Guilford himself, having heard it often enough.' : 'Her father, upon being written to, sends a silver spoon, and asks to be told the weight of the child.'}
+
+The steward enters the name in the estate book, under the heirs of the settlement; and having written it, he looks at it for some time with his head upon one side.`; }}
+  ]});
+
+/* Uncommon: a child that the dates will not allow. His wife is five months gone, and he has been fourteen away. edmCuckoo: kept, told, apart, wales. */
+const farAway = () => E() === 'prisoner' ? 'prisoner' : at('navy') ? 'navy' : at('army') ? 'army' : '';
+ev({ id:'edmCuckoo', from:1803, to:1814, weight:14, at:'hall', who:() => 'henrietta', title:'A Matter of Arithmetic',
+  cond:() => F('edmundMarried') && !!S.flags.edmWife && !frenchWife() && (S.flags.edmWifeAt === 'hall' || !/Tremain|Harbord/.test(S.flags.edmWife)) && !F('edmundDead') && !!farAway() && !F('navPeaceShip') && S.year - (S.flags.edmWedAt || S.year) >= 2 && (farAway() !== 'prisoner' || S.year - S.flags.edmHeldAt >= 2) && !S.peril,
+  text:() => { const k = farAway(), hall = S.flags.edmWifeAt === 'hall';
+    return `${hh('Henrietta comes into the book-room, and shuts the door, and stands with her back against it.', 'Henrietta has come over from Bath without writing, which she never did before; and she shuts the book-room door, and stands with her back against it.')}
+
+“${brideFirst()} is with child. ${hall ? 'She is five months gone. Mr Ferris says five, and I should have said so without him.' : 'Her ' + (richBride() ? 'father' : 'landlady') + ' has written to me, and not to you. She is five months gone.'}”
+
+You take down Edmund’s letters, which are kept in a drawer in the order of their dates. ${k === 'prisoner' ? `He was taken in the year ${S.flags.edmHeldAt}; and he has been at ${F('edmBitche') ? 'Bitche, inside a rock' : 'Verdun, upon his parole, two leagues from the gates'}, ever since.` : k === 'navy' ? `His ship sailed from Spithead upon the 9th of March in last year; and she has not, by any letter in the bundle, been nearer to England since than the Skaw.` : `The regiment embarked upon the 9th of March in last year; and it has not, by any letter in the bundle, been nearer to England since than the Tagus.`}
+
+${k === 'prisoner' ? 'It is ' + inWords(Math.max(2, S.year - S.flags.edmHeldAt)) + ' years.' : 'It is fourteen months.'}
+
+“She has not denied it,” says Henrietta. “She has not said anything${hall ? '. She has counted the linen twice since breakfast' : ', and has written to nobody'}.”`; },
+  choices:[
+    {t:'Say nothing. The child shall have the name.', go:() => { fl('edmCuckoo', 'kept'); add({family:1}); reg('henrietta',1); reg('edmund',1);
+      return `You put the letters back into the drawer, in their order, and turn the key.
+
+The child is a girl. She is entered in the register at Michaelmas as Lucy, daughter of Edmund ${S.sur} and of ${brideFirst()} his wife; and the clerk, who can reckon as well as another man, writes it in his best hand.
+
+Edmund’s letter upon it is five months in coming.
+
+“I am told that I have a daughter, and what she is called. I have looked for some time at the date of your letter, sir, and at the dates of my own; and I find that I had rather have a daughter than be right.”`; }},
+    {t:'Write to Edmund, and give him the dates.', go:() => {
+      const head = `You write him one side. You give him the two dates, and nothing between them.`;
+      if (chance(S.chars.edmund.r >= 1 ? 0.6 : 0.35)) { fl('edmCuckoo', 'told'); add({family:-3}); reg('edmund',1);
+        return `${head}
+
+His answer is five months in coming, and is to you only.
+
+“Sir, I can count. I have been away from her the greater part of every year since we were married. I left a girl of four-and-twenty ${S.flags.edmWifeAt === 'hall' ? 'at Hatherley, to count my mother’s linen' : richBride() ? 'in her father’s house, to be asked at breakfast whether she had heard from me' : 'in a lodging at fourteen shillings a week, with a turned coat to look at'}; and I wrote to her, when I wrote, about the weather.
+
+I do not say that I like it. I say that she is my wife, and that I shall come home to her; and I desire that the child may want for nothing until I do.”`; }
+      fl('edmCuckoo', 'apart'); add({family:-8, standing:-2}); reg('edmund',-1);
+      return `${head}
+
+His answer is five months in coming, and has been opened upon the road.
+
+“Sir, I can count; and so by this time can ${farAway() === 'navy' ? 'the gunroom' : farAway() === 'army' ? 'the mess' : 'the Commandant’s clerk'}. I desire that she may have sixty pounds a year, to be paid by Mr Cox out of mine, and her father’s house; and that I may not be written to upon this subject again.”
+
+${S.flags.edmWifeAt === 'hall' ? 'She goes upon the Thursday. ' + hh('Henrietta sees her into the chaise, and puts in after her, at the last, the cradle with one rocker.', 'Henrietta goes with her as far as Reading.') : 'Her father comes for her upon the Thursday. ' + hh('Henrietta, who was not asked, sends down to ' + BRIDE_AT() + ' by the carrier the cradle with one rocker.', 'Henrietta writes to her from Gay Street, and is not answered.')}`; }},
+    {t:'Send her into Wales to lie in, and tell nobody.', note:'£120', go:() => { const hall = S.flags.edmWifeAt === 'hall'; fl('edmCuckoo', 'wales'); fl('edmWifeAt', 'hall'); add({money:-120, family:-3}); reg('henrietta',-1);
+      return `${hall ? 'Mrs Edmund goes to Tenby in October, for her chest, and Henrietta with her, who will trust it to nobody else.' : 'Henrietta goes down to ' + BRIDE_AT() + ' herself, and has her away to Tenby in October, for her chest.'}
+
+They are back before Lady Day${hall ? '. Mrs Edmund' : '; and it is to Hatherley that they come. Mrs Edmund'} is thinner; she has left off the canary-coloured gown; and upon the first Sunday she walks to church between you both, and stays for the Sacrament.
+
+There is a farmer’s wife at Manorbier who has twelve pounds a year from Tidmarsh’s, paid upon the 25th of March, and entered in your account under “Sundries.” Edmund’s letters ask after his wife’s health, which he hears has been indifferent; and she answers them herself.`; }}
+  ]});
+
+ev({ id:'edmAsksAgain', follow:true, at:'hall', who:() => 'edmund', cond:() => !F('edmundMarried') && !F('edmundDead') && E() !== 'prisoner' && !!S.flags.edmJilt && !/Houzelle/.test(S.flags.edmJilt), title:'He Asks a Second Time',
+  text:() => `${edmAway() ? 'Edmund writes; and it is a letter with no news in it.' : 'Edmund does not come to the book-room. He writes, from his own room, and sends it down by the footman.'}
+
+“My dear Father, It is two years since you told me that it would not do, and I have obeyed you for the whole of them.
+
+${S.flags.edmJilt} has had in that time two offers, of which one was from a man with a carriage; and she has refused them both, and has never told me so. I had it from her ${/Tamworth|Loveday/.test(S.flags.edmJilt) ? 'brother' : 'father'}.
+
+I am ${edmYears()}. I do not want your consent, sir, and I have never pretended to her that I did. I ask for it a second time, because I should like my wife to come into Hatherley by the front door.”`,
+  choices:[
+    {t:'Give it, and three hundred pounds with it.', note:'£300', go:() => { wed(S.flags.edmJilt, !at('navy', 'army')); add({money:-300, family:6}); reg('edmund',3,'You gave your consent the second time of asking'); reg('henrietta',1);
+      return `You write that two years are a longer courtship than your own was, and that she has earned the front door.
+
+They are married within the month. She comes to Hatherley upon her wedding journey, for three days; walks through the hall without once looking up at the ceiling; and at dinner asks Henrietta, across you, whether it is true that Edmund would eat nothing but crusts until he was seven.
+
+${hh('Henrietta tells her that it was nine.', 'Henrietta, who has come from Bath to look at her, says that it was nine.')}`; }},
+    {t:'Give it, and nothing else.', go:() => { wed(S.flags.edmJilt, !at('navy', 'army')); add({family:2}); reg('edmund',1);
+      return `You write six lines. He has your consent; and upon the subject of money you say nothing, in a manner that cannot be mistaken.
+
+They are married within the month, upon his pay, and what she has.
+
+She writes to Henrietta as “My dear Madam”, and to you not at all; and it is some time before either of them asks you for anything.`; }},
+    {t:'Refuse it again.', go:() => { wed(S.flags.edmJilt, !at('navy', 'army')); add({family:-7}); reg('edmund',-4,'He married without your consent'); reg('henrietta',-2,'You refused Edmund’s wife twice');
+      return `You write that what would not do two years ago will not do now.
+
+His answer comes within the week, and is five lines long.
+
+“Sir, I was married upon Tuesday, by licence. My wife desires her duty to my mother. We shall not trouble you at Hatherley; and when you are pleased to send for us, we shall come by whichever door is open.”
+
+${hh('Henrietta orders the carriage for the Thursday, and does not say where she is going.', 'Henrietta writes from Gay Street, that she has sent them her own mother’s tea-spoons.')}`; }}
   ]});
 
 /* ================= The Navy's 1815 ================= */
