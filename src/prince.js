@@ -13,7 +13,8 @@
    the bill of some £30,000 and the first night in Ascot week 1815 are true.)
 
    Flags: prMet (he has spoken to you), prHost (he breakfasted at Hatherley), prPlate, prBrighton, prSide ('whig', 'court' or 'none'), prLibel ('bound', 'bought' or 'let'),
-   prPaid, prPortrait, prList, prTemple, prCottage, prSwans ('kept', 'resigned' or 'sold').
+   prPaid, prPortrait, prList, prTemple, prCottage, prSwans ('kept', 'resigned' or 'sold'), guelph ('worn', 'kept' or 'sent').
+   The Guelphic Order (prGuelph, Christmas 1815): founded 12 August 1815, Hanoverian, in three classes, with no rank in England (from memory). Invented: the fees, the grounds, and all that is said of it.
    Favour at Court (the trait, swans()) has a paper of its own, prSwans, and a reading in the Castle dinner, in We Are In and under the verandah. Invented: Captain Bloomer,
    the slip under the seal, the Levee and the hamper. From memory: that the Regent, in his first year, could grant places only during pleasure. princeLoan is put down when the bond is given up. */
 const prAge = () => ['seven-and-thirty', 'eight-and-thirty', 'nine-and-thirty', 'forty'][clamp(S.year - 1799, 0, 3)];
@@ -23,7 +24,7 @@ const prBondYear = () => S.seen.royalBond === undefined ? 1806 : FIRST_YEAR + Ma
 
 /* The papers are sent for by the calendar, so that the luck of the draw cannot lose them. One that is put off by a dated paper, and has missed its season, is sent for again the next year. */
 const PR_WHEN = {prCastle:() => S.season === 2 && [1799, 1801, 1802].includes(S.year), prBrighton:() => S.season === 1 && S.year >= 1807 && S.year <= 1809,
-  prIn:() => S.year === 1811 && S.season === 0, prAdonis:() => S.year === 1812 && S.season === 0, prPurse:() => (S.year === 1812 && S.season >= 2) || S.year === 1813, prSwans:() => S.year === 1811 && S.season >= 2, prLots:() => S.year === 1814 && S.season === 3, prCottage:() => S.year === 1815 && S.season >= 2};
+  prIn:() => S.year === 1811 && S.season === 0, prAdonis:() => S.year === 1812 && S.season === 0, prPurse:() => (S.year === 1812 && S.season >= 2) || S.year === 1813, prSwans:() => S.year === 1811 && S.season >= 2, prLots:() => S.year === 1814 && S.season === 3, prCottage:() => S.year === 1815 && S.season >= 2, prGuelph:() => S.year === 1815 && S.season === 3};
 const ventureTickPrince = ventureTick;
 ventureTick = function(line){ ventureTickPrince(line);
   for (const id in PR_WHEN) { const e = byId(id); if (PR_WHEN[id]() && S.seen[id] === undefined && !S.queue.some(x => x.id === id) && (!e.cond || e.cond())) later(id, 0); } };
@@ -367,4 +368,47 @@ In November a hamper comes by the Windsor carrier, with no letter in it. There a
       return `Six hundred guineas are paid in at the bank by a Mr Cox, of Craig’s Court, upon the day that your resignation is entered; and the Gazette has Captain Bloomer, of the Tenth Hussars, to be Deputy Keeper of the Swans, vice ${S.sur}, resigned.
 
 The Captain goes down to Windsor with the barge the July following. He is the first Deputy Keeper in forty years to be bitten; and he writes to you from the Castle Inn, with his left hand, to enquire whether the scarlet coat was included.`; }}
+  ]});
+
+/* ---------- Christmas 1815: a cross from Hanover ---------- */
+
+const prGuelphWhy = () => F('prCottage') ? 'services rendered to the Royal Person in the matter of a roof' : F('prSwans') === 'kept' ? 'the faithful keeping of His Majesty’s swans upon the Thames'
+  : F('princeLoan') ? `pecuniary services rendered to the Royal Family in the year ${prBondYear()}` : F('prHost') ? 'the hospitality shown to His Royal Highness in the county of Berks' : 'your known attachment to the Royal Person';
+ev({ id:'prGuelph', follow:true, at:'hall', who:() => null, cond:() => S.year === 1815 && (F('prMet') || F('princeLoan') || F('prPaid')), title:'A Cross from Hanover',
+  text:() => `A packet is brought down from London by a clerk of the Hanoverian Chancery, who has eleven like it in his bag, and a list. The seal is black, and has a horse upon it.
+
+There is in the packet a cross of gold, with a white horse galloping in the middle of it, and three words of Latin round the horse; a yard and a half of sky-blue riband, watered; and a sheet in French, to which an English one is pinned.
+
+“London, the 4th of December 1815.
+
+“Sir, I have it in command from His Royal Highness the Prince Regent, acting in the name and on the behalf of His Majesty as King of Hanover, to acquaint you that he has been pleased to nominate you a Knight of the Royal Guelphic Order, of the third class, in the civil division, in consideration of ${prGuelphWhy()}.
+
+“The Order was instituted upon the 12th of August last. It confers no rank, title or precedence within the United Kingdom. The fees of the Chancery are twenty-six pounds.
+
+“I have the honour to be, Sir, your most obedient servant, Münster.”
+
+The clerk is walking his horse in the yard. ${steward()} has found Hanover upon the globe in the book-room, and has measured it with his thumb.`,
+  choices:[
+    {t:'Pay the fees, and wear it to the magistrates’ dinner.', note:'£26', go:() => { fl('guelph', 'worn'); add({money:-26, standing:2});
+      return `You wear it to the magistrates’ dinner at the Bell, upon the left breast of a blue coat.
+
+Mr Tamworth reads the Latin across the table, with his glass in his eye. “Nec aspera terrent. ‘Nor do rough things frighten them.’ Is it given for the roads, ${S.sur}?”
+
+Lord Cullerne does not read it. “Hanover. He’s made a hundred of ’em since August. He’s made his apothecary.”
+
+${held('knight') || held('baronet') ? `As you are Sir ${S.name.split(' ')[0]} already, the cross makes no difference in the order of going in.` : `There is some debate at the door, whether a Knight of Hanover goes in before an English esquire; and the chairman, having looked into Burn’s Justice and found nothing, sends you in where you went last year.`} But the waiter, who was nine years a drummer in the German Legion, calls you Herr Ritter until the cloth is drawn, and gives you the first cut of the goose.`; }},
+    {t:'Pay the fees, and put it away.', note:'£26', go:() => { fl('guelph', 'kept'); add({money:-26, goodwill:1, family:2});
+      return `The fees go up with the clerk, and the cross into the drawer of the book-room table, under the Christmas accounts.
+
+It does not stay there. Mrs Bunce, who dusts the drawer, has shown it by Twelfth Night to the cook, the dairymaid and the Wyvern carrier; and upon the Sunday old Dewey takes off his hat to you a second time in the churchyard, having been told that the squire is made a German.`; }},
+    {t:'Ask Colonel McMahon whether it is sent in place of the thousand pounds.', if:() => F('princeLoan'), go:() => { fl('guelph', 'kept'); add({standing:1});
+      return `Colonel McMahon answers within the week, upon a whole sheet.
+
+“The Privy Purse of His Royal Highness, and the Chancery of His Majesty’s German dominions, are distinct establishments, and neither is answerable for the engagements of the other. Your bond remains upon the List. I am to add that the cross is of gold.”
+
+${steward()} carries it to the silversmith at Wyvern, and has it weighed. It is of gold, to the value of four pounds eleven shillings; and the Chancery, which has heard from the Colonel, does not ask again for its fees.`; }},
+    {t:'Send it back, with your duty.', go:() => { fl('guelph', 'sent'); add({goodwill:3, standing:-1});
+      return `You write to the Count that you are sensible of the honour; that you have never seen Hanover, nor done anything for it; and that an English gentleman, who has done so little for his own country, cannot very well take a cross for his services to another.
+
+The clerk carries the packet away as he brought it, and crosses a name off his list. From the Count there is no answer. But the Chancery, which has a form for every case except this one, sends after you, by the post, a demand for twenty-six pounds.`; }}
   ]});
