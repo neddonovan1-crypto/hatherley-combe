@@ -2,4 +2,4 @@
 #lastplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.86);overflow:auto;animation:heldup .25s ease-out}
 #lastplate[hidden]{display:none}
 .lastlink{margin:0 0 4px;text-align:center}
-@media (max-width:1080px){ #lastplate{place-items:start center;padding:10px} }
+@media (max-width:1080px){ #lastplate{place-items:start center;padding:10px;overscroll-behavior:contain} }
