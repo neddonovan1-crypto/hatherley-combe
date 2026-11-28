@@ -1244,3 +1244,40 @@ gate('edmund-skaw', () => navRank() === 1 && S.flags.navCmdrAt === undefined);
 gate('edmund-sandyhook', () => navRank() === 2 && S.flags.navCmdrAt === undefined);
 gate('edmund-java', () => navRank() === 2);
 gate('edmund-kit', () => armRank() === 2);
+
+/* If he is killed married. edmWidow: hall, funds, board. */
+const widowHere = () => S.flags.edmWifeAt === 'hall' || !/Pott|Hallett|Tremain|Harbord/.test(S.flags.edmWife || '');
+ev({ id:'edmWidow', weight:300, at:'hall', who:() => null, cut:() => S.flags.edmSon ? 'edmWidow' : 'edmWidow-alone', title:'Mrs Edmund in Black',
+  cond:() => F('edmundDead') && !!S.flags.edmWife && !S.flags.edmWidow && S.flags.edmCuckoo !== 'apart',
+  text:() => { const son = S.flags.edmSon, navy = E() === 'navy', served = navy || E() === 'army';
+    return `${widowHere() ? `Mrs Edmund has not come down to breakfast since the news. Upon the ninth morning she comes, in black that was made at Reading in two days; and she lays a paper beside your plate.` : `A hack chaise from ${BRIDE_AT()} sets down at the door a small person in black, with one trunk${son ? ', and a nurse who carries the boy' : ''}. She is shown in to you at breakfast; and before she has sat down, she lays a paper beside your plate.`}
+
+It is an account, in the small upright hand.
+
+“What I have. ${served ? `The pension of a ${navy ? (navRank() >= 2 ? 'Commander' : 'Lieutenant') : F('major') ? 'Major' : 'Captain'}’s widow, if the Board allows it, which Mr Cox says is commonly done within nine months. His arrears of pay, thirty-one pounds. His sword, which ${navy ? 'the ship' : 'the regiment'} has sent to me, and which I shall not sell.` : `His watch. His books, which are chiefly upon farming, and have his name in them. Four-and-twenty pounds, being what was left of his quarter’s allowance.`} ${richBride() ? 'My father’s house, where I may be a daughter again.' : 'Eleven pounds in the Savings Bank.'}
+
+What I have not. Any claim upon Hatherley; there being no jointure in the settlement, as I have been told twice by the attorney, and once by his clerk.”
+
+${son ? `Under the account there is one line more. “${son} is the heir. I understand that an heir is commonly brought up upon the land, and that his mother is not always asked.”` : `She has ruled a line under it, and written nothing below the line.`}
+
+${hh('Henrietta, who has not spoken at table these nine days, says that the girl folds a paper as Edmund did.', 'Henrietta’s letter from Gay Street is upon paper with a black edge an inch deep; and it asks only where the girl is to go.')}`; },
+  choices:[
+    {t:'Keep her at Hatherley, as a daughter of the house.', go:() => { const son = S.flags.edmSon; fl('edmWidow', 'hall'); fl('edmWifeAt', 'hall'); add({family:6}); reg('henrietta',1,'You kept Edmund’s widow at the Hall');
+      return `You tell her that there is no jointure because nobody thought of one, and that the blue room is hers for as long as there is a roof over it.
+
+She says, “Thank you, sir,” and asks for the key of the linen-press.
+
+${son ? `At Michaelmas ${son} is carried round the farms before the steward, upon the cob; and the tenants take off their hats to a person who cannot yet say what they are.` : `Mr Josiah ${S.sur} of Birmingham, when he comes to look at the chimneys, is shown them by her. He is told which of them smoke, and in what winds; and he learns besides that she is four-and-twenty, that her health is excellent, and that she does not intend to remove.`}`; }},
+    {t:'Lay five hundred pounds in the Funds in her name.', note:'£500', go:() => { const son = S.flags.edmSon; fl('edmWidow', 'funds'); add({money:-500, family:3});
+      return `The stock is bought in her name, and the receipt is put into her hand. She reads it through to the broker’s signature, and enters it in her account, under “What I have.”
+
+She goes to her father’s upon the Thursday.
+
+${son ? `The boy goes with her. By a paper which she drew, and you signed, he is to be at Hatherley for the month of August in every year; and upon the first of August he is at the lodge gate by nine in the morning.` : `She writes at Christmas, four sides; and one of the four is the price of wheat.`}`; }},
+    {t:'Tell her that the Board will provide.', go:() => { const son = S.flags.edmSon; fl('edmWidow', 'board'); add({family:-7}); reg('henrietta',-2,'You sent Edmund’s widow away with nothing');
+      return `You say that a pension is what the country gives for the purpose, and that Hatherley was no party to the marriage.
+
+She folds the account in four, and puts it into her pocket. She goes by the Reading coach upon the Thursday.
+
+${son ? `The boy goes with her. He is the heir of Hatherley, and he is brought up in another man’s house; and what he is told there of his grandfather, you will not know until he is of an age to write.` : `${hh('Henrietta sends Edmund’s watch after her, and does not tell you.', 'Henrietta has her to Gay Street for the winter, and does not tell you.')}`}`; }}
+  ]});
