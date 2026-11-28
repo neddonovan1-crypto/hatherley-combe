@@ -44,3 +44,11 @@ ev({ id:'unique', from:1797, to:1805, weight:2, cond:() => !F('someFlag'),
 `fixed:'1800-2'` pins an event to a year and season (0 spring, 3 winter). `follow:true` marks one that only arrives through `later('id', seasons)`.
 
 House rules for the prose: British spelling, no em dashes, nothing the period would not recognise, and the joke goes in the detail.
+
+## Saves
+
+The game writes itself to the browser's `localStorage` at every choice and every quarter, and the page resumes the estate in hand when it loads. A save carries `S.v`, the `SAVE_VERSION` that wrote it. `load()` in `src/engine.js` never discards an older save: `mend()` runs the numbered steps in `MENDS`, then fills in whatever a new estate has and the old one lacks, and keeps a copy of the save as it was under `hatherley-combe-save-before`.
+
+Adding a field, a person or a table needs nothing. Renaming or reshaping something a save holds needs a step in `MENDS` and `SAVE_VERSION` raised by one. Do not change `SAVE_KEY`.
+
+`node test/oldsaves.js` loads saves written by earlier builds into this one and plays each to the end. Run it before a deploy.

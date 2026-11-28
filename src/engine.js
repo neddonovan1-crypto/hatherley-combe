@@ -1,6 +1,6 @@
 /* The engine: seasons, ledger, undertakings, and the reckoning. */
 let S = null;
-const SAVE_KEY = 'hatherley-combe-save-v1';
+const SAVE_KEY = 'hatherley-combe-save-v1', SAVE_BACKUP = 'hatherley-combe-save-before', SAVE_VERSION = 2;   // the key keeps its old name so that estates begun on earlier builds are found
 
 const F = k => S.flags[k];
 function fl(k, v = true){ S.flags[k] = v; }
@@ -906,6 +906,38 @@ function reckoning(){
 }
 
 /* ---------- saving ---------- */
-function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (err) {} }
-function load(){ try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.chars && s.phase) { if (!s.works) { s.works = s.project ? [s.project] : []; delete s.project; } return s; } } catch (err) {} return null; }
+/* The book is written to the browser at every choice and every quarter, and again when the page is put away.
+   A save carries the number of the build that wrote it. An older one is mended, never thrown out: mend() runs the numbered steps it has missed,
+   then fills in whatever a new estate would have and the old one lacks, so a part added since (a person, a farm's new column, a whole table) cannot break it.
+   Add a step to MENDS and raise SAVE_VERSION only when something must be renamed or reshaped; a plain addition needs nothing. */
+let NOSAVE = false, SAVE_FAILED = false, ASKED_KEEP = false;
+const MENDS = {
+  1: s => { if (!s.works) { s.works = s.project ? [s.project] : []; delete s.project; } }
+};
+function save(){ if (NOSAVE || !S) return; S.v = SAVE_VERSION;
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); SAVE_FAILED = false; } catch (err) { SAVE_FAILED = true; }
+  /* Safari clears a site's storage after a week unvisited unless asked to keep it. */
+  if (!ASKED_KEEP) { ASKED_KEEP = true; try { if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (err) {} } }
+function freshState(){ const keep = S, was = NOSAVE; let f = null; NOSAVE = true; try { newGame('Thomas', 'Merridew', []); f = S; } catch (err) {} S = keep; NOSAVE = was; return f; }
+function mend(s){ const from = s.v || 1;
+  for (let v = from; v < SAVE_VERSION; v++) if (MENDS[v]) MENDS[v](s);
+  const f = freshState(); if (!f) return s;
+  for (const k in f) if (s[k] === undefined) s[k] = f[k];
+  for (const id in f.chars) { if (!s.chars[id]) s.chars[id] = f.chars[id]; else for (const k in f.chars[id]) if (s.chars[id][k] === undefined) s.chars[id][k] = f.chars[id][k]; }
+  for (const x of (s.farms || [])) { const t = f.farms.find(y => y.id === x.id) || f.farms[0]; for (const k in t) if (x[k] === undefined && (k === 'lease' || k === 'level' || t.id === x.id)) x[k] = JSON.parse(JSON.stringify(t[k])); }
+  /* a farm sold under an early build left no record of itself; the works that belonged to it need its name */
+  if (s.farms) for (const x of f.farms) if (!s.farms.some(y => y.id === x.id) && !(s.soldFarms && s.soldFarms[x.id])) (s.soldFarms = s.soldFarms || {})[x.id] = x;
+  /* what a later build has dropped is taken quietly out of the book */
+  const known = id => { try { return !!byId(id); } catch (err) { return false; } };
+  s.queue = (s.queue || []).filter(q => q && known(q.id));
+  s.works = (s.works || []).filter(w => w && PROJECTS[w.id]);
+  if (s.pending && !known(s.pending)) { s.pending = null; if (s.phase === 'event') s.phase = 'undertake'; }
+  if ((s.phase === 'outcome' || s.phase === 'undone') && !s.outcome) s.phase = 'undertake';
+  s.v = SAVE_VERSION; return s; }
+function load(){ let raw = null;
+  try { raw = localStorage.getItem(SAVE_KEY); if (!raw) return null; const s = JSON.parse(raw);
+    if (s && s.chars && s.phase) { if ((s.v || 1) !== SAVE_VERSION) { try { localStorage.setItem(SAVE_BACKUP, raw); } catch (err) {} } return mend(s); } }
+  catch (err) { try { if (raw) localStorage.setItem(SAVE_BACKUP, raw); } catch (e2) {} }
+  return null; }
 function wipe(){ try { localStorage.removeItem(SAVE_KEY); } catch (err) {} S = null; render(); }
+if (typeof addEventListener === 'function') { addEventListener('pagehide', () => save()); addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); }); }

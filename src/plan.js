@@ -38,6 +38,17 @@ const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london', fishing:'mill',
 const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
+/* A board stands at every farm held without a lease, as one stands at a farm for sale; and a farm under lease carries the year it runs to. */
+const heldFarm = id => id && typeof farmsList === 'function' ? farmsList().find(f => f.id === id) : null;
+const toLet = id => { const f = heldFarm(id); return !!f && f.canOffer; };
+const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ? '' : `<small>${f.state === 'hand' ? 'In hand' : (f.state === 'corn' ? 'Corn rent to ' : 'Lease to ') + f.ends}</small>`; };
+/* Where a work is not yet built, or a venture not yet tried, a small roundel of each stands beside the name. */
+function toDoAt(){ const w = new Set(), v = new Set(), shut = S.phase === 'end' || S.dead; if (shut) return {w, v};
+  if (typeof worksList === 'function') for (const x of worksList()) if (x.state === 'open' && !x.off) w.add(workAt(x.id));
+  if (typeof venturesList === 'function') for (const x of venturesList()) if (x.state === 'open' && !x.off && x.why !== 'Not to be had at present.') v.add(ventAt(x.id));
+  return {w, v}; }
+function goLease(id){ const open = SHEET === id && !WHO; WHO = ''; ROUND = false; if (open && LEASING === PLACES[id].farm) { LEASING = ''; SHEET = ''; drawPlan(); return; }
+  SHEET = id; SEC = 'farm'; LEASING = LOT = PLACES[id].farm; drawPlan(); showOnPlan(id); }
 const forSale = id => typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id);
 /* Whether a place has any paper to show. A place with none is only lettering on the sheet. */
 function placeHas(id){ const p = PLACES[id]; if (id === 'hall' || id === 'wyvern' || id === 'london') return true; if (p.farm && farmAt(p.farm)) return true;
@@ -76,14 +87,14 @@ function warmQuarter(){ if (!S || S.phase === 'end') return; const q = (S.season
     piecesOn().map(id => { for (const p of ['plan/f/' + id + '-' + q, 'plan/f/' + id, 'plan/' + id + '-' + q, 'plan/' + id.replace('hall-', '') + '-' + q]) { const u = artURL(p); if (u) return u; } return ''; }))); }
 function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; whenIdle(warmIntro); return; }
   if (!S.plates) S.plates = [];
-  const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; PSTEP = k;
+  const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; if (PSTEP && typeof RESUMED !== 'undefined') RESUMED = false; PSTEP = k;
   VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
   if (PLATEUP || VIEW === 'book' || (SHEET === 'season' && S.phase !== 'undertake')) { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
 function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
 function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; ROUND = false; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
-function shutSheet(){ SHEET = ''; WHO = ''; drawPlan(); }
+function shutSheet(){ SHEET = ''; WHO = ''; LEASING = ''; drawPlan(); }
 function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
 function plateDown(){ PLATEUP = false; drawPlan(); }
 function showProgress(i){ PROGRESS = i === undefined ? Math.max(0, S.plates.length - 1) : i; drawPlate(); }
@@ -187,9 +198,10 @@ function landLblHTML(){
   const arms = artURL('arms/' + armsOf());
   const caller = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : '';
   const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
+  const todo = toDoAt();
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
     if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
-    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : p.farm && toLet(p.farm) ? `onclick="goLease('${id}')"` : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : p.farm && toLet(p.farm) && caller !== id ? '<em class="let">Negotiate lease</em>' : ''}<span>${esc(p.n)}</span>${todo.w.has(id) ? `<i class="todo" title="Works to be put in hand">${pic('icons/works', 'Works to be put in hand')}</i>` : ''}${todo.v.has(id) ? `<i class="todo" title="Ventures untried">${pic('icons/ventures', 'Ventures untried')}</i>` : ''}${heldAs(p.farm)}</button>`; }).join('');
   return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
@@ -204,7 +216,9 @@ function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v 
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
     <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
+    ${typeof RESUMED !== 'undefined' && RESUMED ? `<p class="resumed"><b>Your estate, as you left it</b><span>${esc(QUARTER[S.season])} ${S.year}. Nothing is lost.</span></p>` : ''}
     ${cueHTML()}
+    ${SAVE_FAILED ? '<p class="nosave">This browser will keep no copy of the book. Shut the page, and the estate is gone.</p>' : ''}
     <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
 
 /* ---------- the paper of a place ---------- */

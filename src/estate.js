@@ -129,7 +129,8 @@ function rentRoll(){ estateSync(); const y = S.year, open = S.phase !== 'end' &&
   return S.farms.map(f => { const will = !f.void && f.lease.type === 'will', waiting = S.letQueue.some(x => x.id === f.id);
     return {id:f.id, name:f.name, acres:f.acres, tenant:f.void ? '' : f.tenant, rent:f.void ? 0 : Math.round(rentDue(f)), value:lettingValue(f, y),
       tenure:tenureOf(f), order:ORDER_W[f.cond], means:f.void ? '' : MEANS_W[Math.min(4, Math.floor(f.K / Math.max(1, f.rent) / 0.3))],
-      arrears:Math.round(f.arrears), level:f.level, own:!!f.own, abated:!!f.rebate, waiting, canLevel:open && will && !waiting, canOffer:open && will && !waiting}; }); }
+      arrears:Math.round(f.arrears), level:f.level, own:!!f.own, abated:!!f.rebate, waiting, canLevel:open && will && !waiting, canOffer:open && will && !waiting,
+      state:f.void ? 'hand' : will ? 'will' : f.lease.type, ends:will || f.void ? 0 : f.lease.ends, toRun:will || f.void ? 0 : Math.max(0, f.lease.ends - y)}; }); }
 const LAND = {longbarrow:'Down and sheepwalk', kennet:'Wet clay, with the mill', church:'Strips in the open field', coldharbour:'Sound loam beyond the turnpike', starveall:'Thin chalk on the hill', commonpiece:'New ground off the common', rooksnest:'Mixed land under the hanger', withymead:'Meadow and osiers on the Lambourn', maddle:'Open down, nine miles from a market'};
 /* For the Farms leaf of the book. held is ready to print; the rest is there for the page to draw as it likes. */
 function farmsList(){ return rentRoll().map(f => { const bits = [f.tenure === 'In hand' ? 'In hand, no tenant' : f.tenure, f.order];
@@ -163,6 +164,15 @@ function setLevel(id, lvl){ const f = farm(id); if (!f || !LEVEL[lvl] || f.void 
 function askLet(id, why){ if (S.letQueue.some(x => x.id === id)) return; S.letQueue.push({id, why}); later('leaseFalls', 0); }
 function offerLease(id){ const f = farm(id); if (!f || f.void || f.lease.type !== 'will') return; askLet(id, 'offer');
   S.journal.unshift({when:stamp(), title:'Rent roll', did:'Sent word to ' + f.tenant + ' about a lease of ' + f.name}); save(); render(); }
+
+/* A lease granted from the farm's own paper, there and then. The terms are the choices of the letting paper after its first, which is to leave things alone;
+   leaseTerms(id) lists them with what each does to the rent, and grantLease(id, i) signs one and returns what was said. S.leaseSaid keeps the last for the page to print under the farm. */
+function asLetting(id, fn){ const x = {id, why:'offer'}; S.letQueue.unshift(x); try { return fn(byId('leaseFalls')); } finally { const i = S.letQueue.indexOf(x); if (i >= 0) S.letQueue.splice(i, 1); } }
+function leaseTerms(id){ const f = farm(id); if (!f || f.void || f.lease.type !== 'will' || S.phase === 'end' || S.dead || S.letQueue.some(x => x.id === id)) return [];
+  return asLetting(id, e => e.choices.slice(1).map((c, i) => ({i, label:lab(c), note:typeof c.note === 'function' ? c.note() : c.note || ''}))); }
+function grantLease(id, i){ if (!leaseTerms(id)[i]) return false; const f = farm(id);
+  const said = asLetting(id, e => { const c = e.choices[i + 1], did = lab(c), text = c.go(); S.journal.unshift({when:stamp(), title:'The Letting of ' + f.name, did}); return text; });
+  S.leaseSaid = {id, t:S.t, text:said}; save(); render(); return said; }
 
 /* ---------- papers ---------- */
 function letting(){ while (S.letQueue && S.letQueue.length){ const x = S.letQueue[0], f = farm(x.id); if (f && !f.void && f.lease.type === 'will') return {f, why:x.why}; S.letQueue.shift(); } return null; }
