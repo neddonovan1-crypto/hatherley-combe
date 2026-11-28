@@ -29,7 +29,7 @@ function edmundRole(){ const e = S.flags.edmund, y = S.year;
    They run alongside the seasons and do not use up the season's undertaking. */
 const MAX_WORKS = 2;
 const PROJECTS = {
-  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', line:'Parliament divides the open fields and the common among the owners. Each takes his share and hedges it.', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797,
+  enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', line:'Parliament divides the open fields and the common among the owners. Each takes his share and hedges it.', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797, early:() => S.year < 1797 ? 'The Bill cannot be brought in before 1797.' : '',
     blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
       return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
@@ -114,10 +114,11 @@ function startProject(id){ const p = PROJECTS[id]; S.works.push({id, left:p.seas
 function worksInHand(){ return S.works.map(w => ({id:w.id, name:PROJECTS[w.id].name, left:w.left, per:w.per})); }
 function worksDone(){ return Object.keys(PROJECTS).filter(id => S.projectsDone[id] === 'done').map(id => ({id, name:PROJECTS[id].name})); }
 function worksList(){ const busy = S.works.filter(w => !PROJECTS[w.id].hidden).length;
-  return Object.keys(PROJECTS).filter(id => (!PROJECTS[id].hidden || S.projectsDone[id]) && (S.projectsDone[id] || soldWhy(PROJECTS[id]) || !PROJECTS[id].if || PROJECTS[id].if())).map(id => { const p = PROJECTS[id], cost = projCost(id), per = Math.round(cost / p.seasons);
+  return Object.keys(PROJECTS).filter(id => (!PROJECTS[id].hidden || S.projectsDone[id]) && (S.projectsDone[id] || soldWhy(PROJECTS[id]) || !PROJECTS[id].if || PROJECTS[id].if() || (PROJECTS[id].early && PROJECTS[id].early()))).map(id => { const p = PROJECTS[id], cost = projCost(id), per = Math.round(cost / p.seasons);
     const state = S.projectsDone[id] === 'done' ? 'done' : S.projectsDone[id] === 'begun' ? 'inHand' : 'open'; const w = S.works.find(x => x.id === id);
     const off = state === 'open' && !!soldWhy(p); let why = '';
     if (state === 'open') { if (off) why = soldWhy(p);
+      else if (p.early && p.early()) why = p.early(); /* listed before its day, with the reason it must wait */
       else if (S.phase === 'end' || S.dead) why = 'The books are closed.';
       else if (busy >= MAX_WORKS) why = 'Two works in hand already. There is one estate carpenter, and he is on both.';
       else if (S.money < per) why = 'The purse will not stand the first instalment of ' + fmt(per) + '.'; }
