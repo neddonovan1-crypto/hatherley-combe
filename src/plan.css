@@ -40,8 +40,7 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
 @keyframes laidon{from{opacity:0;transform:translateY(10px)}}
 #sheet > h2{font-family:var(--hand);font-size:2.3rem;line-height:1;padding-right:34px}
 #sheet .shut{position:absolute;top:8px;right:10px;width:38px;height:38px;background:none;border:0;font-family:var(--display);font-size:1.8rem;line-height:1;color:var(--muted)} #sheet .shut:hover{color:var(--madder)}
-#sheet > .plate{aspect-ratio:16/9;flex:none;margin:3px} #sheet > .plate img{object-position:50% 72%} #sheet .plate.round{background:#d8d2bd} #sheet model-viewer{position:absolute;inset:0;width:100%;height:100%;--poster-color:transparent}
-#sheet .turn{position:absolute;right:6px;bottom:6px;background:#efe6cb;border:1px solid var(--ink);padding:3px 9px;font-family:var(--caps);font-size:.72rem;letter-spacing:.08em;line-height:1.5}
+#sheet > .plate{aspect-ratio:16/9;flex:none;margin:3px} #sheet > .plate img{object-position:50% 72%}
 #sheet .sec{border-top:1px solid var(--ink)} #sheet .sec:last-child{border-bottom:1px solid var(--ink)}
 #sheet .sec > summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;padding:7px 0 6px;font-family:var(--caps);font-size:.9rem;letter-spacing:.12em} #sheet .sec > summary::-webkit-details-marker{display:none}
 #sheet .sec > summary::after{content:"\25BE";color:var(--muted)} #sheet .sec[open] > summary::after{content:"\25B4"} #sheet .sec[open] > summary{color:var(--madder)}

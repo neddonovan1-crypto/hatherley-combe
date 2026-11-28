@@ -1,6 +1,6 @@
 /* The plan of the estate. Between quarter days the squire is out of the book and on his land: the places on the plan are the menu,
    and whatever happens to him is struck off as a numbered plate. The book (ui.js) is opened on quarter day and at the end. */
-let VIEW = 'book', SHEET = '', PLATEUP = false, PROGRESS = -1, PSTEP = '', SEC = '', ROUND = false, CALLKEY = '', CALLAT = '';
+let VIEW = 'book', SHEET = '', PLATEUP = false, PROGRESS = -1, PSTEP = '', SEC = '', CALLKEY = '', CALLAT = '';
 const isBuilt = id => typeof worksList === 'function' && worksList().some(w => w.id === id && w.state === 'done');
 const isLive = id => typeof venturesList === 'function' && venturesList().some(v => v.id === id && v.state === 'inHand');
 const isKept = id => typeof societyList === 'function' && societyList().some(v => v.id === id && v.state === 'inHand');
@@ -48,7 +48,7 @@ function toDoAt(){ const w = new Set(), v = new Set(), shut = S.phase === 'end' 
   if (typeof worksList === 'function') for (const x of worksList()) if (x.state === 'open' && !x.off) w.add(workAt(x.id));
   if (typeof venturesList === 'function') for (const x of venturesList()) if (x.state === 'open' && !x.off && !x.notYet) v.add(ventAt(x.id));
   return {w, v}; }
-function goLease(id){ const open = SHEET === id && !WHO; WHO = ''; ROUND = false; if (open && LEASING === PLACES[id].farm) { LEASING = ''; SHEET = ''; drawPlan(); return; }
+function goLease(id){ const open = SHEET === id && !WHO; WHO = ''; if (open && LEASING === PLACES[id].farm) { LEASING = ''; SHEET = ''; drawPlan(); return; }
   SHEET = id; SEC = 'farm'; LEASING = LOT = PLACES[id].farm; drawPlan(); showOnPlan(id); }
 const forSale = id => typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id);
 /* Whether a place has any paper to show. A place with none is only lettering on the sheet. */
@@ -89,12 +89,12 @@ function warmQuarter(){ if (!S || S.phase === 'end') return; const q = (S.season
 function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; whenIdle(warmIntro); return; }
   if (!S.plates) S.plates = [];
   const k = S.t + ':' + S.phase + ':' + S.pending; if (k === PSTEP) return; if (PSTEP && typeof RESUMED !== 'undefined') RESUMED = false; PSTEP = k;
-  VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1; ROUND = false;
+  VIEW = (S.phase === 'ledger' && S.dead) || S.phase === 'end' ? 'book' : 'plan'; PLATEUP = S.phase === 'outcome' || S.phase === 'undone'; PROGRESS = -1;
   if (PLATEUP || VIEW === 'book' || (SHEET === 'season' && S.phase !== 'undertake')) { SHEET = ''; WHO = ''; }
   if (PLATEUP) strike(); }
 function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
-function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; ROUND = false; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
+function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
 function shutSheet(){ SHEET = ''; WHO = ''; LEASING = ''; drawPlan(); }
 function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
 function plateDown(){ PLATEUP = false; drawPlan(); }
@@ -288,9 +288,7 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', bankSay('Tidmarsh’s Bank'), `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>`); }
   if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
   const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
-  const glb = id === 'hall' ? (isBuilt('front') && ART.has('hall/hall-front.glb') ? 'hall-front' : ART.has('hall/hall-old.glb') ? 'hall-old' : '') : '';
-  const view = glb && ROUND ? `<figure class="plate round"><model-viewer src="art/hall/${glb}.glb" alt="Hatherley Hall" camera-controls auto-rotate rotation-per-second="14deg" camera-orbit="30deg 68deg auto" shadow-intensity=".6" exposure="1.05" interaction-prompt="none" disable-zoom></model-viewer></figure>`
-    : `<figure class="plate has">${platePic(p.pic && artURL(p.pic()) ? p.pic() : 'seasons/' + S.season, p.n)}${glb ? `<button class="turn" onclick="turnHall()">In the round</button>` : ''}</figure>`;
+  const view = `<figure class="plate has">${platePic(p.pic && artURL(p.pic()) ? p.pic() : 'seasons/' + S.season, p.n)}</figure>`;
   return `${shut}<h2>${esc(p.n)}</h2>${view}
     ${secs.map(([k, t, h]) => `<details class="sec" name="sec" ${k === open ? 'open' : ''} ontoggle="if(this.open)SEC='${k}'"><summary>${t}</summary><div>${h}</div></details>`).join('')}`; }
 /* What is owed at the Castle, and what may be had there: three standing matters set one of three ways, and the deeds his lordship will or will not sign. */
@@ -305,7 +303,6 @@ function castleHTML(part){ const k = castleList(), fig = n => n ? amt(n, -1) : f
   return `<div class="hh lots flat castle"><p class="hhsum"><b>${esc(k.word)}</b><small>Lord Cullerne</small></p>${k.debt ? `<p class="terms"><em>His lordship holds your mortgage of ${fmt(k.owing)}.</em></p>` : ''}
     ${k.said ? `<div class="prose said">${paras(k.said)}</div>` : ''}${part === 'owed' ? dials : lots}</div>`; }
 /* The model of the Hall is fetched only when asked for. */
-function turnHall(){ ROUND = true; if (!window.customElements || !customElements.get('model-viewer')) { const s = document.createElement('script'); s.type = 'module'; s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'; s.onerror = () => { ROUND = false; drawPlan(); }; document.head.appendChild(s); } drawPlan(); }
 
 let LANDKEY = '';
 /* A new sheet is laid over the old only when every picture on it is ready to be shown, so the plan is never seen bare between quarters. */
