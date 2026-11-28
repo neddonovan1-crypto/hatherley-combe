@@ -118,15 +118,17 @@ function noteOf(c){ if (!c.note) return ''; const n = typeof c.note === 'functio
 
 function accountHTML(){ let rows = '', tot = 0;
   const cells = a => `<td class="n l">${a < 0 ? '<span class="sr">paid </span>' : ''}${Math.abs(a).toLocaleString('en-GB')}</td><td class="n z">0</td><td class="n z">0</td>`;
-  for (const [l, a] of S.ledger){ tot += a; rows += `<tr class="${a < 0 ? 'neg' : ''}"><td>${esc(l)}</td>${cells(a)}</tr>`; }
+  for (const [l, a, why, mark] of S.ledger){ tot += a; rows += `<tr class="${a < 0 ? 'neg' : ''}${mark ? ' dear' : ''}"><td>${mark ? '<i class="hand" aria-hidden="true">☞</i>' : ''}${esc(l)}${why ? `<small>${esc(why)}</small>` : ''}</td>${cells(a)}</tr>`; }
   rows += `<tr class="total${tot < 0 ? ' neg' : ''}"><td>Carried to the purse</td>${cells(tot)}</tr>`;
   return `<div class="tablewrap"><table class="acct"><thead><tr><th>Particulars</th><th class="n l">£</th><th class="n">s.</th><th class="n">d.</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
 
 /* The right-hand leaf, under the plate: what the quarter came to, and what was lately done. */
 function digestHTML(){ let inn = 0, out = 0; for (const [, a] of S.ledger) { if (a > 0) inn += a; else out -= a; }
   const net = inn - out, last = S.journal.slice(0, 3);
-  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div></dl>
+  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div>${rentsDueHTML()}</dl>
     ${last.length ? `<h3 class="orn">Lately</h3><ol class="daybook">${last.map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : ''}</div>`; }
+function rentsDueHTML(){ const r = typeof rentsNext === 'function' && !S.dead ? rentsNext() : null;
+  return r && r.sum ? `<div class="due${r.dry ? ' dry' : ''}"><dt>Rents due at ${esc(r.day)}</dt><dd>${amt(r.sum, 1)}</dd></div>` : ''; }
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}

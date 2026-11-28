@@ -473,7 +473,7 @@ function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing
 const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
 function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
   const paid = s + houseOf('labour').shillings; line('Home farm wages, nine men at ' + paid + 's. the week', -(9 * paid * 13 / 20) * (live('thresher') ? 0.94 : 1));
-  if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75); }
+  if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75, 'For the year.'); }
 
 /* ---------- the land market: buy at any time, sell any farm ---------- */
 const MARKET_FARMS = ['coldharbour', 'rooksnest', 'withymead', 'maddle'];
