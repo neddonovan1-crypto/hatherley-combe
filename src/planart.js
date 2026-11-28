@@ -60,11 +60,15 @@ const PLAN_BOX = {
   'telegraph':[37.792, 3.75, 5.333, 7.0],
   'turnpike':[88.708, 28.75, 8.958, 9.562],
   'camp':[79.458, 39.875, 15.75, 14.438],
-  'icehouse':[37.833, 44.062, 8.208, 8.562],
-  'parterre':[42.208, 53.25, 10.292, 9.812],
-  'hall-old':[45.362, 43.262, 11.875, 10.677],
-  'hall-front':[45.367, 43.25, 11.871, 10.635],
-  'carriage':[44.083, 49.938, 7.083, 5.875],
+  /* The Hall is the whole park redrawn about it (tools/hall/cut.py), so what stands in the park is laid after it.
+     The old brick house and the new stone front each have their own coach and parterre, the ground before the two doors being different. */
+  'hall-old':[39.229, 42.75, 20.312, 19.844],
+  'hall-front':[39.229, 42.75, 20.312, 19.844],
+  'icehouse':[39.479, 49.531, 3.771, 4.875],
+  'parterre':[45.208, 56.875, 4.188, 3.312],
+  'carriage-old':[43.75, 53.594, 6.896, 5.969],
+  'carriage':[44.792, 55.0, 4.5, 3.312],
+  'parterre-old':[44.167, 56.094, 7.938, 4.406],
   'rooks':[37.346, 39.352, 11.111, 10.185],
-  'smoke':[47.531, 35.648, 9.63, 11.111]
+  'smoke':[46.0, 39.3, 9.63, 11.111]
 };

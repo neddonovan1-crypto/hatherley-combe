@@ -40,7 +40,7 @@ const ROADS = [
   {s:'wagon', views:{side:'wagon'}, secs:62, grow:[1, 1], wait:[20, 70], pts:[[93.4, 48.9], [88, 50.5], [82, 52], [77, 52.1], [71, 50.4], [68.2, 48.4]]}
 ];
 /* Ground the stock must keep off: whatever has been built or set going, save the pieces that are themselves grass. */
-const STOCK_FREE = ['london', 'common', 'sheepwalk', 'meadows', 'drain', 'paddock', 'hall-old', 'hall-front', 'parterre', 'carriage'];
+const STOCK_FREE = ['london', 'common', 'sheepwalk', 'meadows', 'drain', 'paddock', 'hall-old', 'hall-front', 'parterre', 'parterre-old', 'carriage', 'carriage-old'];
 let STOCK_SHUT = [], STOCK_KEY = '';
 const stockOK = (x, y) => onGrass(x, y) && !STOCK_SHUT.some(b => x > b[0] - .6 && x < b[0] + b[2] + .6 && y > b[1] - .6 && y < b[1] + b[3] + .6);
 const stockClear = (a, b) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 4); for (let i = 1; i <= n; i++) if (!stockOK(a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n)) return false; return true; };
