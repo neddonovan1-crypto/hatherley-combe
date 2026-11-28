@@ -114,7 +114,7 @@ const SIGN_RE = new RegExp('(^|[^\\w£+−-])([+−]|-(?=[£\\d]))((?:' + SUM_RE
 const signOf = t => /^\+/.test(t) ? 'pos' : /^(−|-(?=[£\d ]))/.test(t) ? 'neg' : '';
 function tinted(t, bare, debt){ const sums = new RegExp('^(?:' + SUM_RE + ')$');
   return esc(t == null ? '' : t).replace(SIGN_RE, (m, pre, sign, body, sum, at, all) => {
-    if (sum && /^ owed to you/.test(all.slice(at + m.length))) return sum; /* a debt owing to the squire is neither come in nor gone out */
+    if (sum && /^( owed to you| a year \()/.test(all.slice(at + m.length))) return sum; /* a debt owing to the squire, or a rent named before its change, is neither come in nor gone out */
     if (sum) return bare ? `<span class="amt ${bare > 0 ? 'pos' : 'neg'}">${bare > 0 ? '+' : '−'}${sum}</span>` : sum;
     const up = (sign === '+') !== !!debt;
     return `${pre}<span class="${sums.test(body) ? 'amt ' : ''}${up ? 'pos' : 'neg'}">${sign === '+' ? '+' : '−'}${body}</span>`; }); }
