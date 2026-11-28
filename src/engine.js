@@ -32,81 +32,79 @@ const PROJECTS = {
   enclosure:{ fx:["+ Church Farm worth a third more to let", "+ The common, to fence into a farm", "+ Standing", "− Goodwill, hard"], effects:`Church Farm is worth a third more to let. The common can then be fenced into a new farm. Tithe ends. Goodwill falls hard, less so if the cottagers have allotments.`, name:'The Hatherley Inclosure Bill', line:'Parliament divides the open fields and the common among the owners. Each takes his share and hedges it.', seasons:3, cost:() => F('allotments') ? 1400 : 1200, if:() => S.year >= 1797, early:() => S.year < 1797 ? 'The Bill cannot be brought in before 1797.' : '',
     blurb:`A private Act of Parliament, a surveyor and three commissioners.`, gain:'Church Farm worth a third more; the common allotted to you',
     done:() => { fl('enclosed'); add({goodwill: F('allotments') ? -6 : -16, standing:3}); if (!F('allotments')) reg('pryor',-2,'Lost his cow-gate when the common was enclosed'); later('commonRiot', 1);
-      return F('allotments') ? `The Hatherley Inclosure Act has the Royal Assent. The Commissioners read the award in the vestry.
+      return F('allotments') ? `The Hatherley Inclosure Act having had the Royal Assent, the three Commissioners sit in the vestry, with the surveyor’s map pinned to the table; and their clerk reads the award to as many of the parish as the room will hold.
 
-To ${S.name}, Esquire, 400 acres. To the Earl of Cullerne, 190. To the Vicar in lieu of tithe, 110. To the cottagers, sixty plots of one acre.
+“To ${S.name}, Esquire, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To the cottagers, sixty plots of one acre each.”
 
-The clerk rolls up the map. There is no common on it.` : `The Hatherley Inclosure Act has the Royal Assent. Forty other parishes had theirs in the same session. The Commissioners read the award in the vestry.
+He rolls up the map; and the common, which was green upon the old one, is upon this ruled into parcels, and numbered.` : `The Hatherley Inclosure Act has the Royal Assent, with those of forty other parishes in the same session; so that the Commissioners, who sit in the vestry with the surveyor’s map pinned to the table, have the business by heart, and their clerk reads the award without once looking at it.
 
-To ${S.name}, Esquire, 400 acres. To the Earl of Cullerne, 190. To the Vicar in lieu of tithe, 110. To nineteen cottagers who could show no deed, nothing.
+“To ${S.name}, Esquire, four hundred acres. To the Right Honourable the Earl of Cullerne, one hundred and ninety. To the Vicar, in lieu of all tithes, one hundred and ten. To nineteen persons claiming by custom, who have produced no deed, nothing.”
 
-Jem Pryor stands up at the back. His family has turned a cow out there since Queen Anne.
+Jem Pryor stands up at the back, with his hat in his hand, and says that there has been a cow of his name upon that common since Queen Anne.
 
 “Have you that in writing?” says the clerk.`; }},
   drain:{ fx:["+ Kennet Bottom up to fair order", "+ About a sixth more rent"], effects:`Kennet Bottom comes up from neglected to fair order: worth about a sixth more to let.`, name:'Drain and marl the clay at Kennet Bottom', line:'Trenches cut a yard deep across the low fields carry the water to the brook. Marl from the pit is spread after.', seasons:2, cost:() => F('hartoppFriend') ? 420 : 520,
     blurb:`Nine miles of stone drains under the low fields. They stand in water from November to May.`, gain:'Kennet Bottom in fair order',
-    done:() => { return `The drains are in at Kennet Bottom. There are nine miles of them, laid with stone and blackthorn.
+    done:() => { return `The last trench is filled at Kennet Bottom, where there are now nine miles of drain under the low fields, laid with stone, and with blackthorn over the stone; and the water, which stood upon that clay from November to May, runs out into the brook at the bottom of every field.
 
-You walk the low fields from end to end. Your boots come home on your feet.`; }},
+You walk the ground from end to end in February, behind ${steward()}; and you come home in both your boots.`; }},
   fourcourse:{ fx:["+ Home farm wheat", "+ Every farm worth a little more"], effects:`Home farm wheat up by about a sixteenth. Every farm worth a fortieth more to let.`, name:'Put the home farm under the Norfolk four-course', line:'A rotation of crops from Mr Coke’s county. The sheep are folded on the turnips and dung the ground for barley.', seasons:1, cost:() => F('hartoppFriend') ? 200 : 260,
     blurb:`Wheat, turnips, barley, clover. No field lies fallow.`, gain:'Yields and rents up',
-    done:() => { S.improve += 1; reg('hartopp',1); return `Wheat, turnips, barley, clover. Then wheat again. There is no fallow on the home farm this year.
+    done:() => { S.improve += 1; reg('hartopp',1); return `The home farm is laid out in four shifts, of wheat, turnips, barley and clover, each to follow the other round; and as the sheep are to be folded upon the turnips, and to dung the ground for the barley, there is this year, for the first time since the fields had names, no fallow.
 
-The old carter stands at the gate of Twelve Acres.
+The old carter is found at the gate of Twelve Acres, looking over it at the turnips.
 
 “That ground ent had a rest since Lady Day twelvemonth, sir.”
 
-He shakes his head at it.`; }},
+He shuts the gate, though it was shut already, and goes back to his horses.`; }},
   mill:{ fx:["+ Kennet Bottom worth a sixteenth more", "+ Goodwill"], effects:`Kennet Bottom worth a sixteenth more to let. Goodwill rises.`, name:'Rebuild Hatherley Mill with an iron wheel', line:'The corn mill on the Kennet grinds for the whole parish. Its elm wheel comes out and a cast one goes in.', seasons:2, cost:() => 420,
     blurb:`The present wheel is of elm. Your grandfather’s father put it in.`, gain:'Kennet Bottom worth more; the parish pleased',
-    done:() => { fl('newMill'); add({goodwill:3}); return `The new wheel turns at Hatherley Mill. It is cast iron, from the foundry at Reading. Eighteen feet across. Painted red.
+    done:() => { fl('newMill'); add({goodwill:3}); return `The new wheel is turning at Hatherley Mill: of cast iron, from the foundry at Reading, eighteen feet across, and painted red; and it grinds before noon what the elm wheel, which your grandfather’s father put in, ground between light and dark.
 
-It grinds before noon what the old wheel ground in a day. Pocock the miller walks round it twice with his hands behind him.
+Pocock the miller walks twice round it with his hands behind him, and stops where the water comes off the buckets.
 
 “Her’ll never last,” he says.`; }},
   cottages:{ fx:["+ Goodwill, a good deal"], effects:`Goodwill rises a good deal.`, name:'Build six brick cottages on the Kintbury lane', line:'Six dwellings of brick and tile for labouring families, each with a garden. The old ones are pulled down.', seasons:2, cost:() => 360,
     blurb:`Six on the lane are past mending. The ivy holds up two of them.`, gain:'Goodwill',
-    done:() => { fl('cottages'); add({goodwill:9}); return `Six cottages stand on the Kintbury lane. Brick walls. Tiled roofs. Two bedrooms, a bread oven and a pigsty to each.
+    done:() => { fl('cottages'); add({goodwill:9}); return `Six cottages stand finished upon the Kintbury lane, of brick, under tile, with two bedrooms, a bread oven and a pigsty to each; and upon the Saturday the six families who are to have them are let in, to walk through.
 
-The six families walk through on Saturday. Nobody speaks. They put their hands on the walls.
-
-One woman stops at the foot of the stairs.
+Nobody speaks. The men put the flat of their hands against the walls, as they would to a horse; and one woman, who has got as far as the foot of the stairs, stops there with her youngest upon her arm.
 
 “Is the upstairs ours and all, sir?”`; }},
   school:{ fx:["+ Goodwill", "− Dr Gall"], effects:`Goodwill rises. Dr Gall cools.`, name:'Endow a dame school in the old tithe barn', line:'A woman of the parish teaches the labourers’ children their letters. You find the room, the slates and her wages.', seasons:1, cost:() => 160,
     blurb:`Letters, the catechism and plain sewing for forty children.`, gain:'Goodwill',
-    done:() => { fl('school'); add({goodwill:6}); if (!F('gallDead')) reg('gall',-1); return `The school opens in the tithe barn. Forty children. Twenty slates. Hannah Gurney’s niece has them for letters, the catechism and knitting.
+    done:() => { fl('school'); add({goodwill:6}); if (!F('gallDead')) reg('gall',-1); return `The school is opened in the old tithe barn, with forty children upon the forms, twenty slates between them, and Hannah Gurney’s niece to teach letters, the catechism and knitting.
 
 “Reading will only make them discontented,” says ${F('gallDead') ? 'old Dewey' : 'Dr Gall'}.
 
-On Friday there is a word chalked on ${F('gallDead') ? 'his yard gate' : 'the vicarage gate'}. It is spelt correctly.`; }},
+Upon the Friday a word of six letters is found chalked on ${F('gallDead') ? 'his yard gate' : 'the vicarage gate'}, in a round hand, and correctly spelt.`; }},
   road:{ fx:["+ Goodwill", "+ Standing"], effects:`Goodwill and standing both rise.`, name:'Mend the Kintbury road, and the bridge with it', line:'Two miles of parish road to Kintbury are dug out and laid with broken flint. The bridge is rebuilt in brick.', seasons:1, cost:() => 240,
     blurb:`Last winter it took two carts and the curate’s pony. The parish has been bound to mend it since Queen Anne.`, gain:'Goodwill and standing',
-    done:() => { fl('road'); add({goodwill:3, standing:3}); return `The Kintbury road is made. Flints broken small, rammed and cambered. A ditch on either side. The bridge has a parapet.
+    done:() => { fl('road'); add({goodwill:3, standing:3}); return `The Kintbury road is made: two miles of it, with the flints broken small, rammed, and cambered to a ditch upon either side; and the bridge, off which the curate’s pony went last winter, has a parapet of brick.
 
-The carrier calls twice a week now. On Tuesday a post-chaise goes through at a trot. The children run out to look at it.`; }},
+The carrier, who used to come when he could, calls upon Tuesdays and Fridays; and a post-chaise has gone through Hatherley at a trot, with every child in the street running after it as far as the bridge.`; }},
   front:{ fx:["+ Standing, a good deal", "+ Henrietta", "+ Household"], effects:`Standing rises a good deal. Henrietta and the household pleased.`, name:'New-front the Hall in Bath stone', line:'Masons face the park side of the Hall in cut stone, over the old red brick. The sash windows stay where they are.', seasons:3, cost:() => 900,
     blurb:`A portico, a pediment and six columns across the park front.`, gain:'Standing; Henrietta',
-    done:() => { fl('newFront'); add({standing:9, family:4}); reg('henrietta',2,'You gave the Hall a front she could ask people to'); return `The scaffolding comes down. The Hall has a front of Bath stone, six Ionic columns and a pediment with your arms cut in it. Behind it the old chimneys smoke as before.
+    done:() => { fl('newFront'); add({standing:9, family:4}); reg('henrietta',2,'You gave the Hall a front she could ask people to'); return `The scaffolding is struck; and the Hall, which had nothing to show the park but red brick and a row of sashes, shows it a front of Bath stone, with six Ionic columns, and a pediment in which your arms are cut a yard high. Behind the pediment the old chimneys smoke as they did.
 
-Henrietta has the Tamworths to dinner on Thursday. She receives them on the steps.`; }},
+Henrietta has the Tamworths to dinner upon the Thursday, and receives them on the steps.`; }},
   pinery:{ fx:["+ Standing", "+ Household"], effects:`Standing rises. The household pleased.`, name:'Build a pinery and raise pine-apples', line:'A heated glass house in the kitchen garden for growing pine-apples. The fruit goes to table at your own dinners.', seasons:1, cost:() => 200,
     blurb:`A glass house, a pit of tanner’s bark and a Scotch gardener. A pine-apple takes two years.`, gain:'Standing; the household',
-    done:() => { fl('pinery'); add({standing:4, family:2}); return `The first pine-apple is cut. It has had two years, forty loads of bark and a Scotchman to itself.
+    done:() => { fl('pinery'); add({standing:4, family:2}); return `The first pine-apple is cut, having had to itself two years, forty loads of tanner’s bark, and a Scotchman.
 
-Nobody eats it. It stands in the middle of the table through eleven dinners. Then the Lovedays send to borrow it.`; }},
+As nobody at Hatherley can be brought to put a knife into it, it stands in the middle of the table through eleven dinners; and upon the morning after the eleventh the Lovedays send their man over, with a basket and a note, to borrow it.`; }},
   oaks:{ fx:["+ Standing"], effects:`Standing rises a little.`, name:'Plant forty acres of oak for the Navy', line:'Acorns are set in rows on Gallows Piece and fenced against rabbits. The King’s dockyards buy such timber when it is grown.', seasons:1, cost:() => 120,
     blurb:`A seventy-four takes two thousand grown oaks.`, gain:'Standing; posterity',
-    done:() => { fl('oaks'); add({standing:2}); return `Forty acres of acorns are dibbled in on Gallows Piece.
+    done:() => { fl('oaks'); add({standing:2}); return `Forty acres of Gallows Piece are dibbled with acorns, in rows, and fenced against the rabbits; and the nurseryman from Newbury, standing in the middle of them with his bill in his hand, gives it as his opinion that they will be fit for the King’s yards in a hundred and twenty years.
 
-The nurseryman from Newbury says they will make ship timber in a hundred and twenty years. You ask him to say it again.
+You ask him to say it again, and he says it again.
 
 You ride home at a walk.`; }},
   icehouse:{ fx:["+ Household", "+ Henrietta"], effects:`The household pleased. Henrietta warms.`, name:'Sink an ice-house in the north shrubbery', line:'A deep brick chamber roofed with earth. Ice cut in winter lies there in straw until the cook wants it in August.', seasons:1, cost:() => 140,
     blurb:`A brick egg under ground, filled from the carp pond in a hard frost.`, gain:'The household',
-    done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk in the north shrubbery. It is a brick egg under a mound of earth. The men are to fill it from the carp pond at the first hard frost.
+    done:() => { fl('icehouse'); add({family:5}); reg('henrietta',1); return `The ice-house is sunk in the north shrubbery, a brick egg under a mound of earth, with its door to the north; and the men have orders to fill it from the carp pond upon the first morning that the ice will bear a barrow.
 
-Henrietta has written to Gunter’s for a receipt for lemon ice. She has asked the Tamworths already.`; }}
+Henrietta, who has written to Gunter’s in Berkeley Square for a receipt for lemon ice, has asked the Tamworths for August.`; }}
 };
 const projCost = id => Math.round(PROJECTS[id].cost() * (T('bred') ? 0.85 : 1) / 10) * 10;
 function startProject(id){ const p = PROJECTS[id]; S.works.push({id, left:p.seasons, per:Math.round(projCost(id) / p.seasons)}); S.projectsDone[id] = 'begun'; }
@@ -311,13 +309,15 @@ They go out by the Kintbury lane, loaded, nine times in the fortnight. When they
 
 “So the old Squire said, sir.”`},
     {id:'ride-names', x:() => `It is a wet week in the saddle, in the course of which you learn the children’s names at every farm; and by Friday you have thirty-one, three of the boys having been christened Barnaby.`},
-    {id:'ride-gates', w:() => tenantOf('church'), x:() => { const f = tenantOf('church'); return `You walk the bounds of Church Farm with ${called(f)}. ${sheHe(f)} stops at every gate that wants hanging.
+    {id:'ride-gates', w:() => tenantOf('church'), x:() => { const f = tenantOf('church'), he = f.she ? 'she' : 'he'; return `You walk the bounds of Church Farm with ${called(f)}; and as the custom of the estate lays the gates and gate-posts upon the landlord, and the hedges and ditches upon the tenant, ${he} stops at every gate that hangs by one hinge, and waits until you have looked at it.
 
 “Your gate, sir.”
 
-The hedges are new laid.
+There are five of them. Between the third and the fourth the quickset has been cut and laid the whole length of the lane, with every pleacher bound down to its stake; and here ${he} does not stop, but walks a little slower.
 
-“My hedges,” ${f.she ? 'she' : 'he'} says.`; }},
+“My hedges,” ${he} says.
+
+You tell ${steward()} to send the carpenter upon Monday, with oak for five gates; and at the last of them ${called(f)} holds it open for you, lifting it by the top bar.`; }},
     {id:'ride-lambing', w:() => S.season === 0 && tenantOf('longbarrow'), x:() => `It is lambing at Long Barrow, where the shepherd has not been to bed since Tuesday; and you hold the lantern for an hour in the fold, while there come twins, and then a single, and then a dead one.
 
 The shepherd skins the dead lamb, and ties the skin upon an orphan, and puts it to the ewe; who smells it twice, and lets it suck.`},

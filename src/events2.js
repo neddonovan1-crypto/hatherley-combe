@@ -3176,7 +3176,7 @@ Lord Cullerne has taken a house on Richmond Hill by the quarter; and this is kno
       const won = chance(0.7); if (won) add({money:2000});
       return `Serjeant Best opens for you in the King’s Bench, the fees being four hundred pounds. Your own servants are sworn; and the footman tells the court what he saw through the window of the keeper’s lodge, and counsel reads her letters aloud, and does the voice.
 
-${won ? 'The jury gives two thousand pounds against the Earl.' : 'The jury finds for you. Damages, one shilling. The foreman holds a farm under the Castle.'} The Mercury gives it nine columns.
+${won ? 'The jury gives two thousand pounds against the Earl.' : 'The jury finds for you, with damages of one shilling; the foreman holds a farm under the Castle.'} The Mercury gives it nine columns.
 
 A divorce wants an Act of Parliament and a second fortune, and you do not move for one; and at the quarter the Earl gives up the Richmond house.
 
