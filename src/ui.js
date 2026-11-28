@@ -93,7 +93,7 @@ const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '�
 function picksHTML(){ const left = pointsLeft(pickList());
   return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${'●'.repeat(Math.max(0, left))}<i>${'○'.repeat(Math.max(0, TRAIT_POINTS - Math.max(0, left)))}</i></b><small>An advantage spends them. A burden earns them back.</small></p>
     ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
-      const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${t[0] === '+' ? 'pos' : 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
+      const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${signOf(t) || 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
       return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
         <div class="opts" role="listbox">${opt('', plain, 0, '')}${[1, -1].map(sg => `<div>${TRAITS.filter(t => t.group === g && Math.sign(t.cost) === sg).map(t => opt(t.id, t.name, t.cost, t.fx)).join('')}</div>`).join('')}</div></details>
         <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
@@ -106,15 +106,30 @@ function resume(){ const s = load(); if (s) { S = s; render(); } }
 const runhead = (l, r, m) => `<p class="runhead"><span>${l}</span>${m ? `<span>${m}</span>` : ''}<span>${r}</span></p>`;
 /* A choice's sum: a plus or "Saves" or a sale is money in and goes green; a bare sum is money out and goes red. Rents on a letting are money in. */
 const RENT_PAPERS = new Set(['leaseFalls', 'cannotPay']);
-/* What an undertaking touches: gains in green with a plus, losses in red with a minus. */
+/* Every gain and loss on the page is coloured by this one hand, so that whatever is written hereafter with a plus or a minus before it follows the rule without being told.
+   A plus goes green and a minus red, the sign together with the sum or the name that follows it: "+£80", "−Goodwill", "+2 Standing", "−1 Lord Cullerne".
+   bare says how a sum with no sign is to be read: 1 a receipt, -1 a cost, 0 left in ink. debt turns the colours about, for a plus upon a mortgage is no gain. */
+const SUM_RE = '£\\d+(?:,\\d{3})*|\\d+ guineas?|\\d+s\\.(?: \\d+d\\.)?', NAME_RE = '[A-Z][\\w’]*(?: (?:[A-Z][\\w’]*|of the \\w+|regard))*';
+const SIGN_RE = new RegExp('(^|[^\\w£+−-])([+−]|-(?=[£\\d]))((?:' + SUM_RE + ')|(?:\\d+)?(?: ?' + NAME_RE + ')?)|(' + SUM_RE + ')', 'g');
+const signOf = t => /^\+/.test(t) ? 'pos' : /^(−|-(?=[£\d ]))/.test(t) ? 'neg' : '';
+function tinted(t, bare, debt){ const sums = new RegExp('^(?:' + SUM_RE + ')$');
+  return esc(t == null ? '' : t).replace(SIGN_RE, (m, pre, sign, body, sum, at, all) => {
+    if (sum && /^( owed to you| a year \()/.test(all.slice(at + m.length))) return sum; /* a debt owing to the squire, or a rent named before its change, is neither come in nor gone out */
+    if (sum) return bare ? `<span class="amt ${bare > 0 ? 'pos' : 'neg'}">${bare > 0 ? '+' : '−'}${sum}</span>` : sum;
+    const up = (sign === '+') !== !!debt;
+    return `${pre}<span class="${sums.test(body) ? 'amt ' : ''}${up ? 'pos' : 'neg'}">${sign === '+' ? '+' : '−'}${body}</span>`; }); }
+/* A list of effects, one to a line. A line that opens with a sign is coloured whole; any other is searched for signs within it. */
+const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => signOf(t) ? `<li class="${signOf(t)}">${esc(t)}</li>` : `<li>${tinted(t)}</li>`).join('')}</ul>` : '';
+const fxHTML = v => fxList(v.fx);
+/* What an undertaking touches. "Costs Standing and Goodwill" is a loss of each; a bare name is a gain. */
 function hintHTML(h){ if (!h) return ''; const m = /^Costs (.+)$/.exec(h);
-  const bits = m ? m[1].split(' and ').map(x => '−' + x) : h.split(', ');
-  return `<small class="fxs">${bits.map(b => /^−/.test(b) ? `<b class="neg">${esc(b)}</b>` : `<b class="pos">+${esc(b.replace(/^\+/, ''))}</b>`).join(' ')}</small>`; }
-function noteOf(c){ if (!c.note) return ''; const n = typeof c.note === 'function' ? c.note() : c.note, M = /[+−-]?(£[\d,]+|\d+ guineas?|\d+s\.(?: \d+d\.)?)/g;
-  if (/^Mortgage /.test(n) || !n.match(M)) return `<em>${esc(n)}</em>`;
+  const bits = m ? m[1].split(' and ').map(x => '−' + x) : h.split(', ').map(x => /^[+−]/.test(x) ? x : '+' + x);
+  return `<small class="fxs">${bits.map(b => `<b class="${signOf(b)}">${esc(b)}</b>`).join(' ')}</small>`; }
+/* A choice's note. A sum with a plus, or after "Saves", or from a sale, is money in; a bare sum is money out. Rents on a letting are money in. A sum laid upon the mortgage is debt, and goes red though it carries a plus. */
+function noteOf(c){ if (!c.note) return ''; const n = typeof c.note === 'function' ? c.note() : c.note;
+  if (/^Mortgage /.test(n)) return `<em>${tinted(n, 0, true)}</em>`;
   const rent = S.phase === 'event' && RENT_PAPERS.has(S.pending) && / a year/.test(n) && !/^Strike/.test(n);
-  const gain = /^(\+|Saves|About)/.test(n) || rent;
-  return `<em>${esc(n).replace(M, (m, a) => { const g = /^\+/.test(m) ? true : /^[−-]/.test(m) ? false : gain; return `<span class="amt ${g ? 'pos' : 'neg'}">${g ? '+' : '−'}${a}</span>`; })}</em>`; }
+  return `<em>${tinted(n, /^(\+|Saves|About)/.test(n) || rent ? 1 : -1)}</em>`; }
 
 function accountHTML(){ let rows = '', tot = 0;
   const cells = a => `<td class="n l">${a < 0 ? '<span class="sr">paid </span>' : ''}${Math.abs(a).toLocaleString('en-GB')}</td><td class="n z">0</td><td class="n z">0</td>`;
@@ -178,7 +193,7 @@ function meter(label, v, words, key, flag, trouble){ const m = typeof marks === 
   const bar = `<i><u style="width:${v}%"></u>${at === null ? '' : `<s style="left:${at}%" title="Settles at ${at}"></s>`}</i>`, bad = flag && F(flag) ? `<em>${trouble}</em>` : '';
   if (!m) return `<div class="meter${v < 40 ? ' low' : ''}"><span>${label}</span>${bar}<b>${esc(band(v, words))}</b></div>`;
   return `<details name="lot" class="meter${v < 40 ? ' low' : ''}"><summary><span>${label}${bad}</span>${bar}<b>${esc(band(v, words))}</b></summary>
-    <ul class="fx"><li>Stands at ${Math.round(v)}, settles at ${at}</li>${m.why[key].map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul></details>`; }
+    <ul class="fx"><li>Stands at ${Math.round(v)}, settles at ${at}</li>${m.why[key].map(t => `<li class="${signOf(t)}">${signOf(t) ? esc(t) : tinted(t)}</li>`).join('')}</ul></details>`; }
 
 function versoHTML(){
   const head = runhead('Dr.', `fo. ${Math.min(S.t + 1, 84)}`, `Hatherley Combe, in Account with ${esc(S.name)}, Esq.`);
@@ -205,8 +220,7 @@ function versoHTML(){
 
 /* Money in the lists: green with a plus where it comes in, red with a minus where it goes out. */
 const amt = (n, sign) => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${fmt(Math.abs(n))}</span>`;
-const tint = (t, sign) => esc(t).replace(/£[\d,]+/g, m => `<span class="amt ${sign > 0 ? 'pos' : 'neg'}">${sign > 0 ? '+' : '−'}${m}</span>`);
-const fxHTML = v => v.fx && v.fx.length ? `<ul class="fx">${v.fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
+const tint = (t, sign) => tinted(t, sign);
 /* What an honour asks for, each requisite marked as had or wanting. */
 function needsHTML(v){ if (!v.needs || !v.needs.length) return '';
   return `<span class="hazard"><span>Requisites</span></span><ul class="needs">${v.needs.map(n => `<li class="${n.ok ? 'ok' : 'no'}"><i>${n.ok ? 'Had' : 'Wanting'}</i>${esc(n.t)}</li>`).join('')}</ul>`; }
@@ -219,12 +233,12 @@ function creditHTML(){ const all = creditList(), by = id => all.find(c => c.id =
   return `<div class="creditbox">${b(by('mortgage'), 'Borrow more')}${b(by('repay'), 'Pay off principal')}</div>`; }
 /* The dearer ways of raising money: the oaks at the foot of Works, the annuity at the foot of Society. */
 function raiseHTML(ids, bare){ if (typeof creditList !== 'function') return ''; const rest = creditList().filter(c => ids.includes(c.id)); if (!rest.length) return '';
-  return `${bare ? '' : '<h3 class="orn">Raising money</h3>'}<div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${esc(c.note || '')}${c.why && !c.can ? ` <em>${esc(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
+  return `${bare ? '' : '<h3 class="orn">Raising money</h3>'}<div class="lots">${rest.map(c => `<details name="lot"><summary><b>${esc(c.name)}</b><span>${c.gets ? amt(c.gets, c.gets) : ''}</span></summary><div>${c.line ? `<p class="line">${esc(c.line)}</p>` : ''}${fxHTML(c)}<p class="terms">${tinted(c.note || '')}${c.why && !c.can ? ` <em>${tinted(c.why)}</em>` : ''}</p><button class="inkbtn" onclick="takeCredit('${c.id}')" ${c.can ? '' : 'disabled'}>${esc(c.verb)}</button></div></details>`).join('')}</div>`; }
 function worksHTML(at){ const list = worksList().filter(w => !at || at(w.id)), hand = list.filter(w => w.state === 'inHand'), open = list.filter(w => w.state === 'open'), done = list.filter(w => w.state === 'done');
   const whys = [...new Set(open.map(w => w.why))], common = whys.length === 1 && whys[0];
   return `${common ? `<p class="note bad">${esc(common)}</p>` : ''}<div class="lots">
     ${hand.map(w => `<div class="lot hand"><b>${esc(w.name)}</b><span>${w.left} season${w.left > 1 ? 's' : ''} more</span></div>`).join('')}
-    ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${w.line ? `<p class="line">${esc(w.line)}</p>` : ''}${fxHTML(w) || `<p>${esc(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${esc(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
+    ${open.map(w => `<details name="lot"${w.off ? ' class="off"' : ''}><summary><b>${esc(w.name)}</b><span>${amt(w.cost, -1)}</span></summary><div>${w.line ? `<p class="line">${esc(w.line)}</p>` : ''}${fxHTML(w) || `<p>${tinted(w.gain)}.</p>`}<p class="terms">${tint(w.note, -1)}.${w.why && !common ? ` <em>${tinted(w.why)}</em>` : ''}</p><button class="inkbtn" onclick="beginWork('${w.id}')" ${w.can ? '' : 'disabled'}>Put in hand</button></div></details>`).join('')}
     ${done.map(w => `<div class="lot done"><b>${esc(w.name)}</b><span>Finished</span></div>`).join('')}</div>${at && !at('timber') ? '' : raiseHTML(['timber'])}`; }
 
 /* Farms and Ventures. The engine will supply farmsList() and venturesList(); until it does these leaves show the economy design's opening figures and move nothing. */
@@ -267,7 +281,7 @@ function farmsHTML(only){ const live = typeof farmsList === 'function', list = l
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
 function lotsHTML(list, live, begin, end, verb){
   const row = v => v.state === 'ended' ? `<div class="lot done"><b>${esc(v.name)}</b><span>${esc(v.note || 'Ended')}</span></div>`
-    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${esc(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}${needsHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why && !(v.needs && v.needs.some(n => !n.ok)) ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
+    : `<details name="lot"${v.off ? ' class="off"' : ''}><summary><b>${esc(v.name)}</b><span>${v.state === 'inHand' ? esc(v.held || 'In hand') : v.cost ? amt(v.cost, -1) : fmt(0)}</span></summary><div>${v.line ? `<p class="line">${tinted(v.line)}</p>` : ''}${fxHTML(v) || `<p>${esc(v.well || '')}${v.ill ? ' ' + esc(v.ill) : ''}</p>`}${hazardHTML(v)}${needsHTML(v)}<p class="terms">${tint(String(v.note || '').replace(/\.$/, ''), -1)}${v.note ? '.' : ''}${v.why && !(v.needs && v.needs.some(n => !n.ok)) ? ` <em>${esc(v.why)}</em>` : ''}${v.endWhy ? ` <em>${esc(v.endWhy)}</em>` : ''}</p>
       ${!live ? '' : v.state === 'inHand' ? (v.endLabel ? `<button class="inkbtn" onclick="${end}('${v.id}')" ${v.canEnd ? '' : 'disabled'}>${tint(v.endLabel, end === 'endSociety' ? 1 : -1)}</button>` : '') : `<button class="inkbtn" onclick="${begin}('${v.id}')" ${v.can ? '' : 'disabled'}>${esc(v.verb || verb)}</button>`}</div></details>`;
   return `<div class="lots">${list.map(row).join('')}</div>`; }
 function venturesHTML(){ const live = typeof venturesList === 'function'; return lotsHTML(live ? venturesList() : DRAFT_VENTURES, live, 'beginVenture', 'endVenture', 'Venture it'); }
@@ -281,17 +295,16 @@ const DRAFT_SOCIETY = [
 function societyHTML(){ const live = typeof societyList === 'function'; return lotsHTML(live ? societyList().filter(r => !r.house || typeof householdList !== 'function') : DRAFT_SOCIETY, live, 'beginSociety', 'endSociety', 'Pay for it') + raiseHTML(['annuity', 'redeem']); }
 
 /* The Household: the footing the house is kept on, what its people are paid, and what is kept in it. */
-const fxList = fx => fx && fx.length ? `<ul class="fx">${fx.map(t => `<li class="${/^\+/.test(t) ? 'pos' : /^[−-]/.test(t) ? 'neg' : ''}">${esc(t)}</li>`).join('')}</ul>` : '';
 function householdHTML(){ const h = householdList(), yearly = t => /a year/.test(t), pounds = t => { const m = /^([+−-])£([\d,]+)/.exec(t); return m ? (m[1] === '+' ? 1 : -1) * +m[2].replace(/,/g, '') : 0; };
   const rest = fx => fxList((fx || []).filter(t => !yearly(t) && t !== 'No change')), fig = n => n > 0 ? amt(n, 1) : n < 0 ? amt(n, -1) : fmt(0);
-  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${esc(y.why)}</em></p>` : ''; };
+  const whyOf = list => { const y = list.find(l => !l.now && l.why); return y ? `<p class="terms"><em>${tinted(y.why)}</em></p>` : ''; };
   const total = -(h.total === undefined ? h.cost : h.total);
-  const est = `<div class="seg n${h.establishment.length}">${h.establishment.map(e => `<button type="button" class="rung${e.now ? ' now' : ''}" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}${e.why ? ` title="${esc(e.why)}"` : ''}><b>${esc(e.name)}</b><span class="yr">${fig(-(e.table === undefined ? e.cost : e.table))}</span>${e.line ? `<small>${esc(e.line)}</small>` : ''}${e.now ? '' : rest(e.fx)}</button>`).join('')}</div>${whyOf(h.establishment)}`;
+  const est = `<div class="seg n${h.establishment.length}">${h.establishment.map(e => `<button type="button" class="rung${e.now ? ' now' : ''}" onclick="setEstablishment('${e.id}')" ${e.can ? '' : 'disabled'}${e.why ? ` title="${esc(e.why)}"` : ''}><b>${esc(e.name)}</b><span class="yr">${fig(-(e.table === undefined ? e.cost : e.table))}</span>${e.line ? `<small>${tinted(e.line)}</small>` : ''}${e.now ? '' : rest(e.fx)}</button>`).join('')}</div>${whyOf(h.establishment)}`;
   const wages = h.wages.map(w => { const cur = w.levels.find(l => l.now), money = l => pounds((l.fx || []).find(yearly) || '');
-    return `<div class="dial${w.off ? ' off' : ''}"><b>${esc(w.name)}</b><div class="seg n3">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'} ${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><span class="yr">${fig(l.yearly === undefined ? money(l) : -l.yearly)}</span><small>${esc(l.name)}</small>${rest(l.fx)}</button>`).join('')}</div>${whyOf(w.levels)}</div>`; }).join('');
+    return `<div class="dial${w.off ? ' off' : ''}"><b>${esc(w.name)}</b><div class="seg n3">${w.levels.map(l => `<button type="button" class="rung${l.now ? ' now' : ''}" onclick="setHousehold('${w.id}', '${l.id}')" ${l.can ? '' : 'disabled'} ${l.why ? ` title="${esc(l.why)}"` : ''}><b>${esc(l.label)}</b><span class="yr">${fig(l.yearly === undefined ? money(l) : -l.yearly)}</span><small>${tinted(l.name)}</small>${rest(l.fx)}</button>`).join('')}</div>${whyOf(w.levels)}</div>`; }).join('');
   const lots = h.lots.map(v => { const fx = rest(v.fx), keep = v.keep ? `<small>${fmt(v.keep)} a year to keep</small>` : '';
-    const what = `<div class="rung what">${v.line ? `<small>${esc(v.line)}</small>` : ''}${keep}</div>`;
-    const seg = v.state === 'ended' ? `<div class="rung what"><b>${esc(v.note || 'Sold')}</b></div>`
+    const what = `<div class="rung what">${v.line ? `<small>${tinted(v.line)}</small>` : ''}${keep}</div>`;
+    const seg = v.state === 'ended' ? `<div class="rung what"><b>${tinted(v.note || 'Sold')}</b></div>`
       : v.state === 'inHand' ? `${what}<button type="button" class="rung" onclick="endSociety('${v.id}')" ${v.canEnd ? '' : 'disabled'}><b>${v.sell ? 'Sell' : 'Give up'}</b>${v.sell ? `<span class="yr">${amt(v.sell, 1)}</span>` : ''}</button>`
       : `${what}<button type="button" class="rung" onclick="beginSociety('${v.id}')" ${v.can ? '' : 'disabled'}${v.why ? ` title="${esc(v.why)}"` : ''}><b>Buy</b><span class="yr">${v.cost ? amt(v.cost, -1) : fmt(0)}</span>${fx}</button>`;
     return `<div class="dial"><b>${esc(v.name)}</b><div class="seg n2">${seg}</div>${v.state === 'open' && v.why ? `<p class="terms"><em>${esc(v.why)}</em></p>` : ''}</div>`; }).join('');
