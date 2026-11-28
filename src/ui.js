@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paras = t => t.split(/\n\n+/).map(p => (/^[A-Za-z]/.test(p) ? '<p>' : '<p class="nocap">') + esc(p) + '</p>').join('');
 const band = (v, words) => words[Math.min(words.length - 1, Math.floor(v / (100 / words.length)))];
-let TAB = 'accounts', LEAF = -1, PAPER = '', WHO = '', MORE = false;
+let TAB = 'accounts', LEAF = -1, WHO = '';
 /* The book is opened on quarter day. Works, ventures, the household and society are found at their places on the plan (plan.js). */
 const TABS = [['accounts', 'Accounts'], ['farms', 'Farms'], ['persons', 'Persons'], ['daybook', 'Day-Book']];
 // Public business is printed and posted; private business comes by hand. These arrive as handbills.
@@ -161,25 +161,7 @@ function paperHTML(){ const e = byId(S.pending), bill = BILLS.has(e.id), text = 
       ${who ? `<div class="from">${medal(who, true)}<div><p class="kicker">${esc(stamp())}. ${esc(PEOPLE[who].name)}</p><h2>${esc(e.title)}</h2></div></div>` : `<p class="kicker">${esc(stamp())}</p><h2>${esc(e.title)}</h2>`}
       <div class="prose">${(e.cut && pic('events/' + e.cut(), '')) || pic('events/' + e.id, '')}${paras(text)}</div>
     </article>`; }
-function eventHTML(){ const e = byId(S.pending); const cs = e.choices.filter(c => !c.if || c.if());
-  return `${runhead('Your answer', 'Cr.')}
-    <dl class="bal slim"><div><dt>In hand</dt><dd class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</dd></div><div><dt>Owing on the mortgage</dt><dd class="owe">${fmt(S.mortgage)}</dd></div></dl>
-    <div class="choices">${cs.map((c, i) => `<button class="choice" onclick="choose(${i})"><span>${esc(lab(c))}</span>${noteOf(c)}</button>`).join('')}</div>`; }
-
-function outcomeHTML(){ const o = S.outcome;
-  return `${runhead(S.phase === 'undone' ? 'The season’s undertaking' : 'What came of it', 'Cr.')}
-    <p class="kicker">${esc(stamp())}</p><h2>${esc(o.title)}</h2><div class="swell"></div>
-    <div class="prose lead">${o.cut ? pic('undertakings/' + o.cut, '') : ''}${paras(o.text)}</div>
-    ${o.d.length ? `<ul class="deltas">${o.d.map(([t, up]) => `<li class="${up ? 'up' : 'down'}">${esc(t)}</li>`).join('')}</ul>` : ''}
-    <div class="row"><button class="go" onclick="next()"><span>${S.dead ? 'And then' : S.phase === 'undone' ? (S.t === 83 ? 'Close the books' : 'Turn the page') : 'Carry on'}</span></button></div>`; }
-
 const ridesLine = () => { const n = typeof ridesLeft === 'function' ? ridesLeft() : 1, first = !(S.rides || 0); return `${['Nothing more', first ? 'One thing' : 'One thing more', 'Two things', 'Three things'][Math.max(0, Math.min(3, n))]} may be undertaken this quarter.`; };
-function undertakeHTML(){ const o = undertakingOptions();
-  return `${runhead('The season’s undertaking', 'Cr.')}
-    <p class="kicker">${esc(stamp())}</p><h2>The Season Is Yours</h2>
-    <div class="prose"><p>${ridesLine()} Works on the estate may be put in hand at any time.</p></div>
-    <div class="choices">${o.map((c, i) => `<button class="choice" onclick="undertake(${i})"><span>${esc(c.t)}${hintHTML(c.hint)}</span>${noteOf(c)}</button>`).join('')}</div>`; }
-
 function endHTML(){ const r = reckoning();
   return `${runhead('Pasted inside the back board', 'Finis')}
     ${typeof endPlateHTML === 'function' ? endPlateHTML() : ''}

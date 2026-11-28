@@ -160,8 +160,6 @@ The stock is sold upon the Friday week, by a Wyvern auctioneer standing in a wag
   if (!quiet) { S.journal.unshift({when:stamp(), title:'The Rent Roll', did:'Turned out ' + was + ' of ' + f.name}); save(); render(); }
   return said; }
 const rentalNow = () => rentRoll().reduce((a, f) => a + f.rent, 0);
-/* The old three-way rent policy still answers: it sets every farm held from year to year. */
-function setRentAll(v){ const lvl = v < 1 ? 'easy' : v > 1 ? 'rack' : 'fair'; for (const f of S.farms) if (!f.void && f.lease.type === 'will') f.level = lvl; }
 function setLevel(id, lvl){ const f = farm(id); if (!f || !LEVEL[lvl] || f.void || f.lease.type !== 'will') return; f.level = lvl; save(); render(); }
 function askLet(id, why){ if (S.letQueue.some(x => x.id === id)) return; S.letQueue.push({id, why}); later('leaseFalls', 0); }
 function offerLease(id){ const f = farm(id); if (!f || f.void || f.lease.type !== 'will') return; askLet(id, 'offer');
@@ -537,11 +535,6 @@ const EST_SETUP = [0, 150, 250, 400];
 function stepEst(d){ const i = estIdx() + d; S.est = EST[i].id;
   if (d < 0) { add({standing:-4, family:i === 0 ? -6 : -4}); reg('henrietta', -1, i === 0 ? 'You sold her carriage' : undefined); return EST_DOWN[i]; }
   add({money:-EST_SETUP[i], standing:3, family:4}); reg('henrietta', 1); return EST_UP[i]; }
-/* Altering the establishment takes the season. These join the season's undertakings. */
-function estOptions(){ const i = estIdx(), y = S.year, o = [];
-  if (i > 0) o.push({t:'Reduce to ' + EST[i - 1].name, note:'Saves ' + fmt(estCost(i, y) - estCost(i - 1, y)) + ' a year', hint:'Costs Standing and Household', run:() => stepEst(-1)});
-  if (i < EST.length - 1) o.push({t:'Set up ' + EST[i + 1].name, note:fmt(estCost(i + 1, y) - estCost(i, y)) + ' a year more, and ' + fmt(EST_SETUP[i + 1]) + ' down', hint:'Standing, Household', run:() => stepEst(1)});
-  return o; }
 /* The quarter's cost of the Hall, and the pull of the establishment on the county's opinion. */
 function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing + societyMark() - 6 * (S.settledSold || 0), 5, 95);
   if (S.annuities) line(S.annuities > 1 ? 'Annuities on your life, ' + numWords(S.annuities) : 'Annuity on your life', -25 * S.annuities);
