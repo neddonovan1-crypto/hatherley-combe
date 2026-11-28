@@ -42,7 +42,7 @@ const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyver
 /* A board stands at every farm held without a lease, as one stands at a farm for sale; and a farm under lease carries the year it runs to. */
 const heldFarm = id => id && typeof farmsList === 'function' ? farmsList().find(f => f.id === id) : null;
 const toLet = id => { const f = heldFarm(id); return !!f && f.canOffer; };
-const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ? '' : `<small>${f.state === 'hand' ? 'In hand' : (f.state === 'corn' ? 'Corn rent to ' : 'Lease to ') + f.ends}</small>`; };
+const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ? '' : `<small>${f.board ? esc(f.board) : f.state === 'hand' ? 'In hand' : (f.state === 'corn' ? 'Corn rent to ' : 'Lease to ') + f.ends}</small>`; };
 /* Where a work is not yet built, or a venture not yet tried, a small roundel of each stands beside the name. */
 function toDoAt(){ const w = new Set(), v = new Set(), shut = S.phase === 'end' || S.dead; if (shut) return {w, v};
   if (typeof worksList === 'function') for (const x of worksList()) if (x.state === 'open' && !x.off) w.add(workAt(x.id));
