@@ -30,7 +30,9 @@ It makes me nothing. A commission must come from the Admiralty, or from an Admir
 
 Lord St Vincent is at the Admiralty, and is said to answer with his own hand every letter that asks him a favour, and to grant none of them. Captain Holloway says that he will write if he is asked, and not otherwise. Have we any friend there?
 
-Your dutiful son, Edmund.”`,
+Your dutiful son, Edmund.”${T('captain') ? `
+
+You passed in the year ’79, at the Navy Office in Seething Lane, before three Captains, of whom two are dead, and the third has his flag; and you were two years a passed Midshipman afterwards, and helped to bury a Lieutenant of the yellow fever at Port Royal, before you had his place.` : ''}`,
   choices:[
     {t:'Ask Lord Cullerne to speak to the First Lord.', go:() => { add({standing:-2});
       if (S.chars.cullerne.r >= 0) { fl('navLtAt', S.year); reg('cullerne',1); reg('edmund',1,'You had him made Lieutenant through the Earl');
@@ -47,6 +49,14 @@ At the next Sessions the Earl’s under-keeper is brought before you for breakin
 By the time you are home the whole of Wyvern knows where you have been three times, and what you were given.
 
 Edmund writes that he has laid the certificate at the bottom of his chest, under the shirts, where the damp will not come at it.`; }},
+    {t:'Write to Lord St Vincent yourself, and ask him nothing.', if:() => T('captain'), go:() => { fl('navLtAt', S.year); add({standing:1}); reg('edmund',2,'You wrote to the First Lord as one sea officer to another');
+      return `You write to the First Lord upon one side of a sheet. You state that Mr ${S.sur}, master’s mate of the Thetis, has passed; that he has been ${inWords(S.year - 1796)} years at sea under a Captain who does not praise; and that the writer, having commanded a frigate for six years, and sat upon some forty young gentlemen for their certificates, would have passed him likewise. You ask for nothing, and sign with your rank.
+
+The answer is in his lordship’s own hand.
+
+“Sir, I have had this year four hundred letters from Peers, Members, and ladies of quality, upon the merits of young men whom they never saw upon a deck. Yours is the first from a sea officer. He shall have the next vacancy in the North Sea. St Vincent.”
+
+${crewAboard() ? 'Tarbuck, having been shown the signature, carries the letter round the servants’ hall upon a tray.' : 'You lay it in the drawer with your own commissions.'}`; }},
     {t:'Ask Captain Holloway to write for him.', go:() => { fl('navLtAt', S.year + 1); reg('edmund',2,'Made Lieutenant on his Captain’s word');
       return `You write six lines to Captain Holloway, and have four back.
 
@@ -69,7 +79,9 @@ ev({ id:'navPrize', weight:40, hen:false, at:'hall', who:() => 'edmund', from:18
 
 The Court has condemned her. Mr Tulk the agent, having taken out his five per cent, and the Proctor’s bill, and the Admiral’s eighth, and something that he calls contingencies, makes my share ${big ? 'six hundred and forty' : 'a hundred and fifty'} pounds.
 
-I never had above eleven pounds at one time in my life, and I do not know what a man does with it. The purser says the Funds; the Captain says land; and the ${big ? 'gunroom' : 'berth'} says that it will do very well where it is until Saturday. Pray advise me.”`; },
+I never had above eleven pounds at one time in my life, and I do not know what a man does with it. The purser says the Funds; the Captain says land; and the ${big ? 'gunroom' : 'berth'} says that it will do very well where it is until Saturday. Pray advise me.”${T('captain') ? `
+
+Mr Tulk’s last word is an old acquaintance. It stood in every account that was ever rendered you of a prize; and in two-and-twenty years you never got an agent to tell you what had been bought with it.` : ''}`; },
   choices:[
     {t:'The Funds. Let him buy into the Navy Five per Cents.', go:() => { add({family:1}); reg('edmund',1);
       return `You write him two sides upon the Navy Five per Cents, in which the dividend is paid at the Bank in January and in July, and the principal lies where no messmate can come at it.
@@ -83,6 +95,12 @@ The first half-year’s dividend he lays out upon a glass by Dollond; with which
 Edmund asks in his next whether it has bought a field, and which.
 
 It has bought none. But you take the estate map into the book-room with ${steward()}, and choose him one: the Nine Acres under the Down, which has the spring in it; and you write his initials upon it in pencil.`; }},
+    {t:'Have Mr Tulk send up his account, with the vouchers to it.', if:() => T('captain'), go:() => { const big = navRank() >= 1; add({standing:1, family:1}); reg('edmund',2,'You went through his prize agent’s vouchers');
+      return `You write to Mr Tulk for the account, and for every voucher to it; and they come up by the wagon in a deal box, which is carried into the book-room by ${crewAboard() ? 'Tarbuck' : 'two of the men'}.
+
+It takes you three evenings. The Proctor has been paid twice, once under his own name, and once under that of his clerk; a pilot is charged at Plymouth for a ship that came in upon the flood without one; and under contingencies there are nineteen guineas for a dinner given at Plymouth to a Judge who has not stirred from Doctors’ Commons since the war began.
+
+Mr Tulk regrets extremely the inadvertence of a young man in his counting-house, who has since left him, and remits Edmund a further ${big ? 'eighty-four' : 'nineteen'} pounds. Before the month is out a second box comes up by the same wagon, from the ${big ? 'gunroom' : 'warrant officers'} of the Thetis, with Captain Holloway’s compliments.`; }},
     {t:'Tell him to lay it out where it will be seen.', go:() => { const big = navRank() >= 1; befriend(); reg('edmund',2,'You told him to spend his prize money like a gentleman');
       return `He takes you at your word.
 
@@ -96,7 +114,9 @@ ev({ id:'navWound', weight:40, hen:false, at:'hall', who:() => 'edmund', from:18
 
 “Lott will carry me up, sir. I had rather my mother did not see me take the stairs.”
 
-His left leg is in splints from the hip to the ankle. The boats of the Thetis, it appears, cut a privateer brig out of the road at the Isle of Bas, under the battery; Edmund had the launch; and a twelve-pound shot, coming in upon her quarter, drove a piece of her own gunwale through his thigh. He has brought the piece home in his hat-box.
+His left leg is in splints from the hip to the ankle. The boats of the Thetis, it appears, cut a privateer brig out of the road at the Isle of Bas, under the battery; Edmund had the launch; and a twelve-pound shot, coming in upon her quarter, drove a piece of her own gunwale through his thigh. He has brought the piece home in his hat-box.${T('captain') ? `
+
+You have it out of the hat-box. It is elm, nine inches long, with the head of a copper bolt in it; ${crewAboard() ? 'and Tarbuck, who holds the candle, having asked leave to look, gives it as his opinion that the launch was a Deptford boat.' : 'and having turned it twice to the candle, you find the King’s broad arrow cut upon the under side.'}` : ''}
 
 When the cloth is drawn he lays three papers upon it. The first is the Gazette, in which Captain Holloway begs leave to mention Lieutenant ${S.sur}. The second is from the Committee of the Patriotic Fund at Lloyd’s Coffee-house, who have voted him a sword of fifty pounds’ value, or the fifty pounds, at his option; and he has written for the sword. The third is in the Captain’s hand.
 
@@ -120,6 +140,12 @@ For nine mornings he sits in the waiting-room at the Admiralty with the crutch b
 His lordship desires the secretary to take the name.
 
 The leg, which had begun to knit, opens again upon the stairs in Spring Gardens, and he goes back to Haslar for six weeks; ${hh(`whence the surgeon writes to Henrietta, and Henrietta, upon one side of a sheet, to you.`, `whence the surgeon writes to Gay Street, and Gay Street, upon one side of a sheet, to you.`)}`; }},
+    {t:'Carry him back to Haslar, and lodge at Gosport, where his Captain may see him.', note:'£35', if:() => T('captain'), go:() => { fl('navWound'); befriend(); add({money:-35, family:-1}); reg('edmund',2,'You kept him under his Captain’s eye at Haslar'); reg('henrietta',-1);
+      return `A wounded officer who lies in Berkshire is forgotten at Spithead within the week, and you have in your time forgotten several. You carry him down again in the same chaise, see him into the officers’ ward at Haslar, take two rooms over a chandler’s at Gosport, and are pulled across the harbour every morning at nine.
+
+Captain Holloway, coming ashore for his letters, finds you upon the Hard on the Tuesday, and again on the Friday; and upon Sunday he has you off to dine in the Thetis, where you go up a ship’s side for the first time since the Dryad paid off, and are asked by the Master whether she did not carry her mizen too far aft.
+
+In the eleventh week Edmund walks the length of the ward without a stick, before two surgeons and his Captain; and he is read in as First Lieutenant upon Lady Day. ${hh(`Henrietta, who has had him one night out of the three months, sends his shirts down to Gosport by the carrier, and no letter with them.`, `Gay Street, which was promised him for a month, has the news from you in six lines, and does not answer them.`)}`; }},
     {t:'Let him go back as soon as he can stand.', go:() => { fl('navWound'); befriend(); add({family:-1}); reg('edmund',2,'You let him go back to his ship'); reg('henrietta',-1);
       return `In five weeks he can stand; in six he can cross the hall, provided that nobody is looking at him; and at the end of the seventh Lott has the chest corded, and in the cart.
 
@@ -167,6 +193,16 @@ In November the Earl’s agent sends you, without a note, a plan of the new road
 He bends to the foot again; and as the huntsman does not look up either, you find your own way out between the kennels.
 
 ${navFail()}`; }},
+    {t:'Call upon Sir Digby Frome, who was your First in the Dryad, and sits at the Board.', if:() => T('captain'), go:() => { navMade(); add({standing:1}); reg('edmund',2,'You had his Captain’s log read at the Board');
+      return `Rear-Admiral Sir Digby Frome, who was six years your First Lieutenant, and has been two a Lord of the Admiralty, receives you in his own room, with his back to the fire.
+
+“You taught me to keep a clean deck, sir, and I keep a clean list. I cannot make your son because he is your son.”
+
+“I do not ask it. Send for Holloway’s log, and for the nephew’s journal.”
+
+They are sent for. The journal is of ten weeks, in a hand like a copy-book, and records upon four several days that the ship was in sight of land. The log Sir Digby reads standing, for the better part of an hour; and when he has done, he rings for the Secretary.
+
+Edmund is made Commander into the Sparrow. The nephew goes out to the Mediterranean in a flagship, with his journal, and a new quadrant.`; }},
     {t:'Wait upon the First Lord yourself.', note:'£40', go:() => { add({money:-40});
       if (S.standing >= 55 || interest() >= 3) { navMade(); add({standing:1}); reg('edmund',2,'You waited upon the First Lord for him');
         return `You send up your card at the Admiralty at eleven, and are shown in at four.
@@ -219,6 +255,22 @@ On the tenth day the order is confirmed. Edmund is Post, of the date of the acti
 You carry the Gazette, folded open at the page, to the Secretary, and to two of the junior Lords; and upon the tenth day you are informed by letter, though you are sitting at the time in the next room, that their Lordships do not confirm appointments made upon a foreign station, other than to a death vacancy in the officer’s own ship.
 
 A Captain is sent out to the Calliope from Portsmouth. Edmund goes back to the Sparrow, and to her pumps.`; }},
+    {t:'Send their Lordships your own reading of the action.', if:() => T('captain'), go:() => {
+      const head = `You have the Admiral’s letter, the Sparrow’s force out of Steel, and the Tamerlane’s out of the Gazette; and you sit down to them in the book-room, as you formerly sat upon courts martial.
+
+Your letter to the Secretary is of two sides. A sloop of eighteen guns, that has pumped for thirty hours, does not take a privateer of sixteen in forty minutes by good fortune. She takes her because her people can fire three broadsides in five minutes; and they can do that only where a Commander has laid out his own money upon powder, the allowance for exercise being what their Lordships know it to be. You had a frigate for six years, and never brought her people to it.`;
+      if (postChance(0.6)) { posted(); reg('edmund',2,'You wrote to the Board upon his action, as an officer');
+        return `${head}
+
+The Secretary’s answer is of one line; and the confirmation goes out to Halifax in the next packet. Edmund is Post, of the date of the action.
+
+“The Admiral has shown me a copy of a letter,” he writes. “I did not know that you had ever counted the Dryad’s broadsides. Nor, I think, did the Dryad.”`; }
+      reg('edmund',1);
+      return `${head}
+
+The Secretary acknowledges the receipt of your letter, which has been laid before their Lordships. A Captain is sent out to the Calliope from Portsmouth, and Edmund goes back to his sloop.
+
+At the year’s end you learn from an officer who has dined at the Admiralty, that the allowance of powder for exercise is raised by one third upon the North American station.`; }},
     {t:'Send his letter to the Naval Chronicle.', go:() => { add({standing:2}); reg('edmund',-1,'You printed his letter');
       const head = `Mr Gold of Shoe Lane prints the letter whole in the Naval Chronicle, between a memoir of the late Admiral Lord Gardner and a table of the tides at Leith; the Courier copies the Chronicle, and the Mercury copies the Courier; and on Saturday it is read aloud at the George by the landlord, standing upon a settle.`;
       if (postChance(0.35)) { posted();
@@ -256,7 +308,9 @@ ev({ id:'armLieutenancy', weight:40, hen:false, at:'hall', who:() => 'edmund', f
 
 The difference between an Ensigncy and a Lieutenancy is a hundred and fifty pounds by the King’s regulation, to be lodged with Mr Cox in Craig’s Court. Garrow asks sixty guineas besides; which are not to pass through Mr Cox’s hands, nor to be spoken of before the Colonel.
 
-If I do not lodge it within the month, an Ensign of the 9th buys in over all our heads. He is sixteen. Tamworth has seen him, and says that he has not done growing.”`,
+If I do not lodge it within the month, an Ensign of the 9th buys in over all our heads. He is sixteen. Tamworth has seen him, and says that he has not done growing.”${T('soldier') ? `
+
+Your own step cost you nothing. It was had at Guilford, at about three in the afternoon, of a Mr Tench, who was carrying the other colour.` : ''}`,
   choices:[
     {t:'Lodge the hundred and fifty, and find Garrow his sixty guineas.', note:'£213', go:() => { fl('armLtAt', S.year); add({money:-213}); reg('edmund',2,'You bought him his Lieutenancy');
       return `A hundred and fifty pounds go to Mr Cox, and are acknowledged upon a printed form. The sixty guineas go down to Chelmsford in the foot of a stocking, by the hand of Tamworth’s servant, and are not acknowledged at all.
@@ -264,6 +318,14 @@ If I do not lodge it within the month, an Ensign of the 9th buys in over all our
 The Gazette has it within the fortnight: “52nd Foot. Ensign Edmund ${S.sur} to be Lieutenant, by purchase, vice Garrow, who retires.”
 
 Edmund writes that he has now five shillings and eightpence a day; and that the mess, having met upon it, has raised his subscription.`; }},
+    {t:'Lodge the regulation, and go down to dine with his mess.', note:'£158', if:() => T('soldier'), go:() => { fl('armLtAt', S.year); befriend(); add({money:-158, standing:1}); reg('edmund',1,'You told Guilford to his mess');
+      return `A hundred and fifty pounds are lodged with Mr Cox; and you go down to Chelmsford by the coach, where the 52nd give a dinner to an old officer of the Fusiliers, and the Colonel, when the cloth is drawn, asks for Guilford.
+
+You tell it, from the wood to the rail fence. Lieutenant Garrow, who sits four places below you, and has in nine years’ service heard no shot fired except at a review, is observed to take water with his wine.
+
+“We had a Lieutenant in the 23rd, Colonel, who sold out at New York, in the week before we sailed for Charleston. His price, I remember, was the regulation.”
+
+Nobody looks at Mr Garrow. He signs next morning before the Adjutant, for a hundred and fifty pounds; and Edmund is in the Gazette, by purchase, before the brewer’s widow has been told what a Lieutenancy commonly fetches.`; }},
     {t:'The regulation, and not a guinea over it.', note:'£150', go:() => {
       if (chance(0.5)) { fl('armLtAt', S.year); add({money:-150, standing:1}); reg('edmund',1);
         return `You lodge the hundred and fifty; and you write to Edmund that the King has fixed the price of a Lieutenancy, and that you do not propose to amend him.
@@ -318,6 +380,12 @@ Then the second battalion is gazetted, with ten Captains; and the seventh name i
 Then the second battalion is gazetted, with ten Captains; of whom six are come from other regiments, three from the General’s own Staff, and one from the Militia, with four hundred men at his back.
 
 Edmund remains senior Lieutenant. On Tuesdays he commands the company that Dobbs bought, Dobbs being upon those days at Folkestone, with a lady.`; }},
+    {t:'Write to General Stanwix, who was your captain at Guilford.', if:() => T('soldier'), go:() => { fl('armCaptAt', Math.min(1808, S.year + 1)); add({standing:1}); reg('edmund',2,'Your old captain asked Sir John Moore about him');
+      return `You answer Mr Cox that the money will not be lodged this month; and by the same post you write to the Horse Guards.
+
+“My dear ${S.sur}, I asked Moore at the levee. He says that your boy is one of four subalterns in his camp who can be found at five in the morning, and the only one who has been seen with a book upon out-posts. He will take no recommendation from this office, and told me so; but he had the name before I could spell it to him. Let Molesworth’s company go. There are ten coming, and they are not for sale. J. S.”
+
+Molesworth’s company is bought by a Lieutenant Dobbs, to whom Edmund taught his drill. In the spring the second battalion is gazetted, with ten Captains; and the fourth name is Edmund’s, with no “by purchase” after it.`; }},
     {t:'Sell him out, and bring him home.', note:'+£550', go:() => { fl('edmund','home'); add({money:550, family:1}); reg('edmund',-3,'You sold his commission'); reg('henrietta',2);
       return `Mr Cox sells the Lieutenancy within the week, to the father of a boy at Harrow; and remits five hundred and fifty pounds, less his own commission upon it.
 
@@ -335,7 +403,9 @@ ev({ id:'armWound', weight:40, hen:false, at:'hall', who:() => 'edmund', from:18
 
 The ball went in under the left collar-bone, and has not come out. The surgeon at Lisbon let it alone; and the Medical Board at Belem gave him six months’ leave, and a paper. Mr Ferris feels for it with two fingers, the patient looking all the while at the rack of fowling-pieces; and having found it, he washes his hands, and speaks to you.
 
-“It lies against the great artery, sir. I shall not cut for it. Mr Astley Cooper of Broad Street would, for eighty guineas; or it may be left where it is, when he will lift a glass with that arm, but hardly a sword.”
+“It lies against the great artery, sir. I shall not cut for it. Mr Astley Cooper of Broad Street would, for eighty guineas; or it may be left where it is, when he will lift a glass with that arm, but hardly a sword.”${T('soldier') ? `
+
+Your own ball went through, and the leg was a twelvemonth in mending. Edmund asks you, with his eyes still upon the fowling-pieces, whether it aches before rain; and you tell him that it does.` : ''}
 
 The regiment lies before Lisbon, and writes by every packet to know when he comes.`,
   choices:[
@@ -385,6 +455,12 @@ ${BREVET_YES()}`; }
 “Sir, I am directed by the Commander-in-Chief to acquaint you, that the claims of Captain ${S.sur} will be considered with those of other deserving officers.”
 
 ${BREVET_NO()}`; }},
+    {t:'Write to General Stanwix, and ask him to turn it.', if:() => T('soldier'), go:() => { brevet(); reg('edmund',1,'Your old captain turned over the heap for him');
+      return `General Stanwix is in his seventy-fourth year, and goes down to the Horse Guards upon Tuesdays.
+
+“My dear ${S.sur}, I went into Torrens’s room myself, and asked to be shown the heap. It is two feet high. I found Colborne’s letter a foot from the top, and laid it upon the blotting-paper, under the Colonel’s spectacles. At my age I can do no more than move a paper; but I have observed these forty years that nobody here does anything else. J. S.”
+
+${BREVET_YES()}`; }},
     {t:'Speak to the Secretary at War in the lobby.', if:() => F('mp'), go:() => { brevet(); add({standing:-1}); reg('edmund',1);
       return `Lord Palmerston, who is nine-and-twenty, is found in the lobby eating an orange. He hears you with great good humour, asks how the name is spelt, and having no paper about him, writes it upon his wristband.
 
