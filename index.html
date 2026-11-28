@@ -501,7 +501,7 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* what is said, in a balloon over the cut */
 .cutwrap{position:relative} .balloon{position:absolute;inset:0;quotes:none;pointer-events:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
 .balloon b{position:absolute;display:grid;place-items:center;font-weight:400;background:url(art/ui/balloon.png) center/100% 100% no-repeat;visibility:hidden}
-.balloon svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible} .balloon path{fill:#ead9bd;stroke:#3a2a1c;stroke-width:1.3px;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.balloon svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible} .balloon path.tf{fill:#ead9bd;stroke:none} .balloon path.tl{fill:none;stroke:#3a2a1c;stroke-width:1.3px;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:butt}
 /* the words keep their size and the balloon is drawn about them: fitBalloons() in plan.js finds both */
 .balloon span{display:block} .balloon span i{display:block;font-family:var(--display);font-style:italic;font-size:12px;line-height:1.12;text-align:center;color:#2b1d10;text-wrap:balance}
 
@@ -587,7 +587,6 @@ body.intro .desk{display:none}
 #opening .print img{aspect-ratio:16/9;mix-blend-mode:normal}
 #opening .pside{max-height:calc(100dvh - 110px)} #opening.heir .pside{max-height:calc(100dvh - 36px)}
 #opening .pside .sheet{padding-top:26px} #opening .answer{gap:6px} #opening .answer .quiet{align-self:flex-start}
-#opening .balloon.said i{font-size:2.3cqw} #opening .balloon.said span{width:80%}
 /* the second plate stands upright, and is as tall as the window allows */
 #opening.heir .pcard{grid-template-columns:minmax(0,auto) minmax(0,1fr);width:min(1180px, 100%)}
 #opening.heir .print{width:min(44vw, calc((100dvh - 215px) * .75 + 62px));transform:rotate(.4deg)}
@@ -12533,8 +12532,11 @@ function balloonSeat(g, mx, my, bw, bh){ let best = null;
 function balloonTail(mx, my, x, y, bw, bh){ const M = [mx * 3, my * 2], C = [(x + bw / 2) * 3, (y + bh / 2) * 2], a = bw * 1.5, b = bh, out = p => Math.abs((p[0] - C[0]) / a) ** 3 + Math.abs((p[1] - C[1]) / b) ** 3 > 1;
   const P = [clamp(M[0], C[0] - a * .55, C[0] + a * .55), clamp(M[1], C[1] - b * .5, C[1] + b * .5)], on = t => [P[0] + (M[0] - P[0]) * t, P[1] + (M[1] - P[1]) * t]; if (!out(M)) return '';
   let lo = 0, hi = 1; for (let n = 0; n < 14; n++) { const m = (lo + hi) / 2; if (out(on(m))) hi = m; else lo = m; }
-  const B = on(lo * .94), L = Math.hypot(M[0] - B[0], M[1] - B[1]); if (L < 4) return '';
-  const u = [(M[0] - B[0]) / L, (M[1] - B[1]) / L], nrm = [-u[1], u[0]], T = [M[0] - u[0] * Math.min(3, L * .15), M[1] - u[1] * Math.min(3, L * .15)], hw = clamp(L * .13, 3, 6), sway = L * .13 * (M[0] < C[0] ? 1 : -1);
+  /* the root of the horn is drawn back into the balloon until both its corners lie under the paper, or a tail that leaves at a slant shows one corner in the air */
+  const deep = p => Math.abs((p[0] - C[0]) / a) ** 3 + Math.abs((p[1] - C[1]) / b) ** 3 < .66; let B, L, u, nrm, hw;
+  for (let k = .86; k > .05; k -= .06) { B = on(lo * k); L = Math.hypot(M[0] - B[0], M[1] - B[1]); if (L < 4) return ''; u = [(M[0] - B[0]) / L, (M[1] - B[1]) / L]; nrm = [-u[1], u[0]]; hw = clamp(Math.hypot(M[0] - on(lo)[0], M[1] - on(lo)[1]) * .13 + 1, 3, 6);
+    if (k < .45) hw = Math.min(hw, 2.4); if (deep([B[0] + nrm[0] * hw, B[1] + nrm[1] * hw]) && deep([B[0] - nrm[0] * hw, B[1] - nrm[1] * hw])) break; }
+  const T = [M[0] - u[0] * Math.min(3, L * .15), M[1] - u[1] * Math.min(3, L * .15)], sway = L * .13 * (M[0] < C[0] ? 1 : -1);
   const mid = [(B[0] + T[0]) / 2 + nrm[0] * sway, (B[1] + T[1]) / 2 + nrm[1] * sway], pt = (p, k) => (p[0] + nrm[0] * k).toFixed(1) + ' ' + (p[1] + nrm[1] * k).toFixed(1);
   return `M${pt(B, hw)}Q${pt(mid, hw * .5)} ${pt(T, 0)}Q${pt(mid, -hw * .5)} ${pt(B, -hw)}`; }
 /* The words keep the size they had in the old balloon, which was as large as it would hold; the balloon is then drawn close about them, in whichever of two or three shapes finds the clearest seat. */
@@ -12549,7 +12551,10 @@ function fitBalloons(){ for (const q of document.querySelectorAll('.balloon')) {
       const bw = pw / CW * 100, bh = ph / CH * 100, seat = balloonSeat(g, at[0], at[1], bw, bh); if (!best || seat.c + i * .6 < best.c) best = {...seat, c:seat.c + i * .6, bw, bh, w}; best.last = th; }
     b.style.cssText = `left:${best.x.toFixed(1)}%;top:${best.y.toFixed(1)}%;width:${best.bw.toFixed(2)}%;height:${best.bh.toFixed(2)}%;visibility:visible`; box.style.width = (best.w / (best.bw / 100 * CW) * 100).toFixed(1) + '%';
     /* kept as a share of the cut's breadth, so that it holds when the window is resized */
-    t.style.fontSize = (F / CW * 100).toFixed(3) + 'cqw'; q.lastElementChild.firstElementChild.setAttribute('d', balloonTail(at[0], at[1], best.x, best.y, best.bw, best.bh)); } }
+    t.style.fontSize = (F / CW * 100).toFixed(3) + 'cqw'; /* The horn is filled over the balloon's edge, so that the two are one piece of paper; and its outline is masked by the balloon itself, so that the line stops where the balloon's own line begins. */
+    const d = balloonTail(at[0], at[1], best.x, best.y, best.bw, best.bh), n = ++TAILS, box3 = `x="${(best.x * 3).toFixed(1)}" y="${(best.y * 2).toFixed(1)}" width="${(best.bw * 3).toFixed(1)}" height="${(best.bh * 2).toFixed(1)}"`;
+    q.lastElementChild.innerHTML = d ? `<defs><filter id="tk${n}"><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter><mask id="tm${n}" maskUnits="userSpaceOnUse" x="-60" y="-60" width="420" height="320"><rect x="-60" y="-60" width="420" height="320" fill="#fff"/><image href="art/ui/balloon.png" ${box3} preserveAspectRatio="none" filter="url(#tk${n})"/></mask></defs><path class="tf" d="${d}"/><path class="tl" d="${d}" mask="url(#tm${n})"/>` : ''; } }
+let TAILS = 0;
 addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the italic is fetched when first set, and is broader than what stood in for it */
 if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
@@ -12742,25 +12747,22 @@ addEventListener('keydown', e => { if (e.key !== 'Escape' || !S) return; if (PRO
 /* The opening. Two plates are struck before the first quarter: the will is read, and then the heir is made.
    They are laid out as every later plate is (plan.css), so that the game begins in the hand it goes on in. */
 let OPENAT = 'will', OPENROW = '', LASTROW = '', PICKS = {};
-/* Where the attorney's mouth is on the first cut, and where his words hang: hundredths of the cut, as in SAY_AT. */
-const OPEN_SAY = {mouth:[34.6, 51.2], seat:[29, 3, 27, 25]};
+/* The first cut's balloon is seated as every other is (plan.js): where the attorney's mouth is, and what is drawn in each square of the cut. */
+const OPEN_CUT = 'opening/will', OPEN_SAID = 'And the residue, sir, real and personal, is yours.';
+SAY_AT[OPEN_CUT] = [34.6, 51.2]; SAY_ROOM[OPEN_CUT] = '000000000000ro00000005JJrrrr0003r5_Jrrrr99rrr5_Jrrrr99rrr5_JrrrrfVrrr5JJrrrrf___r5JJrrAv____PrroroAT-SSSPrroAAASSSSSPrroAAASSSSSMrAAAAASSSSSMrAAAAAySSSSOrAAAAAySSSSRJAAAAAyiiiiJJAAAAAyiiiiJJAA';
 const pickList = () => Object.values(PICKS).filter(Boolean);
 /* Favours: three to begin. An advantage spends one or two, a burden earns them back; what cannot be afforded is greyed. */
 const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
 
-function openingSaid(){ const [mx, my] = OPEN_SAY.mouth, [x, y, w, h] = OPEN_SAY.seat;
-  if (!ART.has('ui/balloon.png')) return '';
-  return `<q class="balloon said"><b style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;visibility:visible"><span><i>And the residue, sir, real and personal, is yours.</i></span></b><svg viewBox="0 0 300 200" preserveAspectRatio="none" aria-hidden="true"><path d="${balloonTail(mx, my, x, y, w, h)}"/></svg></q>`; }
-
 function willHTML(){ const has = !!load();
   return `<p class="series">A Squire’s Progress, in eighty-four Plates<b>Hatherley Combe</b></p>
     <div class="pcard">
-      <figure class="print"><div class="mark"><span class="pn">Plate the First</span><div class="cutwrap">${pic('opening/will', 'The will is read')}${openingSaid()}</div>
+      <figure class="print"><div class="mark"><span class="pn">Plate the First</span><div class="cutwrap">${pic('opening/will', 'The will is read')}${balloonHTML(OPEN_CUT, OPEN_SAID)}</div>
         <figcaption><b>The Will is Read</b><small>${imprint('Michaelmas 1794')}</small></figcaption></div></figure>
       <div class="pside"><article class="sheet"><p class="kicker">Hatherley, in Berkshire</p><div class="prose">
         <p>Your uncle Barnaby died at his own table upon Michaelmas Day, between the goose and the syllabub, with the Bishop of Salisbury upon his right hand. His will is read in the library on the Tuesday following; and Mr Spurling the attorney, who has had it in a tin box these nineteen years, is four minutes about it.</p>
         <p>There are four cousins, who have come ninety miles between them to hear it; and they go out again by the library door with a mourning ring, a gilt snuff-box, a likeness of the deceased in crayons, and the pike of nineteen pounds which he took out of the Kennet in ’78, in its glass case. The pug is left to nobody.</p>
-        <p class="nocap">“And the residue, sir, real and personal, is yours.”</p>
+        <p class="nocap">“${OPEN_SAID}”</p>
         <p class="nocap">It is two thousand one hundred acres of chalk and clay, in three farms and a mill; a house of fifty-four windows, of which Mr Pitt taxes every one; and a mortgage of four thousand pounds, at five per cent. Mr Spurling, who has taken the keys of it out of the tin box in two bunches, puts one into each of your hands, and bows.</p>
       </div></article>
       <div class="answer"><div class="choices"><button class="choice" id="keys" onclick="openHeir()"><span>Wish your cousins a safe journey.</span></button></div>
@@ -12798,7 +12800,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(nameFit);
 function drawOpening(){ const el = $('opening'); if (!el) return;
   if (S) { if (!el.hidden) { el.hidden = true; el.innerHTML = ''; } OPENAT = 'will'; OPENROW = ''; return; }
   const key = OPENAT; if (!el.hidden && el.dataset.key === key) return;
-  el.hidden = false; el.dataset.key = key; el.className = OPENAT; el.innerHTML = OPENAT === 'heir' ? heirHTML() : willHTML(); el.scrollTop = 0; nameFit();
+  el.hidden = false; el.dataset.key = key; el.className = OPENAT; el.innerHTML = OPENAT === 'heir' ? heirHTML() : willHTML(); el.scrollTop = 0; nameFit(); fitBalloons();
   if (typeof warm === 'function') warm([artURL('opening/heir'), artURL('opening/will')]); }
 function openHeir(){ OPENAT = 'heir'; drawOpening(); const b = $('first'); if (b && innerWidth > 700) b.select(); }
 function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || '').trim() || 'Thomas', s = ($('sur').value || '').trim() || 'Merridew'; newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }

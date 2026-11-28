@@ -9,7 +9,6 @@ body.intro .desk{display:none}
 #opening .print img{aspect-ratio:16/9;mix-blend-mode:normal}
 #opening .pside{max-height:calc(100dvh - 110px)} #opening.heir .pside{max-height:calc(100dvh - 36px)}
 #opening .pside .sheet{padding-top:26px} #opening .answer{gap:6px} #opening .answer .quiet{align-self:flex-start}
-#opening .balloon.said i{font-size:2.3cqw} #opening .balloon.said span{width:80%}
 /* the second plate stands upright, and is as tall as the window allows */
 #opening.heir .pcard{grid-template-columns:minmax(0,auto) minmax(0,1fr);width:min(1180px, 100%)}
 #opening.heir .print{width:min(44vw, calc((100dvh - 215px) * .75 + 62px));transform:rotate(.4deg)}

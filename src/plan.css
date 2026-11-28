@@ -109,7 +109,7 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* what is said, in a balloon over the cut */
 .cutwrap{position:relative} .balloon{position:absolute;inset:0;quotes:none;pointer-events:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
 .balloon b{position:absolute;display:grid;place-items:center;font-weight:400;background:url(art/ui/balloon.png) center/100% 100% no-repeat;visibility:hidden}
-.balloon svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible} .balloon path{fill:#ead9bd;stroke:#3a2a1c;stroke-width:1.3px;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.balloon svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible} .balloon path.tf{fill:#ead9bd;stroke:none} .balloon path.tl{fill:none;stroke:#3a2a1c;stroke-width:1.3px;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:butt}
 /* the words keep their size and the balloon is drawn about them: fitBalloons() in plan.js finds both */
 .balloon span{display:block} .balloon span i{display:block;font-family:var(--display);font-style:italic;font-size:12px;line-height:1.12;text-align:center;color:#2b1d10;text-wrap:balance}
 

@@ -1,25 +1,22 @@
 /* The opening. Two plates are struck before the first quarter: the will is read, and then the heir is made.
    They are laid out as every later plate is (plan.css), so that the game begins in the hand it goes on in. */
 let OPENAT = 'will', OPENROW = '', LASTROW = '', PICKS = {};
-/* Where the attorney's mouth is on the first cut, and where his words hang: hundredths of the cut, as in SAY_AT. */
-const OPEN_SAY = {mouth:[34.6, 51.2], seat:[29, 3, 27, 25]};
+/* The first cut's balloon is seated as every other is (plan.js): where the attorney's mouth is, and what is drawn in each square of the cut. */
+const OPEN_CUT = 'opening/will', OPEN_SAID = 'And the residue, sir, real and personal, is yours.';
+SAY_AT[OPEN_CUT] = [34.6, 51.2]; SAY_ROOM[OPEN_CUT] = '000000000000ro00000005JJrrrr0003r5_Jrrrr99rrr5_Jrrrr99rrr5_JrrrrfVrrr5JJrrrrf___r5JJrrAv____PrroroAT-SSSPrroAAASSSSSPrroAAASSSSSMrAAAAASSSSSMrAAAAAySSSSOrAAAAAySSSSRJAAAAAyiiiiJJAAAAAyiiiiJJAA';
 const pickList = () => Object.values(PICKS).filter(Boolean);
 /* Favours: three to begin. An advantage spends one or two, a burden earns them back; what cannot be afforded is greyed. */
 const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
 
-function openingSaid(){ const [mx, my] = OPEN_SAY.mouth, [x, y, w, h] = OPEN_SAY.seat;
-  if (!ART.has('ui/balloon.png')) return '';
-  return `<q class="balloon said"><b style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;visibility:visible"><span><i>And the residue, sir, real and personal, is yours.</i></span></b><svg viewBox="0 0 300 200" preserveAspectRatio="none" aria-hidden="true"><path d="${balloonTail(mx, my, x, y, w, h)}"/></svg></q>`; }
-
 function willHTML(){ const has = !!load();
   return `<p class="series">A Squire’s Progress, in eighty-four Plates<b>Hatherley Combe</b></p>
     <div class="pcard">
-      <figure class="print"><div class="mark"><span class="pn">Plate the First</span><div class="cutwrap">${pic('opening/will', 'The will is read')}${openingSaid()}</div>
+      <figure class="print"><div class="mark"><span class="pn">Plate the First</span><div class="cutwrap">${pic('opening/will', 'The will is read')}${balloonHTML(OPEN_CUT, OPEN_SAID)}</div>
         <figcaption><b>The Will is Read</b><small>${imprint('Michaelmas 1794')}</small></figcaption></div></figure>
       <div class="pside"><article class="sheet"><p class="kicker">Hatherley, in Berkshire</p><div class="prose">
         <p>Your uncle Barnaby died at his own table upon Michaelmas Day, between the goose and the syllabub, with the Bishop of Salisbury upon his right hand. His will is read in the library on the Tuesday following; and Mr Spurling the attorney, who has had it in a tin box these nineteen years, is four minutes about it.</p>
         <p>There are four cousins, who have come ninety miles between them to hear it; and they go out again by the library door with a mourning ring, a gilt snuff-box, a likeness of the deceased in crayons, and the pike of nineteen pounds which he took out of the Kennet in ’78, in its glass case. The pug is left to nobody.</p>
-        <p class="nocap">“And the residue, sir, real and personal, is yours.”</p>
+        <p class="nocap">“${OPEN_SAID}”</p>
         <p class="nocap">It is two thousand one hundred acres of chalk and clay, in three farms and a mill; a house of fifty-four windows, of which Mr Pitt taxes every one; and a mortgage of four thousand pounds, at five per cent. Mr Spurling, who has taken the keys of it out of the tin box in two bunches, puts one into each of your hands, and bows.</p>
       </div></article>
       <div class="answer"><div class="choices"><button class="choice" id="keys" onclick="openHeir()"><span>Wish your cousins a safe journey.</span></button></div>
@@ -57,7 +54,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(nameFit);
 function drawOpening(){ const el = $('opening'); if (!el) return;
   if (S) { if (!el.hidden) { el.hidden = true; el.innerHTML = ''; } OPENAT = 'will'; OPENROW = ''; return; }
   const key = OPENAT; if (!el.hidden && el.dataset.key === key) return;
-  el.hidden = false; el.dataset.key = key; el.className = OPENAT; el.innerHTML = OPENAT === 'heir' ? heirHTML() : willHTML(); el.scrollTop = 0; nameFit();
+  el.hidden = false; el.dataset.key = key; el.className = OPENAT; el.innerHTML = OPENAT === 'heir' ? heirHTML() : willHTML(); el.scrollTop = 0; nameFit(); fitBalloons();
   if (typeof warm === 'function') warm([artURL('opening/heir'), artURL('opening/will')]); }
 function openHeir(){ OPENAT = 'heir'; drawOpening(); const b = $('first'); if (b && innerWidth > 700) b.select(); }
 function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || '').trim() || 'Thomas', s = ($('sur').value || '').trim() || 'Merridew'; newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }

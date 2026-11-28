@@ -139,8 +139,11 @@ function balloonSeat(g, mx, my, bw, bh){ let best = null;
 function balloonTail(mx, my, x, y, bw, bh){ const M = [mx * 3, my * 2], C = [(x + bw / 2) * 3, (y + bh / 2) * 2], a = bw * 1.5, b = bh, out = p => Math.abs((p[0] - C[0]) / a) ** 3 + Math.abs((p[1] - C[1]) / b) ** 3 > 1;
   const P = [clamp(M[0], C[0] - a * .55, C[0] + a * .55), clamp(M[1], C[1] - b * .5, C[1] + b * .5)], on = t => [P[0] + (M[0] - P[0]) * t, P[1] + (M[1] - P[1]) * t]; if (!out(M)) return '';
   let lo = 0, hi = 1; for (let n = 0; n < 14; n++) { const m = (lo + hi) / 2; if (out(on(m))) hi = m; else lo = m; }
-  const B = on(lo * .94), L = Math.hypot(M[0] - B[0], M[1] - B[1]); if (L < 4) return '';
-  const u = [(M[0] - B[0]) / L, (M[1] - B[1]) / L], nrm = [-u[1], u[0]], T = [M[0] - u[0] * Math.min(3, L * .15), M[1] - u[1] * Math.min(3, L * .15)], hw = clamp(L * .13, 3, 6), sway = L * .13 * (M[0] < C[0] ? 1 : -1);
+  /* the root of the horn is drawn back into the balloon until both its corners lie under the paper, or a tail that leaves at a slant shows one corner in the air */
+  const deep = p => Math.abs((p[0] - C[0]) / a) ** 3 + Math.abs((p[1] - C[1]) / b) ** 3 < .66; let B, L, u, nrm, hw;
+  for (let k = .86; k > .05; k -= .06) { B = on(lo * k); L = Math.hypot(M[0] - B[0], M[1] - B[1]); if (L < 4) return ''; u = [(M[0] - B[0]) / L, (M[1] - B[1]) / L]; nrm = [-u[1], u[0]]; hw = clamp(Math.hypot(M[0] - on(lo)[0], M[1] - on(lo)[1]) * .13 + 1, 3, 6);
+    if (k < .45) hw = Math.min(hw, 2.4); if (deep([B[0] + nrm[0] * hw, B[1] + nrm[1] * hw]) && deep([B[0] - nrm[0] * hw, B[1] - nrm[1] * hw])) break; }
+  const T = [M[0] - u[0] * Math.min(3, L * .15), M[1] - u[1] * Math.min(3, L * .15)], sway = L * .13 * (M[0] < C[0] ? 1 : -1);
   const mid = [(B[0] + T[0]) / 2 + nrm[0] * sway, (B[1] + T[1]) / 2 + nrm[1] * sway], pt = (p, k) => (p[0] + nrm[0] * k).toFixed(1) + ' ' + (p[1] + nrm[1] * k).toFixed(1);
   return `M${pt(B, hw)}Q${pt(mid, hw * .5)} ${pt(T, 0)}Q${pt(mid, -hw * .5)} ${pt(B, -hw)}`; }
 /* The words keep the size they had in the old balloon, which was as large as it would hold; the balloon is then drawn close about them, in whichever of two or three shapes finds the clearest seat. */
@@ -155,7 +158,10 @@ function fitBalloons(){ for (const q of document.querySelectorAll('.balloon')) {
       const bw = pw / CW * 100, bh = ph / CH * 100, seat = balloonSeat(g, at[0], at[1], bw, bh); if (!best || seat.c + i * .6 < best.c) best = {...seat, c:seat.c + i * .6, bw, bh, w}; best.last = th; }
     b.style.cssText = `left:${best.x.toFixed(1)}%;top:${best.y.toFixed(1)}%;width:${best.bw.toFixed(2)}%;height:${best.bh.toFixed(2)}%;visibility:visible`; box.style.width = (best.w / (best.bw / 100 * CW) * 100).toFixed(1) + '%';
     /* kept as a share of the cut's breadth, so that it holds when the window is resized */
-    t.style.fontSize = (F / CW * 100).toFixed(3) + 'cqw'; q.lastElementChild.firstElementChild.setAttribute('d', balloonTail(at[0], at[1], best.x, best.y, best.bw, best.bh)); } }
+    t.style.fontSize = (F / CW * 100).toFixed(3) + 'cqw'; /* The horn is filled over the balloon's edge, so that the two are one piece of paper; and its outline is masked by the balloon itself, so that the line stops where the balloon's own line begins. */
+    const d = balloonTail(at[0], at[1], best.x, best.y, best.bw, best.bh), n = ++TAILS, box3 = `x="${(best.x * 3).toFixed(1)}" y="${(best.y * 2).toFixed(1)}" width="${(best.bw * 3).toFixed(1)}" height="${(best.bh * 2).toFixed(1)}"`;
+    q.lastElementChild.innerHTML = d ? `<defs><filter id="tk${n}"><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter><mask id="tm${n}" maskUnits="userSpaceOnUse" x="-60" y="-60" width="420" height="320"><rect x="-60" y="-60" width="420" height="320" fill="#fff"/><image href="art/ui/balloon.png" ${box3} preserveAspectRatio="none" filter="url(#tk${n})"/></mask></defs><path class="tf" d="${d}"/><path class="tl" d="${d}" mask="url(#tm${n})"/>` : ''; } }
+let TAILS = 0;
 addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the italic is fetched when first set, and is broader than what stood in for it */
 if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
