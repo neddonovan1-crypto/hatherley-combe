@@ -78,6 +78,48 @@ Hartopp’s broker bought for him at thirty-two and a half; and Hartopp, who wal
 The newspaper comes on Wednesday. At the Easter Sessions the chairman, having called over the list of magistrates, asks whether the gentleman from Hatherley has any intelligence from France to lay before the Bench.`; }}
   ]});
 
+/* ---------- Thursday, 22 June 1815 ----------
+   Major Percy brought the Duke's despatch through Kent, and was in St James's Square with the two eagles at eleven on the Wednesday night: no Berkshire house saw him.
+   The officer here is a second man, invented, sent off after midnight for the General at Bristol: he is the man of the old paper 'waterloo', who comes up the Bath road standing in a post-chaise.
+   This paper is read first, in the same summer, and the Gazette Extraordinary after it (see pickEvent and next below); London has the news already, and Hatherley has it an hour or six before Wyvern.
+   The rumours of a defeat, and the fall of the Funds upon them, are of record. That the Admiralty manned its shutters again for the Hundred Days is believed and not checked. */
+const hadShutters = () => { const v = vent('telegraph'); return !!v && (!v.ended || v.how === 'Shut at the peace'); };
+const newsStake = () => Math.min(3000, Math.floor(S.money / 100) * 100);
+ev({ id:'waterloo1815', follow:true, at:'hall', who:() => null, cond:() => S.year === 1815, title:'Breakfast for an Officer',
+  text:() => `For three days it has been said in Wyvern that the Duke is beaten before Brussels, and the Prussians cut to pieces; Hartopp has told the ordinary at the George that he sells upon Thursday; and Omnium, which was at par a week ago, may be had across Mr Tidmarsh’s counter, of any gentleman who left his scrip there, at five discount.
+
+At half past five this morning, being Thursday, a chaise and four from London loses a wheel at your gate; and there gets down out of it, in the coat of a Staff officer, with the dust of sixty miles upon him, a Captain of the Adjutant-General’s office, who is carrying a paper to the General at Bristol, and who must have a wheelwright and a breakfast.
+
+“It was on Sunday, sir, at a place called Waterloo. Bonaparte is beat, and his army is gone.”
+
+He lets you read the paper while he eats. A hundred and fifty guns are taken, and two eagles, which were put out at the windows of a post-chaise in St James’s Square last night at eleven. He means, when he has a wheel, to go through Wyvern standing up in the chaise, and to cry it at every turnpike as far as Bristol.
+
+The wheelwright says an hour. Tidmarsh opens at nine; and until the chaise is upon the road again, nobody in the county but yourself and two post-boys knows what the Captain has in his pocket${hadShutters() ? `. Upon the Down, where the Admiralty put Lieutenant Tregear back into his hut in April, the six shutters stand open to the first of the light, and nothing has yet come down from London` : ''}.`,
+  choices:[
+    {t:'Bid the wheelwright take till noon, and be at Tidmarsh’s counter at nine.', note:() => 'Lays out ' + fmt(newsStake()), if:() => S.money >= 300, go:() => { const stake = newsStake(), gain = Math.round(stake * .35 / 10) * 10, known = chance(.5); add({money:gain}); S.flags.waterloo = known ? 'known' : 'bought'; S.flags.waterlooGain = gain;
+      if (known) { add({standing:-5}); reg('hartopp', -2, 'You bought his Omnium upon the morning of the news'); }
+      return `The wheelwright, who has had a crown and a word, finds the box of the wheel cracked, and sends to Kintbury for another. The Captain is given a second breakfast, and the Peerage to read; and between nine and noon, at five discount and under, you take across Tidmarsh’s counter the Omnium of eleven gentlemen, two clergymen, and a widow at Speen, to the amount of ${fmt(stake)}.
+
+At ten minutes past twelve the chaise goes through Wyvern at a gallop, with the Captain standing up in it. By Saturday the scrip is at six premium in London; and Tidmarsh’s clerk, selling for you, brings back ${fmt(gain)} over what was given.
+
+${known ? `It is recollected in Wyvern by Sunday that the chaise stood six hours at your gate upon the Thursday, with your own wheelwright under it; and Hartopp, who sold at eleven o’clock that morning, goes by you in the churchyard without his hat moving.`
+  : `The wheelwright, who is deaf, has since been asked by half the county what it was that kept him.`}`; }},
+    {t:'Walk up to the Down, and put fifty pounds and an order for Plymouth into the Lieutenant’s hand.', note:() => '£50, and lays out ' + fmt(newsStake()), if:() => hadShutters() && S.money >= 350, go:() => { const stake = newsStake(), gain = Math.round(stake * .8 / 10) * 10 - 50, found = chance(.35); add({money:gain}); S.flags.waterloo = found ? 'inquiry' : 'shutters'; S.flags.waterlooGain = gain;
+      if (found) add({standing:-8});
+      return `Lieutenant Tregear looks at the fifty pounds for some time, and at the order for longer. He then sends both his seamen down to the Hall for their breakfast, and goes to the ropes himself; and in four minutes, by sixty-three changes of which he has never told you the meaning of one, a prize agent at Plymouth Dock is desired to buy Omnium and Navy bills, for a gentleman in Berkshire, of every officer’s widow and dockyard clerk that will sell.
+
+At eight a haze comes up the valley from Newbury; so that the Admiralty’s own signal, which leaves Whitehall at ten, is not seen beyond Inkpen until noon upon the Friday. The Captain is upon the road again by seven, crying it at every turnpike; but a chaise is three days to Plymouth, and the agent, who has the whole of them, remits you ${fmt(gain)}.
+
+${found ? `In August two gentlemen come down from the Navy Board, with the signal-books of nine stations, to ask what was passed westward from Hatherley at ten minutes before six upon the 22nd of June. The Lieutenant is superseded; and the two gentlemen, who dine at the George, are told there whose turf the hut stands upon.`
+  : `The Lieutenant, of whom nobody at the Navy Board has asked anything, has bought a horse.`}`; }},
+    {t:'Send to the church, and have the bells rung.', go:() => { const again = S.flags.hoax === 'bells'; S.flags.waterloo = 'bells'; add({goodwill:4, standing:2});
+      return `${again ? `The ringers, having rung for the death of Bonaparte in February of last year, send up to ask whether they may see the officer; and the Captain, with his mouth full, is walked down to the churchyard, and shown to them over the wall.` : `The ringers are got out of their beds by the sexton’s boy, and the Captain, who hears the first of it from the breakfast-room, gets up and shuts the window.`}
+
+Hatherley bells begin at ten minutes past six; and when the chaise goes through Wyvern at seven, with the Captain standing up in it, the ringers there are already upon the tower stair, having sent a boy to learn what Hatherley knows. Hartopp, who hears the bells in his yard, with his boots on for Wyvern, does not sell.`; }},
+    {t:'Ride over to Hartopp before he sells.', go:() => { S.flags.waterloo = 'told'; add({standing:1}); reg('hartopp', 2, 'You rode over with the news before he sold');
+      return `Hartopp is found in his yard, booted for Wyvern, with the scrip in his pocket-book. He reads what you have copied from the Captain’s paper twice through; puts the pocket-book into the corn bin, and locks it; and has told four of his neighbours before the chaise is mended, who tell eleven more; so that when Tidmarsh takes down his shutters at nine, there is no Omnium to be had across his counter at any price.`; }}
+  ]});
+
 /* ---------- what the Mercury recollects of it in 1815 ---------- */
 function hazardNotes(){ const P = [], f = S.flags;
   if (f.lotWon >= 2000) P.push(`He drew a prize of ${fmt(f.lotWon)} in the State Lottery of ${f.lotYear}. The barber at Wyvern, who sold him the ticket, has sold eleven hundred since.`);
@@ -88,4 +130,12 @@ function hazardNotes(){ const P = [], f = S.flags;
   else if (f.remountFate === 'late') P.push(`He landed forty horses at Ostend five days after the battle. They are believed to be drawing Flemish carts.`);
   if (f.hoax === 'bit') P.push(`He bought Omnium upon the morning that Bonaparte was killed by Cossacks. Bonaparte is at St Helena.`);
   else if (f.hoax === 'bells') P.push(`Hatherley bells were rung for the death of Bonaparte in February 1814. He paid the ringers.`);
+  if (f.waterloo === 'known') P.push(`He had the news of Waterloo six hours before Wyvern, and is believed to have made ${fmt(f.waterlooGain)} by it. Wyvern has counted the hours.`);
+  else if (f.waterloo === 'inquiry') P.push(`The Navy Board has inquired into a signal passed down the Plymouth line from Hatherley Down upon the morning of the 22nd of June. Lieutenant Tregear is no longer in the service.`);
+  else if (f.waterloo === 'bells') P.push(`Hatherley bells rang for Waterloo an hour before any other in the county.`);
+  else if (f.waterloo === 'told') P.push(`Mr Hartopp holds his Omnium still. He says that he owes it to a neighbour.`);
   return P; }
+
+/* The officer's breakfast comes before the Gazette, and both in the summer of 1815: the one is put in front of the other when it is drawn, and the Gazette is opened when the breakfast is done. */
+{ const pick = pickEvent; pickEvent = function(){ const id = pick(); if (id === 'waterloo' && !S.seen.waterloo1815) { S.flags.gazetteAt = S.t; return 'waterloo1815'; } return id; };
+  const go = next; next = function(){ if (S.phase === 'outcome' && !S.dead && S.flags.gazetteAt === S.t && S.seen.waterloo1815 === S.t && S.seen.waterloo === undefined) { const e = byId('waterloo'); if (e && (!e.cond || e.cond())) { S.pending = 'waterloo'; S.phase = 'event'; save(); render(); window.scrollTo({top:0, behavior:'smooth'}); return; } } go(); }; }
