@@ -43,7 +43,7 @@ body.intro .desk{display:none}
   #opening{place-items:start center;padding:8px 10px 14px;gap:4px}
   #opening .series{font-size:.6rem;letter-spacing:.16em} #opening .series b{font-size:1.6rem}
   #opening .pcard, #opening.heir .pcard{grid-template-columns:minmax(0,1fr);gap:10px;width:min(640px, 100%)}
-  #opening .print .mark{padding:8px 8px 6px} #opening .print .pn{display:none} #opening .print figcaption{padding-top:5px} #opening .print figcaption small{display:none}
+  #opening .print .mark{padding:8px 8px 6px} #opening .print figcaption{padding-top:5px} #opening .print figcaption small{font-size:.62rem}
   #opening .pside, #opening.heir .pside{max-height:none;gap:10px} #opening .pside .sheet{padding:12px 14px 14px;gap:6px} #opening .pside .sheet::before, #opening .sheet .kicker{display:none} #opening .prose p{font-size:.86rem;line-height:1.44;margin-bottom:.55em}
   #opening .answer{position:sticky;bottom:0;z-index:2;padding:8px 12px}
   #opening.heir .print{width:auto;transform:none} #opening.heir .print img{aspect-ratio:5/2;object-position:50% 34%}
