@@ -56,8 +56,8 @@ function stockHTML(calm){ let h = '';
   ROADS.forEach((g, gi) => { if (!calm && ART.has('plan/s/' + g.s + '-walk.webp')) h += roadEl(g, 'r' + gi); });
   return h; }
 /* Each creature has two faces laid one upon the other, looking left and looking right, and only one is shown. Turning it by a transform made some browsers draw the strip afresh, and the beast went out for a moment as it turned. */
-const stockEl = (s, id) => { const t = STRIPS[s], face = `style="background-image:url(art/plan/s/${s}-walk.webp);background-size:${t.n * 100}% 100%"`; return `<i class="stock" data-b="${id}" style="aspect-ratio:${(1 / t.r).toFixed(3)}"><b ${face}></b><b class="r" ${face}></b></i>`; };
-const stockFace = (s, t) => `style="background-image:url(art/plan/s/${s}-walk.webp);background-size:${t.n * 100}% 100%"`;
+const stockEl = (s, id) => { const t = STRIPS[s], face = `style="background-image:url(${artAt('plan/s/' + s + '-walk.webp')});background-size:${t.n * 100}% 100%"`; return `<i class="stock" data-b="${id}" style="aspect-ratio:${(1 / t.r).toFixed(3)}"><b ${face}></b><b class="r" ${face}></b></i>`; };
+const stockFace = (s, t) => `style="background-image:url(${artAt('plan/s/' + s + '-walk.webp')});background-size:${t.n * 100}% 100%"`;
 const roadViews = g => Object.values(g.views).filter(s => STRIPS[s] && ART.has('plan/s/' + s + '-walk.webp'));
 const roadEl = (g, id) => `<i class="stock road" data-b="${id}">${roadViews(g).map(s => `<b data-s="${s}" ${stockFace(s, STRIPS[s])}></b><b class="r" data-s="${s}" ${stockFace(s, STRIPS[s])}></b>`).join('')}</i>`;
 /* Which drawing suits a heading, whether it is to be shown in the glass, and how far it must be turned. vx, vy: the way it goes across the sheet, right and down. */

@@ -80,11 +80,11 @@ const whenIdle = f => (window.requestIdleCallback || (g => setTimeout(g, 200)))(
 /* While the will is being read: the sheet for the season the game opens in (or was left in), with everything that may stand on it. */
 function warmIntro(){ let q = 0, first = 'events/speen'; try { const s = load(); if (s) { q = s.season; first = ''; } } catch (err) {}
   warm([artURL('plan/' + q), artURL('arms/esquire'), artURL('plan/hand'), artURL('plan/wheel'), artURL('ui/book-leaf'), artURL('ui/seal'), artURL(first)]
-    .concat([...ART].filter(a => a.startsWith('plan/s/') || (a.startsWith('plan/f/') && a.includes('-' + q + '.')) || a.startsWith('icons/')).map(a => 'art/' + a))); }
+    .concat(ICONS ? ['p/' + ICONS.u] : [], [...ART].filter(a => a.startsWith('plan/s/') || (a.startsWith('plan/f/') && a.includes('-' + q + '.')) || (!ICONS && a.startsWith('icons/'))).map(artAt))); }
 /* In the quarter: the view of every place on the sheet, the cut of whatever is waiting, and next quarter's sheet. */
 function warmQuarter(){ if (!S || S.phase === 'end') return; const q = (S.season + 1) % 4, e = S.phase === 'event' && S.pending && byId(S.pending);
   const cut = e ? eventCut(e) : '';
-  warm([artURL(cut), artURL('ui/balloon')].concat(Object.keys(PLACES).filter(placeOn).map(id => artURL(PLACES[id].pic())), [artURL('plan/' + q)],
+  warm([artURL(cut), artURL('ui/balloon'), artURL('seasons/' + S.season)].concat(Object.keys(PLACES).filter(placeOn).map(id => artURL(PLACES[id].pic())), [artURL('plan/' + q)],
     piecesOn().map(id => { for (const p of ['plan/f/' + id + '-' + q, 'plan/f/' + id, 'plan/' + id + '-' + q, 'plan/' + id.replace('hall-', '') + '-' + q]) { const u = artURL(p); if (u) return u; } return ''; }))); }
 function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGRESS = -1; PSTEP = ''; whenIdle(warmIntro); return; }
   if (!S.plates) S.plates = [];
@@ -221,10 +221,10 @@ const BEASTS = [
 const openCommon = () => !F('enclosed') && !farmAt('commonpiece');
 function landMotHTML(){ const calm = CALM();
   /* Two small loops laid on in multiply: the rooks over the park, who leave when the new front goes up, and the smoke of the Hall chimneys. */
-  const moving = calm ? '' : ['smoke'].concat(isBuilt('front') ? [] : ['rooks']).map(id => { const b = PLAN_BOX[id]; return b && ART.has('plan/' + id + '.mp4') ? `<video class="mot" src="art/plan/${id}.mp4" autoplay muted loop playsinline disablepictureinpicture style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"></video>` : ''; }).join('');
+  const moving = calm ? '' : ['smoke'].concat(isBuilt('front') ? [] : ['rooks']).map(id => { const b = PLAN_BOX[id]; return b && ART.has('plan/' + id + '.mp4') ? `<video class="mot" src="${artAt('plan/' + id + '.mp4')}" autoplay muted loop playsinline disablepictureinpicture style="left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"></video>` : ''; }).join('');
   /* The mill wheel is a drawing turned by the page, laid over the wheel on the sheet. The new mill has its own wheel in another place, so it stops. */
-  const wheel = ART.has('plan/wheel.webp') && !isBuilt('mill') ? `<i class="wheel${calm ? ' calm' : ''}"><img src="art/plan/wheel.webp" alt=""></i>` : '';
-  const beasts = BEASTS.map(b => (b.on && !b.on()) || !ART.has('plan/s/' + b.s + '.webp') ? '' : `<img class="beast${b.go && !calm ? ' ' + b.go : ''}" src="art/plan/s/${b.s}.webp" alt="" style="left:${b.at[0]}%;top:${b.at[1]}%;width:${b.w}%">`).join('') + stockHTML(calm);
+  const wheel = ART.has('plan/wheel.webp') && !isBuilt('mill') ? `<i class="wheel${calm ? ' calm' : ''}"><img src="${artAt('plan/wheel.webp')}" alt=""></i>` : '';
+  const beasts = BEASTS.map(b => (b.on && !b.on()) || !ART.has('plan/s/' + b.s + '.webp') ? '' : `<img class="beast${b.go && !calm ? ' ' + b.go : ''}" src="${artAt('plan/s/' + b.s + '.webp')}" alt="" style="left:${b.at[0]}%;top:${b.at[1]}%;width:${b.w}%">`).join('') + stockHTML(calm);
   return wheel + beasts + moving; }
 function landLblHTML(){
   const arms = artURL('arms/' + armsOf());
@@ -234,7 +234,7 @@ function landLblHTML(){
   const by = p => p.by ? ' by-' + p.by : '';
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
     if (caller !== id && !placeHas(id)) return `<span class="lbl mute${by(p)}" data-k="${id}" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
-    return `<button class="lbl tag${by(p)}${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" data-k="${id}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : p.farm && toLet(p.farm) ? `onclick="goLease('${id}')"` : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 || p.by === 'b' || p.under ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : p.farm && toLet(p.farm) && caller !== id ? '<em class="let">Negotiate lease</em>' : ''}<span>${esc(p.n)}</span>${todo.w.has(id) ? `<i class="todo" title="Works to be put in hand">${pic('icons/todo-works', 'Works to be put in hand')}</i>` : ''}${todo.v.has(id) ? `<i class="todo" title="Ventures untried">${pic('icons/todo-ventures', 'Ventures untried')}</i>` : ''}${heldAs(p.farm)}</button>`; }).join('');
+    return `<button class="lbl tag${by(p)}${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" data-k="${id}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : p.farm && toLet(p.farm) ? `onclick="goLease('${id}')"` : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 || p.by === 'b' || p.under ? ' under' : ''}"><img src="${artAt('plan/hand.webp')}" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : p.farm && toLet(p.farm) && caller !== id ? '<em class="let">Negotiate lease</em>' : ''}<span>${esc(p.n)}</span>${todo.w.has(id) ? `<i class="todo" title="Works to be put in hand">${pic('icons/todo-works', 'Works to be put in hand')}</i>` : ''}${todo.v.has(id) ? `<i class="todo" title="Ventures untried">${pic('icons/todo-ventures', 'Ventures untried')}</i>` : ''}${heldAs(p.farm)}</button>`; }).join('');
   return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}${keyHTML()}`; }
 /* The surveyor's explanation of his marks, in the corner of the sheet where there is nothing but meadow. */
 function keyHTML(){ const row = (mark, words) => `<p>${mark}<span>${words}</span></p>`;
