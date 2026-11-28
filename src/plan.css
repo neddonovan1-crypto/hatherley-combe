@@ -15,8 +15,6 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
   text-shadow:0 0 2px #f6edd4, 0 0 3px #f6edd4, 0 0 5px #f6edd4, 0 0 8px #f6edd4, 0 0 12px #f6edd4}
 .lbl:hover span, .lbl:focus-visible span{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px} .lbl.on span{color:var(--madder);text-decoration:underline;text-underline-offset:3px}
 .lbl .stir{display:inline-block;width:1.9em;height:1.9em;margin-right:.3em;vertical-align:middle;border-radius:50%;overflow:hidden;background:#efe6cb;box-shadow:0 0 0 1px rgba(60,40,20,.55), 1px 2px 4px rgba(0,0,0,.35)} .lbl .stir img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
-.lbl .call{position:absolute;left:50%;bottom:92%;width:3.2em;height:4em;margin-left:-1.6em;border-radius:50%;overflow:hidden;background:#efe6cb;box-shadow:0 0 0 2px #efe6cb, 0 0 0 3px var(--madder), 2px 5px 9px rgba(0,0,0,.5);animation:knock 1.6s ease-in-out infinite}
-.lbl .call .medal{width:100%;height:100%;display:block;border-radius:0} .lbl .call .medal span{font-size:1.6em} .lbl .call > img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
 .lbl.called{z-index:3} .lbl.called span{color:var(--madder)}
 @keyframes knock{0%, 100%{transform:translateY(0)} 50%{transform:translateY(-.5em)}}
 
