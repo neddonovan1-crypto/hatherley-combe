@@ -925,6 +925,8 @@ function mend(s){ const from = s.v || 1;
   for (const k in f) if (s[k] === undefined) s[k] = f[k];
   for (const id in f.chars) { if (!s.chars[id]) s.chars[id] = f.chars[id]; else for (const k in f.chars[id]) if (s.chars[id][k] === undefined) s.chars[id][k] = f.chars[id][k]; }
   for (const x of (s.farms || [])) { const t = f.farms.find(y => y.id === x.id) || f.farms[0]; for (const k in t) if (x[k] === undefined && (k === 'lease' || k === 'level' || t.id === x.id)) x[k] = JSON.parse(JSON.stringify(t[k])); }
+  /* a farm sold under an early build left no record of itself; the works that belonged to it need its name */
+  if (s.farms) for (const x of f.farms) if (!s.farms.some(y => y.id === x.id) && !(s.soldFarms && s.soldFarms[x.id])) (s.soldFarms = s.soldFarms || {})[x.id] = x;
   /* what a later build has dropped is taken quietly out of the book */
   const known = id => { try { return !!byId(id); } catch (err) { return false; } };
   s.queue = (s.queue || []).filter(q => q && known(q.id));
