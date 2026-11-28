@@ -216,3 +216,14 @@ function shutLastPlate(){ const el = document.getElementById('lastplate'); if (e
 
 /* On the last leaf of the book, the way back to the plate. */
 function endPlateHTML(){ return `<p class="lastlink"><button class="quiet" onclick="showLastPlate()">${esc(ending().title)}: the last plate</button></p>`; }
+
+/* The bank: a squire who stood upon its steps in 1797, and was thanked for it, is let in as a partner for seven hundred pounds; and once the bank has broken, every list names the man who opened it again. */
+{ const B = VENTURES.bank, line = B.line, effects = B.effects, cheap = () => !!S && F('cheapCredit');
+  Object.defineProperty(B, 'cost', {enumerable:true, get:() => cheap() ? 700 : 1000});
+  Object.defineProperty(B, 'line', {enumerable:true, get:() => cheap() ? `Mr Tidmarsh’s bank at Wyvern issues its own notes. Another man must find a thousand pounds to be a partner in it; but Mr Tidmarsh, who has not forgotten the bank steps, will take seven hundred from you.` : line});
+  Object.defineProperty(B, 'effects', {enumerable:true, get:() => cheap() ? effects.replace('£1,000', '£700') : effects}); }
+venturesList = (f => function(){ return bankDeep(f.apply(this, arguments)); })(venturesList);
+creditList = (f => function(){ return bankDeep(f.apply(this, arguments)); })(creditList);
+castleList = (f => function(){ return bankDeep(f.apply(this, arguments)); })(castleList);
+ending = (f => function(){ return bankDeep(f.apply(this, arguments)); })(ending);
+reckoning = (f => function(){ const r = f.apply(this, arguments); r.P = bankDeep(r.P); return r; })(reckoning);

@@ -248,14 +248,15 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
     return cue(bill ? `A notice is posted at ${esc(at)}.` : `You are wanted at ${esc(at)}.`, bill ? 'Read the notice' : id === 'hall' ? 'Go in' : `Go to ${esc(at)}`, 'callOn()'); }
   if (S.phase === 'undertake') return cue('The season is yours.', 'Choose its business', "goPlace('season')");
   return ''; }
-function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<span>${label}</span><b>${esc(band(v, words))}</b><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
+function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<p class="rk"><span>${label}</span><b${band(v, words).length > 14 ? ' class="long"' : ''}>${esc(band(v, words))}</b></p><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
     <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${typeof RESUMED !== 'undefined' && RESUMED ? `<p class="resumed"><b>Your estate, as you left it</b><span>${esc(QUARTER[S.season])} ${S.year}. Nothing is lost.</span></p>` : ''}
     ${cueHTML()}
     ${SAVE_FAILED ? '<p class="nosave">This browser will keep no copy of the book. Shut the page, and the estate is gone.</p>' : ''}
-    <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
+    <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>
+    ${wipeHTML() ? `<div class="giveup">${wipeHTML()}</div>` : ''}`; }
 
 /* ---------- the paper of a place ---------- */
 function underHTML(at){ if (S.phase !== 'undertake') return ''; const o = undertakingOptions();
@@ -284,7 +285,7 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   if (id === 'london' && typeof creditList === 'function' && S.phase !== 'end') sec('ann', 'Life Annuities', raiseHTML(['annuity', 'redeem'], true));
   /* What is bought in town is found in London; what is bought in the county, at Wyvern. */
   if ((id === 'london' || id === 'wyvern') && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house && COUNTY_LOTS.has(r.id) === (id === 'wyvern')), true, 'beginSociety', 'endSociety', 'Pay for it'));
-  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', 'Tidmarsh’s Bank', `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>`); }
+  if (id === 'wyvern') { sec('wheat', 'Wheat at Wyvern Market', chartHTML()); if (typeof creditList === 'function' && S.phase !== 'end') sec('bank', bankSay('Tidmarsh’s Bank'), `<dl class="bal"><div><dt>Owing, limit ${fmt(mortCap())}</dt><dd class="owe">${fmt(S.mortgage)}</dd></div>${creditHTML()}</dl>`); }
   if (folk.length) sec('folk', 'Persons', `<ul class="people">${folk.map(k => { const c = S.chars[k], q = PEOPLE[k]; return `<li><button onclick="showWho('${k}')">${medal(k)}<span class="pp"><b>${esc(q.name)}</b><small>${esc(q.role())}</small><span class="r r${c.r + 5}">${REGARD[c.r + 5]}</span></span></button></li>`; }).join('')}</ul>`);
   const open = secs.some(s => s[0] === SEC) ? SEC : secs.length ? secs[0][0] : '';
   const glb = id === 'hall' ? (isBuilt('front') && ART.has('hall/hall-front.glb') ? 'hall-front' : ART.has('hall/hall-old.glb') ? 'hall-old' : '') : '';
