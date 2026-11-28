@@ -506,8 +506,9 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
   #cart .vig{flex:1 1 0;min-width:0;grid-template-columns:minmax(0,1fr);row-gap:1px} #cart .vig img{display:none} #cart .vig span{font-size:.58rem} #cart .vig b{font-size:1.1rem} #cart .vig > i{grid-column:1}
   #cart .next{grid-column:1/-1;flex-direction:row;align-items:center;gap:10px} #cart .next p{flex:1 1 0;min-width:0;font-size:.95rem;text-align:left} #cart .act{width:auto;flex:none;max-width:56%;padding:9px 30px 8px 10px;font-size:.78rem} #cart .act::after{width:34px;height:34px;margin-top:-17px;right:-9px}
   #cart .foot{grid-column:1/-1;margin:0} #cart .foot button{padding:2px;font-size:.9rem}
-  #landwrap{display:block;place-items:normal;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
-  #land{height:100%;width:auto} #landwrap{filter:none}
+  #landwrap{display:block;place-items:normal;overflow:auto;overscroll-behavior:contain;height:100%;scrollbar-width:none;-webkit-overflow-scrolling:touch} #landwrap::-webkit-scrollbar{display:none}
+  /* the sheet is never drawn so small that its tickets crowd one another: it keeps its size and is pushed about under the finger */
+  #land{height:max(100%, 620px);width:auto} #plan.sheeton #land{height:100%} #landwrap{filter:none}
   #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton .lbl em.let, #plan.sheeton .lbl .todo, #plan.sheeton .key{display:none} #plan.sheeton #land{margin:0 auto;justify-self:normal}
   #sheet, #sheet.left, #sheet.right{position:relative;inset:auto;width:auto;padding:14px 16px 20px;box-shadow:0 -6px 18px rgba(0,0,0,.5);animation:none}
   #sheet > h2{font-size:2rem} #sheet > .plate{aspect-ratio:5/2}
@@ -579,11 +580,26 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* The rank word never rides over its label: it keeps a gap, takes a smaller hand when long, and drops to a line of its own when there is no room beside. */
 #cart .vig .rk{grid-column:2/4;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:1px 10px;margin:0;min-width:0} #cart .vig .rk b{margin-left:auto;max-width:100%;text-align:right} #cart .vig .rk b.long{font-size:1.08rem}
 @media (max-width:1080px){ #cart .vig .rk{grid-column:1;display:block} #cart .vig .rk span, #cart .vig .rk b{display:block;text-align:left} #cart .vig .rk b{white-space:normal;overflow:hidden;text-overflow:ellipsis} #cart .vig .rk b.long{font-size:.86rem;line-height:1.28;white-space:nowrap} }
+
+/* A phone held upright. A paper taken up has the whole room under the quarter's slips, the sheet being put by until it is laid down again; and the button for giving the estate up stands between the ledger and the Progress, where it costs no line of its own until it is pressed. */
+@media (orientation:portrait) and (max-width:700px){
+  #plan.sheeton{grid-template-rows:auto minmax(0,1fr)} #plan.sheeton #landwrap{display:none}
+  #plan.sheeton #cart .giveup, #plan.sheeton #cart .resumed{display:none}
+  #cart .giveup:not(:has(.sure)){margin-top:-36px;pointer-events:none} #cart .giveup .wipe{pointer-events:auto} #cart .giveup .wipe button{min-height:32px}
+  #cart .foot{min-height:32px;align-items:center}
+}
+/* A phone on its side: the three marks stand one under another in the narrow leaf, each word beside its label, so that none is cut short. */
+@media (max-width:1080px) and (orientation:landscape) and (max-height:520px){
+  #cart .vigs{flex-direction:column;gap:5px} #cart .vig .rk{display:flex;flex-wrap:nowrap;align-items:baseline;gap:8px} #cart .vig .rk span{display:inline} #cart .vig .rk b, #cart .vig .rk b.long{display:inline;margin-left:auto;text-align:right;font-size:1.05rem;white-space:nowrap}
+  #cart .next{flex-direction:column;align-items:stretch;gap:6px} #cart .act{max-width:none;width:100%}
+  #cart .purse{align-items:flex-start} #cart .creditbox{align-self:stretch}
+}
+@media (max-width:1080px) and (orientation:landscape) and (max-height:520px){ #tabs{grid-template-columns:repeat(5, minmax(0,1fr))} }
 /* The last plate, held up over the book when the life ends. It borrows the card, print and side sheet of the other plates (plan.css). */
 #lastplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.86);overflow:auto;animation:heldup .25s ease-out}
 #lastplate[hidden]{display:none}
 .lastlink{margin:0 0 4px;text-align:center}
-@media (max-width:1080px){ #lastplate{place-items:start center;padding:10px} }
+@media (max-width:1080px){ #lastplate{place-items:start center;padding:10px;overscroll-behavior:contain} }
 /* The paper of a venture, held up over the plan upon the day it is undertaken. It borrows the card, print and side sheet of the other plates (plan.css). */
 #ventplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.8);overflow:auto;animation:heldup .25s ease-out}
 #ventplate[hidden]{display:none}
@@ -10821,7 +10837,7 @@ function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
 function plateDown(){ PLATEUP = false; drawPlan(); }
 function showProgress(i){ PROGRESS = i === undefined ? Math.max(0, S.plates.length - 1) : i; drawPlate(); }
 function shutProgress(){ PROGRESS = -1; drawPlate(); }
-function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, behavior:'smooth'})); }
+function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, top:l.offsetHeight * p.at[1] / 100 - w.clientHeight / 2, behavior:'smooth'})); }
 
 /* ---------- the plates ---------- */
 const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
@@ -11059,11 +11075,14 @@ function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.
   if (!$('landart')) land.innerHTML = '<div id="landart"></div><div id="landmot"></div><div id="landlbl"></div>';
   for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { const fresh = el._h === undefined; el._h = h; if (k === 'landart') layArt(el, h); else patchKids(el, h, k === 'landmot' && !fresh); } }
   if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key;
-    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
+    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; w.scrollTop = land.offsetHeight * PLACES[to].at[1] / 100 - w.clientHeight / 2; }); }
   setHTML($('cart'), cartHTML());
   whenIdle(warmQuarter);
   const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
-  sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
+  { /* on a phone the sheet is put by while a paper is read, and comes back lying where it lay */
+    const w = $('landwrap'), was = $('plan').classList.contains('sheeton'); if (!was && SHEET) w._at = [w.scrollLeft, w.scrollTop];
+    sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET);
+    if (was && !SHEET && w._at && pane()) { const [x, y] = w._at; w.scrollLeft = x; w.scrollTop = y; } } sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
   const sh = SHEET ? sheetHTML() : ''; if (sheet._h !== sh) { sheet._h = sh; sheet.innerHTML = sh; } sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
 addEventListener('keydown', e => { if (e.key !== 'Escape' || !S) return; if (PROGRESS >= 0) shutProgress(); else if (SHEET && VIEW === 'plan' && !PLATEUP) shutSheet(); });
 /* The page: Mr Crabbe's book. The standing account on the left-hand page, the paper in hand on the right. */
@@ -11112,7 +11131,7 @@ function render(){
     stage.innerHTML = `<figure class="plate band${artURL('frontispiece') ? ' has' : ''}">${sceneSVG(1)}${platePic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
     const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
     $('verso').innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>'; $('verso').appendChild(told);
-    $('tabs').innerHTML = ''; syncTraits(); fitLeaf(); return; }
+    $('tabs').innerHTML = ''; if (typeof drawPlan === 'function') drawPlan(); syncTraits(); fitLeaf(); window.scrollTo({top:0}); return; }
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }

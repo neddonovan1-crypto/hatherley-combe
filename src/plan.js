@@ -100,7 +100,7 @@ function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
 function plateDown(){ PLATEUP = false; drawPlan(); }
 function showProgress(i){ PROGRESS = i === undefined ? Math.max(0, S.plates.length - 1) : i; drawPlate(); }
 function shutProgress(){ PROGRESS = -1; drawPlate(); }
-function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, behavior:'smooth'})); }
+function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, top:l.offsetHeight * p.at[1] / 100 - w.clientHeight / 2, behavior:'smooth'})); }
 
 /* ---------- the plates ---------- */
 const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
@@ -338,10 +338,13 @@ function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.
   if (!$('landart')) land.innerHTML = '<div id="landart"></div><div id="landmot"></div><div id="landlbl"></div>';
   for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { const fresh = el._h === undefined; el._h = h; if (k === 'landart') layArt(el, h); else patchKids(el, h, k === 'landmot' && !fresh); } }
   if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key;
-    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
+    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; w.scrollTop = land.offsetHeight * PLACES[to].at[1] / 100 - w.clientHeight / 2; }); }
   setHTML($('cart'), cartHTML());
   whenIdle(warmQuarter);
   const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
-  sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
+  { /* on a phone the sheet is put by while a paper is read, and comes back lying where it lay */
+    const w = $('landwrap'), was = $('plan').classList.contains('sheeton'); if (!was && SHEET) w._at = [w.scrollLeft, w.scrollTop];
+    sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET);
+    if (was && !SHEET && w._at && pane()) { const [x, y] = w._at; w.scrollLeft = x; w.scrollTop = y; } } sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
   const sh = SHEET ? sheetHTML() : ''; if (sheet._h !== sh) { sheet._h = sh; sheet.innerHTML = sh; } sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
 addEventListener('keydown', e => { if (e.key !== 'Escape' || !S) return; if (PROGRESS >= 0) shutProgress(); else if (SHEET && VIEW === 'plan' && !PLATEUP) shutSheet(); });
