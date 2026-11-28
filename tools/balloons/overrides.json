@@ -5,6 +5,90 @@
    46
   ]
  },
+ "events/henrietta-bunce": {
+  "m": [
+   77,
+   42
+  ]
+ },
+ "events/henrietta-gowns": {
+  "m": [
+   39,
+   41
+  ]
+ },
+ "events/henrietta-margravine": {
+  "m": [
+   72.5,
+   48
+  ]
+ },
+ "events/henrietta-mourning": {
+  "m": [
+   27.5,
+   23.5
+  ]
+ },
+ "events/henrietta-portrait": {
+  "m": [
+   40.5,
+   33
+  ]
+ },
+ "events/henrietta-tea": {
+  "m": [
+   66.5,
+   38.5
+  ]
+ },
+ "events/kitty-assembly": {
+  "m": [
+   35,
+   28.5
+  ]
+ },
+ "events/kitty-clifton": {
+  "m": [
+   47,
+   40
+  ]
+ },
+ "events/kitty-danes": {
+  "m": [
+   63,
+   64.5
+  ]
+ },
+ "events/kitty-latin": {
+  "m": [
+   33.5,
+   54
+  ]
+ },
+ "events/kitty-manumit": {
+  "m": [
+   31.5,
+   44
+  ]
+ },
+ "events/kitty-stmalo": {
+  "m": [
+   31,
+   39
+  ]
+ },
+ "events/kitty-telescope": {
+  "m": [
+   23.5,
+   56
+  ]
+ },
+ "events/kitty-vane-bailiff": {
+  "m": [
+   41.5,
+   48.5
+  ]
+ },
  "events/kitty-vane-child": {
   "m": [
    39.5,
@@ -15,33 +99,6 @@
   "m": [
    78.5,
    49
-  ]
- },
- "events/walcheren": {
-  "m": [
-   18.5,
-   69.5
-  ]
- },
- "undertakings/home-drip": {
-  "m": [
-   33.5,
-   45
-  ],
-  "p": [
-   [
-    "f",
-    56,
-    6,
-    74,
-    30
-   ]
-  ]
- },
- "undertakings/ride-lambing": {
-  "m": [
-   65,
-   30.5
   ]
  },
  "events/ventGravel": {
@@ -69,6 +126,17 @@
    ]
   ]
  },
+ "events/ventRaces": {
+  "p": [
+   [
+    "f",
+    32,
+    32,
+    64,
+    58
+   ]
+  ]
+ },
  "events/ventThresher": {
   "p": [
    [
@@ -91,15 +159,31 @@
    ]
   ]
  },
- "events/ventRaces": {
+ "events/walcheren": {
+  "m": [
+   18.5,
+   69.5
+  ]
+ },
+ "undertakings/home-drip": {
+  "m": [
+   33.5,
+   45
+  ],
   "p": [
    [
     "f",
-    32,
-    32,
-    64,
-    58
+    56,
+    6,
+    74,
+    30
    ]
+  ]
+ },
+ "undertakings/ride-lambing": {
+  "m": [
+   65,
+   30.5
   ]
  }
 }

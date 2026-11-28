@@ -161,3 +161,5 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* The rank word never rides over its label: it keeps a gap, takes a smaller hand when long, and drops to a line of its own when there is no room beside. */
 #cart .vig .rk{grid-column:2/4;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:1px 10px;margin:0;min-width:0} #cart .vig .rk b{margin-left:auto;max-width:100%;text-align:right} #cart .vig .rk b.long{font-size:1.08rem}
 @media (max-width:1080px){ #cart .vig .rk{grid-column:1;display:block} #cart .vig .rk span, #cart .vig .rk b{display:block;text-align:left} #cart .vig .rk b{white-space:normal;overflow:hidden;text-overflow:ellipsis} #cart .vig .rk b.long{font-size:.86rem;line-height:1.28;white-space:nowrap} }
+
+.purse .of{white-space:nowrap}
