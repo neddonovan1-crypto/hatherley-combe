@@ -546,11 +546,11 @@ function estOptions(){ const i = estIdx(), y = S.year, o = [];
 function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing + societyMark() - 6 * (S.settledSold || 0), 5, 95);
   if (S.annuities) line(S.annuities > 1 ? 'Annuities on your life, ' + numWords(S.annuities) : 'Annuity on your life', -25 * S.annuities);
   line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
-  if (T('jointure')) line('Your uncle’s widow, her jointure', -30);
-  if (T('taste')) line('Milliners and mantua-makers', -30);
+  if (T('jointure') && !F('jointureOut')) line('Your uncle’s widow, her jointure', -30);
+  if (T('taste')) line('Milliners and mantua-makers', F('tasteNewbury') ? -10 : F('tasteAllow') ? -20 : -30);
   if (T('bottle') && !F('abstemious')) line('The wine merchant', -10);
-  if (T('lawsuit') && S.season === 3) line('Costs in the matter of the pew', -40);
-  if (T('brother') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
+  if (T('lawsuit') && !F('pewEnded') && S.season === 3) line('Costs in the matter of the pew', -40);
+  if (T('brother') && !F('fredAbroad') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
   { const sc = houseCost('schoolroom'); if (sc) line(sc > 0 ? 'The schoolroom: governess and masters' : 'Saved by sending the governess away', -sc / 4); }
   { const sv = houseCost('servants'), sb = houseCost('stables'); if (sv) line(sv > 0 ? 'Servants’ wages above the county rate' : 'Saved on servants’ wages', -sv / 4); if (sb) line(sb > 0 ? 'The stables: corn, a second groom, the farrier' : 'Saved in the stables', -sb / 4); }
   if (S.t > 0) societyQuarter(line); }
