@@ -84,6 +84,10 @@ table.acct .n.l{width:5rem;border-left:3px double var(--redrule)}
 table.acct th.n{padding:5px 8px;font-size:.8rem;font-family:var(--caps)}
 table.acct .z{color:#7c786c}
 table.acct tr.neg td{color:var(--bad)}
+table.acct td small{font-family:var(--body, inherit);font-size:.74rem;line-height:1.2;letter-spacing:.01em;color:var(--muted);margin-left:.5em}
+table.acct tr.dear td small{color:var(--ink)} table.acct tr.dear .n.l{font-weight:700;background:rgba(143,36,34,.09)}
+table.acct .hand{font-style:normal;font-size:1.1rem;line-height:1;margin-right:5px;color:var(--bad)}
+.bal.slim .due{margin-left:auto;text-align:right} .bal.slim .due dd{font-size:1.35rem;line-height:1.3} .bal.slim .due.dry dt{color:var(--ink)}
 table.acct tr.total td{border-bottom:0;border-top:1px solid var(--ink)}
 table.acct tr.total td:first-child{font-family:var(--caps);font-size:1rem;letter-spacing:.08em;padding:8px 0}
 table.acct tr.total .n{font-size:1.3rem}

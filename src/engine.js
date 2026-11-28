@@ -128,7 +128,7 @@ function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || 
 
 function newGame(first, sur, traits){
   S = { name:(first + ' ' + sur).trim(), sur, t:0, year:FIRST_YEAR, season:0, phase:'ledger',
-    money:900, mortgage:4000, standing:40, goodwill:50, family:60,
+    money:1500, mortgage:4000, standing:40, goodwill:50, family:60,
     improve:0, rentPolicy:1, rentAdj:1, poorMult:1, game:3, canal:0, yearIncome:0,
     farms:startFarms(), letQueue:[], payQueue:[], flags:{}, chars:{}, queue:[], seen:{}, journal:[], works:[], projectsDone:{}, dead:null,
     ledger:[], notes:[], pending:null, vignette:null, outcome:null, priceSeen:[] };
@@ -140,11 +140,20 @@ function newGame(first, sur, traits){
 }
 
 function halfRent(){ return rentalNow() / 2; }
+/* The rent day next to come, for the foot of the account: rents are paid at Lady Day and Michaelmas, and at no other time. */
+function rentsNext(){ const q = S.season, at = q === 0 || q === 1 ? 2 : 0, t = S.t + (q === 0 ? 2 : q === 1 ? 1 : q === 2 ? 2 : 1);
+  return t > 83 ? null : {day:QUARTER[at], sum:Math.round(halfRent()), dry:q === 1 || q === 3}; }
+/* The poor rate is struck once a year at 130 pounds with wheat at 75s. What the year's wheat and the bread scale lay on top is said under the entry, and a rate a quarter above the common is marked. */
+function poorWhy(P){ const base = 130 * S.poorMult, corn = base * (P / 75 - 1), scale = F('speen') ? base * (P / 75) * 0.6 : 0, bits = [];
+  if (scale >= 1) bits.push('the bread scale agreed at Speen adds ' + fmt(scale));
+  if (corn >= 10) bits.push('wheat at ' + P + 's. adds ' + fmt(corn));
+  const s = bits.join(', and ');
+  return ['For the year.' + (s ? ' ' + s[0].toUpperCase() + s.slice(1) + '.' : ''), base + corn + scale >= 1.25 * 130]; }
 
 function beginSeason(){
   const y = S.year, q = S.season, P = PRICES[y], pi = P / 75;
   const L = []; S.notes = [];
-  const line = (label, amt) => { amt = Math.round(amt); if (amt) { L.push([label, amt]); S.money += amt; } };
+  const line = (label, amt, why, mark) => { amt = Math.round(amt); if (amt) { L.push(why ? [label, amt, why, mark ? 1 : 0] : [label, amt]); S.money += amt; } };   // why: small print under the entry; mark: a hand in the margin against a charge out of the common
   if (q === 0) { S.yearIncome = 0; if (!S.priceSeen.includes(y)) S.priceSeen.push(y); }
   estateSync();
   if (q === 0 || q === 2) rentDay(line);
@@ -165,12 +174,12 @@ function beginSeason(){
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
   if (q === 3) {
-    line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1));
-    line('Land tax', -110);
+    { const [why, mark] = poorWhy(P); line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1), why, mark); }
+    line('Land tax', -110, 'For the year.');
     if (T('court') && !F('courtLost') && !F('courtSold')) line('Salary as Deputy Keeper of the Swans', 90);
     if (T('play')) line('Losses at whist and hazard', -(70 + Math.floor(Math.random() * 12) * 10));
     if (T('gout') && !F('goutEased')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household goes on tiptoe. You shout at them for creeping.'); }
-    if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1)); }
+    if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1), 'For the year.'); }
   }
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
   // Nothing keeps without tending: regard, like a hedge, grows out.

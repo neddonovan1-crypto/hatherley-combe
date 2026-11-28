@@ -88,6 +88,10 @@ table.acct .n.l{width:5rem;border-left:3px double var(--redrule)}
 table.acct th.n{padding:5px 8px;font-size:.8rem;font-family:var(--caps)}
 table.acct .z{color:#7c786c}
 table.acct tr.neg td{color:var(--bad)}
+table.acct td small{font-family:var(--body, inherit);font-size:.74rem;line-height:1.2;letter-spacing:.01em;color:var(--muted);margin-left:.5em}
+table.acct tr.dear td small{color:var(--ink)} table.acct tr.dear .n.l{font-weight:700;background:rgba(143,36,34,.09)}
+table.acct .hand{font-style:normal;font-size:1.1rem;line-height:1;margin-right:5px;color:var(--bad)}
+.bal.slim .due{margin-left:auto;text-align:right} .bal.slim .due dd{font-size:1.35rem;line-height:1.3} .bal.slim .due.dry dt{color:var(--ink)}
 table.acct tr.total td{border-bottom:0;border-top:1px solid var(--ink)}
 table.acct tr.total td:first-child{font-family:var(--caps);font-size:1rem;letter-spacing:.08em;padding:8px 0}
 table.acct tr.total .n{font-size:1.3rem}
@@ -538,8 +542,9 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 #cart .creditbox button:hover:not(:disabled), #cart .creditbox button:focus-visible{background:var(--sheet);border-color:var(--ink)} #cart .creditbox button:disabled{opacity:.4;cursor:not-allowed}
 @media (max-width:1080px), (orientation:portrait){ #cart .creditbox{flex-direction:row;align-self:flex-end;margin-top:3px} #cart .creditbox button{padding:1px 6px;font-size:.78rem;gap:6px} }
 /* the ledger is shut from its corner as well as from the foot of the quarter's leaf */
-#bookx{position:absolute;top:-12px;right:calc(var(--edge) * -.5 - 9px);z-index:6;width:38px;height:38px;background:none;border:0;font-family:var(--display);font-size:2.3rem;line-height:1;color:var(--ink);cursor:pointer} #bookx:hover, #bookx:focus-visible{color:var(--madder)} body.intro #bookx{display:none}
-@media (max-width:1080px){ #bookx{top:0;right:2px;font-size:1.9rem} #stage .runhead{padding-right:30px} }
+#bookx{position:absolute;top:2px;left:calc(100% + var(--edge) * .1 + 6px);z-index:6;width:44px;height:44px;display:grid;place-items:center;padding:0 0 4px;background:var(--ink);border:2px solid var(--gilt);border-radius:50%;box-shadow:0 3px 8px rgba(0,0,0,.55), inset 0 0 0 1px rgba(0,0,0,.5);font-family:var(--display);font-size:2.1rem;font-weight:700;line-height:1;color:var(--sheet);cursor:pointer;transition:background .12s, transform .12s} #bookx[hidden]{display:none} #bookx:hover, #bookx:focus-visible{background:var(--madder);transform:scale(1.08)} #bookx:active{transform:scale(.96)} body.intro #bookx{display:none}
+.book:has(#bookx:not([hidden])) #tabs{top:56px}
+@media (max-width:1080px){ #bookx{top:4px;left:auto;right:4px;width:38px;height:38px;font-size:1.8rem} #stage .runhead{padding-right:46px} .book:has(#bookx:not([hidden])) #tabs{top:auto} }
 
 /* the Castle: what was last done there, and the yearly figure on a rung */
 .castle .said{border-left:3px double var(--ink);padding:2px 0 2px 10px;margin:2px 0 4px} .castle .said p{margin:0 0 6px;font-size:1rem;line-height:1.35} .castle .said p:last-child{margin-bottom:0}
@@ -1093,7 +1098,7 @@ function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || 
 
 function newGame(first, sur, traits){
   S = { name:(first + ' ' + sur).trim(), sur, t:0, year:FIRST_YEAR, season:0, phase:'ledger',
-    money:900, mortgage:4000, standing:40, goodwill:50, family:60,
+    money:1500, mortgage:4000, standing:40, goodwill:50, family:60,
     improve:0, rentPolicy:1, rentAdj:1, poorMult:1, game:3, canal:0, yearIncome:0,
     farms:startFarms(), letQueue:[], payQueue:[], flags:{}, chars:{}, queue:[], seen:{}, journal:[], works:[], projectsDone:{}, dead:null,
     ledger:[], notes:[], pending:null, vignette:null, outcome:null, priceSeen:[] };
@@ -1105,11 +1110,20 @@ function newGame(first, sur, traits){
 }
 
 function halfRent(){ return rentalNow() / 2; }
+/* The rent day next to come, for the foot of the account: rents are paid at Lady Day and Michaelmas, and at no other time. */
+function rentsNext(){ const q = S.season, at = q === 0 || q === 1 ? 2 : 0, t = S.t + (q === 0 ? 2 : q === 1 ? 1 : q === 2 ? 2 : 1);
+  return t > 83 ? null : {day:QUARTER[at], sum:Math.round(halfRent()), dry:q === 1 || q === 3}; }
+/* The poor rate is struck once a year at 130 pounds with wheat at 75s. What the year's wheat and the bread scale lay on top is said under the entry, and a rate a quarter above the common is marked. */
+function poorWhy(P){ const base = 130 * S.poorMult, corn = base * (P / 75 - 1), scale = F('speen') ? base * (P / 75) * 0.6 : 0, bits = [];
+  if (scale >= 1) bits.push('the bread scale agreed at Speen adds ' + fmt(scale));
+  if (corn >= 10) bits.push('wheat at ' + P + 's. adds ' + fmt(corn));
+  const s = bits.join(', and ');
+  return ['For the year.' + (s ? ' ' + s[0].toUpperCase() + s.slice(1) + '.' : ''), base + corn + scale >= 1.25 * 130]; }
 
 function beginSeason(){
   const y = S.year, q = S.season, P = PRICES[y], pi = P / 75;
   const L = []; S.notes = [];
-  const line = (label, amt) => { amt = Math.round(amt); if (amt) { L.push([label, amt]); S.money += amt; } };
+  const line = (label, amt, why, mark) => { amt = Math.round(amt); if (amt) { L.push(why ? [label, amt, why, mark ? 1 : 0] : [label, amt]); S.money += amt; } };   // why: small print under the entry; mark: a hand in the margin against a charge out of the common
   if (q === 0) { S.yearIncome = 0; if (!S.priceSeen.includes(y)) S.priceSeen.push(y); }
   estateSync();
   if (q === 0 || q === 2) rentDay(line);
@@ -1130,12 +1144,12 @@ function beginSeason(){
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
   if (q === 3) {
-    line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1));
-    line('Land tax', -110);
+    { const [why, mark] = poorWhy(P); line('Poor rate', -130 * S.poorMult * pi * (F('speen') ? 1.6 : 1), why, mark); }
+    line('Land tax', -110, 'For the year.');
     if (T('court') && !F('courtLost') && !F('courtSold')) line('Salary as Deputy Keeper of the Swans', 90);
     if (T('play')) line('Losses at whist and hazard', -(70 + Math.floor(Math.random() * 12) * 10));
     if (T('gout') && !F('goutEased')) { add({family:-3}); S.notes.push('The gout has you by the foot from Advent to Candlemas. The household goes on tiptoe. You shout at them for creeping.'); }
-    if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1)); }
+    if (y >= 1799 && y !== 1802) { const rate = y <= 1801 ? 0.1 : y <= 1805 ? 0.05 : 0.1; line('Income tax at ' + (rate * 100) + ' per cent', -S.yearIncome * rate * (F('taxDodge') ? 0.5 : 1), 'For the year.'); }
   }
   if (S.money < 0) { line('Interest on tradesmen’s bills and notes of hand', S.money * 0.03); add({standing:-1}); S.notes.push('You are living on credit. Wyvern has noticed.'); }
   // Nothing keeps without tending: regard, like a hedge, grows out.
@@ -8622,10 +8636,10 @@ function ventureTick(line){ if (!S.vent) return; const y = S.year, q = S.season,
 
 /* ---------- the establishment: what the Hall costs to keep, and what the county thinks of it ---------- */
 const EST = [
-  {id:'retrenched', name:'a retrenched household', cost:800, standing:25, line:`Half the rooms are shut and the carriage is put down. A cook, one maid and a boy.`},
-  {id:'plain', name:'a plain establishment', cost:1100, standing:42, line:`A cook, two maids, a man and a gardener. One joint a day, and company once a month.`},
-  {id:'handsome', name:'a handsome establishment', cost:1500, standing:60, line:`A butler, a footman and a housekeeper. Two courses at dinner, a carriage and pair, and the county asked to dine.`},
-  {id:'splendid', name:'a splendid establishment', cost:2100, standing:80, line:`Eleven indoor servants in livery and a French cook. Wax candles in every room and the house open to the county.`}
+  {id:'retrenched', name:'a retrenched household', cost:700, standing:25, line:`Half the rooms are shut and the carriage is put down. A cook, one maid and a boy.`},
+  {id:'plain', name:'a plain establishment', cost:1000, standing:42, line:`A cook, two maids, a man and a gardener. One joint a day, and company once a month.`},
+  {id:'handsome', name:'a handsome establishment', cost:1400, standing:60, line:`A butler, a footman and a housekeeper. Two courses at dinner, a carriage and pair, and the county asked to dine.`},
+  {id:'splendid', name:'a splendid establishment', cost:2000, standing:80, line:`Eleven indoor servants in livery and a French cook. Wax candles in every room and the house open to the county.`}
 ];
 const estIdx = () => Math.max(0, EST.findIndex(e => e.id === (S.est || 'plain')));
 const priceRise = y => 1 + 0.032 * (y - FIRST_YEAR);
@@ -8664,7 +8678,7 @@ function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing
 const weekWage = y => Math.round(9 * wageIdx(y) / wageIdx(FIRST_YEAR));
 function homeFarmCosts(line){ const y = S.year, s = weekWage(y);
   const paid = s + houseOf('labour').shillings; line('Home farm wages, nine men at ' + paid + 's. the week', -(9 * paid * 13 / 20) * (live('thresher') ? 0.94 : 1));
-  if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75); }
+  if (S.season === 3 && !F('enclosed')) line('Tithe on the home farm', -45 * PRICES[y] / 75, 'For the year.'); }
 
 /* ---------- the land market: buy at any time, sell any farm ---------- */
 const MARKET_FARMS = ['coldharbour', 'rooksnest', 'withymead', 'maddle'];
@@ -10590,15 +10604,17 @@ function noteOf(c){ if (!c.note) return ''; const n = typeof c.note === 'functio
 
 function accountHTML(){ let rows = '', tot = 0;
   const cells = a => `<td class="n l">${a < 0 ? '<span class="sr">paid </span>' : ''}${Math.abs(a).toLocaleString('en-GB')}</td><td class="n z">0</td><td class="n z">0</td>`;
-  for (const [l, a] of S.ledger){ tot += a; rows += `<tr class="${a < 0 ? 'neg' : ''}"><td>${esc(l)}</td>${cells(a)}</tr>`; }
+  for (const [l, a, why, mark] of S.ledger){ tot += a; rows += `<tr class="${a < 0 ? 'neg' : ''}${mark ? ' dear' : ''}"><td>${mark ? '<i class="hand" aria-hidden="true">☞</i>' : ''}${esc(l)}${why ? `<small>${esc(why)}</small>` : ''}</td>${cells(a)}</tr>`; }
   rows += `<tr class="total${tot < 0 ? ' neg' : ''}"><td>Carried to the purse</td>${cells(tot)}</tr>`;
   return `<div class="tablewrap"><table class="acct"><thead><tr><th>Particulars</th><th class="n l">£</th><th class="n">s.</th><th class="n">d.</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
 
 /* The right-hand leaf, under the plate: what the quarter came to, and what was lately done. */
 function digestHTML(){ let inn = 0, out = 0; for (const [, a] of S.ledger) { if (a > 0) inn += a; else out -= a; }
   const net = inn - out, last = S.journal.slice(0, 3);
-  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div></dl>
+  return `<div class="digest"><dl class="bal slim"><div><dt>Received</dt><dd>${inn ? amt(inn, 1) : fmt(0)}</dd></div><div><dt>Paid away</dt><dd>${out ? amt(out, -1) : fmt(0)}</dd></div><div><dt>The quarter</dt><dd>${net ? amt(net, net) : fmt(0)}</dd></div>${rentsDueHTML()}</dl>
     ${last.length ? `<h3 class="orn">Lately</h3><ol class="daybook">${last.map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : ''}</div>`; }
+function rentsDueHTML(){ const r = typeof rentsNext === 'function' && !S.dead ? rentsNext() : null;
+  return r && r.sum ? `<div class="due${r.dry ? ' dry' : ''}"><dt>Rents due at ${esc(r.day)}</dt><dd>${amt(r.sum, 1)}</dd></div>` : ''; }
 function ledgerHTML(){
   const warn = S.dead === 'ruin' ? `<p class="note bad">The tradesmen of Wyvern met at the George on Tuesday. They resolved to give the Hall no more credit. No hand was raised against it. The mortgagees have sent a man to look at the roof.</p>` : '';
   return `${runhead('Papers received this quarter', 'Cr.')}
