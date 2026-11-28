@@ -1084,7 +1084,7 @@ The ha-ha is finished, and in the first week a cow falls into it.`; }}
    art/events/<id>. Kinds: news (a letter), talk (he comes in person), ask (he wants money), girl (he wants to marry),
    settle (Long Barrow and his signature), cold (you are not on terms). */
 const edmWhere = () => F('edmundVicar') ? 'vicar' : (E() || 'home');
-const edmAway = () => ['army', 'navy', 'militia', 'church'].includes(edmWhere());
+const edmAway = () => ['army', 'navy', 'militia', 'church', 'prisoner'].includes(edmWhere());
 const edmR = () => S.chars.edmund.r;
 const yr = (a, b) => S.year >= a && S.year <= b;
 const at = (...w) => w.includes(edmWhere());
@@ -1407,7 +1407,7 @@ const PREFACE = [
   `The carrier leaves a letter at the lodge, from Edmund; and the lodge-keeper’s wife, having brought it up herself, waits in the hall.`];
 const mates = () => at('army') ? 'the mess' : at('navy') ? 'the gunroom' : at('militia') ? 'the mess' : 'his landlady';
 
-ev({ id:'edmundLetter', from:1797, to:1815, weight:7, repeatGap:5, cond:() => !F('edmundDead') && !!E() && (!at('army', 'navy') || S.year >= 1798),
+ev({ id:'edmundLetter', from:1797, to:1815, weight:7, repeatGap:5, cond:() => !F('edmundDead') && !!E() && E() !== 'prisoner' && (!at('army', 'navy') || S.year >= 1798),
   get title(){ return S.pending === 'edmundLetter' && !edmAway() ? 'Edmund at the Book-room Door' : 'A Letter from Edmund'; },
   cut:() => edmNow().id,
   text:() => { const p = edmNow(); return edmAway() ? `${PREFACE[S.t % PREFACE.length]}\n\n${p.x()}` : p.x(); },

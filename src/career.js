@@ -510,7 +510,7 @@ ${BREVET_NO()}`; }}
 /* ================= The peace of 1814 ================= */
 
 const navShip = () => ['Thetis', 'Thetis', 'Sparrow', 'Calliope'][navRank()];
-ev({ id:'navPeace', weight:40, hen:false, at:'hall', who:() => 'edmund', from:1814, to:1815, cond:() => edmServes('navy') && !S.peril && (S.year === 1815 || S.season >= 2), title:'Paid Off',
+ev({ id:'navPeace', weight:150, hen:false, at:'hall', who:() => 'edmund', from:1814, to:1815, cond:() => edmServes('navy') && !S.peril && (S.year === 1815 || S.season >= 2), title:'Paid Off',
   text:() => { const r = navRank();
     return `The ${navShip()} was paid off at ${r >= 2 ? 'Deptford' : 'Portsmouth'} upon the Tuesday. Her people had their money over the capstan head, and were out of her by noon; the pendant came down at sunset; and her ${r >= 2 ? 'Captain' : r ? 'First Lieutenant' : 'senior mate'}, having given up his keys to a clerk of the Dock-yard, went ashore in a wherry, and paid the waterman himself.
 
@@ -550,7 +550,7 @@ For a month he does nothing that can be given a name. He winds the clocks. He ri
 On the Monday he asks ${steward()} for the key of the wood-yard, and for the name of the man who has been buying your oak at ninepence the foot.`; }}
   ]});
 
-ev({ id:'armPeace', weight:40, hen:false, at:'hall', who:() => 'edmund', from:1814, to:1814, cond:() => edmServes('army') && !S.peril && S.season >= 2, title:'The Peace Establishment',
+ev({ id:'armPeace', weight:150, hen:false, at:'hall', who:() => 'edmund', from:1814, to:1814, cond:() => edmServes('army') && !S.peril && S.season >= 1, title:'The Peace Establishment',
   text:() => `Edmund has six weeks’ leave from Hythe, and has been three of them at the Hall before he lays a letter beside your plate.
 
 “This is from Craig’s Court, sir, and every Captain in the regiment has had the same.”
@@ -596,6 +596,315 @@ The mule is led round to the door. It will not pass the lodge until he gets down
 after('waterloo', () => E() === 'home' && S.flags.edmWas === 'army' && !F('edmundDead') ? `Edmund has the paper from you before you have done with it, and carries it to the window. He goes down the 52nd with his thumb, and stops four times; and having come to the foot of the column, he folds the sheet small, as a letter is folded, and puts it into his breast.` : '');
 /* Once he has a ship in the peace, the war's letters from Halifax and the Baltic are done. */
 EDMUND.forEach(x => { if (/at\('navy'\)/.test(String(x.w))) { const w0 = x.w; x.w = () => w0() && !F('navPeaceShip'); } });
+
+/* ================= A prisoner of war =================
+   A small chance in either service. While he is held, S.flags.edmund is 'prisoner' and edmHeld keeps the service, so that every paper
+   and letter of that service stands off of itself. edmTaken asks what is to be done (edmPlan); edmOut, some seasons on, tells what came
+   of it (edmOut: free, parole, held); edmFreed opens the gates in 1814 for a man still there. Nobody dies of it. */
+const wasIn = () => S.flags.edmHeld;
+const taken = () => { if (E() === 'prisoner') return; const k = E(); fl('edmHeld', k); fl('edmHeldAt', S.year);
+  if (k === 'navy' && S.flags.navCmdrAt === undefined) fl('navCmdrAt', 9999);
+  fl('edmund', 'prisoner'); add({family:-8}); reg('henrietta',-1); later('edmFreed', Math.max(2, (1814 - 1795) * 4 + 1 - S.t)); };
+const setPlan = (k, p) => { fl('edmPlan', k); fl('edmPlanP', p); later('edmOut', 3 + Math.floor(Math.random() * 3)); };
+const outRoll = () => { if (S.flags.edmOut) return S.flags.edmOut; const k = S.flags.edmPlan, ok = chance(S.flags.edmPlanP || 0);
+  fl('edmOut', !ok ? 'held' : k === 'bribe' ? 'parole' : 'free'); if (!ok && k === 'escape') fl('edmBitche');
+  if (!ok) { add({family:-6}); if (S.year < 1813 && !F('edmHeldPapers')) { fl('edmHeldPapers'); later('edmHeldHen', 3); later('edmHeldBill', 7); } } else { fl('edmFreeAt', S.year); add({family:8}); }
+  return S.flags.edmOut; };
+const backToIt = () => fl('edmund', wasIn());
+const hisCorps = () => wasIn() === 'navy' ? 'his ship' : 'the regiment';
+
+ev({ id:'edmTaken', weight:3, hen:false, at:'hall', who:() => 'edmund', from:1804, to:1812, title:'A Letter from Verdun',
+  cond:() => !F('edmundDead') && !S.peril && S.flags.edmHeld === undefined && ((E() === 'navy' && S.year <= 1808 && navRank() <= 1) || (E() === 'army' && S.year >= 1811)) || (E() === 'prisoner' && !S.flags.edmPlan),
+  text:() => { const navy = (E() === 'prisoner' ? wasIn() : E()) === 'navy'; taken();
+    return `The letter has no post-mark upon it. It is brought to the door by ${navy ? 'a surgeon of the Navy on his road to Bath, who was nineteen months at Verdun, and has been sent home with his lungs' : 'a Captain of the 43rd upon two crutches, who was a year at Verdun, and has been sent home as past service'}; and he had it out of France, he says, between the sole of his boot and the welt.
+
+“Verdun, upon the Meuse. My dear Father, I am a prisoner, and am well. ${navy ? `I was sent away from the Thetis in a prize, a brig of Nantes with wine, having six hands, and orders for Plymouth; and upon the second night, in a fog off Ushant, we were laid on board by a lugger of St Malo, who had seventy men to my six. I gave up my sword to a man in a red nightcap. They marched us from Brest to this place in six-and-thirty days.` : `I was taken with my picquet, a serjeant and eleven men, in a fog upon the Agueda, by a patrol of chasseurs who came at us from our own side of the river. I gave up my sword to a boy of nineteen, who begged my pardon for it. They marched us through Spain to Bayonne, and from Bayonne to this place, in nine weeks.`}
+
+An officer who gives his parole may lodge in the town, and walk two leagues from the gates; and I have given mine. There are eight hundred English here, who have got up two clubs, a race-course, and a pack of beagles. We answer to our names twice a day before a gendarme, and pay him for the trouble.
+
+The Emperor exchanges nobody. There are Lieutenants here who were taken in the year ’03.
+
+Three things are said in the clubs, and I give them as I had them. The Transport Board will sometimes get a man out, where his friends are loud enough. The Commandant has sold passports for the waters; and his price is named at three hundred pounds, to be lodged with Messrs Perregaux at Paris. And an officer who misses the roll-call three times is shut up in the citadel; where, being under lock and key, he is upon nobody’s parole but the gaoler’s. Four have gone from the citadel since Christmas, of whom two are at Deal, and two in the fortress of Bitche, fifty steps under ground.
+
+I shall not break my word. I tell you only how the word is taken back.
+
+Your affectionate son, Edmund.”
+
+${hh(`Henrietta keeps the ${navy ? 'surgeon' : 'Captain'} to dinner, and asks him what they are given to eat.`, `You send the letter on to Gay Street by express; and it comes back with the corners worn.`)}`; },
+  choices:[
+    {t:'Go to the Transport Board, and be loud.', note:'£30', go:() => { add({money:-30, standing:-2}); setPlan('exchange', Math.min(0.75, 0.1 + 0.13 * interest()));
+      return `The Commissioners for the Transport Service, who have the charge of all prisoners, receive you with great civility, and with a printed paper; by which it appears that there are in England near fifty thousand Frenchmen, and that every proposal for a cartel since the year ’03 has come back from Paris unanswered.
+
+You are loud. ${F('mp') ? 'You name the matter in the lobby to the Secretary of the Admiralty, who writes it upon his cuff. ' : ''}${S.chars.cullerne.r >= 2 ? 'The Earl, upon being asked, sends four lines to a Duke. ' : ''}You leave Edmund’s name with the Board, with a chief clerk at ${wasIn() === 'navy' ? 'the Admiralty' : 'the Horse Guards'}, and with the porter at both; and you are three weeks in town before ${steward()} writes that the hay is down, and nobody to say which rick.`; }},
+    {t:'Ask Lieutenant Dubreuil whether he has a friend in Paris.', if:() => F('dubreuilFriend') && K() !== 'dubreuil' && !(S.seen && S.seen.dubreuilAsks !== undefined), go:() => { setPlan('exchange', 0.8); fl('edmByDubreuil'); reg('dubreuil',1,'You asked his help for your son');
+      return `He hears you standing, in your own library, with his hat under his arm.
+
+He has, he says, a cousin in the bureau of the Minister of Marine, who owes him nine hundred francs, and his place; and he has never yet asked him for either.
+
+He writes that evening at your desk, three sheets, and a fourth to his mother, which he does not offer to show you. The Transport Board, who read all four, send them over by the Morlaix cartel; and upon the Saturday he comes up from the milestone as usual, and loses at chess in thirty moves.`; }},
+    {t:'Lodge three hundred pounds with Messrs Perregaux.', note:'£330', go:() => { add({money:-330}); setPlan('bribe', 0.6);
+      return `Tidmarsh, who has never before remitted to an enemy’s country, turns the thing over for a day; and he finds upon the second that it may be done through a house at Hamburg, at ten per cent.
+
+Three hundred pounds are lodged at Paris, to the credit of a Madame Lacoste, who is understood to be a friend of the Commandant’s lady.
+
+You are given no receipt. Tidmarsh enters it in your account under “Foreign,” and rules a line beneath.`; }},
+    {t:'Send him eighty guineas, and ask no questions.', note:'£90', go:() => { add({money:-90}); setPlan('escape', 0.55); reg('edmund',1);
+      return `Eighty guineas go out to him through the same Messrs Perregaux, as for his lodging and his tailor.
+
+Your letter will be read by the Commandant’s clerk before it is read by Edmund; and you write, therefore, that the money is for his health, and that you recommend to him exercise, stout shoes, and early hours. ${hh(`Henrietta, who has read it over your shoulder, adds below your name that the nights are cold, and that he is to take his flannel.`, `You send a copy to Gay Street, and have it back with one word underlined, which is “shoes”.`)}`; }},
+    {t:'Leave him where he is.', go:() => { setPlan('left', 0.22); reg('edmund',-1,'You left him at Verdun');
+      return `You write that he is well lodged; that the war cannot last for ever; and that he is to keep his health, and his word.
+
+${hh(`Henrietta puts in a sheet of her own, which she seals before you can read it, and a pair of worsted stockings.`, `A second letter goes to Verdun by the same hand, from Gay Street, and a pair of worsted stockings with it.`)}
+
+The ${wasIn() === 'navy' ? 'surgeon' : 'Captain'} takes the packet as far as the Transport Office, and does not ask what is in it.`; }}
+  ]});
+
+const OUT_FREE = () => { const k = S.flags.edmPlan;
+  if (k === 'jenner') return `He comes by the Morlaix cartel, in the coat that he was taken in; and he has in his pocket a passport, signed at Paris, which gives no reason.
+
+It is told at Verdun, he says, that the petition lay a month upon the Emperor’s table with forty others; that the Empress took it up, and read out the name at the foot; and that the Emperor said, he could refuse nothing to that man. The Commandant sent for Edmund upon a Tuesday, and asked him whether he were a physician.
+
+${hh(`Henrietta does not come down. She is found afterwards in his room, where she has turned down the bed herself, and is sitting upon it.`, `He goes on to Bath by the same coach; and it is a week before either of them writes.`)}
+
+“I am to call at Berkeley, sir, upon my way anywhere, and thank him. I do not know what one says.”`;
+  if (k === 'exchange') return `The Morlaix cartel landed him at Plymouth upon the 3rd, with nine invalids, and a Colonel’s widow; and he is at the Hall four days afterwards, in the coat that he was taken in, which has been turned.
+
+He has been exchanged, man for man, against a ${wasIn() === 'navy' ? 'lieutenant de vaisseau' : 'Captain of the 26th of the Line'} who was upon his parole at Thame. ${F('edmByDubreuil') ? 'The order came down from the Minister of Marine’s own bureau; and the Commandant, he says, read it twice, and looked at the back.' : 'It is the only exchange that has been made out at Verdun this year; and the Commandant, he says, read the order twice, and looked at the back.'}
+
+“They gave me a dinner at the club, sir. Forty sat down to it. I could not eat for looking at them.”`;
+  return `A man gets down from the Dover coach at the lodge, in a French carter’s jacket, wooden shoes, and a round hat that was never made in England; and the lodge-keeper’s wife, who has known him since he was breeched, asks him what he wants.
+
+It is Edmund. He missed the roll-call upon three mornings running, and was shut up in the citadel upon the fourth; whence, on a night of rain, he and a Lieutenant of Marines went down sixty feet of wall upon their sheets, and were nineteen nights walking to the coast of Flanders. ${k === 'escape' ? 'Forty of your guineas went to a smuggler of Blankenberg, who put them aboard an English brig off the Scheldt.' : 'His watch went to a smuggler of Blankenberg, who put them aboard an English brig off the Scheldt; and the Lieutenant of Marines gave a note of hand for the rest.'}
+
+“I broke no parole, sir. They took it from me at the citadel gate, with my braces.”`; };
+const OUT_PAROLE = () => `He comes by the Morlaix cartel, and by the mail from Plymouth; and he lays his passport upon the hall table before he has taken off his hat.
+
+It is signed by the Commandant, and countersigned at Paris. It permits Monsieur ${S.sur}, prisoner of war, to return into England for the re-establishment of his health; and it binds him, upon his honour, not to serve against France or her allies until he shall have been regularly exchanged.
+
+“I am in perfect health, sir. It says here that I am not, and I have put my name to it.”
+
+Madame Lacoste, he adds, drives out now in a new calash.`;
+const OUT_HELD = () => { const k = S.flags.edmPlan, navy = wasIn() === 'navy';
+  if (k === 'jenner') return `Dr Jenner’s answer is from Berkeley, in his own hand, and is franked.
+
+He sent the petition by a way that has served him before. It has been acknowledged by a secretary; and since then there has come nothing. He had better fortune, he says, in the year ’05, when there were fewer prisoners, and the Emperor was newer to being asked. He will write again at Christmas.
+
+There is enclosed for Mrs ${S.sur}, who had not asked for it, a printed paper of directions for the vaccine inoculation, and two ivory points, charged.
+
+${hh(`Henrietta puts the points away in her work-box, with his letters.`, `The points go on to Gay Street, with the letter.`)}`;
+  if (k === 'escape') return `There is a letter with the Paris post-mark, charged four and tenpence; and it has been opened, and sealed again with a wafer that is not his.
+
+“Bitche. My dear Father, I was out for three nights, and was taken upon the fourth morning in a wood near Longwy, by two gendarmes and a dog, having put my ankle out in coming down the wall. They walked me to this place in irons, a hundred miles.
+
+Bitche is a rock, with a fort upon it. We are lodged inside the rock, fifty steps down, in a vault where the wall runs with water; and there are with me nine Midshipmen, a master of a collier, and a clergyman who is here for debt. The guineas were found in my boot.
+
+I am not sorry that I tried it, and I beg that you will not be.”`;
+  if (k === 'bribe') return `There is a letter with the Paris post-mark, charged four and tenpence; and it has been opened, and sealed again with a wafer that is not his.
+
+“Verdun. My dear Father, The Commandant is recalled to Paris, to explain his accounts; and Madame Lacoste is gone in the same carriage. Nobody here can tell me in which of his accounts your three hundred pounds were entered.
+
+The new Commandant is an honest man. He has shut the gaming-table, doubled the roll-calls, and sells nothing.
+
+I am as I was. I have a room over a clock-maker’s, and I teach the Midshipmen their navigation three mornings in the week, ${navy ? 'having some of it left' : 'out of a book, keeping one chapter ahead of them'}.”`;
+  if (k === 'exchange') return `Edmund’s letter and the Transport Board’s come by the same post; and his, being the shorter, is read first.
+
+“Verdun. My dear Father, I beg that nobody will be loud upon my account any further. The Commandant has sent for me, and asked who my father was, and whether he were a Duke. I have a room over a clock-maker’s, and have been twice to the races. I am very well.”
+
+The Board writes upon a printed form, with the name put in by a clerk: that the proposal for the exchange of ${navy ? 'Mr' : 'Captain'} ${S.sur} was duly transmitted to the French Government upon the 9th of last month, and that no answer has been returned thereto.`;
+  return `There is a letter with the Paris post-mark, charged four and tenpence.
+
+“Verdun. My dear Father, I keep my word, and my health. I have a room over a clock-maker’s, with eleven clocks in the shop beneath, of which no two strike together. I have learnt French enough to quarrel with my landlady, and the flute enough to be asked to leave off.
+
+Two more went from the citadel in March. One of them is at Bitche. Of the other we hear nothing, and so suppose him to be at home.
+
+The stockings fit.”`; };
+
+ev({ id:'edmOut', follow:true, hen:false, at:'hall', who:() => 'edmund', cond:() => E() === 'prisoner' && !F('edmundDead') && !!S.flags.edmPlan,
+  cut:() => outRoll() === 'held' ? (S.flags.edmPlan === 'escape' ? 'edmOut-bitche' : 'edmTaken') : 'edmOut',
+  get title(){ const o = S.flags.edmOut, k = S.flags.edmPlan; return o === 'held' ? (k === 'escape' ? 'Fifty Steps Down' : 'No Answer from Paris') : o === 'parole' ? 'For the Re-establishment of His Health' : k === 'exchange' ? 'Man for Man' : k === 'jenner' ? 'He Could Refuse Nothing to That Man' : 'The Dover Coach'; },
+  text:() => { const o = outRoll(); return o === 'free' ? OUT_FREE() : o === 'parole' ? OUT_PAROLE() : OUT_HELD(); },
+  choices:[
+    {t:() => `Let him go back to ${hisCorps()}.`, if:() => S.flags.edmOut === 'free', go:() => { backToIt(); befriend(); add({family:-1, standing:2}); reg('edmund',2,'You let him go back, after Verdun');
+      return `He is at home for five weeks, in which he eats, and sleeps, and is measured for a coat.
+
+${wasIn() === 'navy' ? `Their Lordships, who have had four officers out of France in as many years, desire to see this one; and he is an hour at the Admiralty, drawing the citadel upon the back of a chart. He is appointed to the Thetis again within the month.` : `The Horse Guards, who have had four officers out of France in as many years, desire to see this one; and he is an hour with the Quartermaster-General’s people, drawing the citadel upon the back of a map. He sails for Lisbon with the next draft.`}
+
+The wooden shoes he leaves behind him. ${hh(`Henrietta has them upon the chimney-piece in her dressing-room.`, `They go to Gay Street by the carrier, by desire.`)}`; }},
+    {t:'He has done enough. Keep him.', if:() => S.flags.edmOut === 'free', go:() => { comeHome(wasIn(), 'prisoner'); add({family:4}); reg('henrietta',2); reg('edmund',-1);
+      return `“You have been ${inWords(Math.max(1, S.year - S.flags.edmHeldAt))} ${S.year - S.flags.edmHeldAt > 1 ? 'years' : 'year'} out of the world, Edmund, and the world has got on. Stay, and look at the farms.”
+
+He does not answer at once. He has not, he says, been asked what he would like since the morning that he was taken; and he finds that he is out of the way of it.
+
+By the spring he has the home farm. He walks it every evening, to the boundary and back; and ${steward()} has remarked that at the boundary he always stops, and puts a hand upon the gate.`; }},
+    {t:'Hold him to his paper, and give him the home farm.', if:() => S.flags.edmOut === 'parole', go:() => { comeHome(wasIn(), 'parole'); add({family:4}); reg('henrietta',2); reg('edmund',-1,'Bought out of Verdun, and bound not to serve');
+      return `“You have signed it, and it was bought with my money. You will keep it.”
+
+He keeps it. He will not so much as dine with the Volunteers; and when ${wasIn() === 'navy' ? 'a Captain of the Navy' : 'Colonel Tamworth'}, at the Tamworths’ table, gives “Confusion to the French,” he drinks it in water, as a man not at liberty to wish them any.
+
+He has the home farm by Lady Day, and reads Mr Young in the evenings, with a pencil.`; }},
+    {t:'Work for his exchange, that he may serve again.', if:() => S.flags.edmOut === 'parole', go:() => { backToIt(); add({standing:-1, family:-1}); reg('edmund',2,'You got his parole discharged');
+      return `It is seven months’ work. The Transport Board must find a Frenchman of his rank who is willing to go home; the Frenchman must be sent over; and Paris must acknowledge to have received him.
+
+One is found at Thame, who has married there, and is not willing. A second, at Wincanton, is willing, and sails in October.
+
+The discharge of Edmund’s parole comes down in a cover from the Board, with ninepence to pay. He reads it through twice, standing; and he has joined ${hisCorps()} before the month is out.`; }},
+    {t:() => F('edmBitche') ? 'Send a hundred pounds to the gaoler, for a room above ground.' : 'Send him a hundred pounds for his lodging.', note:'£100', if:() => S.flags.edmOut === 'held', go:() => { add({money:-100, family:1}); reg('edmund',1);
+      return F('edmBitche') ? `A hundred pounds go out through Perregaux; and are four months upon the road.
+
+He is moved up into the barrack upon the top of the rock, where there is a window, and from the window, he writes, a view of forty miles of wood, with nothing in it.
+
+He has taken the nine Midshipmen for their navigation, there being no other use to which they can be put; and the clergyman has the collier’s master in Greek.` : `A hundred pounds go out through Perregaux; and are four months upon the road.
+
+He moves from over the clock-maker’s to a first floor in the Rue Mazel, with a stove. He has bought a share in the beagles; and he has been elected, he writes, to the less noisy of the two clubs.`; }},
+    {t:'Write to him by every cartel.', if:() => S.flags.edmOut === 'held', go:() => { add({family:1}); reg('edmund',1);
+      return `You write upon the first of every month, four sides, of the wheat, the lambing, and who is dead; and the Transport Office sends them over as it has a ship.
+
+They reach him in threes and fours. He answers them in their order, by their dates; so that you learn in August what he thought in May of what you told him at Christmas.
+
+${hh(`Henrietta has moved his pin upon the library map, and has had to buy a second sheet to do it, the first having stopped at the Rhine.`, `At Gay Street, you are told, there is a map of France upon the wall, with one pin in it.`)}`; }}
+  ]});
+
+/* The years between, for a man whom nothing has got out. */
+ev({ id:'edmHeldHen', follow:true, at:'hall', who:() => 'henrietta', cond:() => E() === 'prisoner' && !F('edmundDead') && S.year < 1814, title:'The Second Sheet of the Map',
+  text:() => { if (!F('edmHenGrief')) { fl('edmHenGrief'); add({family:-4}); } return hh(`Henrietta has not dined out since the letter came. She has sent back the Tamworths’ card twice; she has had Edmund’s room shut up, and then opened, and then shut; and the map of Europe lies upon the library table with a second sheet pasted to its edge, and one pin in the second sheet.
+
+Upon Sunday she does not go to church. You find her, when you come back from it, at your own desk, with the Gentleman’s Magazine open before her, and a pen.
+
+“There is a Dr Wickham here, who was a prisoner at Geneva, and a Mr Williams. Dr Jenner wrote to Bonaparte for them, and they were let go. It says that the letter was four lines long.” She turns the book round to you. “${F('vaccinated') ? 'You had your arm scratched upon the green before the whole parish, for that man’s discovery. He may do something for a person who did that.' : 'He is a Gloucestershire apothecary. He cannot be so hard to write to as an Emperor.'}”`, `Henrietta writes from Gay Street, upon black-edged paper; though nobody is dead.
+
+“I have not been to the Rooms since the letter came. I have a map of France upon my wall, with one pin in it, and my landlady’s girl has orders not to dust it.
+
+There is in the Gentleman’s Magazine a Dr Wickham, who was a prisoner, and a Mr Williams. Dr Jenner wrote to Bonaparte for them, and they were let go; and it says that the letter was four lines long. ${F('vaccinated') ? 'You had your arm scratched upon the green before the whole parish, for that man’s discovery. He may do something for a person who did that.' : 'He is a Gloucestershire apothecary, and cannot be so hard to write to as an Emperor.'}
+
+I shall write to him on Monday unless you forbid it. I think that I shall write if you do.”`); },
+  choices:[
+    {t:'Write to Dr Jenner yourself, and let her put her name beside yours.', go:() => { fl('edmPlan','jenner'); fl('edmPlanP', F('vaccinated') ? 0.45 : 0.3); delete S.flags.edmOut; later('edmOut', 3); add({family:5}); reg('henrietta',2,'You wrote to Dr Jenner with her');
+      return `${hh('You write it together, at the one desk.', 'You go down to Bath, and write it together at her table.')} You say who Edmund is, and where; ${F('vaccinated') ? 'that the whole parish of Hatherley was vaccinated upon the green in the year of the smallpox, yourself the first; ' : ''}and that his mother has not dined out since the spring. She strikes out the last, and you put it back.
+
+It goes to Berkeley by the cross post. Dr Jenner’s acknowledgment is two lines long: he will try; and he does not promise.
+
+${hh('Henrietta goes to church upon the Sunday, and to the Tamworths’ upon the Thursday, in the grey silk.', 'Henrietta is seen at the Rooms upon the Thursday, in the grey silk.')}`; }},
+    {t:() => hh('Take her to Bath for the winter.', 'Go down to her at Bath.'), note:'£60', go:() => { add({money:-60, family:4}); reg('henrietta',1);
+      return `You are six weeks at Bath together, in lodgings in Gay Street, and walk every morning to the Pump Room, where she will not drink the water.
+
+It is no cure. But there is living upon the Parade a Mrs Pargeter, whose husband has been at Verdun since the year ’03; and the two of them sit together in the window for whole afternoons, with their two bundles of letters, reading out to each other the price of butter upon the Meuse.
+
+${hh('She comes home with the map rolled up under her arm, and pins it to the wall of her dressing-room herself.', 'When you come away, the map is still upon her wall; but there is a second pin in it, for Captain Pargeter.')}`; }},
+    {t:'Tell her that an Emperor does not read his letters.', go:() => { add({family:-5}); reg('henrietta',-3,'You forbade her to write to Dr Jenner');
+      return `${hh('“He has four hundred thousand men in Spain, Henrietta, and does not open letters from apothecaries.”\n\nShe shuts the Magazine.', 'You write to Gay Street that a man who has four hundred thousand soldiers in Spain does not open letters from apothecaries.')}
+
+She writes ${hh('on the Monday, from her dressing-room, and sends the letter to the post by her own maid', 'on the Monday, as she said that she would')}. No answer comes; or if one comes, you are not shown it.`; }}
+  ]});
+
+ev({ id:'edmHeldBill', follow:true, hen:false, at:'hall', who:() => 'edmund', cut:() => 'edmTaken', cond:() => E() === 'prisoner' && !F('edmundDead') && S.year < 1814, title:'A Bill upon Perregaux',
+  text:() => `Tidmarsh rides out himself, which he has not done since the year of the run, and lays upon your desk a bill for a hundred and forty pounds, drawn at Verdun, accepted by Messrs Perregaux, and come round to him by Hamburg.
+
+The signature is Edmund’s. The letter that should have gone before the bill arrives two days behind it.
+
+“My dear Father, You will have had a bill of mine before this, and will have thought the worst. I have not played. There is a Midshipman here of fifteen, named Cope, a widow’s son out of Devonshire, who lost a hundred and forty pounds at the Commandant’s own table in the Rue Mazel, to a gentleman who lives by it. A prisoner who cannot pay is sent to Bitche. ${F('edmBitche') ? 'I have been in that place, and I would not send a dog there' : 'I have seen them marched off, in irons, at six in the morning'}; and so I put my name to the paper.
+
+If you will not meet it, I shall go ${F('edmBitche') ? 'back ' : ''}in his room, which is the rule here, and no hardship that I have not agreed to. But I had rather you met it.”`,
+  choices:[
+    {t:'Meet the bill.', note:'£140', go:() => { add({money:-140, family:2}); reg('edmund',2,'You met his bill for the Midshipman');
+      return `You write your acceptance across the face of it; and Tidmarsh, who had brought a pen in case, takes it back to Wyvern in his breast.
+
+In the summer there comes a letter in a round hand, from a Mrs Cope, of Bideford; who has a hundred and forty pounds to find, and proposes to find it at five pounds a quarter. With it she sends a pot of clotted cream, which has not travelled.
+
+You answer that the debt is discharged. ${hh(`Henrietta answers at greater length; and the two of them are writing yet.`, `A copy goes to Gay Street; whence, you are told, a letter went to Bideford by the next post.`)}`; }},
+    {t:'Meet it, and tell him it is the last.', note:'£140', go:() => { add({money:-140}); reg('edmund',-1);
+      return `You meet it; and you write to him that Hatherley has no interest in the gaming-tables of France, and that the next Midshipman must go where his cards send him.
+
+His answer is five months upon the road.
+
+“Sir, I thank you for the money. Mr Cope desires his duty. I shall not trouble you again; and you will permit me to say, that if you were here, you would have done it before I did.”`; }},
+    {t:'Let the bill go back.', go:() => { fl('edmBitche'); add({family:-6}); reg('edmund',-3,'You let his bill go back, and he went to Bitche for it'); reg('henrietta',-2,'You let Edmund’s bill go back');
+      return `Tidmarsh takes the bill up again by one corner. It goes back to Hamburg, and from Hamburg to Paris, noted for non-acceptance.
+
+Nothing comes from Verdun for seven months. Then there is half a sheet, dated from Bitche.
+
+“Sir, I am here in Mr Cope’s room, as I said. It is fifty steps down, and the wall runs with water. He writes to me upon Sundays. I have nothing further to communicate.”
+
+${hh(`Henrietta reads it standing, and lays it down upon your desk, with the writing uppermost.`, `You send it to Gay Street. It is not returned.`)}`; }}
+  ]});
+
+ev({ id:'edmFreed', follow:true, hen:false, at:'hall', who:() => 'edmund', cut:() => 'edmOut', cond:() => E() === 'prisoner' && !F('edmundDead'), title:'The Gates Stand Open',
+  text:() => { const n = Math.max(1, S.year - S.flags.edmHeldAt);
+    return `Edmund is at the lodge before his letter is.
+
+“They marched us out ${F('edmBitche') ? 'of Bitche' : 'of Verdun'} in January, sir, before the Russians; eleven days, in the snow, to Blois. And at Blois, one morning in April, there was nobody to call our names. We stood in the square until ten. Then a Midshipman said that he supposed it was peace, and we went to breakfast.”
+
+He has been ${inWords(n)} ${n > 1 ? 'years' : 'year'} a prisoner. He has a French coat, a German pipe, and ${F('edmBitche') ? 'a cough, which he has brought up out of the rock' : 'a flute, upon which he is forbidden to play before ten'}; and he walks about the house touching things.
+
+${wasIn() === 'navy' ? `The Navy has paid off four hundred ships since Easter. His name stands in Steel’s List where it stood upon the day that he was taken, ${navRank() ? 'a Lieutenant’s' : 'a Mate’s'}, with those of forty boys above it who were not then at sea.` : `The 52nd is at Hythe. Three men have had the company since he had it; and the last, who bought, would be glad to know what Captain ${S.sur} intends.`}`; },
+  choices:[
+    {t:'Let him rejoin the regiment.', if:() => wasIn() === 'army', go:() => { backToIt(); add({family:-2}); reg('edmund',2,'You let him rejoin, after Verdun');
+      return `He goes down to Hythe in the French coat, his own being with the moths.
+
+The Colonel gives him a company, there being one vacant by a death; and the mess, he writes, has made him tell Verdun upon four nights running, and will not believe in the beagles.
+
+He has not seen a shot fired since the Agueda. He says so, in every letter.`; }},
+    {t:'Give him the home farm and the woods.', go:() => { comeHome(wasIn(), 'prisoner'); add({family:5}); reg('edmund',2,'You gave him the home farm when he came out of France'); reg('henrietta',1);
+      return `You give him the home farm, and the woods; and he begins by walking round them, which takes him a week.
+
+He will not have a gate shut upon the farm that can be left open. The carters learn it in a day, and the cows in less; and ${steward()}, having twice fetched the heifers out of the barley, lays before you a plan for doubling the hedges.
+
+On the first of every month he is found to have written to Blois, to the widow who lodged him; and he sends her, at Michaelmas, a Berkshire ham.`; }},
+    {t:'Let him be, till he has done touching things.', go:() => { comeHome(wasIn(), 'prisoner'); add({family:3}); reg('edmund',1);
+      return `You ask nothing of him, and he does nothing; and it is observed in the servants’ hall that he does it out of doors.
+
+He is upon the Down by six. He is seen from the lodge at noon, lying in the grass at the top of Twelve Acres, with his hat over his face; and he walks into Wyvern upon market days, where he stands at the Cross for an hour together, and buys nothing.
+
+In August he asks ${steward()} whose wheat that is under the Down, and what it will fetch.`; }}
+  ]});
+
+/* ================= The Navy's 1815 ================= */
+
+const navyMan = () => !F('edmundDead') && ((E() === 'navy' && !F('navPeaceShip')) || (E() === 'home' && S.flags.edmWas === 'navy' && S.flags.edmWasHow !== 'early'));
+ev({ id:'navBoney', weight:150, hen:false, at:'hall', who:() => 'edmund', from:1815, to:1815, cond:() => navyMan() && S.season >= 2, title:'Bonaparte in the Sound',
+  text:() => E() === 'navy' ? `Edmund writes from Plymouth, upon a sheet that has been wet.
+
+“My dear Father, I have a guard-boat, and Bonaparte. He is in the Bellerophon, two cables from where I sit; Captain Maitland took him off Rochefort upon the 15th, in his cocked hat, with a suite of fifty, and brought him here. My orders are to keep a cable’s length of clear water about the ship, and I keep it with a boat-hook. There were upon the Sound this afternoon, by my own count, nine hundred boats, with a band of music in one of them.
+
+He comes to the gangway at about six. I have been ${inWords(S.year - 1796)} years looking for that man’s ships, and I have now seen him four times, for ten minutes together.
+
+It is said that he is for St Helena, and that the Northumberland is fitting to carry him. If you would see him, come by Friday. I can put you within fifty yards; and the Port Admiral’s lady has not been within two hundred.”
+
+${hh(`Henrietta asks what one wears.`, `By the same post Henrietta writes from Gay Street, that she has taken four places in the Exeter coach, and is that enough.`)}` : `Edmund comes in to breakfast with the Courier in his hand, and does not sit down.
+
+“He is in Plymouth Sound, sir, in the Bellerophon. Maitland took him off Rochefort on the 15th. I was ${inWords(Math.max(2, (S.flags.edmHeldAt || 1814) - 1796))} years looking for that man’s ships, and I never saw him.”
+
+By the newspaper there are a thousand boats about the Bellerophon every afternoon. The watermen of Plymouth ask what they please; the guard-boats keep the crowd off with boat-hooks; and at six o’clock the General shows himself at the gangway.
+
+It is said that he is for St Helena, and that the Northumberland is fitting to carry him.
+
+${hh(`Henrietta asks what one wears.`, `By the same post Henrietta writes from Gay Street, that she has taken four places in the Exeter coach, and is that enough.`)}`,
+  choices:[
+    {t:'Go down to Plymouth, all of you.', note:'£30', go:() => { add({money:-30, family:4, standing:2}); reg('edmund',1); reg('henrietta',1);
+      return `You are three days upon the road, and sleep at Plymouth four in a room. A waterman, who has by his own account made in one week what he made in the whole of the war, asks eleven guineas for the afternoon, and has them.
+
+At six he comes to the gangway: a short man in a green coat with a red collar, white breeches, and a small cocked hat, who stands for ten minutes looking at the shore through a glass. Every hat upon the water comes off. Yours is in your hand before you know that you have moved it${hh('; and Henrietta, who came down meaning to be severe, has got up in the boat to see', '')}.
+
+${E() === 'navy' ? 'Edmund, in the guard-boat, has his back to the ship, as his orders are, and is pushing off a wherry full of clergymen.' : 'Edmund keeps his own on. He has his hands upon his knees, and does not once take his eyes from the gangway.'}
+
+“He is a stout man, sir,” he says, when the boats are pulling in. “I had supposed, from the trouble, that he was tall.”`; }},
+    {t:'Go off in your own blue coat, and be let through the guard-boats.', note:'£30', if:() => T('captain'), go:() => { add({money:-30, family:3, standing:3}); reg('edmund',2,'You took him within twenty yards of Bonaparte');
+      return `The old coat still meets, with the lowest button left undone. The officer of the guard-boat${E() === 'navy' ? ', who is your son,' : ''} tosses his oars to it; and your waterman, who had asked eleven guineas, pulls through the line for five.
+
+You lie for a quarter of an hour within twenty yards of the Bellerophon’s gangway. He comes to it at six, in a green coat, with a glass; and you observe that he stands with his feet apart, as a man does who has learnt to, and that he looks a long while at the two-deckers in Hamoaze, and hardly at the people.
+
+${E() === 'navy' ? '' : 'Edmund sits in the stern sheets with his hat upon his knee. '}Captain Maitland, coming to the side, sees the coat, and touches his hat to it. The General turns his glass upon you for as long as a man might count five, and then upon a boat-load of ladies from Tavistock.`; }},
+    {t:() => E() === 'navy' ? 'Stay, and have it from his letters.' : 'Let Edmund go down, and tell you of it.', go:() => { add({family:1}); reg('edmund',1);
+      return E() === 'navy' ? `You write that the wheat is cutting, and that he is to look for you.
+
+His next is dated the 7th of August. “He is gone. They shifted him into the Northumberland off the Start, in a swell, and she sailed the same evening. I had the boat under her quarter, and saw him go up the side: he took it slowly, and did not look behind him. The Sound is empty. A waterman has asked me this morning whether there is any other person coming.”` : `He goes down outside the Exeter mail, and is nine days away.
+
+“I saw him three times, sir. He comes to the gangway and looks at England through a glass, and England looks at him. A man in the next boat to mine had brought his children, and held them up.”
+
+He turns his cup round in the saucer.
+
+“I had thought that I should hate him. I found that I was counting his guns. She is a seventy-four, and an old one; we might have had her in forty minutes.”`; }}
+  ]});
 
 /* ================= The Church ================= */
 
