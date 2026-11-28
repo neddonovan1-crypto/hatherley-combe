@@ -579,6 +579,8 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* The rank word never rides over its label: it keeps a gap, takes a smaller hand when long, and drops to a line of its own when there is no room beside. */
 #cart .vig .rk{grid-column:2/4;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:1px 10px;margin:0;min-width:0} #cart .vig .rk b{margin-left:auto;max-width:100%;text-align:right} #cart .vig .rk b.long{font-size:1.08rem}
 @media (max-width:1080px){ #cart .vig .rk{grid-column:1;display:block} #cart .vig .rk span, #cart .vig .rk b{display:block;text-align:left} #cart .vig .rk b{white-space:normal;overflow:hidden;text-overflow:ellipsis} #cart .vig .rk b.long{font-size:.86rem;line-height:1.28;white-space:nowrap} }
+
+.purse .of{white-space:nowrap}
 /* The last plate, held up over the book when the life ends. It borrows the card, print and side sheet of the other plates (plan.css). */
 #lastplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.86);overflow:auto;animation:heldup .25s ease-out}
 #lastplate[hidden]{display:none}
@@ -1153,7 +1155,7 @@ function beginSeason(){
   if (F('pompey') && q === 0 && y <= 1799) S.notes.push('Mr Stroud of Bath has viewed the pug Pompey and found him alive.');
   if (F('wages')) line('Home farm wages above the common rate', -30);
   if (F('crabbeSkims') && !F('crabbeGone') && !T('figures')) line('“Sundries” (Mr Crabbe)', -45);
-  if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160);
+  if (F('mp') && q === 0) line('Lodgings in Half Moon Street for the session', -160, 'Standing rises a point each quarter while you sit.');
   if (F('kittyAllowance') && q === 0) line('Mrs Vane, her allowance', -80);
   for (const w of S.works.slice()) { line(PROJECTS[w.id].name, -w.per); w.left--;
     if (w.left <= 0) { S.works.splice(S.works.indexOf(w), 1); S.projectsDone[w.id] = 'done'; S.notes.push(PROJECTS[w.id].done()); S.journal.unshift({when:stamp(), title:'Works', did:'Finished: ' + PROJECTS[w.id].name}); } }
@@ -8835,18 +8837,22 @@ const MARKET_FARMS = ['coldharbour', 'rooksnest', 'withymead', 'maddle'];
 const landFor = id => (S.soldFarms && S.soldFarms[id]) || Object.assign({id, level:'fair', arrears:0, lease:{type:'will'}}, NEW_FARMS[id]);
 const askPrice = (f, years) => Math.round((years || (moneyTight(S.year) ? 19 : 22)) * lettingValue(f, S.year) / 10) * 10;
 const loanOn = price => moneyTight(S.year) ? 0 : Math.floor(price * 0.6 / 100) * 100;   // the bank lends half on the farm itself, when it lends at all
+/* What the whole estate would carry with this farm added to it; and what must be raised on that to make up a short purse. In a tight year, or when the county has cut him, the bank pays out nine tenths, as on any other borrowing. */
+const capWith = f => { S.farms.push(Object.assign({}, f, {own:true})); const c = mortCap(); S.farms.pop(); return c; };
+const raiseFor = short => short <= 0 ? 0 : Math.ceil(short * 500 / borrowGets() / 100) * 100;
 function farmsForSale(){ estateSync(); const open = S.phase !== 'end' && !S.dead;
   const ids = MARKET_FARMS.concat(Object.keys(S.soldFarms || {}).filter(id => !MARKET_FARMS.includes(id))).filter(id => !farm(id));
   return ids.map(id => { const f = landFor(id), price = askPrice(f), trust = Math.min(S.trust || 0, price), loan = loanOn(price - trust), down = price - trust - loan;
-    const why = !open ? 'The books are closed.' : S.farms.length >= MAX_FARMS ? 'Eight farms is as much as one steward can ride.' : S.money < down ? 'The purse will not stand ' + fmt(down) + ' down.' : '';
-    return {id, name:f.name, land:LAND[id], acres:f.acres, price, down, loan, trust, order:ORDER_W[f.cond], value:lettingValue(f, S.year), can:!why, why}; }); }
+    const more = raiseFor(down - Math.max(0, S.money)), room = capWith(f) - S.mortgage - loan, purse = Math.max(0, Math.round(down - more * borrowGets() / 500));
+    const why = !open ? 'The books are closed.' : S.farms.length >= MAX_FARMS ? 'Eight farms is as much as one steward can ride.' : more > room ? 'The purse will not stand ' + fmt(down) + ' down, and the land will not carry ' + fmt(more) + ' more on mortgage.' : '';
+    return {id, name:f.name, land:LAND[id], acres:f.acres, price, down, loan, trust, more, purse, borrowed:loan + more, interest:Math.round((loan + more) * (F('cheapCredit') ? 0.04 : 0.05)), order:ORDER_W[f.cond], value:lettingValue(f, S.year), can:!why, why}; }); }
 function takeFarm(id, loan, paid){ const f = landFor(id); f.paid = paid; f.boughtT = S.t; if (S.soldFarms) delete S.soldFarms[id];
   Object.assign(f, {own:true, arrears:0, level:'fair', lease:{type:'will'}, since:S.year}); delete f.void; delete f.rebate; if (!f.tenant || f.tenant === 'Edmund') f.tenant = incomer()[0];
   f.rent = five(0.95 * lettingValue(f, S.year)); f.K = 0.5 * f.rent; if (loan) S.mortgage += loan;
   S.farms.push(f); return f; }
 function buyFarm(id){ const x = farmsForSale().find(r => r.id === id); if (!x || !x.can) return false;
-  S.money -= x.down; const f = takeFarm(id, x.loan, x.price); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
-  S.journal.unshift({when:stamp(), title:'Land', did:'Bought ' + f.name + ', ' + f.acres + ' acres, for ' + fmt(x.price) + (x.loan ? ', ' + fmt(x.loan) + ' of it on mortgage' : '') + (x.trust ? ', ' + fmt(x.trust) + ' of it the trustees’ money' : '')}); save(); render(); return true; }
+  S.money -= x.purse; const f = takeFarm(id, x.borrowed, x.price); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
+  S.journal.unshift({when:stamp(), title:'Land', did:'Bought ' + f.name + ', ' + f.acres + ' acres, for ' + fmt(x.price) + (x.borrowed ? ', ' + fmt(x.borrowed) + ' of it on mortgage' : '') + (x.trust ? ', ' + fmt(x.trust) + ' of it the trustees’ money' : '')}); save(); render(); return true; }
 function sellState(id){ const f = farm(id), open = S.phase !== 'end' && !S.dead, settled = !f.own;
   const why = !open ? 'The books are closed.' : S.farms.length <= 1 ? 'The last farm cannot be sold.' : f.tenant === 'Edmund' && !f.void ? 'Edmund farms it himself.' : settled && !F('edmundDead') && S.chars.edmund.r <= -3 ? 'Settled land. Edmund will not sign.' : '';
   const sp = settled ? splitSettled(salePrice(f), S.money, 0) : {free:salePrice(f), off:0, trust:0};
@@ -9261,7 +9267,7 @@ for (const [id, of] of [['plough', 'longbarrow'], ['peat', 'kennet'], ['brickkil
 function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]}; const put = (k, n, t) => { if (n) why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); return n; };
   let st = EST[i].standing; why.standing.push(EST[i].standing + ' ' + cap1(EST[i].name));
   st += put('standing', societyMark(), 'Society'); st += put('standing', -6 * (S.settledSold || 0), 'Settled land sold');
-  st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down'); st += put('standing', F('hallPew') ? 1 : 0, 'The Hall pew'); st += put('standing', F('churchRoof') ? 1 : 0, 'The church roof');
+  st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down'); st += put('standing', F('hallPew') ? 1 : 0, 'The Hall pew'); st += put('standing', F('mp') ? 4 : 0, 'Member for Wyvern, and a point more each quarter you sit'); st += put('standing', F('churchRoof') ? 1 : 0, 'The church roof');
   st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 2) ? -4 : 0, 'Not seen in the county this half-year'); st += put('standing', S.money < 0 ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
   let g = 44; why.goodwill.push('44 The parish as you found it');
   const rack = S.farms.filter(f => f.level === 'rack').length, easy = S.farms.filter(f => f.level === 'easy').length;
@@ -9290,6 +9296,7 @@ const idle = (k, seasons) => S.t - ((S.duty && S.duty[k]) || 0) >= seasons;
 function duty(k){ S.duty = S.duty || {}; S.duty[k] = S.t; }
 function regardQuarter(line){ const m = marks(), q = S.season, d = {};
   for (const k of ['standing', 'goodwill', 'family']) { const over = S[k] - m[k]; d[k] = over > HOLD ? -Math.ceil((over - HOLD) / SINK) - (S[k] > 80 ? 1 : 0) : over <= -20 ? 2 : over <= -5 ? 1 : 0; }
+  if (F('mp')) d.standing += 1;   // a Member is somebody in the county for as long as he sits
   add(d);
   // the parish
   if (S.goodwill < 38 && !F('sullen')) { fl('sullen'); S.notes.push(`No hat is touched in Hatherley street this morning; and the eleven men who stand at the door of the Bell, as you ride by, look at the road.`); }
@@ -10573,7 +10580,7 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<p class="rk"><span>${label}</span><b${band(v, words).length > 14 ? ' class="long"' : ''}>${esc(band(v, words))}</b></p><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
-    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <span class="of"><i>${fmt(S.mortgage)}</i>${typeof mortCap === 'function' ? ` of ${fmt(mortCap())}` : ''}</span></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${typeof RESUMED !== 'undefined' && RESUMED ? `<p class="resumed"><b>Your estate, as you left it</b><span>${esc(QUARTER[S.season])} ${S.year}. Nothing is lost.</span></p>` : ''}
     ${cueHTML()}
@@ -10946,7 +10953,7 @@ function farmsHTML(only){ const live = typeof farmsList === 'function', list = l
     return `<details name="lot"${LOT === f.id ? ' open' : ''} ontoggle="if(this.open)LOT='${f.id}';else if(LOT==='${f.id}')LOT=''"><summary><b>${esc(f.name)} <small>${amt(f.rent, 1)} a year</small></b><span>${f.sellPrice ? `<i class="tag">Sell</i>${sum(f)}` : fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p>${tenure(f)}${said(f)}<p class="terms">${esc(more(f))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${up || `${f.canLevel ? `<p class="lvrow"><span>Rent asked</span>${lv(f)}</p>` : ''}${f.sellPrice ? `<ul class="fx">${f.sellToYou === undefined ? `<li class="pos">+${fmt(f.sellPrice)} if sold</li>` : `${f.sellToYou ? `<li class="pos">+${fmt(f.sellToYou)} in hand if sold</li>` : ''}${f.sellToMortgage ? `<li class="pos">+${fmt(f.sellToMortgage)} off the mortgage if sold</li>` : ''}${raised(f) ? '' : '<li>Settled land. The price goes to the trustees</li>'}`}<li class="neg">−${fmt(f.rent)} a year in rent</li></ul>` : ''}
     <span class="acts">${f.canOffer ? `<button class="inkbtn lease" onclick="leaseOn('${f.id}')">Negotiate a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${sum(f)}</button>` : ''}</span>
     ${f.evict && f.evict.can ? `<details class="evict"><summary>Notice to quit</summary>${fxList(f.evict.fx)}<button class="inkbtn" onclick="evictTenant('${f.id}')">Serve it</button></details>` : ''}`}</div></details>`; };
-  const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span><i class="tag">Buy</i>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}</p>${f.value ? `<ul class="fx"><li class="neg">−${fmt(f.price)} to buy</li><li class="pos">+${fmt(f.value)} a year in rent</li></ul>` : ''}<p class="terms">${f.down !== undefined ? amt(f.down, -1) + ' down' + (f.loan ? ', ' + amt(f.loan, -1) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
+  const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span><i class="tag">Buy</i>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}</p>${f.value ? `<ul class="fx"><li class="neg">−${fmt(f.price)} to buy</li><li class="pos">+${fmt(f.value)} a year in rent</li>${f.borrowed ? `<li class="neg">−${fmt(f.interest)} a year in interest</li>` : ''}</ul>` : ''}<p class="terms">${f.down !== undefined ? (f.purse || !f.borrowed ? amt(f.purse, -1) + ' from the purse' : 'Nothing from the purse') + (f.borrowed ? ', ' + amt(f.borrowed, -1) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>${f.more ? 'Buy on mortgage' : 'Buy it'}</button></div></details>`;
   if (only) { const f = list.find(x => x.id === only), s = sale.find(x => x.id === only); return `<div class="lots flat">${f ? held(f) : s ? lot(s) : ''}</div>`.replace(/<details name="lot"( open)?/, '<details name="lot" open'); }
   return `<dl class="bal slim"><div><dt>The rental</dt><dd>${amt(list.reduce((a, f) => a + f.rent, 0), 1)}</dd></div><div><dt>Acres let</dt><dd>${list.reduce((a, f) => a + f.acres, 0).toLocaleString('en-GB')}</dd></div><div><dt>Farms</dt><dd>${list.length} of 8</dd></div></dl>
     <div class="lots flat">${list.map(held).join('')}</div>${sale.length ? `<h3 class="orn">To be had</h3><div class="lots">${sale.map(lot).join('')}</div>` : ''}`; }
