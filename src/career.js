@@ -1283,9 +1283,9 @@ ${son ? `The boy goes with her. He is the heir of Hatherley, and he is brought u
   ]});
 
 /* ================= The princes =================
-   The Duke of Clarence for a son at sea, the Duke of York for one in the Army, the Bishop of Salisbury (the King's Fisher) for one in orders.
-   Each reads what the squire has done: his own service, the petition of 1807, the bond, the bread at Windsor, the Member's seat, the living sold.
-   Flags: clarenceMan, clarenceReview, yorkMan, chRoyal, chStall. A prince's man has one more of interest in his own service. */
+   The Duke of Clarence for a son at sea, the Duke of York for one in the Army, the Queen at Windsor for one in orders.
+   Each reads what the squire has done: his own service, the petition of 1807, the bond, the bread at Windsor, the Member's seat, Mr Robinson at the farm, Mr Fox's dinner.
+   Flags: clarenceMan, clarenceReview, yorkMan, yorkPug, chRoyal. A prince's man has one more of interest in his own service. */
 const dukeKnows = () => T('captain') ? 'captain' : F('signedPetition') ? 'saint' : F('princeLoan') ? 'bond' : F('royalPlain') ? 'bread' : '';
 
 ev({ id:'navClarence', weight:30, hen:false, at:'hall', who:() => 'edmund', from:1806, to:1809, cond:() => edmServes('navy') && navRank() === 1 && !S.peril && !F('clarenceSeen'), title:'Nineteen to Dinner at Bushy',
@@ -1308,9 +1308,7 @@ Captain Holloway said in the chaise, ‘He has said that to forty. He has rememb
       if (chance(Math.min(0.85, 0.35 + 0.1 * interest()))) { fl('clarenceMan'); reg('edmund',1,'You wrote to the Duke of Clarence for him');
         return `You write one side, and the keeper kills a buck.
 
-The answer is in the Duke’s own hand. It is four sides without a stop; it thanks you for the venison in the first line, and comes by way of Lord Nelson’s wedding, the state of the Dock-yards, and a Mr Pitcairn who made him a pair of boots at Halifax in the year ’86, to the last.
-
-“Your boy is upon my list Sir and by God there he stays.”`; }
+The answer is in the Duke’s own hand. It is four sides without a stop; it thanks you for the venison in the first line, and comes by way of Lord Nelson’s wedding, the state of the Dock-yards, and a Mr Pitcairn who made him a pair of boots at Halifax in the year ’86, to the last line; which is, that your boy is upon his list, Sir, and by God there he stays.`; }
       return `You write one side, and the keeper kills a buck.
 
 The answer is from a Mr Barton, at Bushy, in a clerk’s hand. He is commanded by His Royal Highness to acknowledge the receipt of a haunch of venison, which arrived in good condition; and he has the honour to be.`; }},
@@ -1319,13 +1317,13 @@ The answer is from a Mr Barton, at Bushy, in a clerk’s hand. He is commanded b
 
 The answer comes within the week, in his own hand, and upon six sides. He remembers the barge. He remembers her coxswain, a man named Hake, with one ear; and he says that she was green. She was white.
 
-“Your boy is upon my list Sir and when I have a flag he shall have the barge of my flag-ship and I shall not ask the loan of her.”`; }},
+Your boy, he ends, is upon his list; and when he has a flag, the boy shall have the barge of his flag-ship, and nobody shall ask the loan of her.`; }},
     {t:'Write, and tell him why you signed.', if:() => F('signedPetition') && !T('captain'), go:() => { fl('clarenceSeen'); fl('clarenceMan'); add({goodwill:1}); reg('edmund',1); if (S.chars.thorne) reg('thorne',1);
       return `You write two sides upon the Trade, and you soften nothing.
 
 He answers with eight. He was at Jamaica a Midshipman; he saw the negroes dance of a Sunday, and never saw happier men; Mr Wilberforce was never out of Yorkshire, but to go to Bath; and a man who will tell a King’s son to his face that he is wrong, is the father that he would choose for an officer.
 
-“I shall not convince you Sir nor you me. Your boy is upon my list.”`; }},
+He will not convince you, he says, nor you him; and your boy is upon his list.`; }},
     {t:'Tell Edmund that a Prince without a ship can give nobody one.', go:() => { fl('clarenceSeen'); reg('edmund',-1);
       return `You write that an Admiral who has been so long ashore has nothing in his gift but dinners; and that the way to a Commander’s commission lies through Captain Holloway’s good word, and the enemy.
 
@@ -1391,9 +1389,7 @@ P.S. I have been. The Duchess keeps forty dogs, and a kangaroo. I carried a pug 
     {t:'Write to the Duke yourself, as an old Captain of the American war.', if:() => T('soldier'), go:() => { fl('yorkSeen'); fl('yorkMan'); add({standing:1}); reg('edmund',1);
       return `You write that you sold out because there was a peace, and that you have sent him a son because there is not.
 
-The answer is in a clerk’s hand, and has one line under the signature that is not.
-
-“I was hard upon you, sir, to your son, and am since told that you were at Guilford. Bring him to me when you are in town. Frederick.”
+The answer is in a clerk’s hand, and has three lines under the signature that are not. He was hard upon you to your son, and is since told that you were at Guilford; and you are to bring the boy to him when you are next in town.
 
 Colonel Gordon has added Edmund’s name, the clerk says, to a list which is kept in the left-hand drawer; and of which nobody at the Horse Guards will say more, than that there is such a drawer.`; }},
     {t:'Let Colonel Gordon know how the Member votes.', if:() => F('mp'), go:() => { fl('yorkSeen'); fl('yorkMan'); add({standing:-1}); reg('edmund',-1,'You bought him the Duke’s notice with your vote');
@@ -1417,44 +1413,50 @@ after('clarke', () => F('yorkMan') && E() === 'army' && !F('edmundDead') ? `He l
 byId('armPeace').choices.splice(2, 0, {t:'Write to the Duke of York, to keep him upon full pay.', if:() => F('yorkMan'), go:() => { add({family:-1, standing:1}); reg('edmund',2,'The Duke of York kept him in the first battalion');
   return `You write to the Horse Guards; and the answer is from Colonel Torrens, upon a half sheet.
 
-“Sir, I am directed by the Commander-in-Chief to acquaint you, that Captain ${S.sur} of the 52nd is not to be reduced, and that he will do duty with the first battalion until further orders. His Royal Highness desires me to add, that ${F('yorkPug') ? 'the pug is dead' : 'he has not forgot the facings'}.”
+He is directed by the Commander-in-Chief to acquaint you, that Captain ${S.sur} of the 52nd is not to be reduced, and will do duty with the first battalion until further orders; and His Royal Highness desires him to add, that ${F('yorkPug') ? 'the pug is dead' : 'he has not forgot the facings'}.
 
 Edmund goes back to Hythe with the mule, and Ortiz behind him. Mr Cox strikes one name out of his book, and the eleven gentlemen who wait to purchase are still eleven.`; }});
 
-ev({ id:'chFisher', weight:30, at:'hall', who:() => 'edmund', from:1808, to:1813, cond:() => edmServes('church') && !F('chFisherSeen'), title:'The King’s Fisher',
-  text:() => `The Bishop of Salisbury confirms at Wyvern upon the Thursday, and dines at the Hall${F('soldLiving') ? ', where he has not sat down since the living was sold; and he says grace as a man does who has considered whether he will' : F('churchRoof') ? '; having first walked round the church, and looked for some time at the new lead' : '; having first walked round the church, and looked for some time at the place where the rain comes into the chancel'}.
+ev({ id:'chQueen', weight:30, hen:false, at:'hall', who:() => 'edmund', from:1805, to:1809, cond:() => edmServes('church') && !F('chQueenSeen'), title:'A Quinsy at Windsor',
+  text:() => { const kg = S.king && S.king.end;
+    return `Edmund writes from Windsor, upon paper with a crown in the water-mark; and the letter is dated upon a Sunday, at eleven at night.
 
-Dr Fisher was a Canon of Windsor before he was a Bishop. The King calls him his own Fisher; and for these ${inWords(Math.max(3, S.year - 1805))} years he has had the charge of the Princess Charlotte’s education, of which he talks from the fish until the cheese. He names his own office with the whole weight upon the second syllable; and it is known in Berkshire, though not at his own table, that her Royal Highness calls him the Great UP.
+“My dear Father, I preached this morning before the King and Queen, and I have not yet been to bed.
 
-${F('edmundVicar') ? 'Edmund, whose church it now is, has read prayers for him' : 'Edmund has ridden over from ' + (F('edmRector') ? 'Upton' : 'his cure') + ' to read prayers for him'}; and when the cloth is drawn, the Bishop turns his chair.
+I lay on Saturday at Datchet, with old Mr Jessop, who is a Minor Canon. At ten at night there came a page from the Queen’s Lodge, with a lantern. Dr Ives, who is in waiting, had a quinsy, and could not speak above a whisper; the Dean was at Bath; and Mr Jessop had the gout in both feet, as the page could see for himself. Mr Jessop looked at me.
 
-“Mr ${S.sur}, your son preached before me this morning for twelve minutes. Her Royal Highness has told me that she will hear no sermon which is above fifteen; and I have not a chaplain who can leave off under forty. I want a young man for the Sunday after Ascension, at Windsor. ${F('chBought') ? 'I instituted him at Upton, I think. I did not ask what the presentation cost; I find it better never to ask.' : F('royalPlain') ? 'The King has not forgot what you told him of bread; and it will do the young man no harm to bear your name.' : F('school') ? 'I am told that you have forty children at school in a tithe barn. I should like the Princess to hear a man who comes from such a parish.' : 'He will want a silk gown. She remarks upon stuff.'}”
+I had one sermon in my saddle-bag. It was written for ${F('edmundVicar') ? 'Hatherley' : F('edmRector') ? 'Upton' : 'my own people'}, upon the text, ‘The harvest truly is plenteous’; and it has in it the price of a bushel of wheat, and what Farmer Twitchen said to me about the tithe of turnips. There was no time to take them out.
 
-Edmund looks at the decanter${S.flags.edmWife && /Poyntz|Lyford/.test(S.flags.edmWife) ? `; and then at ${hh('his mother', 'you')}, there being nobody else present who knows that the sermon was eight-and-twenty minutes until Mrs Edmund had it on the Saturday` : ''}.`,
+Prayers are at eight. The King makes the responses louder than the clerk, and beats the time of the psalm upon the front of his pew. The Queen had a snuff-box in her lap, and beyond her there sat five Princesses in a row, in five bonnets of the one pattern. I was twelve minutes. At the price of wheat His Majesty said, ‘Right! Quite right!’ so as to be heard in the organ-loft; and when I had done, he asked the Queen three times what I was called, before she could tell him.
+
+${kg === 'blown' ? `Colonel Taylor, who writes the King’s letters, asked whether I were anything to the Mr ${S.sur} at whose farm a Mr Robinson once lodged. I said that I was his son. He said that Mr Robinson’s friends had read of that visit in a newspaper, and had not forgot it; and I stood for the rest of the time that he was speaking.` : kg ? `Colonel Taylor, who writes the King’s letters, asked whether I were anything to the Mr ${S.sur} at whose farm a Mr Robinson once lodged. I said that I was his son. He said nothing more upon that head; but a chair was set for me, and nobody else in the room had one.` : F('royalPlain') ? `The King had it at the third time. ‘${S.sur}! Bread! The father told me bread, and the son tells me wheat. Good family. What?’ And he said it again to the clerk, upon the stairs.` : F('foxite') ? `Colonel Taylor, who writes the King’s letters, asked whether I were son to the gentleman who drank the People at Mr Fox’s dinner. I said that I was, and that I had not been of the party. He wrote something upon a card, and put the card into his waistcoat.` : F('princeLoan') ? `The Queen asked whether it were my father who had lent a thousand pounds to her son. I said that it was. She took snuff; and she said that I should then be the first of my family who had got anything from hers.` : `Nobody at Windsor had ever heard the name, and Colonel Taylor, who writes the King’s letters, had me spell it.`}
+
+Her Majesty sent for me afterwards. She is a very small lady, and speaks as the Germans do. She had heard Dr Ives for nineteen years, she said, and was never told until this morning what a tithe of turnips is; and she had remarked that I did not once look at the Princesses, which she has seen in no clergyman under fifty. I am to be written down an Assistant Chaplain to her Household, if my father has no objection.
+
+It is thirty pounds a year, sir, and a month’s waiting in the twelve, with a place at the Chaplains’ table. I must find a curate for the month, and a silk gown; and the Colonel desires to have your answer, and not mine.”`; },
   choices:[
-    {t:'Let him go to Windsor, and buy him the silk gown.', note:'£25', go:() => { fl('chFisherSeen'); fl('chRoyal'); add({money:-25, standing:3, family:3}); reg('edmund',2,'You sent him to preach before the Princess Charlotte');
-      return `He preaches at Windsor upon the Sunday after Ascension, from the forty-sixth Psalm; and he is eleven minutes and a half.
+    {t:'Let him take it, and find the curate and the gown.', note:'£45', go:() => { fl('chQueenSeen'); fl('chRoyal'); add({money:-45, standing:4, family:2}); reg('edmund',2,'You let him be Chaplain to the Queen');
+      return `The warrant comes down in a tin case, with a seal to it of the bigness of a saucer; and there come after it the fees, which are seven pounds, thirteen shillings, and sixpence, to five persons, of whom one is the Yeoman of the Mouth.
 
-The Princess has a watch open upon the cushion before her. When he comes down, she shuts it, so as to be heard; and she says to Lady de Clifford, in a voice which carries to the organ loft, that there is the first clergyman she ever met with who left off when he had done.
+He does his month in November. The King has him by the sleeve upon the Terrace, and asks what turnips are doing in Berkshire; the Princess Elizabeth draws him, in chalks, with a sheaf under his arm; and the Queen, upon the last Sunday, gives him a prayer-book in German, with her name in it, of which he can read the name.
 
-He is sent for to the Lower Lodge, and is asked whether he hunts. The Bishop writes to you that her Royal Highness has desired to have “the short one” again at Michaelmas; and he begs that the young man may not be encouraged to think that brevity is everything.`; }},
-    {t:'Ask what the Bishop will do for him afterwards.', go:() => { fl('chFisherSeen');
-      if (F('soldLiving')) { add({standing:-2}); reg('edmund',-1);
-        return `You say that a young man who obliges a Bishop may look to be obliged.
+At Hatherley he is called the Queen’s Chaplain by everybody but ${steward()}, who calls him Mr Edmund, and is observed to do it oftener than before.`; }},
+    {t:'Carry your answer to Windsor yourself.', note:'£55', if:() => F('royalKnown'), go:() => { fl('chQueenSeen'); fl('chRoyal'); add({money:-55, standing:6, family:3}); reg('edmund',1); reg('henrietta',1);
+      return `You are upon the Terrace at six, ${hh('with Henrietta upon your arm, ', '')}among two hundred people who have come to see the Family walk.
 
-“I had understood, Mr ${S.sur}, that in this parish preferment was a thing bought and sold. I have nothing to sell.”
+The King is led past, and stops. He cannot see you, and he knows your voice at the second word. He cries out that here is the parson’s father; that it was twelve minutes, sir, twelve; and that he has sat under Bishops for fifty years, and not a man of them could do it. He calls the Queen back to look at you; and she tells you, with her snuff-box open, that your son is a good young man, who looks at his book.
 
-He calls for his carriage before the tea comes in. The sermon at Windsor is preached by his own chaplain, in three-and-forty minutes; and it is said at Wyvern that the Princess counted the panes in the east window, twice, and got a different sum.`; }
-      fl('chRoyal'); fl('chStall'); add({standing:2, family:2}); reg('edmund',1);
-      return `You say that a young man who obliges a Bishop may look to be obliged.
+The warrant is made out that week. You pay the fees, the curate, and the mercer; and you are bowed to in Wyvern by two persons who had left it off.`; }},
+    {t:'Write to the Colonel, that a son does not answer for his father’s toasts.', note:'£45', if:() => F('foxite') && !F('royalKnown'), go:() => { fl('chQueenSeen'); fl('chRoyal'); add({money:-45, standing:2}); reg('edmund',1);
+      return `You write that you dined with Mr Fox, and would again; and that your son was thirty miles off upon the day, construing Hooker.
 
-Dr Fisher takes it very well. He has heard the same thing said at Windsor, he tells you, by a King, and in fewer words.
+The answer is one sentence. Her Majesty is pleased to hope, that the father may in time be found to answer for the son.
 
-Edmund preaches before the Princess for eleven minutes and a half, in the gown that he has; and at Christmas he is collated to the prebend of Grimston in the church of Sarum, which is worth eleven pounds, four shillings, and twopence a year, and gives him a seat in the choir that he may sit in when he pleases.`; }},
-    {t:'Keep him to his parish.', go:() => { fl('chFisherSeen'); add({goodwill:1}); reg('edmund',-1);
-      return `You say that he has ${F('edmRector') ? 'four hundred souls at Upton' : 'a cure of his own'}, and that the Sunday after Ascension comes there also.
+The warrant follows it within the week; and you pay for the gown.`; }},
+    {t:'Tell him that a parish is not served from Windsor.', go:() => { fl('chQueenSeen'); add({goodwill:1}); reg('edmund',-1);
+      return `You write that he has a cure of souls, and that there is not a Princess among them.
 
-The Bishop bows, and takes snuff. It is his chaplain who preaches at Windsor, for three-and-forty minutes; and the Princess is said to have counted the panes in the east window, twice, and to have got a different sum.
+Dr Ives recovers of his quinsy, and preaches upon the Sunday following for one-and-forty minutes. The Queen is said to have emptied the snuff-box.
 
-Edmund’s text upon that Sunday, in his own church, is from the forty-sixth Psalm; and the clerk times it at eleven minutes and a half, to a congregation of thirty-one.`; }}
+Edmund gives the harvest sermon to his own people, with the turnips in it; and Farmer Twitchen, finding himself in the second head, stands up in his pew to hear it the better.`; }}
   ]});
