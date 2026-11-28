@@ -133,8 +133,21 @@ The groom takes your answer without reading the direction, and turns his horse�
 ${steward()}, who was shown the figure, keeps it to himself for the better part of a day. By Sunday it is known at the Bell that the squire was offered ${pounds(R)} a year to turn ${called(f)} out, and refused it; and by the time the story has walked as far as Kintbury, the sum is five thousand.`; }}
   ]});
 
+/* What he recollects of the landlord: the sword, the swans, and which way the squire took him when the stag was in the pond. The two flags are put down here,
+   since the hunt did not keep them; a squire hunted over before this was written gets the turnips. */
+{ const stag = byId('royalStag'); if (stag) [['royalRam', 0], ['royalHall', 1]].forEach(([k, i]) => { const c = stag.choices[i], go = c.go; c.go = function(){ fl(k); return go.apply(this, arguments); }; }); }
+const kingKnew = () => T('court') || !!soc('knight') || F('royalKnown');
+function kingHail(){ const says = [];
+  if (soc('knight')) says.push('I did you with the Berkshire address. What?');
+  if (T('court')) says.push(swans() ? 'Held the horse. They let me see nobody here, and they have sent me my swan-keeper.' : 'Held the horse. You had my swans. Who has ’em now?');
+  if (F('royalRam')) says.push('My stag was in your pond, and I sent you a ram. Does he stand the wet? What?');
+  if (F('royalHall')) says.push('I sat in your house in my boots. Old house. Have you pulled it about? What?');
+  if (F('royalPlain')) says.push('Nine shillings! You told me nine, and I said twelve. What?');
+  if (!says.length) return F('royalKnown') ? S.sur + '! What? The turnips! Hoe ’em twice, I said.' : 'Who’s this? The landlord? What? Good land. Good land.';
+  return (soc('knight') ? 'Sir ' + firstName() : S.sur) + '! ' + says.slice(0, 2).join(' '); }
+
 ev({ id:'kingComes', follow:true, who:() => null, get at(){ return S.king ? S.king.id : ''; }, cond:() => kingIn() && S.king.st === 'here', title:'Mr Robinson',
-  text:() => { const f = kingF(), w = kingWas(), hail = F('royalKnown') ? S.sur + '! What? The turnips! Hoe ’em twice, I said.' : 'Who’s this? The landlord? What? Good land. Good land.';
+  text:() => { const f = kingF(), w = kingWas(), hail = kingHail();
     return `By the Doctor’s agreement the landlord is to keep away from ${f.name}; and you have kept away, until a note comes about the pump, which draws foul, and which nobody but the landlord can be asked to mend.
 
 In the close behind the barn three men are hoeing turnips abreast, each in a black coat, a white waistcoat, black silk breeches, and powder; and as the two outer men work in silence, and are never a yard before the middle one, nor a yard behind him, it is some time before you understand that they are not there for the turnips.
@@ -149,12 +162,12 @@ ${kingDoc()} is coming up from the gate. He is a civil man, and takes off his ha
 
 “My patient is not allowed paper, Mr ${S.sur}. If he has given you any, I must trouble you for it.”`; },
   choices:[
-    {t:'Give the Doctor the paper.', go:() => { S.king.letter = 'given'; fl('royalKnown'); add({money:52});
+    {t:'Give the Doctor the paper.', go:() => { const knew = kingKnew(); S.king.letter = 'given'; fl('royalKnown'); add({money:52});
       return `You hold it out. The Doctor reads the direction, and no more; and having put the paper into his waistcoat, he looks along the row to the two men in black, who lay down their hoes.
 
 Mr Robinson is walked back to the house between them, at their pace and not at his. At the yard gate he stops, and turns his whole person about, as he would upon a parade.
 
-“I shall know you again, sir.”
+${T('court') ? '“I knew you, sir. Forty minutes. I shall know you again.”' : knew ? '“I knew you, sir; and I shall know you again.”' : '“I shall know you again, sir.”'}
 
 On Monday there comes by the post a draft upon Drummond’s for fifty guineas, with a half-sheet folded round it, upon which is written, “For the pump.”`; }},
     {t:'Say that he gave you nothing; and send it express from Speen.', note:'£2', go:() => { S.king.letter = 'sent'; S.king.freeAt = S.t + 1; fl('royalKnown'); add({money:-2});
@@ -170,7 +183,7 @@ You do not go home. At the Pelican at Speen an express is to be had at any hour 
 
 The Doctor looks at your glove, and puts on his hat.
 
-In the book-room, with the door shut, you unfold four sides of pencil, written upon the fly-leaves of a volume of the Annals of Agriculture. Three of them concern the rotation of crops in the Electorate of Hanover, and are perfectly just. Upon the fourth there is a list of persons to be made Knights of the Garter, of whom two are dead; and under the list, in a larger hand, a single line: “I am as well as you are, and I am kept from my family.”
+In the book-room, with the door shut, you unfold four sides of pencil, written upon the fly-leaves of a volume of the Annals of Agriculture. Three of them concern the rotation of crops in the Electorate of Hanover, and are perfectly just. Upon the fourth there is a list of persons to be made Knights of the Garter, of whom two are dead${swans() ? `, with a memorandum that the swans are to be counted at Midsummer by Mr ${S.sur}, and by no physician` : ''}; and under the list, in a larger hand, a single line: “I am as well as you are, and I am kept from my family.”
 
 You hold the paper a good while over the candle before you can let it take. When next you ride by the close he sees you over the hedge, and stops hoeing.
 
@@ -360,7 +373,7 @@ Of ${kingDoc()} the equerry writes nothing. It is said at Windsor that the name 
     {t:'Go up to the Levee, and kneel.', if:() => !kingTitled(), note:'£105', go:() => { S.soc = S.soc || {}; S.soc.knight = {year:S.year, t:S.t}; add({money:-105, standing:3}); SOCIETY.knight.begin();
       return `You kneel upon a red cushion at St James’s. The King, having come out without a sword, borrows the Lord in Waiting’s; and he lays it upon your left shoulder, and then, having considered, upon your right.
 
-“Rise, Sir ${firstName()}. What? Hoe ’em twice.”
+“Rise, Sir ${firstName()}. What? ${swans() ? 'Count ’em twice' : 'Hoe ’em twice'}.”
 
 He passes on to a bishop. The fees are paid to eleven doorkeepers in turn, the last of whom, having counted his, opens the door.`; }},
     {t:'Go up to the Levee.', if:() => kingTitled(), go:() => { add({standing:4, family:2});
