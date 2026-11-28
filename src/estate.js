@@ -90,7 +90,7 @@ function ladyDay(){ const y = S.year, st = steward(), up = [];
     const bound = !!f.lease.drain && f.cond < 4;   // an easy lease carries a covenant to drain and fence, and it is kept the first year
     if (bound) delete f.lease.drain;
     if (bound || (secure && f.K > 1.4 * f.rent && f.cond >= 1 && f.cond < 4)) { if (!bound) f.K -= 0.9 * f.rent; f.cond++;
-      S.notes.push(`${f.tenant} has drained and fenced at ${f.name} at ${p.his} own cost; and ${st} enters the farm as ${ORDER_W[f.cond].toLowerCase()}.`); } }
+      S.notes.push(`${f.tenant} ${bound ? mendOf(f).done : 'has drained and fenced'} at ${f.name} at ${p.his} own cost; and ${st} enters the farm as ${ORDER_W[f.cond].toLowerCase()}.`); } }
   if (up.length) S.notes.push('Rents from year to year, moved this Lady Day: ' + up.join('; ') + '.'); }
 
 function relet(f){ const n = incomer(); f.cond = Math.max(0, f.cond - 1); f.tenant = n[0]; f.she = false; f.arrears = 0; f.lease = {type:'will'}; f.level = 'fair'; f.since = S.year; delete f.void; delete f.rebate;
@@ -185,6 +185,19 @@ const willNext = f => { const v = lettingValue(f, S.year); return five(v > f.ren
 const cornNow = f => five(0.86 * f.base * farmF(f) * (0.5 * means(S.year - 1) + 0.5 * market(S.year)));
 const LONG_LEASE = 0.96;   // fourteen years are bought with a twenty-fifth off the rent
 const covenants = `no two white straw crops together, no hay or straw sold off the farm, the hedges kept`;
+/* What each farm most wants doing, and what an easy lease binds its tenant to do. t: upon the choice; cov: in the lease; seen: the Monday after; done: at Lady Day. */
+const MEND = {
+  longbarrow:{t:'to puddle the down pond and turf the fold-banks', cov:'to puddle the pond upon the down afresh with clay and straw, and to turf the banks of the sheep-fold', seen:p => `a cart of clay stands at the down pond, and two men are treading straw into it`, done:'has puddled the pond upon the down and turfed the fold-banks'},
+  kennet:{t:'to scour the ditches to the river', cov:'to scour every ditch between the lane and the Kennet, and to cut the pollards that have fallen across them', seen:p => `four men are in the long ditch, to the waist`, done:'has scoured the ditches down to the Kennet and cut the fallen pollards'},
+  church:{t:'to plash the hedges and hang new gates', cov:'to plash the hedges upon the glebe side, and to hang eleven new gates of oak', seen:p => `a hedger from Kintbury is in the glebe hedge with his bill`, done:'has plashed the hedges and hung eleven oak gates'},
+  coldharbour:{t:'to pick the flints and stone the farm road', cov:'to pick the flints off the upper fields, and to lay them in the farm road', seen:p => `every child at Coldharbour is in the upper field with a basket`, done:'has picked the upper fields and laid the flints in the farm road'},
+  starveall:{t:'to stub up the gorse', cov:'to stub up the gorse from the thirty acres under the wood, and to burn it where it lies', seen:p => `there is smoke under the wood until dark`, done:'has stubbed and burnt the gorse under the wood'},
+  commonpiece:{t:'to level the ant-hills and the old ridges', cov:'to cut and carry the ant-hills, and to plough down the old ridges', seen:p => `a team is upon the old ridges, going across them`, done:'has cut the ant-hills and ploughed the old ridges level'},
+  rooksnest:{t:'to thatch the barn and the stable anew', cov:`to thatch the barn and the stable anew, with wheat straw of the farm’s own growing`, seen:p => `the thatcher’s ladder is against the barn`, done:'has new thatched the barn and the stable'},
+  withymead:{t:'to mow out the rushes and open the grips', cov:'to mow the rushes from the mead twice in every summer, and to open the grips', seen:p => `a man is in the mead with a spade, opening the first grip`, done:'has mown the rushes twice and opened the grips'},
+  maddle:{t:'to clean the old arable of couch', cov:'to fallow the old arable, and to fork out and burn the couch', seen:p => `the couch is burning in forty heaps upon the old arable`, done:'has fallowed the old arable and burnt the couch in heaps'}
+};
+const mendOf = f => MEND[f.id] || {t:'to drain and fence', cov:'to lay stone drains in the wet grounds, and to plant quick along the lane', seen:p => `there are two loads of stone at ${p.his} gate`, done:'has drained and fenced'};
 
 ev({ id:'leaseFalls', follow:true, cond:() => !!letting(),
   get title(){ const x = letting(); return x ? 'The Letting of ' + x.f.name : 'A Letting'; },
@@ -207,11 +220,11 @@ ${f.tenant} is in the hall, and has brought the old lease with ${p.him}.`; },
       return `The lease, being engrossed upon one skin at Wyvern, is read over in the steward’s room, and ${f.tenant} signs. The rent is ${fmt(r)} until Lady Day ${S.year + 7}.`; }},
     {t:'A lease of fourteen years.', note:() => rentNote(letting().f, five(LONG_LEASE * lettingValue(letting().f, S.year)), 'fixed for fourteen years. +Goodwill; the tenant improves the farm in time'), go:() => { const {f} = letting(), r = five(LONG_LEASE * lettingValue(f, S.year)); sign(f, 'term', 14, 'fair', r); add({goodwill:2});
       return `Fourteen years being agreed upon, ${steward()} reads the covenants aloud: ${covenants}. ${f.tenant} signs below your name, and the rent is ${fmt(r)} until Lady Day ${S.year + 14}.`; }},
-    {t:'Fourteen years at an easy rent, the tenant to drain and fence.', note:() => rentNote(letting().f, five(0.88 * lettingValue(letting().f, S.year)), 'fixed for fourteen years. +Goodwill; the farm a step better by Lady Day'), go:() => { const {f} = letting(), p = pro(f), r = five(0.88 * lettingValue(f, S.year)); sign(f, 'term', 14, 'easy', r); f.lease.drain = true; add({goodwill:3});
+    {t:() => `Fourteen years at an easy rent, the tenant ${mendOf(letting().f).t}.`, note:() => rentNote(letting().f, five(0.88 * lettingValue(letting().f, S.year)), 'fixed for fourteen years. +Goodwill; the farm a step better by Lady Day'), go:() => { const {f} = letting(), p = pro(f), r = five(0.88 * lettingValue(f, S.year)); sign(f, 'term', 14, 'easy', r); f.lease.drain = true; add({goodwill:3});
       if (f.tenant === 'Mrs Thorne') reg('thorne', 1, 'You gave her fourteen years at a rent she could mend the farm on');
-      return `The rent is set at ${fmt(r)} for fourteen years, ${f.tenant} covenanting to lay stone drains in the wet grounds, and to plant quick along the lane; and ${p.he} asks to take the lease home and read it.
+      return `The rent is set at ${fmt(r)} for fourteen years, ${f.tenant} covenanting ${mendOf(f).cov}; and ${p.he} asks to take the lease home and read it.
 
-On Monday there are two loads of stone at ${p.his} gate.`; }},
+On Monday ${mendOf(f).seen(p)}.`; }},
     {t:'Advertise the farm and take the best bidder.', note:() => rentNote(letting().f, five(1.13 * lettingValue(letting().f, S.year)), 'fixed for seven years, with a new tenant. −Goodwill'), go:() => { const {f} = letting(), r = five(1.13 * lettingValue(f, S.year)), old = f.tenant, n = incomer();
       if (old === 'Mrs Thorne') reg('thorne', -4, 'You advertised Long Barrow over her head'); if (old === 'Edmund') { reg('edmund', -3, 'You let Kennet Bottom over his head'); add({family:-6}); }
       f.tenant = n[0]; f.she = false; f.K = 0.3 * r; f.arrears = 0; f.since = S.year; sign(f, 'term', 7, 'rack', r); add({goodwill:-5});
@@ -933,12 +946,12 @@ const TRAIT_MARK = {
   standing:{soldier:5, captain:4, court:12, connexions:15, enemy:-3, whig:-10, dean:6, hunt:7, trade:-12, oxford:-4, lawsuit:-4},
   goodwill:{beloved:15, stranger:-12, hunt:-3},
   family:{captain:-5, lovematch:12, portion:-12, mother:-10, bottle:-6} };
-const SINK = 5;   // a figure loses a point a season for every five it stands above its mark
+const SINK = 7, HOLD = 3;   // regard well earned holds: nothing is lost within three of the mark, and beyond that a point a season for every seven; above eighty it is harder kept
 /* The three duties: the tenancies, the county, the family. Each goes stale if the squire lets it lie. */
 const idle = (k, seasons) => S.t - ((S.duty && S.duty[k]) || 0) >= seasons;
 function duty(k){ S.duty = S.duty || {}; S.duty[k] = S.t; }
 function regardQuarter(line){ const m = marks(), q = S.season, d = {};
-  for (const k of ['standing', 'goodwill', 'family']) { const over = S[k] - m[k]; d[k] = over > 0 ? -Math.ceil(over / SINK) : over <= -20 ? 2 : over <= -5 ? 1 : 0; }
+  for (const k of ['standing', 'goodwill', 'family']) { const over = S[k] - m[k]; d[k] = over > HOLD ? -Math.ceil((over - HOLD) / SINK) - (S[k] > 80 ? 1 : 0) : over <= -20 ? 2 : over <= -5 ? 1 : 0; }
   add(d);
   // the parish
   if (S.goodwill < 38 && !F('sullen')) { fl('sullen'); S.notes.push(`No hat is touched in Hatherley street this morning; and the eleven men who stand at the door of the Bell, as you ride by, look at the road.`); }
