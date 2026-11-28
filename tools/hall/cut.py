@@ -5,7 +5,7 @@ The Hall on the plan is not a separate drawing laid on. Each season's park was c
 takes back only what changed: the house, its shadow, the sweep and the trees about it. Since the rest of the
 drawing is the sheet itself, the piece has no edge to show.
 
-  python3 tools/hall/cut.py <folder holding old-, front-, extras-, coach- and garden-0..3.png>
+  python3 tools/hall/cut.py <folder holding old-, front-, extras-, coach-, garden-, wingo-, conso-, wingf- and consf-0..3.png>
 
 extras-<season> is the stone-fronted park with the coach at the door, the ice-house in the shrubbery and the
 parterre on the lawn drawn in, coach-<season> the brick house with the coach on its own gravel, and garden-<season> that again with
@@ -28,7 +28,13 @@ EXTRAS = [('carriage', 'extras', 'front', 40, 11, [(680,890),(875,890),(875,975)
           ('parterre', 'extras', 'front', 26, 17, [(700,950),(880,950),(880,1035),(700,1035)]),
           ('icehouse', 'extras', 'front', 26, 17, [(425,715),(585,715),(585,850),(425,850)]),
           ('carriage-old', 'coach', 'old', 26, 17, [(630,845),(940,845),(940,1015),(630,1015)]),
-          ('parterre-old', 'garden', 'coach', 26, 17, [(650,925),(1010,925),(1010,1045),(650,1045)])]
+          ('parterre-old', 'garden', 'coach', 26, 17, [(650,925),(1010,925),(1010,1045),(650,1045)]),
+          # The new wing (wingo on the brick house, wingf on the stone front), and the conservatory at its end (conso, consf),
+          # which is whatever its drawing changed in the drawing of the wing alone.
+          ('wing-old', 'wingo', 'old', 26, 17, [(1000,690),(1460,690),(1460,1020),(1000,1020)]),
+          ('conservatory-old', 'conso', 'wingo', 26, 17, [(1230,740),(1460,740),(1460,1020),(1230,1020)]),
+          ('wing', 'wingf', 'front', 26, 17, [(1000,690),(1460,690),(1460,1020),(1000,1020)]),
+          ('conservatory', 'consf', 'wingf', 26, 17, [(1230,740),(1460,740),(1460,1020),(1230,1020)])]
 
 def load(src, state, n): return Image.open(os.path.join(src, '%s-%d.png' % (state, n))).convert('RGB').resize((CW * K, CH * K), Image.LANCZOS)
 def base(n): return Image.open(os.path.join(OUT, '%d.jpg' % n)).convert('RGB').crop(CROP).resize((CW * K, CH * K), Image.LANCZOS)

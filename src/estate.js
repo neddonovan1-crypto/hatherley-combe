@@ -915,13 +915,13 @@ You pay ${pounds(70 * n)}, and sixty for the attorney.`; }}
 /* ---------- the rungs of credit, for the book ---------- */
 const timberLeft = () => S.timber === undefined ? 3 : S.timber;
 const timberNow = () => Math.round(75 * (1 + 0.035 * (S.year - FIRST_YEAR))) * 10;
-function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? '' : 'The books are closed.', n = S.annuities || 0, g = borrowGets();
+function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? '' : 'The books are closed.', n = S.annuities || 0, g = borrowGets(), off = Math.min(500, S.mortgage), last = off > 0 && off === S.mortgage;
   return [
     {id:'mortgage', name:'Borrow £500 on the land', line:'A lender advances money on the security of the estate. The deeds lie with his attorney until he is paid.', gets:g, verb:'Borrow', can:open && canBorrow(), why:shut || borrowWhy(), note:borrowNote(),
       effects:'Five per cent a year until it is paid off. The estate will carry ' + fmt(mortCap()) + ' in all.' + (g < 500 ? ' This year £50 of every £500 goes to the attorney who finds the lender.' : ''),
       fx:['+' + fmt(g), '−£25 a year in interest']},
-    {id:'repay', name:'Pay off £500 of the mortgage', line:'A draft on Tidmarsh’s bank for five hundred pounds goes to the lender. His attorney writes the payment on the deed.', gets:-500, verb:'Pay off', can:open && S.money >= 500 && S.mortgage >= 500, why:shut || (S.mortgage < 500 ? 'Nothing is owing.' : S.money < 500 ? 'There is not £500 in hand.' : ''), note:'',
-      effects:'Saves £25 a year in interest.', fx:['−£500', '+£25 a year saved']},
+    {id:'repay', name:last ? 'Pay off the last ' + fmt(off) + ' of the mortgage' : 'Pay off £500 of the mortgage', line:last ? 'A draft on Tidmarsh’s bank for the whole of what is left goes to the lender. His attorney sends back the deeds.' : 'A draft on Tidmarsh’s bank for five hundred pounds goes to the lender. His attorney writes the payment on the deed.', gets:-(off || 500), verb:last ? 'Pay it off' : 'Pay off', can:open && off > 0 && S.money >= off, why:shut || (!off ? 'Nothing is owing.' : S.money < off ? 'There is not ' + fmt(off) + ' in hand.' : ''), note:'',
+      effects:last ? 'Clears the estate of debt, and saves ' + fmt(Math.round(off / 20)) + ' a year in interest.' : 'Saves £25 a year in interest.', fx:[MINUS + fmt(off || 500), '+' + fmt(Math.round((off || 500) / 20)) + ' a year saved'].concat(last ? ['+ The deeds come home'] : [])},
     {id:'annuity', name:'Sell an annuity on your life', line:'A deed binding you to pay a hundred a year for life. The office has a surgeon examine you before it signs.', gets:700, verb:'Sell one', can:open && n < 4, why:shut || (n >= 4 ? 'Nobody will buy a fifth on one life.' : ''), note:n ? cap1(numWords(n)) + ' granted already' : '',
       effects:'A London office pays £700 down. You pay £100 a year for as long as you live. It is outside the usury law and needs no land.', fx:['+£700', '−£100 a year for life']},
     {id:'redeem', name:'Buy back an annuity', line:'The office names its price for giving up the deed. The parchment comes back with the seals cut off.', gets:-800, verb:'Buy it back', can:open && n > 0 && S.money >= 800, why:shut || (!n ? 'None is granted.' : S.money < 800 ? 'There is not £800 in hand.' : ''), note:'',
@@ -931,7 +931,7 @@ function creditList(){ const open = S.phase !== 'end' && !S.dead, shut = open ? 
   ]; }
 function takeCredit(id){ const x = creditList().find(r => r.id === id); if (!x || !x.can) return false; let did = x.name;
   if (id === 'mortgage') { S.mortgage += 500; S.money += x.gets; }
-  else if (id === 'repay') { S.mortgage -= 500; S.money -= 500; }
+  else if (id === 'repay') { const off = Math.min(500, S.mortgage); S.mortgage -= off; S.money -= off; if (!S.mortgage) did = 'Paid off the last ' + fmt(off) + ' of the mortgage'; }
   else if (id === 'annuity') { S.annuities = (S.annuities || 0) + 1; S.money += 700; add({standing:-1}); }
   else if (id === 'redeem') { S.annuities--; S.money -= 800; }
   else if (id === 'timber') { S.timber = timberLeft() - 1; add({money:x.gets, standing:-3}); }
@@ -989,7 +989,7 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   let st = EST[i].standing; why.standing.push(EST[i].standing + ' ' + cap1(EST[i].name));
   st += put('standing', societyMark(), 'Society'); st += put('standing', -6 * (S.settledSold || 0), 'Settled land sold');
   st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down'); st += put('standing', F('hallPew') ? 1 : 0, 'The Hall pew'); st += put('standing', F('mp') ? 4 : 0, 'Member for Wyvern, and a point more each quarter you sit'); st += put('standing', F('churchRoof') ? 1 : 0, 'The church roof');
-  st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 2) ? -4 : 0, 'Not seen in the county this half-year'); st += put('standing', S.money < 0 ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
+  st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 2) ? -4 : 0, 'Not seen in the county this half-year'); st += put('standing', S.money < 0 && S.red ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
   let g = 44; why.goodwill.push('44 The parish as you found it');
   const rack = S.farms.filter(f => f.level === 'rack').length, easy = S.farms.filter(f => f.level === 'easy').length;
   g += put('goodwill', -4 * Math.min(4, rack), 'Rack rents'); g += put('goodwill', 2 * Math.min(4, easy), 'Easy rents'); g += put('goodwill', idle('ride', 2) ? -5 : 0, 'The tenants have not seen you this half-year');
@@ -1001,7 +1001,7 @@ function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]
   let fm = 45; why.family.push('45 The house as you found it'); fm += put('family', idle('home', 1) ? -6 : 0, 'You have not kept at home this quarter');
   fm += put('family', 3 * S.chars.henrietta.r, 'Henrietta’s regard'); fm += put('family', F('edmundDead') ? 0 : S.chars.edmund.r, 'Edmund’s regard');
   fm += put('family', [-8, 0, 4, 7][i], cap1(EST[i].name)); fm += put('family', F('newFront') ? 3 : 0, 'The new front'); fm += put('family', F('icehouse') ? 2 : 0, 'The ice-house');
-  fm += put('family', S.money < 0 ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
+  fm += put('family', S.money < 0 && S.red ? -6 : 0, 'Duns at the door'); fm += put('family', T('gout') && !F('goutEased') ? -4 : 0, 'The gout');
   for (const dial in HOUSE) { const h = houseOf(dial), nm = HOUSE[dial].name + ', ' + h.label.toLowerCase(); st += put('standing', h.standing || 0, nm); g += put('goodwill', h.goodwill || 0, nm); fm += put('family', h.family || 0, nm); }
   if (typeof castleMark === 'function') for (const [k, n, t] of castleMark()) { const v = put(k, n, t); if (k === 'standing') st += v; else if (k === 'goodwill') g += v; else fm += v; }
   // what the squire was born or married to stays with him: each choice at the start moves its mark for good by what its card says

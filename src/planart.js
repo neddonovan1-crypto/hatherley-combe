@@ -32,6 +32,7 @@ const PLAN_BOX = {
   'road':[2.417, 46.312, 29.208, 5.812],
   'cottages':[2.583, 43.312, 15.5, 6.562],
   'school':[21.542, 41.875, 7.417, 8.312],
+  'clock':[17.583, 39.812, 3.708, 7.187],
   'pinery':[53.083, 40.875, 6.125, 5.0],
   'thresher':[58.958, 46.25, 11.667, 11.125],
   'barns':[25.625, 63.625, 14.333, 13.688],
@@ -53,13 +54,27 @@ const PLAN_BOX = {
   'spa':[43.875, 60.875, 5.792, 8.875],
   'mill':[47.792, 71.0, 10.333, 15.0],
   'malthouse':[56.417, 70.812, 8.208, 12.5],
+  /* PR 61: the later years. Each was drawn into the season's sheet (tools/plan), and is what the drawing changed. */
+  'papermill':[32.958, 74.938, 10.208, 12.25],
+  'wharf':[39.542, 77.875, 15.833, 15.875],
+  'barges':[41.75, 84.5, 11.708, 6.813],
+  'bridge':[54.625, 78.875, 13.167, 15.313],
   'brickkiln':[76.875, 62.75, 8.792, 10.75],
   'butts':[10.417, 32.312, 10.708, 5.812],
   'kennels':[27.0, 40.938, 10.417, 9.062],
   'paddock':[50.625, 26.812, 12.625, 11.688],
   'telegraph':[37.792, 3.75, 5.333, 7.0],
+  'tower':[29.708, 2.25, 6.0, 9.188],
   'turnpike':[88.708, 28.75, 8.958, 9.562],
   'camp':[79.458, 39.875, 15.75, 14.438],
+  'bellinn':[83.125, 32.5, 7.75, 7.562],
+  'hermitage':[71.75, 43.75, 7.958, 8.438],
+  /* the model farm is the Home Farm rebuilt, and covers the threshing barn and the yards; the engine's smoke stands on it */
+  'modelfarm':[56.25, 40.125, 15.708, 18.625],
+  'steam':[63.75, 37.625, 11.208, 18.125],
+  /* Mr Repton's park is laid before the Hall, whose own trees stand along its lower edge */
+  'park':[30.417, 32.812, 22.708, 18.0],
+  'obelisk':[41.042, 34.562, 5.25, 11.375],
   /* The Hall is the whole park redrawn about it (tools/hall/cut.py), so what stands in the park is laid after it.
      The old brick house and the new stone front each have their own coach and parterre, the ground before the two doors being different. */
   'hall-old':[39.229, 42.75, 20.312, 19.844],
@@ -69,6 +84,12 @@ const PLAN_BOX = {
   'carriage-old':[43.75, 53.594, 6.896, 5.969],
   'carriage':[44.792, 55.0, 4.5, 3.312],
   'parterre-old':[44.167, 56.094, 7.938, 4.406],
+  /* the wing and its conservatory, for the brick house and for the stone front (tools/hall/cut.py) */
+  'wing-old':[51.458, 48.75, 10.021, 10.969],
+  'wing':[51.458, 48.75, 10.021, 10.969],
+  'conservatory-old':[56.25, 50.313, 5.229, 9.406],
+  'conservatory':[56.25, 50.313, 5.229, 9.406],
+  'lodge':[48.333, 57.188, 6.042, 6.562],
   'rooks':[37.346, 39.352, 11.111, 10.185],
   'smoke':[46.0, 39.3, 9.63, 11.111]
 };

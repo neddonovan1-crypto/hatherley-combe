@@ -10,8 +10,8 @@ const farmAt = id => (typeof farmsList === 'function' && farmsList().some(f => f
 /* n: the name lettered on the plan. at: where the lettering sits, in hundredths of the sheet. pic: the aquatint shown on the place's paper. */
 /* at: where the name is hung, in hundredths of the sheet. by: which side of that point the label lies (a above, b below, l left, r right), so that however long a label grows it grows away from the thing it names. None: it is centred on open ground. */
 const PLACES = {
-  hall:{n:'Hatherley Hall', at:[54, 61.6], by:'b', pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
-  home:{n:'The Home Farm', at:[67, 45.3], by:'a', pic:() => 'places/estate-office'},
+  hall:{n:'Hatherley Hall', at:[55.2, 64], by:'r', pic:() => isBuilt('front') ? 'places/hall-new-front' : 'frontispiece'},
+  home:{n:'The Home Farm', at:[64.5, 44], by:'a', pic:() => 'places/estate-office'},
   longbarrow:{n:'Long Barrow', at:[43.5, 28], by:'a', farm:'longbarrow', pic:() => 'places/long-barrow-farm'},
   kennet:{n:'Kennet Bottom', at:[75, 67.9], by:'b', farm:'kennet', pic:() => isBuilt('drain') ? 'places/kennet-bottom-drained' : 'places/kennet-bottom-flood'},
   church:{n:'Church Farm', at:[29.4, 64.5], by:'l', farm:'church', pic:() => 'places/twelve-acres'},
@@ -19,13 +19,13 @@ const PLACES = {
   common:{n:'The Common', at:[22, 32], farm:'commonpiece', pic:() => farmAt('commonpiece') ? 'places/common-piece' : F('enclosed') ? 'places/common-enclosed' : 'places/common'},
   mill:{n:'The Mill', at:[62.4, 78.4], by:'r', pic:() => isBuilt('mill') ? 'places/mill-new' : 'places/mill-old'},
   lane:{n:'Kintbury Lane', at:[10, 51.2], by:'b', pic:() => isBuilt('road') ? 'places/kintbury-lane-mended' : 'places/kintbury-lane'},
-  copse:{n:'Cuckoo Copse', at:[75.5, 45], by:'b', pic:() => 'places/cuckoo-copse'},
+  copse:{n:'Cuckoo Copse', at:[76.5, 37.2], by:'a', pic:() => 'places/cuckoo-copse'},
   hanger:{n:'Hanger Wood', at:[58, 22.4], by:'b', pic:() => 'places/gallows-piece'},
   down:{n:'The Down', at:[48.6, 11.4], pic:() => 'places/down-beacon'},
   castle:{n:'Cullerne Castle', at:[89, 11.9], by:'b', pic:() => 'places/cullerne-castle'},
   london:{n:'London', at:[74.4, 9], by:'l', pic:() => 'places/london-season'},
-  wyvern:{n:'Wyvern', at:[89.6, 38.2], by:'l', under:true, pic:() => 'places/market-place'},
-  turnpike:{n:'The London Road', at:[88.8, 32.6], by:'l', pic:() => 'places/milestone'},
+  wyvern:{n:'Wyvern', at:[93.6, 45.8], by:'l', under:true, pic:() => 'places/market-place'},
+  turnpike:{n:'The London Road', at:[88.8, 30.4], by:'l', pic:() => 'places/milestone'},
   rooksnest:{n:'Rooksnest', at:[66, 31.6], by:'b', farm:'rooksnest', if:() => farmAt('rooksnest'), pic:() => 'places/rooksnest-farm'},
   coldharbour:{n:'Coldharbour', at:[79.3, 25.6], by:'l', farm:'coldharbour', if:() => farmAt('coldharbour'), pic:() => 'places/coldharbour-farm'},
   withymead:{n:'Withy Mead', at:[11.9, 74.5], by:'r', farm:'withymead', if:() => farmAt('withymead'), pic:() => 'places/withy-mead'},
@@ -33,10 +33,10 @@ const PLACES = {
   starveall:{n:'Starveall', at:[86, 60], by:'b', farm:'starveall', if:() => farmAt('starveall'), pic:() => 'places/starveall'}
 };
 /* Every work, venture, undertaking and person belongs to one place. What is not named here is found at the Hall, or for ventures at Wyvern. */
-const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', lbfold:'longbarrow', churchhouse:'church', coldyards:'coldharbour', coldclover:'coldharbour', starveburn:'starveall', starvepond:'starveall', cplime:'common', cpcloses:'common', rookdrain:'rooksnest', rookgranary:'rooksnest', withybank:'withymead', withybarn:'withymead', maddlehouse:'maddle', maddlesainfoin:'maddle', homeyards:'home', enclosure:'common', commonpiece:'common', pound:'common', cricket:'common', bells:'vestry', churchroof:'vestry', pew:'vestry'};
-const VENT_AT = {dairy:'church', hops:'coldharbour', limekiln:'starveall', potatoes:'common', cherries:'rooksnest', osiers:'withymead', gallops:'maddle', gravel:'common', sheepfair:'common', warren:'common', plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london'};
+const WORK_AT = {drain:'kennet', meadows:'kennet', fourcourse:'home', mill:'mill', cottages:'lane', road:'lane', school:'vestry', oaks:'hanger', timber:'hanger', barns:'church', chalk:'longbarrow', lbfold:'longbarrow', churchhouse:'church', coldyards:'coldharbour', coldclover:'coldharbour', starveburn:'starveall', starvepond:'starveall', cplime:'common', cpcloses:'common', rookdrain:'rooksnest', rookgranary:'rooksnest', withybank:'withymead', withybarn:'withymead', maddlehouse:'maddle', maddlesainfoin:'maddle', homeyards:'home', enclosure:'common', commonpiece:'common', pound:'common', cricket:'common', vaccine:'vestry', clock:'vestry', lodge:'turnpike', modelfarm:'home', tower:'down', hermitage:'copse', bells:'vestry', churchroof:'vestry', pew:'vestry', monument:'vestry', steam:'home', conservatory:'hall', obelisk:'hall'};
+const VENT_AT = {dairy:'church', hops:'coldharbour', limekiln:'starveall', potatoes:'common', cherries:'rooksnest', osiers:'withymead', gallops:'maddle', gravel:'common', sheepfair:'common', warren:'common', plough:'longbarrow', merino:'down', thresher:'home', peat:'kennet', brickkiln:'kennet', spa:'hall', turnpike:'turnpike', racecourse:'down', telegraph:'down', tithes:'vestry', funds:'london', brazil:'london', gaslight:'london', southdown:'down', coach:'turnpike', plait:'lane', papermill:'mill', wharf:'mill', bellinn:'turnpike', barges:'mill', hamburg:'london', remounts:'turnpike', bridge:'mill'};
 const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london', fishing:'mill', shooting:'hanger', underwood:'hanger'};
-const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
+const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike', purefoy:'wyvern', wray:'london', lyde:'turnpike', peverell:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
 /* A board stands at every farm held without a lease, as one stands at a farm for sale; and a farm under lease carries the year it runs to. */
@@ -139,8 +139,11 @@ function balloonSeat(g, mx, my, bw, bh){ let best = null;
 function balloonTail(mx, my, x, y, bw, bh){ const M = [mx * 3, my * 2], C = [(x + bw / 2) * 3, (y + bh / 2) * 2], a = bw * 1.5, b = bh, out = p => Math.abs((p[0] - C[0]) / a) ** 3 + Math.abs((p[1] - C[1]) / b) ** 3 > 1;
   const P = [clamp(M[0], C[0] - a * .55, C[0] + a * .55), clamp(M[1], C[1] - b * .5, C[1] + b * .5)], on = t => [P[0] + (M[0] - P[0]) * t, P[1] + (M[1] - P[1]) * t]; if (!out(M)) return '';
   let lo = 0, hi = 1; for (let n = 0; n < 14; n++) { const m = (lo + hi) / 2; if (out(on(m))) hi = m; else lo = m; }
-  const B = on(lo * .94), L = Math.hypot(M[0] - B[0], M[1] - B[1]); if (L < 4) return '';
-  const u = [(M[0] - B[0]) / L, (M[1] - B[1]) / L], nrm = [-u[1], u[0]], T = [M[0] - u[0] * Math.min(3, L * .15), M[1] - u[1] * Math.min(3, L * .15)], hw = clamp(L * .13, 3, 6), sway = L * .13 * (M[0] < C[0] ? 1 : -1);
+  /* the root of the horn is drawn back into the balloon until both its corners lie under the paper, or a tail that leaves at a slant shows one corner in the air */
+  const deep = p => Math.abs((p[0] - C[0]) / a) ** 3 + Math.abs((p[1] - C[1]) / b) ** 3 < .66; let B, L, u, nrm, hw;
+  for (let k = .86; k > .05; k -= .06) { B = on(lo * k); L = Math.hypot(M[0] - B[0], M[1] - B[1]); if (L < 4) return ''; u = [(M[0] - B[0]) / L, (M[1] - B[1]) / L]; nrm = [-u[1], u[0]]; hw = clamp(Math.hypot(M[0] - on(lo)[0], M[1] - on(lo)[1]) * .13 + 1, 3, 6);
+    if (k < .45) hw = Math.min(hw, 2.4); if (deep([B[0] + nrm[0] * hw, B[1] + nrm[1] * hw]) && deep([B[0] - nrm[0] * hw, B[1] - nrm[1] * hw])) break; }
+  const T = [M[0] - u[0] * Math.min(3, L * .15), M[1] - u[1] * Math.min(3, L * .15)], sway = L * .13 * (M[0] < C[0] ? 1 : -1);
   const mid = [(B[0] + T[0]) / 2 + nrm[0] * sway, (B[1] + T[1]) / 2 + nrm[1] * sway], pt = (p, k) => (p[0] + nrm[0] * k).toFixed(1) + ' ' + (p[1] + nrm[1] * k).toFixed(1);
   return `M${pt(B, hw)}Q${pt(mid, hw * .5)} ${pt(T, 0)}Q${pt(mid, -hw * .5)} ${pt(B, -hw)}`; }
 /* The words keep the size they had in the old balloon, which was as large as it would hold; the balloon is then drawn close about them, in whichever of two or three shapes finds the clearest seat. */
@@ -155,7 +158,10 @@ function fitBalloons(){ for (const q of document.querySelectorAll('.balloon')) {
       const bw = pw / CW * 100, bh = ph / CH * 100, seat = balloonSeat(g, at[0], at[1], bw, bh); if (!best || seat.c + i * .6 < best.c) best = {...seat, c:seat.c + i * .6, bw, bh, w}; best.last = th; }
     b.style.cssText = `left:${best.x.toFixed(1)}%;top:${best.y.toFixed(1)}%;width:${best.bw.toFixed(2)}%;height:${best.bh.toFixed(2)}%;visibility:visible`; box.style.width = (best.w / (best.bw / 100 * CW) * 100).toFixed(1) + '%';
     /* kept as a share of the cut's breadth, so that it holds when the window is resized */
-    t.style.fontSize = (F / CW * 100).toFixed(3) + 'cqw'; q.lastElementChild.firstElementChild.setAttribute('d', balloonTail(at[0], at[1], best.x, best.y, best.bw, best.bh)); } }
+    t.style.fontSize = (F / CW * 100).toFixed(3) + 'cqw'; /* The horn is filled over the balloon's edge, so that the two are one piece of paper; and its outline is masked by the balloon itself, so that the line stops where the balloon's own line begins. */
+    const d = balloonTail(at[0], at[1], best.x, best.y, best.bw, best.bh), n = ++TAILS, box3 = `x="${(best.x * 3).toFixed(1)}" y="${(best.y * 2).toFixed(1)}" width="${(best.bw * 3).toFixed(1)}" height="${(best.bh * 2).toFixed(1)}"`;
+    q.lastElementChild.innerHTML = d ? `<defs><filter id="tk${n}"><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter><mask id="tm${n}" maskUnits="userSpaceOnUse" x="-60" y="-60" width="420" height="320"><rect x="-60" y="-60" width="420" height="320" fill="#fff"/><image href="art/ui/balloon.png" ${box3} preserveAspectRatio="none" filter="url(#tk${n})"/></mask></defs><path class="tf" d="${d}"/><path class="tl" d="${d}" mask="url(#tm${n})"/>` : ''; } }
+let TAILS = 0;
 addEventListener('resize', () => requestAnimationFrame(fitBalloons)); /* the italic is fetched when first set, and is broader than what stood in for it */
 if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(fitBalloons));
 function printHTML(n, src, title, pub, say){ return `<figure class="print"><div class="mark"><span class="pn">Plate ${n}</span><div class="cutwrap">${pic(src, title)}${balloonHTML(src, say)}</div><figcaption><b>${esc(title)}</b><small>${imprint(pub)}</small></figcaption></div></figure>`; }
@@ -203,6 +209,12 @@ function piecesOn(){ const on = [], y = S.year, est = footing();
   if (isLive('merino')) on.push('sheepwalk');
   if (isKept('hunters')) on.push('paddock'); if (isKept('harriers')) on.push('kennels');
   if (est === 'splendid') on.push(isBuilt('front') ? 'parterre' : 'parterre-old'); if (isKept('chariot') || est === 'handsome' || est === 'splendid') on.push(isBuilt('front') ? 'carriage' : 'carriage-old');
+  /* the later years (PR 61) */
+  for (const id of ['clock', 'tower', 'hermitage', 'modelfarm', 'park', 'lodge']) if (isBuilt(id)) on.push(id);
+  if (isBuilt('modelfarm') && isBuilt('steam')) on.push('steam'); if (isBuilt('park') && isBuilt('obelisk')) on.push('obelisk');
+  for (const id of ['papermill', 'wharf', 'bridge', 'bellinn']) if (isLive(id)) on.push(id);
+  if (isLive('wharf') && isLive('barges')) on.push('barges');
+  if (isBuilt('wing')) { on.push(isBuilt('front') ? 'wing' : 'wing-old'); if (isBuilt('conservatory')) on.push(isBuilt('front') ? 'conservatory' : 'conservatory-old'); }
   if (y < 1802 || (y >= 1803 && y <= 1813) || (y === 1815 && S.season < 2)) on.push('camp');
   if (F('volunteers') && !F('enclosed')) on.push('butts');
   on.push(isBuilt('front') ? 'hall-front' : 'hall-old'); const lay = Object.keys(PLAN_BOX); return on.sort((a, b) => lay.indexOf(a) - lay.indexOf(b)); }
@@ -280,8 +292,7 @@ function sheetHTML(){ const id = SHEET, shut = `<button class="shut" onclick="sh
   if (id === 'hall' && typeof householdList === 'function') sec('house', 'The Household', householdHTML());
   if (id === 'castle' && typeof castleList === 'function') { sec('castle', 'What Is Owed the Castle', castleHTML('owed')); sec('castle2', 'What May Be Had There', castleHTML('had')); }
   if (works) sec('works', 'Works', worksHTML(w => workAt(w) === id));
-  const brazils = id === 'london' && S.bub && S.bub.shares > 0 ? `<div class="lots"><div class="lot done"><b>The Brazil Association</b><span>${S.bub.shares} shares</span></div></div>` : '';
-  if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it') + brazils);
+  if (vents.length) sec('vents', id === 'london' ? 'The Funds' : 'Ventures', lotsHTML(vents, true, 'beginVenture', 'endVenture', 'Venture it'));
   if (id === 'london' && typeof creditList === 'function' && S.phase !== 'end') sec('ann', 'Life Annuities', raiseHTML(['annuity', 'redeem'], true));
   /* What is bought in town is found in London; what is bought in the county, at Wyvern. */
   if ((id === 'london' || id === 'wyvern') && typeof societyList === 'function') sec('soc', 'Figure and Consequence', lotsHTML(societyList().filter(r => !r.house && COUNTY_LOTS.has(r.id) === (id === 'wyvern')), true, 'beginSociety', 'endSociety', 'Pay for it'));

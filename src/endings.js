@@ -25,7 +25,7 @@ A shepherd coming over the Down with forty ewes takes off his hat; and the ewes 
 
   /* ---------- sold up: four ways out of the Hall ---------- */
   { id:'tenant', title:'A Tenant on His Own Land', did:'Sold up, and stayed in the parish.', if:() => S.dead === 'ruin' && S.goodwill >= 58,
-    news:() => `${S.name}, Esquire, late of that place, has taken the bailiff’s house at Church Farm, at a rent of twenty pounds.`,
+    news:() => `${styled()}, late of that place, has taken the bailiff’s house at Church Farm, at a rent of twenty pounds.`,
     text:() => `Upon the morning of the sale there are three wagons at the door, that nobody sent for; and into these the tenants load what Mr Skinner has left, and carry it to the bailiff’s house at Church Farm.
 
 The rent of the house is twenty pounds a year, and the purchaser’s agent, taking it at Lady Day, writes you a receipt.
@@ -34,7 +34,7 @@ On Sunday you walk to church, where the Hall pew is found to have a new lock upo
 
 “There’s room here, sir.”` },
   { id:'bath', title:'The Second Floor in Gay Street', did:'Sold up, and went to Bath on Henrietta’s money.', if:() => S.dead === 'ruin' && S.family >= 52 && !endAway(),
-    news:() => `${S.name}, Esquire, late of that place, has removed with his lady to Bath.`,
+    news:() => `${styled()}, late of that place, has removed with his lady to Bath.`,
     text:() => `Mrs Tamworth has the first floor in Gay Street, and you the second, to which there are forty-one stairs; and she has counted them for you.
 
 Henrietta’s settlement brings two hundred a year, and being beyond the reach of the creditors, has been mentioned by her as such to the landlady, and to the butcher.
@@ -43,7 +43,7 @@ You drink the waters at eight in the morning, when the Pump Room is empty; and i
 
 “We shall do,” she says.` },
   { id:'bench', title:'A Room in the King’s Bench', did:'Sold up, and taken for debt.', if:() => S.dead === 'ruin' && S.standing < 42 && S.goodwill < 45,
-    news:() => `${S.name}, Esquire, late of that place, is lodged in the King’s Bench Prison, at the suit of nine tradesmen of Wyvern and a coachmaker of Long Acre.`,
+    news:() => `${styled()}, late of that place, is lodged in the King’s Bench Prison, at the suit of nine tradesmen of Wyvern and a coachmaker of Long Acre.`,
     text:() => `The turnkey at the King’s Bench wants half a crown for the room, and a shilling for the key of it.
 
 There are two beds, the other being that of a hop factor from the Borough, who has been here since the Peace of Amiens; and who shows you the racket court, the pump, and the window where the beer is passed in.
@@ -52,7 +52,7 @@ There are two beds, the other being that of a hop factor from the Borough, who h
 
 Mr Spurling writes on Tuesday that the sale is made up, and that the creditors are to have fourteen shillings in the pound.` },
   { id:'soldup', title:'Sold Up', did:'Sold up, and crossed to the Isle of Man.', if:() => S.dead === 'ruin',
-    news:() => `${S.name}, Esquire, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`,
+    news:() => `${styled()}, late of that place, has removed with his family to Douglas in the Isle of Man. The King’s writ for debt does not run there. He walks on the pier most mornings.`,
     text:() => `The Liverpool packet lands you at Douglas with nine trunks, one of them holding the rent books.
 
 There are forty English gentlemen in the town, who meet upon the pier at ten; and each of them having asked what you owed, and been told, two of them bow lower the next morning.
