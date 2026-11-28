@@ -12,7 +12,7 @@ const {chromium, devices} = require('playwright');
   p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errs.push('c: ' + m.text()); });
   await p.goto('http://localhost:8765/'); await p.waitForTimeout(1200);
   const key = () => p.evaluate(() => {
-    if (!S) return 'none';
+    if (!S) return 'none|' + (typeof OPENAT === 'string' ? OPENAT : '');   // the opening has two plates, and no estate behind either
     const pl = document.querySelector('#plate'), lp = document.getElementById('lastplate');
     return [S.t, S.phase, S.pending, S.used, PLATEUP, SHEET, VIEW, pl ? pl.innerText.length : 0, lp ? lp.hidden : ''].join('|');
   });
@@ -41,7 +41,7 @@ const {chromium, devices} = require('playwright');
     return {o, out};
   });
   for (let L = 0; L < lives; L++) {
-    await tap('#takeit'); await p.waitForTimeout(600);
+    await tap('#keys'); await p.waitForTimeout(400); await tap('#takeit'); await p.waitForTimeout(600);
     for (let i = 0; i < 1500; i++) {
       const s = await p.evaluate(() => S ? {ph: S.phase, up: PLATEUP, view: VIEW, sheet: SHEET} : null);
       if (!s) break;
@@ -61,7 +61,7 @@ const {chromium, devices} = require('playwright');
     console.log('life', L, 'ended', end);
     if (end && end[1] === 'end') { await p.waitForTimeout(500); if (!await tap('#lastplate .go')) errs.push('no last plate'); await p.waitForTimeout(300); await tap('#stage .go'); } else { await tap('#cart .wipeask'); await tap('#cart .wipe .yes'); }
     await p.waitForTimeout(400);
-    const back = await p.evaluate(() => [S === null, document.querySelector('#plan').hidden, !!document.querySelector('#takeit')]);
+    const back = await p.evaluate(() => [S === null, document.querySelector('#plan').hidden, !!document.querySelector('#keys')]);
     if (back.some(x => !x)) errs.push('no opening after the end ' + back);
   }
   console.log(dev, 'taps', taps, 'dead', dead, 'overflow samples', over, 'label overlaps', [...ovl]);

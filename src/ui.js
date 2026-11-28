@@ -48,11 +48,8 @@ function render(){
   if (S && S.phase === 'event' && typeof pendingStands === 'function' && !pendingStands()) { S.pending = null; S.phase = 'undertake'; save(); }
   document.body.classList.toggle('intro', !S);
   if (typeof planSync === 'function') planSync();
-  if (!S) { LEAF = -1; stage.classList.remove('turn');
-    stage.innerHTML = `<figure class="plate band${artURL('frontispiece') ? ' has' : ''}">${sceneSVG(1)}${platePic('frontispiece', 'Hatherley Hall from the park')}</figure>` + introHTML();
-    const told = document.createElement('div'); told.className = 'opening'; const form = stage.querySelector('#begin'); while (form.parentNode.firstElementChild !== form) told.appendChild(form.parentNode.firstElementChild);
-    $('verso').innerHTML = '<p class="titlepage">Hatherley Combe<small>A squire’s seasons, 1795 to 1815</small></p>'; $('verso').appendChild(told);
-    $('tabs').innerHTML = ''; if (typeof drawPlan === 'function') drawPlan(); syncTraits(); fitLeaf(); window.scrollTo({top:0}); return; }
+  if (!S) { LEAF = -1; stage.classList.remove('turn'); stage.innerHTML = ''; $('verso').innerHTML = ''; $('tabs').innerHTML = ''; if (typeof drawPlan === 'function') drawPlan(); drawOpening(); window.scrollTo({top:0}); return; }
+  drawOpening();
   { const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; }
   if (S.t !== LEAF) { if (LEAF >= 0 && S.phase === 'ledger') { stage.classList.remove('turn'); void stage.offsetWidth; stage.classList.add('turn'); } LEAF = S.t; }
   { const k = S.t + ':' + S.phase + ':' + S.pending; if (k !== STEP) { STEP = k; LEAFUP = true; if (innerWidth <= 1080) window.scrollTo({top:0}); } }
@@ -61,11 +58,6 @@ function render(){
   if (typeof drawPlan === 'function') drawPlan();
   const n = (LAST_YEAR - FIRST_YEAR + 1) * 4; $('ribbon').style.height = Math.round(60 + 420 * Math.min(S.t + 1, n) / n) + 'px';
 }
-/* the opening is sized to the window, so the will and the choosing are read without scrolling */
-function fitLeaf(){ const d = document.querySelector('.desk'); d.style.zoom = ''; d.style.maxWidth = ''; if (S || innerWidth <= 1080) return;
-  const room = innerHeight - 34, wide = Math.min(1420, innerWidth - 32); let z = 1;
-  for (let i = 0; i < 5; i++){ const h = d.getBoundingClientRect().height; if (h <= room && i) break; z = Math.max(.6, Math.min(1, z * room / h)); d.style.zoom = z.toFixed(3); d.style.maxWidth = Math.round(wide / z) + 'px'; } }
-addEventListener('resize', fitLeaf); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeaf);
 function drawBook(){ $('verso').innerHTML = versoHTML(); $('bookx').hidden = !!S.dead || S.phase === 'end';
   document.body.classList.toggle('reading', TAB === 'paper'); document.body.classList.toggle('leafup', LEAFUP);
   const leaf = ['leaf', S.phase === 'end' ? 'Finis' : 'The Quarter'];
@@ -73,43 +65,7 @@ function drawBook(){ $('verso').innerHTML = versoHTML(); $('bookx').hidden = !!S
 /* On a phone one page shows at a time: LEAFUP is the paper in hand, otherwise the tab chosen. */
 function showTab(t){ LEAFUP = t === 'leaf' || t === 'paper'; if (t !== 'leaf') TAB = t; WHO = ''; drawBook(); if (innerWidth <= 1080) window.scrollTo({top:0}); }
 function showWho(id){ WHO = id; if (typeof VIEW !== 'undefined' && VIEW === 'plan') drawPlan(); else drawBook(); }
-
-function introHTML(){ const has = !!load();
-  return `<article class="card opening">
-    <p class="kicker">Berkshire, Lady Day 1795</p>
-    <h2>An Inheritance</h2>
-    <p>Your uncle Barnaby died at his own table upon Michaelmas Day, aged seventy-one, with the Bishop upon his right, and the syllabub just come in; and Mr Spurling the attorney, reading the will in the library a week afterwards, was four minutes about it. Everything comes to you.</p>
-    <p>It is Hatherley Combe: two thousand one hundred acres of chalk and clay, in three farms let to tenants, with a water mill, and a common upon which forty cottagers keep a cow apiece; a house of fifty-four windows and eleven chimneys, nine of which smoke; and a mortgage of four thousand pounds, at five per cent.</p>
-    <p>The steward, whose name is Crabbe, met your carriage at the lodge this morning, with the keys in one hand and the rent book in the other; and he gave you the keys.</p>
-    <p>Henrietta, who had hoped that you would be a baronet by now, is upstairs counting bedrooms. Kitty is seventeen, and has found the library; and Edmund, who is nineteen, having found your uncle’s sword over the hall chimney-piece, is trying to get it out of the scabbard.</p>
-    <p>England has been two years at war with France; and the quartern loaf, which was sevenpence when the war began, is elevenpence today.</p>
-    <p>You have twenty-one years, and they come one season at a time.</p>
-    <form id="begin" class="names" onsubmit="event.preventDefault(); start();">
-      <label for="first">Christian name</label><input id="first" value="Thomas" maxlength="18" autocomplete="off">
-      <label for="sur">Surname</label><input id="sur" value="Merridew" maxlength="18" autocomplete="off">
-      <fieldset class="traits">
-        <legend>What manner of man inherits</legend>
-        <div id="picks">${picksHTML()}</div>
-      </fieldset>
-      <div class="row"><button class="go" id="takeit" type="submit">Take possession</button>${has ? '<button class="quiet" type="button" onclick="resume()">Resume the estate you left</button>' : ''}</div>
-    </form>
-  </article>`; }
-let PICKS = {};
-const pickList = () => Object.values(PICKS).filter(Boolean);
-/* Favours: three to begin. An advantage spends one or two, a burden earns them back. Each row opens a list; what cannot be afforded is greyed. */
-const favour = n => n ? `<span class="fav ${n > 0 ? 'neg' : 'pos'}">${n > 0 ? '−' : '+'}${'●'.repeat(Math.abs(n))}</span>` : '';
-function picksHTML(){ const left = pointsLeft(pickList());
-  return `<p class="favours"><span>Favours in hand</span><b id="pts" aria-label="${left}">${'●'.repeat(Math.max(0, left))}<i>${'○'.repeat(Math.max(0, TRAIT_POINTS - Math.max(0, left)))}</i></b><small>An advantage spends them. A burden earns them back.</small></p>
-    ${TRAIT_GROUPS.map(([g, label, plain], gi) => { const cur = PICKS[g] && traitById(PICKS[g]), room = left + (cur ? cur.cost : 0);
-      const opt = (id, name, cost, fx) => `<button type="button" role="option" aria-selected="${(PICKS[g] || '') === id}" ${cost > room ? 'disabled' : ''} onclick="setPick('${g}', '${id}')"><b>${esc(name)}</b>${favour(cost)}${fx && fx.length ? `<small>${fx.map(t => `<i class="${signOf(t) || 'neg'}">${esc(t)}</i>`).join('')}</small>` : ''}</button>`;
-      return `<div class="pickrow"><span class="plabel" id="pl-${g}">${label}</span><details class="pick${gi >= TRAIT_GROUPS.length - 3 ? ' up' : ''}" name="pick"><summary aria-labelledby="pl-${g}"><b>${esc(cur ? cur.name : plain)}</b>${cur ? favour(cur.cost) : ''}</summary>
-        <div class="opts" role="listbox">${opt('', plain, 0, '')}${[1, -1].map(sg => `<div>${TRAITS.filter(t => t.group === g && Math.sign(t.cost) === sg).map(t => opt(t.id, t.name, t.cost, t.fx)).join('')}</div>`).join('')}</div></details>
-        <p class="pickblurb">${cur ? esc(cur.blurb) + ' <span>' + esc(cur.effect) + '</span>' : ''}</p></div>`; }).join('')}`; }
-function setPick(g, id){ PICKS[g] = id || null; if ($('picks')) { $('picks').innerHTML = picksHTML(); fitLeaf(); } }
-function syncTraits(){ if ($('picks')) $('picks').innerHTML = picksHTML(); }
-document.addEventListener('click', e => { if (!e.target.closest('details.pick')) document.querySelectorAll('details.pick[open]').forEach(d => d.open = false); });
-function start(){ if (pointsLeft(pickList()) < 0) return; const f = ($('first').value || 'Thomas').trim(), s = ($('sur').value || 'Merridew').trim(); newGame(f, s, pickList()); render(); window.scrollTo({top:0}); }
-function resume(){ const s = load(); if (s) { S = s; render(); } }
+/* The will, the choosing of the squire, start() and resume() are in opening.js. */
 
 const runhead = (l, r, m) => `<p class="runhead"><span>${l}</span>${m ? `<span>${m}</span>` : ''}<span>${r}</span></p>`;
 /* A choice's sum: a plus or "Saves" or a sale is money in and goes green; a bare sum is money out and goes red. Rents on a letting are money in. */
