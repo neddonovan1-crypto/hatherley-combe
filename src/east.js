@@ -19,7 +19,7 @@
 
    S.raj: st ('here', 'gone', 'no'), pay (the Company's ten guineas a week are taken), t0, ease (how he was used), sum (the account was cast), way (which door), won.
    Flags: rajPaper (he left a deed in Persian), rajDeed ('asked', 'hawk', 'hung'), mz (how the Mirza was received, 1 to 3), agha ('house', 'office', 'free'),
-   lion ('worn', 'home', 'hen', 'by'), aghaKeys, aghaBooks, aghaSixty. */
+   lion ('worn', 'home', 'hen', 'by'), aghaKeys, aghaBooks, aghaSixty; kitty 'rajah' with kittyRanee ('gone', 'settled'). */
 const rajHere = () => !!S.raj && S.raj.st === 'here';
 const rajQs = () => S.raj ? Math.max(1, S.t - S.raj.t0) : 0;
 const rajMonths = () => numWords(Math.max(2, 3 * rajQs()));
@@ -28,6 +28,10 @@ const aghaIn = () => agha() === 'house' || agha() === 'office';
 const aghaYears = () => Math.max(1, S.year - 1810);
 const aghaFunds = () => 30 * aghaYears();
 const RAJ_PAY = 136;
+const kittyYears = () => { const a = kittyAge(); return a % 10 ? `${ONES[a % 10]}-and-${TENS[Math.floor(a / 10)]}` : TENS[a / 10]; };
+const rajNext = () => later(kittyHome() && S.raj.ease >= 3 ? 'rajahKitty' : 'rajahGoes', 1);
+const ranee = () => S.flags.kitty === 'rajah';
+const raneeOut = () => ranee() && !!S.raj && S.raj.st === 'gone' && S.t - (S.raj.out || 0) >= 4;
 const rajBack = () => S.raj.ease < 0 ? rajQs() * (S.raj.paid ? RAJ_PAY : 45) : 0;
 
 const ventureTickEast = ventureTick;
@@ -36,6 +40,7 @@ function eastTick(line){ const r = S.raj, earn = (label, a) => { line(label, a);
   if (S.year === 1805 && S.season === 0 && !r && !F('rajSent')) { fl('rajSent'); later('rajahLetter', 0); }
   if (r && r.st === 'no' && S.t - r.t0 === 3) S.notes.push(`The Rajah of Doolghur is lodged, by the Court of Directors, with a clergyman near Cheltenham, who has ten guineas a week for him, and is building a conservatory.`);
   if (rajHere() && S.t > r.t0) { if (r.pay) earn('The India House, for the Rajah’s table', RAJ_PAY); else line('The Rajah’s people and horses', -45); }
+  if (rajHere() && r.way && S.seen.rajahGoes === undefined && !S.queue.some(x => x.id === 'rajahGoes' || x.id === 'rajahKitty') && S.pending !== 'rajahGoes' && S.pending !== 'rajahKitty') later('rajahGoes', 0);
   if (S.year === 1810 && S.season === 1 && !F('mzSent')) { fl('mzSent'); later('mirzaComes', 0); }
   if (agha() === 'house') { line('Aga Firooz, his wages', -10); if (!F('aghaKeysUp')) line('Saved upon the house books', 16, 'Candles, tea and soap, since they were weighed at the door.'); }
   if (agha() === 'office') line('Aga Firooz, his wages', -10);
@@ -101,7 +106,7 @@ A sirloin has been at the kitchen fire since ten. The moonshee, who has smelt it
 
 “Sir, His Highness will sit at any table in England. He will eat at none. I beg to be informed what is to be done with the cook.”`,
   choices:[
-    {t:'Give the cook the old brewhouse, as Mr Burke gave his greenhouse.', go:() => { S.raj.ease += 2; add({family:1}); later('rajahAsks', 1);
+    {t:'Give the cook the old brewhouse, as Mr Burke gave his greenhouse.', go:() => { S.raj.ease += 2; add({family:1}); later('rajahFlag', 1);
       return `Mr Burke, when the Peshwa’s uncle sent two Brahmins to London in the year ’81, and London had lodged them over a stable, carried them down to Beaconsfield and gave them his greenhouse; and what was done for an agent may be done for a prince.
 
 The brewhouse is swept and given up. The cook washes the flags from one of the eleven vessels, digs a hearth in the floor with a trowel of his own, and shuts the door; and at five the Rajah goes in to him alone, and the door is shut again.
@@ -109,13 +114,13 @@ The brewhouse is swept and given up. The cook washes the flags from one of the e
 At six a brass dish is carried across the yard to the Hall, covered with a leaf, that the squire may know what His Highness had. ${hh('You and Henrietta eat it between you', 'You eat it alone')}, with spoons, in the library. It is rice, with something yellow, and is by a great deal the hottest thing that was ever swallowed at Hatherley; and when the dish goes back there is nothing in it.
 
 The sirloin is eaten in the servants’ hall, in silence.`; }},
-    {t:'Seat him at your own table. He is a prince, and this is your house.', go:() => { add({standing:2}); later('rajahAsks', 1);
+    {t:'Seat him at your own table. He is a prince, and this is your house.', go:() => { add({standing:2}); later('rajahFlag', 1);
       return `He sits at your right hand for two hours and a quarter, before a clean plate; and through the soup, the trout, the sirloin, which at Meer Hyder’s entreaty is carved behind a screen, and the gooseberry tart, he talks of Lord Lake, of the price of a horse at Hurdwar fair, and of what an acre of wheat will bear in a country where it rains for three months and for no more.
 
 He eats one orange, which he peels with his own knife. When the cloth is drawn, and the port comes round to him, he looks at the decanter with great attention, and sends it on by the proper hand.
 
 Next morning the moonshee waits upon ${steward()}, and enquires, as from himself, whether there be about the place any outhouse with a door.`; }},
-    {t:() => `Ask ${kingParson()} to dinner to meet him.`, go:() => { const p = kingParson(); S.raj.ease += 1; if (!F('gallDead')) reg('gall', 1, 'Dined with the Rajah of Doolghur'); later('rajahAsks', 1);
+    {t:() => `Ask ${kingParson()} to dinner to meet him.`, go:() => { const p = kingParson(); S.raj.ease += 1; if (!F('gallDead')) reg('gall', 1, 'Dined with the Rajah of Doolghur'); later('rajahFlag', 1);
       return `${p[0].toUpperCase() + p.slice(1)} comes at four, with a Testament in the Bengalee character, printed by the Baptists at Serampore, which he has had by him two years for want of anybody to give it to.
 
 The Rajah receives it in both hands, and lays it upon his knee. He then asks what the living of Hatherley is worth; and being told that it is the tithe, he turns to his moonshee.
@@ -127,7 +132,7 @@ He asks next who gave the gentleman his church; and learning that the living is 
 “It is so in Doolghur. But in Doolghur the priest does not dine with the man who appointed him, and tell him across the table that he will be damned.”
 
 The dinner lasts until nine. Nobody is converted; and the Rajah, at parting, is promised the loan of Dr Paley’s Evidences.`; }},
-    {t:'Never mind dinner. Walk him over the farms while there is light.', if:() => T('bred'), go:() => { S.raj.ease += 2; S.raj.plough = true; add({goodwill:1}); later('rajahAsks', 1);
+    {t:'Never mind dinner. Walk him over the farms while there is light.', if:() => T('bred'), go:() => { S.raj.ease += 2; S.raj.plough = true; add({goodwill:1}); later('rajahFlag', 1);
       return `He gets down in the first barley that you come to, takes up a handful of the ground, and breaks it in his fingers; and he asks what the man pays who has it.
 
 You name the rent.
@@ -145,7 +150,7 @@ The Rajah walks the length of a hedge without speaking.
 “In Doolghur I take the half of what is grown; and in a bad year I take the half of nothing. The Resident has written to Calcutta that I am an oppressor of my people.”
 
 At the home farm he has the drill plough drawn out of its shed, and walks behind it for two furrows in his green silk. He asks the maker’s name and the price; and Meer Hyder, upon the tail of a wagon, writes an order to Reading for two.`; }},
-    {t:'Ask to see the Company’s account against him.', if:() => T('figures'), go:() => { S.raj.ease += 2; S.raj.sum = true; later('rajahAsks', 1);
+    {t:'Ask to see the Company’s account against him.', if:() => T('figures'), go:() => { S.raj.ease += 2; S.raj.sum = true; later('rajahFlag', 1);
       return `Meer Hyder brings down a tin box. The Company, as heir to the Peshwa by the treaty of Bassein, claims the Peshwa’s tribute upon Doolghur, at forty thousand rupees by the year, for eleven years in which nobody paid it, with interest at twelve per cent.
 
 You add the column; and then, as your habit is, you add it upwards.
@@ -155,7 +160,7 @@ It is cast correctly. But the years stand in two hands, one clerk having entered
 The difference, with the interest upon it, is one lac and four thousand rupees, or thirteen thousand pounds sterling. You write it out fair upon a half-sheet. Meer Hyder copies the half-sheet into Persian, and the Rajah puts the copy inside his coat.
 
 “Eleven years,” he says, “and it wanted a man with one village.”`; }},
-    {t:'Tell him that you served under Lord Cornwallis.', if:() => T('soldier'), go:() => { S.raj.ease += 2; add({standing:1}); later('rajahAsks', 1);
+    {t:'Tell him that you served under Lord Cornwallis.', if:() => T('soldier'), go:() => { S.raj.ease += 2; add({standing:1}); later('rajahFlag', 1);
       return `“Cornwallis? He that took the half of Tippoo’s country in the year ’92?”
 
 “He that gave up an army at York Town in ’81. I was six months before that upon his line of march, with a ball in my leg.”
@@ -165,12 +170,51 @@ The Rajah has the whole of Guilford Court House from you upon the steps, and the
 “It is a great comfort to me. In Hindostan it is believed that the English were never beaten; and so nobody can see the use of talking to them.”
 
 He dines in the brewhouse, which you have given up to his cook. Afterwards he sends Meer Hyder across the yard for the name of the American general, and for the spelling of it.`; }},
-    {t:'Propose a game after dinner.', if:() => T('play'), note:'It will cost you', go:() => { S.raj.ease += 1; add({money:-16}); later('rajahAsks', 1);
+    {t:'Propose a game after dinner.', if:() => T('play'), note:'It will cost you', go:() => { S.raj.ease += 1; add({money:-16}); later('rajahFlag', 1);
       return `He does not play at cards; but there is a board among his baggage, and men of red and green ivory. In his game a pawn may go but one square at the first move, and a king may not castle; and of this you are informed at the eleventh move, when you attempt it.
 
 The stake is a gold mohur. He plays quickly, with one hand, and talks all the while to his moonshee of something else.
 
 By midnight you have lost eight games, and sixteen pounds; and the Rajah, who has taken off his pearls for coolness, says that he has not been so well entertained since Calcutta, and offers you a rook.`; }}
+  ]});
+
+/* The standard. Ned, 28 Nov 2026: the flag of Doolghur flies from the Hall's roof during his stay, the household call it the Hindostanee gentleman's standard, and are very
+   fond of him. The pennon and its monkey are invented; Hunooman upon a banner is common among the Hindoo states. S.flags.rajFlag: up | both | down. */
+ev({ id:'rajahFlag', follow:true, at:'hall', who:() => null, cond:() => rajHere(), title:'The Hindostanee Gentleman’s Standard',
+  text:() => `Upon the second morning of the Rajah’s stay Meer Hyder asked leave for a thing out of the baggage; and since that day there has flown from the pole upon the leads, where the Union goes up for the King’s birthday, a swallow-tailed pennon of orange silk, four yards long, with a monkey worked upon it in gold thread, who carries a mace.
+
+The servants’ hall has settled what it is to be called. It is the Hindostanee gentleman’s standard; and the knife boy, who begged the duty of Mudge, hoists it at six, and is upon the leads again at sunset to bring it in dry.
+
+His Highness has been three months among them. He has every name below stairs, and the parish that each came from. He thanks the footmen. He sat up a night in the stable with Mudge over the cart mare, and it was his own groom’s drench of ginger and black pepper that got her upon her legs; and the laundry maid will let no hand but hers iron the green silk.
+
+This morning there are two papers upon your table. In the Mercury, A Berkshire Freeholder enquires what colour that may be which flies over a magistrate’s house in a time of war; and there is a note from Mr Tamworth of Marsh Court, who has had his glass upon it from the Wyvern road, and takes it to be Popish.
+
+Both were read in the kitchen before they came to you. When you go out to your horse Mrs Bunce is upon the gravel in a clean apron, with Mudge behind her, and the knife boy behind Mudge; and overhead the monkey stands out stiff in a west wind.
+
+“Sir, we hear the Hindostanee gentleman’s standard is to come down.”
+
+She has not come round to the front of the house upon an errand of her own since she was hired.`,
+  choices:[
+    {t:'Let it fly. He is the Company’s ally, and your guest.', go:() => { fl('rajFlag', 'up'); S.raj.ease += 2; add({family:2, standing:-2}); later('rajahAsks', 1);
+      return `You write to Mr Tamworth that the monkey is no Papist, but a general; who by Meer Hyder’s account leapt the sea to Ceylon, and burnt the capital of it; and that the colour of a prince in alliance with the Company may fly at Hatherley for as long as the prince is under it. To the Freeholder you write nothing.
+
+Mrs Bunce looks once up at the roof, and goes in by the back door.
+
+At dinner there is a pudding which you did not order. At dusk, from the library window, you see the knife boy upon the leads with the silk gathered in both his arms; and at the foot of the ladder, holding it, there is Mudge, who was never known to hold a ladder for a boy.`; }},
+    {t:'Run up the King’s colour above it, upon the same halliard.', go:() => { fl('rajFlag', 'both'); S.raj.ease += 1; add({family:1, standing:1}); later('rajahAsks', 1);
+      return `Mudge bends on the Union above the orange with his own hands; and the two go up together at noon, with the household upon the gravel to see it.
+
+Mr Tamworth is satisfied. The Freeholder, in the next Mercury, is happy to find that Hatherley knows which is uppermost.
+
+The Rajah has watched it from the brewhouse door, and stops you at the horse-block.
+
+“It is so at Calcutta, Mr ${S.sur}. The Company’s is above, and the Nabob’s below; and both are told that it is friendship. I did not look to see it done with so good a heart. Your people cheered mine.”`; }},
+    {t:'Have it struck. This is an English roof.', go:() => { fl('rajFlag', 'down'); S.raj.ease -= 2; add({family:-3, standing:1}); later('rajahAsks', 1);
+      return `The knife boy is not to be found. Mudge goes up at last, and is a long while upon the leads; and he brings the silk down folded square, and carries it across the yard to the brewhouse upon both his arms, as the clerk carries the pall.
+
+Meer Hyder receives it at the door.
+
+For nine days the mutton comes to table underdone, and the library bell is answered at the second ringing. The Rajah says nothing of it then or afterwards. But upon the tenth morning there is an orange rag tied to the pump in the brewhouse yard, at the height of a boy’s reach; and nobody at Hatherley can be got to say who put it there.`; }}
   ]});
 
 ev({ id:'rajahAsks', follow:true, at:'hall', who:() => null, cond:() => rajHere(), title:'Which Door',
@@ -186,7 +230,7 @@ The Rajah has come in from the stables, and stands with his back to the fire.
 
 “Mr ${S.sur}, I have seen in England a cattle show, a hanging at Reading, and Mrs Bunce’s dairy. I have not seen the Court of Directors. There is a door in Leadenhall Street, and there is a door at Westminster; and Mr Peachey is come from Bath to tell me that I must go in at neither. Which door is it?”`,
   choices:[
-    {t:'Carry him up to Leadenhall Street yourself, and sit there with him until he is seen.', note:() => '£40' + (S.raj.pay ? '. The Company’s allowance stops' : ''), go:() => { S.raj.way = 'court'; S.raj.pay = false; S.raj.ease += 2; add({money:-40, standing:1}); later('rajahGoes', 1);
+    {t:'Carry him up to Leadenhall Street yourself, and sit there with him until he is seen.', note:() => '£40' + (S.raj.pay ? '. The Company’s allowance stops' : ''), go:() => { S.raj.way = 'court'; S.raj.pay = false; S.raj.ease += 2; add({money:-40, standing:1}); rajNext();
       return `You are nine days in the lobby of the India House, upon a bench between a ship’s husband and the mother of a cadet. A doorkeeper in a blue coat takes in the Rajah’s name each morning at ten, and brings it out again at four; and upon the sixth day he lets it be understood, that the lobby has been sat in before now by a Nabob for two years.
 
 Upon the tenth the Chairs receive him. Mr Grant, who is in the first of them, is very civil; and having asked whether there be any missionary settled at Doolghur, and learnt that there is not, he takes the memorial into his own hand and lays it upon a heap.
@@ -195,7 +239,7 @@ It has lasted eleven minutes. The Rajah comes down the steps into Leadenhall Str
 
 “It is not so large as I had thought,” he says. “I will go home to Hatherley now.”`; }},
     {t:'Give him Mr Paull’s letter, and a horse.', note:() => S.raj.pay ? 'The Company’s allowance stops' : '', go:() => { S.raj.way = 'paull'; S.raj.pay = false; S.raj.ease += 1; add({standing:T('whig') ? 1 : -2}); if (T('whig')) reg('hartopp', 1, 'You gave the Rajah to Mr Paull');
-      later('rajahGoes', 1);
+      rajNext();
       return `Mr Peachey leaves within the hour, without his nuncheon. The Rajah rides to London upon your grey, with Meer Hyder behind him in a chaise, and is gone three weeks.
 
 He comes back with a pamphlet, price two shillings, of which he has been given forty copies. It has a preface by Mr Paull upon the crimes of the Marquess Wellesley, in sixty pages; after which, in four, and in a smaller type, there follows the memorial of Doolghur.
@@ -203,13 +247,13 @@ He comes back with a pamphlet, price two shillings, of which he has been given f
 Mr Paull has moved for papers. The motion came on at a quarter before midnight, when there were nine-and-thirty Members in their places; and as forty are wanted to make a House, it was counted out.
 
 “He is a very angry little man,” says the Rajah. “I think he would be angry in any country. But he opened his door.”`; }},
-    {t:'Tell him that Mr Peachey is right, and that the Court will write.', go:() => { S.raj.way = 'kept'; S.raj.ease -= 3; later('rajahGoes', 1);
+    {t:'Tell him that Mr Peachey is right, and that the Court will write.', go:() => { S.raj.way = 'kept'; S.raj.ease -= 3; rajNext();
       return `The Rajah bows to you, and then to Mr Peachey; and he puts Mr Paull’s letter into the fire with the tongs.
 
 Mr Peachey stays to dinner, and is helped twice to the beef.
 
 From that day His Highness rides out every morning at six, alone, as far as the fourth milestone, where the Wyvern road falls into the road to London. He sits his horse there for a quarter of an hour by the church clock, with his face to the east; and then he rides home to breakfast.`; }},
-    {t:'Present his petition yourself, from your place in the House.', if:() => F('mp'), note:() => S.raj.pay ? 'The Company’s allowance stops' : '', go:() => { S.raj.way = 'house'; S.raj.pay = false; S.raj.ease += 2; add({standing:1}); later('rajahGoes', 1);
+    {t:'Present his petition yourself, from your place in the House.', if:() => F('mp'), note:() => S.raj.pay ? 'The Company’s allowance stops' : '', go:() => { S.raj.way = 'house'; S.raj.pay = false; S.raj.ease += 2; add({standing:1}); rajNext();
       return `You rise at twenty minutes past eleven at night, before one-and-thirty Members and the Serjeant at Arms, and beg leave to bring up the humble petition of Pertaub Sing, Rajah of Doolghur; who, as you tell the House, has been charged by the Company for eleven years as a tributary, and treated in the same years as an ally, and prays to be informed which he is.
 
 The Chairman of the Company, who sits for a Scotch county, says from his place that the matter is before the Court. The petition is ordered to lie upon the table.
@@ -217,7 +261,7 @@ The Chairman of the Company, who sits for a Scotch county, says from his place t
 The Rajah has heard it from the gallery, between a reporter and a man asleep. In the lobby he asks you what is done with the papers that lie upon the table; and you tell him.
 
 “Then it is the same as with us,” he says. “But you were heard; and my name was said aloud in that room.”`; }},
-    {t:'Take him to the Levee. The King likes a farmer.', if:() => T('court') || F('royalKnown'), note:() => '£30' + (S.raj.pay ? '. The Company’s allowance stops' : ''), go:() => { S.raj.way = 'king'; S.raj.pay = false; S.raj.ease += 2; add({money:-30, standing:2}); later('rajahGoes', 1);
+    {t:'Take him to the Levee. The King likes a farmer.', if:() => T('court') || F('royalKnown'), note:() => '£30' + (S.raj.pay ? '. The Company’s allowance stops' : ''), go:() => { S.raj.way = 'king'; S.raj.pay = false; S.raj.ease += 2; add({money:-30, standing:2}); rajNext();
       return `The Lord in Waiting has him upon the list as “The Rajah of Dolgar, presented by Mr ${S.sur}”. He goes up the room at St James’s in the green silk and the pearls, between a Russian and a Bavarian; and the King, having come to him, stops.
 
 “Bundelcund? What? Hot. Very hot. What grows there?”
@@ -241,7 +285,11 @@ The Rajah reads it standing, and gives it to Meer Hyder; who reads it, and folds
 
 “Six months to Calcutta. A year for the Governor-General to write his report, for he is a new one, and must first be told where Doolghur is. Six months to London, and six to Calcutta again. I came fifteen thousand miles to give a letter to a man; and the man has put it in the post.”
 
-His passage is taken in the Walmer Castle, which sails from Portsmouth with the fleet. ${r.ease >= 3 ? `Upon the last evening a box is carried into the drawing-room, out of which the moonshee lifts two shawls of Cashmere, such as Bond Street asks eighty guineas for, and lays them ${hh('across Henrietta’s lap', 'across the sofa, for the lady who is at Bath')}.` : r.ease >= 0 ? `Upon the last evening he walks once round the park with you, and names the trees.` : `Upon the last evening Meer Hyder comes to the library with a bag, and counts out upon your table, in gold mohurs, the whole of what ${r.paid ? 'the Court of Directors has paid for His Highness’s board' : `His Highness’s people and horses have cost you by ${steward()}’s book`}, to the odd shilling; for the Rajah, as he tells you, desires to owe nothing in Berkshire to anybody but a horse.`}${r.ease >= 1 ? `
+His passage is taken in the Walmer Castle, which sails from Portsmouth with the fleet. ${r.ease >= 3 ? `Upon the last evening a box is carried into the drawing-room, out of which the moonshee lifts two shawls of Cashmere, such as Bond Street asks eighty guineas for, and lays them ${hh('across Henrietta’s lap', 'across the sofa, for the lady who is at Bath')}.` : r.ease >= 0 ? `Upon the last evening he walks once round the park with you, and names the trees.` : `Upon the last evening Meer Hyder comes to the library with a bag, and counts out upon your table, in gold mohurs, the whole of what ${r.paid ? 'the Court of Directors has paid for His Highness’s board' : `His Highness’s people and horses have cost you by ${steward()}’s book`}, to the odd shilling; for the Rajah, as he tells you, desires to owe nothing in Berkshire to anybody but a horse.`}${F('rajFlag') && S.flags.rajFlag !== 'down' ? `
+
+The Hindostanee gentleman’s standard was brought down from the leads this morning for the last time, and the knife boy was twenty minutes about it. His Highness will not have it packed. It is to lie in the linen press at Hatherley; and Mrs Bunce has the key.` : ''}${ranee() ? `
+
+Kitty’s trunks have stood corded in the hall since Tuesday. There are nine of them; and upon the top of the nine, in its own case, there lies the Hatherley side-saddle, which the Rajah has examined, and of which he has ordered two from the maker.` : ''}${r.ease >= 1 ? `
 
 There is besides a paper, in the Persian character, sealed with the Rajah’s own seal. He lays it upon the hall table; and all that he will say of it is, that you are to have it read to you upon the day you find a man who can.` : ''}`; },
   choices:[
@@ -287,7 +335,11 @@ ${r.won ? `The pleasure of the Court has been signified through the Resident. Th
 
 ${r.plough ? `The two ploughs from Reading are arrived, and one is put together. The ryots come nine miles to look at it. ` : ''}His Highness desires to have from Hatherley a bull and two heifers, of the red breed that stood under your elms; and encloses a bill upon Messrs Porcher, in Devonshire Square, for two hundred guineas. They are not to be eaten.
 
-Sealed by order, Meer Hyder.”`; },
+Sealed by order, Meer Hyder.”${ranee() ? `
+
+Below the seal, and across it, there are eleven lines in Kitty’s hand.
+
+“Dear Papa, I have a house of my own with a fountain in the middle of it, and forty villages, of which I have ridden round nineteen. The elder Ranee received me sitting. Next morning she sent me a dish of sweetmeats with silver leaf upon them, which Meer Hyder says is a treaty. I wear a bonnet in the sun, and nobody laughs. Tell Mamma that I am well, and that I am not sorry. K.”` : ''}`; },
   choices:[
     {t:'Send the cattle, and present the bill.', note:'+£210 by the bill. The beasts and their freight, £120', go:() => { add({money:90, goodwill:1});
       return `A bull and two heifers are walked to Portsmouth in nine days by Tom Deacon, the cowman’s second boy; and as nobody at the India House can say what a heifer eats between the Downs and the Hooghly, Tom Deacon is shipped with them, at twelve shillings a month, and forty trusses of hay.
@@ -306,6 +358,63 @@ It is laid down before the library fire. The spaniels, which have slept upon tha
 
 No answer comes by the next fleet, nor by the next. The yellow of Bundelcund is still to be found in the great atlas, south of the Jumna; and somebody has put a small cross upon it in pencil, to show where Doolghur ought to be.`; }}
   ]});
+
+/* Kitty. Offered only where she is at home and unmarried, and the Rajah has been well used. No such match is known in these years: the marriages of the time ran the other way,
+   as Colonel Kirkpatrick's with Khair-un-Nissa at Hyderabad in 1800. Chirkaree is a real Boondela state; its daughter here is invented. Mr James Venn of Lincoln's Inn is
+   Henrietta's brother (events5.js). S.flags.kitty becomes 'rajah', and kittyRanee 'gone' or 'settled'. */
+ev({ id:'rajahKitty', follow:true, at:'hall', who:() => null, cond:() => rajHere() && kittyHome(), title:'The Second Ranee',
+  text:() => `Kitty has ridden out with the Rajah every morning since the hay was carried, upon the grey, with a groom forty yards behind; and she has had an hour of Persian from Meer Hyder every afternoon, in the breakfast room, with the door open.
+
+The moonshee waits upon you in the library at eleven, in clean muslin, with a paper.
+
+“Sir, I am instructed to make a proposal. His Highness desires to marry your daughter.”
+
+He reads the paper through. His Highness has one wife, who is a daughter of the Rajah of Chirkaree, and two sons. Miss ${S.sur} would be the second Ranee of Doolghur; with a house of her own, forty villages for her separate maintenance, a guard of twenty horse, and leave to bring a clergyman, if one can be found who will come.
+
+“I am to conceal nothing, sir. His Highness cannot be made a Christian, for he would cease the same day to be a Rajah. The Brahmins will not call it a marriage. The Resident will not call it one. Your own Doctors’ Commons, I have read, will not call it one either. In Doolghur it will be called one by every person who wishes to keep his ears.”
+
+Kitty has come to the door in her habit, with her whip in her hand.
+
+“I am ${kittyYears()}, Papa. He is the first man who ever asked me what I thought of a thing, and then waited to be told.”
+
+${hh(`Henrietta is upstairs with her door shut; and it is known through the house that she has sent for her brother James.`, `Henrietta has had the news at Bath by express, and has written by the same hand to her brother James.`)}`,
+  choices:[
+    {t:'Forbid it. She shall be nobody’s second wife.', go:() => { add({family:-3}); reg('kitty', -3, 'You forbade the Rajah'); reg('henrietta', 1); later('rajahGoes', 1);
+      return `You say it to the moonshee, who writes it down; and then you cross the yard to the brewhouse, and say it to the Rajah.
+
+He hears you standing.
+
+“It is the answer I should give for my own daughter, Mr ${S.sur}; and I have given it twice. I shall not ask again.”
+
+He rides out next morning at six, alone. Kitty breakfasts in her room. The Persian grammar goes back to the moonshee by the housemaid, with a marker left in it at the fourth conjugation.`; }},
+    {t:'Let her go out with him. She has chosen.', go:() => { fl('kitty', 'rajah'); fl('kittyRanee', 'gone'); add({family:-8, standing:-8}); reg('kitty', 5, 'You let her go to Doolghur'); reg('henrietta', -3, 'You let Kitty go to India'); later('rajahGoes', 1);
+      return `There are no banns, for there is no church that will read them. ${kingParson()[0].toUpperCase() + kingParson().slice(1)}, to whom you put the case, turns up the Table of Kindred and Affinity, finds nothing in it about Rajahs, and declines upon general grounds.
+
+What is done is done in the brewhouse, before the cook’s fire, by a priest in a yellow cloth who has been fetched down from the Rajah’s lodging in town. Kitty walks seven times round the fire in her riding habit. You stand in the door, with your hat on, as the moonshee desires.
+
+By Sunday the county has it. Mrs Tamworth calls, and is an hour and ten minutes in the drawing-room without once naming India; and at the Castle Lord Cullerne is reported to have asked how many villages, and to have said that the girl has done better than either of his.`; }},
+    {t:'Consent, upon a settlement: her uncle Venn to draw it, in English and in Persian.', note:'£60 in law', go:() => { fl('kitty', 'rajah'); fl('kittyRanee', 'settled'); add({money:-60, family:-4, standing:-5}); reg('kitty', 5, 'You let her go to Doolghur, upon a settlement'); reg('henrietta', -1, 'Kitty is gone to India'); later('rajahGoes', 1);
+      return `Mr James Venn comes down from Lincoln’s Inn by the night coach, and is nine days at Hatherley with the moonshee and a ream of paper.
+
+The deed runs to nineteen skins. The forty villages are conveyed to two trustees, of whom you are one; the Ranee Catherine is to have her house, her horse, and her own religion; she may come home when she pleases, at His Highness’s charge, by the first ship; and her children, if there are any, are to be taught to read English. Every clause is written twice, in two characters, upon facing pages.
+
+The Rajah seals each skin. Mr Venn, having read the Persian side through an interpreter three times, says that it is the first settlement he ever drew in which the husband struck out nothing.
+
+The India House is asked to witness it, and declines; but the Secretary has no objection to the Court’s being informed. Kitty walks seven times round a fire in the brewhouse, in her riding habit; and her uncle, who has come to see it done, takes a note of the number.`; }}
+  ]});
+
+KITTY.push({id:'kitty-doolghur-rains', kind:'news', w:() => raneeOut(), x:() => `There is a letter from Kitty, which has been ten months upon the water, and has four shillings and tenpence to pay.
+
+“Doolghur. Dear Papa, It has rained for sixty days, and my forty villages are thirty-nine, one being at present in the river. I ride round them with a clerk and an umbrella-bearer. The people take half of everything to His Highness’s granary, as you take rent; but when the crop fails they bring nothing, and nobody is turned out; and I cannot make them understand what a Michaelmas is. I have had a well dug at Peeplee. It cost eleven rupees. Pray tell Mr Hartopp. Your affectionate daughter, K.”`});
+KITTY.push({id:'kitty-doolghur-resident', kind:'news', w:() => raneeOut(), x:() => `There is a letter from Kitty, with a second sheet, and nine shillings to pay.
+
+“Doolghur. Dear Papa, The Resident has called. He is a Major Skene, with a red face, and he could not settle whether to bow to me or to be sorry for me; and so did both. He asked whether I was kindly treated. I said that I had a house, a horse, a seat at the durbar behind a screen, and was asked my opinion of the revenue every Thursday; and I enquired whether Mrs Skene could say as much. He has not called again. The boys are learning their letters with me, out of your old Mavor. Your affectionate daughter, K.”`});
+
+const kittyRoleEast = kittyRole;
+kittyRole = function(){ return ranee() ? 'The second Ranee of Doolghur' : kittyRoleEast(); };
+{ const bio = PEOPLE.kitty.bio; PEOPLE.kitty.bio = () => ranee() && rajHere() ? `She is to be the second Ranee of Doolghur, and goes out with the fleet; and her trunks stand in the hall, corded, with the side-saddle in its case upon the uppermost.` : ranee() ? `She went out to Bundelcund in the Walmer Castle, and is the second Ranee of Doolghur; where she has forty villages to ride round, a seat at the durbar behind a screen, and two boys of the first Ranee’s at their letters. A letter from her is ten months upon the water.` : bio(); }
+/* The playtest thread keeps tables of Kitty's matches in suitors.js (KITTY_ROLE, KITTY_BIO, KITTY_END). The wrappers here answer whichever file is loaded first;
+   and where KITTY_END is found, the Mercury's line is put into it at the reckoning, that the engine may print it in its own place. */
 
 /* ================= II. The Persian Envoy ================= */
 
@@ -643,12 +752,18 @@ VIGNETTES[1].push({w:() => aghaIn(), x:`In your pocket-book: “Mr. Furze sat up
 VIGNETTES[1].push({w:() => agha() === 'free', x:`The Reading Mercury has it among the notices, under a sale of oak timber: “PERSIAN TONGUE. Mr. FIROOZ, of Wyvern, begs to acquaint the Parents of young Gentlemen intended for India, that his Pupil, Mr. J. TAMWORTH, has passed in Persian before the Examiners at Hertford, the first of his Term. N.B. A few Phials of the true Attar of Roses.”`});
 VIGNETTES[2].push({w:() => aghaIn(), x:`In your pocket-book: “Paid Mr. Furze his Half Year 20. 0. 0. He walked to Wyvern the same Day and put 15. 0. 0. of it with Tidmarsh into the Navy 5 per Cents. He has now more in the Funds than the Curate. Killed a Pig this Morn’, weight 14 Score. Wind N. and sharp.”`});
 VIGNETTES[3].push({w:() => aghaIn(), x:`In your pocket-book: “Decr. 25. Christmas Day. We had the Tenants as usual, 14 at Table. Mr. Furze made a Sherbet of Quinces which was handed round in the Servants’ Hall. I thought it wanted Brandy, and Mudge was of my Mind. Gave to the Ringers 0. 5. 0. Hard Frost.”`});
+VIGNETTES[0].push({w:() => rajHere(), x:`In your pocket-book: “The Rajah’s Birth Day by Meer Hyder’s Reckoning. The Servants begged a Holiday for it, which I never knew them do for mine. Gave them the Afternoon and a Barrel. Sowed the Ten Acres with Oats. Wind E. and dry.”`});
+VIGNETTES[2].push({w:() => rajHere(), x:`In your pocket-book: “Mudge took the Rajah ferreting in the Warren. They had 9 Couple and His Highness would carry the Bag. Mudge says he never went out with a quieter Gentleman. Recd. for 4 Qrs. of Barley 7. 4. 0. Dinner to day a Leg of Mutton rosted. Wind S.W.”`});
+VIGNETTES[1].push({w:() => !!S.raj && S.raj.st === 'gone' && F('rajFlag') && S.flags.rajFlag !== 'down', x:`In your pocket-book: “Mrs. Bunce had the Hindostanee Gentleman’s Standard out of the Linen Press to air, it being the Day he came. The Knife Boy asked might it go up till Sunset. I said it might. Cut the Home Close, a good Crop. Very hot.”`});
 VIGNETTES[3].push({w:() => !!S.raj && S.raj.st === 'here', x:`In your pocket-book: “The Rajah walked out in the Snow this Morn’ in his green Coat and took some up in his Hand, having never seen it. His Cook will not come out of the Brewhouse. To 2 Load of Wood for the same, 0. 14. 0. Dinner to day a Hare jugged. Wind N.E.”`});
 
 /* The Reading Mercury, January 1816: what the county says of it all. */
 const reckoningEast = reckoning;
-reckoning = function(){ const r = reckoningEast(); if (!r || r.score === null || !Array.isArray(r.P)) return r;
+const raneeLine = () => `His daughter is the second Ranee of Doolghur, in Bundelcund. She has forty villages, and rides round them. ${S.flags.kittyRanee === 'settled' ? 'The settlement is at Lincoln’s Inn, upon nineteen skins.' : 'There was no settlement.'} Mrs Tamworth has left off asking after her.`;
+reckoning = function(){ const tabled = typeof KITTY_END === 'object'; if (tabled && !KITTY_END.rajah) KITTY_END.rajah = raneeLine;
+  const r = reckoningEast(); if (!r || r.score === null || !Array.isArray(r.P)) return r;
   const add1 = t => r.P.splice(r.P.length - 1, 0, t), net = S.money - S.mortgage + ownLandValue();
+  if (ranee() && !tabled) { const line = raneeLine(), i = r.P.findIndex(x => x === undefined || x === null); if (i >= 0) r.P[i] = line; else add1(line); }
   if (S.raj && S.raj.st === 'gone') add1(S.flags.rajDeed === 'hung' ? `He had the Rajah of Doolghur a year under his roof. A deed in the Persian character hangs in his justice room. By it he is lord of a village in Bundelcund. He has not had a rupee of the rent.` : `He had the Rajah of Doolghur a year under his roof. The Rajah’s memorial is still before the Governor-General in Council.`);
   if (S.flags.lion === 'worn') add1(`He wears the Persian Order of the Lion and Sun, by the Royal licence. He had it for one night’s lodging.`);
   else if (S.flags.lion === 'hen') add1(`Mrs ${S.sur} wears the Sun of Persia in her turban. It is the only one in the county that is not paste.`);
