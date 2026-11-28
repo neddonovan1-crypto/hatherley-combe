@@ -69,9 +69,11 @@ marks = function(){ const m = marksSuit(), put = (k, n, t) => { if (n) { m.why[k
 
 /* ---------- a neighbour's heir ---------- */
 ev({ id:'suitPurefoy', follow:true, cond:() => K() === 'free', who:() => 'purefoy', title:'Three Horses in a Week',
-  text:() => { meet('purefoy'); return `Young Mr Giles Purefoy of Shalbourne, who is to have two thousand four hundred acres and a pack of harriers when his father dies, has called at the Hall three times since Sunday; upon a bay, upon a grey, and upon a chestnut with one white stocking; and each time he has asked after Miss Kitty’s cold, which nobody at Hatherley can recollect her having.
+  text:() => { meet('purefoy'); return `Young Mr Giles Purefoy of Shalbourne, who is to have two thousand four hundred acres and a pack of harriers when his father dies, has called at the Hall three times since Sunday; upon a bay, upon a grey, and upon a chestnut with one white stocking; and each time he has got no farther than the gravel, whence he has called up the one question to the window.
 
-This morning a groom brings over a letter in the father’s hand.
+“Is Miss Kitty’s cold any better?”
+
+Nobody at Hatherley can recollect her having a cold; and this morning a groom brings over a letter in the father’s hand.
 
 “Shalbourne, Tuesday. Dear Sir, My son informs me that he has a mind to your daughter; which I had from his sister a month ago, and before that from his horses, which are never in the stable. He is a good lad, and will have this place. I can give them the Lodge, and six hundred a year; and I shall look to you for two thousand pounds with the young lady, to be settled upon herself. He has not, I believe, said a word to her, and is waiting, as I understand him, for a frost. I am, dear Sir, yours &c., JNO. PUREFOY.”
 
@@ -111,6 +113,8 @@ ev({ id:'suitWray', follow:true, cond:() => K() === 'free', who:() => 'wray', ti
   text:() => { meet('wray'); return `Mr Augustus Wray, who is the eldest son of Viscount Stanmere, and stands six feet two, danced twice with Kitty at Lady Salt’s; and upon each of the nine mornings that remained of your stay in town he left a card at the door, with one corner turned down, to show that he had brought it himself.
 
 To-day there gets down from the Bath coach a Mr Pettiward, of Lincoln’s Inn, who does his lordship’s business; and who, having been given a glass of sherry, lays a half-sheet upon the library table.
+
+“His lordship has made his inquiries, sir, and finds no objection to the young lady.”
 
 “Heads of a Proposal. The Hon. Mr Wray to have £1,200 a Year during the Life of the Viscount. The Lady’s Jointure, £800. Pin-money, £200. The Lady’s Father to pay down ${fmt(wrayPortion())}, on or before the Day.”
 
@@ -182,9 +186,9 @@ They are married by licence, with no settlement but his own; and in April they c
   ]});
 
 ev({ id:'lydeLetter', follow:true, cond:() => K() === 'free' && F('lydeVerdun') && S.year <= 1812, who:() => 'lyde', title:'A Letter from Verdun',
-  text:() => `A letter has come through Rotterdam, in eleven weeks, having been opened and sealed again by somebody upon the way.
+  text:() => `A letter has come through Rotterdam, in eleven weeks, dated from Verdun in the Department of the Meuse, and opened and sealed again by somebody upon the way.
 
-“Verdun, Department of the Meuse. Sir, I am detained here with some hundreds of my countrymen, upon my parole, and answer to my name every morning at the Citadel. We have a club, a pack of hounds, and three clergymen; and I have found upon the ramparts a Bryum which I believe to be new. There is no talk of exchange for those who are not officers. I therefore beg that Miss ${S.sur} will consider herself free of any understanding with me, and that she will keep the box. I am, Sir, your obliged servant, A. LYDE.”
+“Sir, I am detained here upon my parole, with some hundreds of my countrymen. We answer to our names every morning at the Citadel; we have a club, a pack of hounds, and three clergymen; and I have found upon the ramparts a Bryum which I believe to be new. There is no talk of exchange for those who are not officers. I therefore beg that Miss ${S.sur} will consider herself free of any understanding with me, and that she will keep the box. I am, Sir, your obliged servant, A. LYDE.”
 
 Kitty has known the hand upon the cover from the other end of the hall.`,
   choices:[
