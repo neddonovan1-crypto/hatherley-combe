@@ -129,7 +129,7 @@ function beginWork(id){ const w = worksList().find(x => x.id === id); if (!w || 
 
 function newGame(first, sur, traits){
   S = { name:(first + ' ' + sur).trim(), sur, t:0, year:FIRST_YEAR, season:0, phase:'ledger',
-    money:900, mortgage:4000, standing:40, goodwill:50, family:60,
+    money:1500, mortgage:4000, standing:40, goodwill:50, family:60,
     improve:0, rentPolicy:1, rentAdj:1, poorMult:1, game:3, canal:0, yearIncome:0,
     farms:startFarms(), letQueue:[], payQueue:[], flags:{}, chars:{}, queue:[], seen:{}, journal:[], works:[], projectsDone:{}, dead:null,
     ledger:[], notes:[], pending:null, vignette:null, outcome:null, priceSeen:[] };

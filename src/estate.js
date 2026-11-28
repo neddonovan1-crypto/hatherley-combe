@@ -431,10 +431,10 @@ function ventureTick(line){ if (!S.vent) return; const y = S.year, q = S.season,
 
 /* ---------- the establishment: what the Hall costs to keep, and what the county thinks of it ---------- */
 const EST = [
-  {id:'retrenched', name:'a retrenched household', cost:800, standing:25, line:`Half the rooms are shut and the carriage is put down. A cook, one maid and a boy.`},
-  {id:'plain', name:'a plain establishment', cost:1100, standing:42, line:`A cook, two maids, a man and a gardener. One joint a day, and company once a month.`},
-  {id:'handsome', name:'a handsome establishment', cost:1500, standing:60, line:`A butler, a footman and a housekeeper. Two courses at dinner, a carriage and pair, and the county asked to dine.`},
-  {id:'splendid', name:'a splendid establishment', cost:2100, standing:80, line:`Eleven indoor servants in livery and a French cook. Wax candles in every room and the house open to the county.`}
+  {id:'retrenched', name:'a retrenched household', cost:700, standing:25, line:`Half the rooms are shut and the carriage is put down. A cook, one maid and a boy.`},
+  {id:'plain', name:'a plain establishment', cost:1000, standing:42, line:`A cook, two maids, a man and a gardener. One joint a day, and company once a month.`},
+  {id:'handsome', name:'a handsome establishment', cost:1400, standing:60, line:`A butler, a footman and a housekeeper. Two courses at dinner, a carriage and pair, and the county asked to dine.`},
+  {id:'splendid', name:'a splendid establishment', cost:2000, standing:80, line:`Eleven indoor servants in livery and a French cook. Wax candles in every room and the house open to the county.`}
 ];
 const estIdx = () => Math.max(0, EST.findIndex(e => e.id === (S.est || 'plain')));
 const priceRise = y => 1 + 0.032 * (y - FIRST_YEAR);
