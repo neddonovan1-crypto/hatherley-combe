@@ -353,25 +353,36 @@ ev({ id:'kingThanks', follow:true, who:() => null, at:'london', cond:() => !!S.k
 
 “His Majesty, who forgets nothing, has more than once named Mr ${S.sur} of Hatherley, and a field of turnips, and an express from Speen; and I am commanded to say that if Mr ${S.sur} should attend the Levee upon Wednesday, he will not be suffered to go away as he came.”
 
-${kingTitled() ? `What a King may give to a man who is Sir already, the equerry does not say.` : `The fees upon a knighthood are a hundred guineas, divided among the Heralds, the Lord Chamberlain’s people, and eleven doorkeepers. ${hh(`Henrietta, who has read the letter over your shoulder, is gone upstairs to try how “Lady ${S.sur}” looks upon the back of a cover.`, `Henrietta has the news in Gay Street by Friday; and her answer, which is charged double, has “Lady ${S.sur}” written nine times down the margin.`)}`}
+${held('knight') ? `As it was at a Levee that you were knighted, with the address of the county in your hand, ${hh('Henrietta, who has read the letter over your shoulder, asks what there is left for you to come away with', 'you read the last line twice, to learn what there is left for you to come away with')}; and the equerry does not say.` : kingTitled() ? `What a King may give to a man who is Sir already, the equerry does not say.` : `The fees upon a knighthood are a hundred guineas, divided among the Heralds, the Lord Chamberlain’s people, and eleven doorkeepers. ${hh(`Henrietta, who has read the letter over your shoulder, is gone upstairs to try how “Lady ${S.sur}” looks upon the back of a cover.`, `Henrietta has the news in Gay Street by Friday; and her answer, which is charged double, has “Lady ${S.sur}” written nine times down the margin.`)}`}
 
 Of ${kingDoc()} the equerry writes nothing. It is said at Windsor that the name is not to be spoken there.`,
   choices:[
-    {t:'Go up to the Levee, and kneel.', if:() => !kingTitled(), note:'£105', go:() => { S.soc = S.soc || {}; S.soc.knight = {year:S.year}; add({money:-105, standing:3}); SOCIETY.knight.begin();
+    {t:'Go up to the Levee, and kneel.', if:() => !kingTitled(), note:'£105', go:() => { S.soc = S.soc || {}; S.soc.knight = {year:S.year, t:S.t}; add({money:-105, standing:3}); SOCIETY.knight.begin();
       return `You kneel upon a red cushion at St James’s. The King, having come out without a sword, borrows the Lord in Waiting’s; and he lays it upon your left shoulder, and then, having considered, upon your right.
 
 “Rise, Sir ${firstName()}. What? Hoe ’em twice.”
 
 He passes on to a bishop. The fees are paid to eleven doorkeepers in turn, the last of whom, having counted his, opens the door.`; }},
     {t:'Go up to the Levee.', if:() => kingTitled(), go:() => { add({standing:4, family:2});
+      if (held('knight')) return `The King, coming round the circle at St James’s, stops before you; looks at your face; and then, for some time, at your left shoulder.
+
+“I have done you. What? Did you with the Berkshire address. Can’t do a man twice; the Heralds won’t have it.”
+
+He takes you by a button instead, and keeps you by it for six minutes, upon the subject of the Swedish turnip, while a duke and the Bishop of Durham stand waiting behind him with their hats under their arms.
+
+Upon the Friday a groom comes down from Windsor with a box. There is in it a snuff-box of gold, with a cypher upon the lid; and inside the lid, cut small, “For the Express. G. R.”`;
       return `The King stops before you in the circle at St James’s, which he does for nobody else below an earl, and holds you by a button for six minutes, upon the subject of the Swedish turnip.
 
 Upon the Friday a groom comes down from Windsor with a box. There is in it a snuff-box of gold, with a cypher upon the lid; and inside the lid, cut small, “For the Express. G. R.”`; }},
-    {t:'Send your duty, and stay at home.', go:() => { add({goodwill:2, standing:1}); fl('merinoRam');
-      return `You write that you did no more than carry a letter to the post, for which the charge was one pound eleven and sixpence; and that you are His Majesty’s dutiful subject.
+    {t:'Send your duty, and stay at home.', go:() => { add({goodwill:2, standing:1, money:1.575}); fl('merinoRam');
+      return `Your answer to the equerry is that you rode with a letter to the post-house at Speen, as any man would who had a horse; that the express cost you one pound eleven and sixpence, and nothing else; and that you are His Majesty’s dutiful subject.
 
-The equerry does not answer. But within the month a groom comes from Windsor leading a ram of the Spanish breed, with a line in pencil tied to its horn: “For the Express. G. R.”`; }}
+No card comes back. But within the month a groom in the Windsor livery walks up the avenue leading a ram of the Spanish breed, and has in his other hand a small packet, sealed, which he will give up to nobody but yourself. There are in it a guinea and a half-guinea; and round them, in pencil, upon the back of a seedsman’s bill: “For the Express. Paid. G. R.”`; }}
   ]});
+
+/* The sword is offered once. A squire who has had the King's card, and did not kneel, is not sent up afterwards with the county's address. */
+{ const needs = SOCIETY.knight.needs; SOCIETY.knight.needs = () => needs().concat(S.king && S.seen.kingThanks !== undefined && !soc('knight') && !held('baronet')
+    ? [{ok:false, t:'You were bid to the Levee once, and sent your duty. The county does not send up with its address a gentleman who has already stayed away.'}] : []); }
 
 /* What follows the last paper: the Levee for the man who posted the letter, and the King's long memory for the man who gave it up. */
 { const gone = byId('kingGone'); for (const c of gone.choices) { const go = c.go; c.go = function(){ const k = S.king, end = k.end, text = go();
