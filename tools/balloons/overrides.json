@@ -1,14 +1,146 @@
 {
+ "events/ballot": {
+  "m": [
+   27.2,
+   55.9
+  ]
+ },
+ "events/bath-selina": {
+  "m": [
+   33.6,
+   52.4
+  ]
+ },
+ "events/clarke": {
+  "m": [
+   33.8,
+   41.2
+  ]
+ },
+ "events/clergy-southcott": {
+  "m": [
+   32.7,
+   46.7
+  ]
+ },
+ "events/county-hen": {
+  "m": [
+   55.3,
+   45.8
+  ]
+ },
+ "events/county-lottery": {
+  "m": [
+   35.6,
+   48.3
+  ]
+ },
+ "events/crabbeSums": {
+  "m": [
+   67.1,
+   47.7
+  ]
+ },
+ "events/dearth": {
+  "m": [
+   36.3,
+   46.3
+  ]
+ },
+ "events/edmund-christening": {
+  "m": [
+   52.8,
+   50.8
+  ]
+ },
+ "events/edmund-cold-letter": {
+  "m": [
+   38.1,
+   42.8
+  ]
+ },
+ "events/edmund-cold-room": {
+  "m": [
+   25.6,
+   50.3
+  ]
+ },
+ "events/edmund-huddersfield": {
+  "m": [
+   28.2,
+   43.9
+  ]
+ },
+ "events/edmund-ordained": {
+  "m": [
+   32.1,
+   42.3
+  ]
+ },
+ "events/edmund-pony": {
+  "m": [
+   36.5,
+   63.5
+  ]
+ },
+ "events/edmund-settle-stiff": {
+  "m": [
+   67.3,
+   45.9
+  ]
+ },
+ "events/edmund-thirty": {
+  "m": [
+   34.5,
+   47.9
+  ]
+ },
+ "events/edmund-vestry": {
+  "m": [
+   32.2,
+   27.9
+  ]
+ },
+ "events/edmund-waiting": {
+  "m": [
+   25.7,
+   34.6
+  ]
+ },
+ "events/fate-duel-alive": {
+  "m": [
+   27.3,
+   51.6
+  ]
+ },
  "events/flour": {
   "m": [
    25.5,
    46
   ]
  },
+ "events/gallDies": {
+  "m": [
+   32.2,
+   40.3
+  ]
+ },
+ "events/georgeMeeting": {
+  "m": [
+   33.8,
+   40.9
+  ]
+ },
+ "events/henPorch": {
+  "m": [
+   44.3,
+   54.5
+  ]
+ },
  "events/henrietta-bunce": {
   "m": [
-   77,
-   42
+   86.5,
+   36.2
   ]
  },
  "events/henrietta-gowns": {
@@ -25,8 +157,8 @@
  },
  "events/henrietta-mourning": {
   "m": [
-   27.5,
-   23.5
+   55.6,
+   42.5
   ]
  },
  "events/henrietta-portrait": {
@@ -37,8 +169,14 @@
  },
  "events/henrietta-tea": {
   "m": [
-   66.5,
-   38.5
+   70.1,
+   34.4
+  ]
+ },
+ "events/honBills": {
+  "m": [
+   34.5,
+   19.5
   ]
  },
  "events/kitty-assembly": {
@@ -71,6 +209,12 @@
    44
   ]
  },
+ "events/kitty-northampton": {
+  "m": [
+   41.7,
+   42.6
+  ]
+ },
  "events/kitty-stmalo": {
   "m": [
    31,
@@ -85,8 +229,8 @@
  },
  "events/kitty-vane-bailiff": {
   "m": [
-   41.5,
-   48.5
+   59.9,
+   36.0
   ]
  },
  "events/kitty-vane-child": {
@@ -95,10 +239,118 @@
    40
   ]
  },
+ "events/kitty-widow": {
+  "m": [
+   34.4,
+   48.3
+  ]
+ },
+ "events/manTraps": {
+  "m": [
+   32.5,
+   41.5
+  ]
+ },
+ "events/member-bellamy": {
+  "m": [
+   17.2,
+   71.5
+  ]
+ },
+ "events/member-curwen": {
+  "m": [
+   56.1,
+   56.6
+  ]
+ },
+ "events/overseer": {
+  "m": [
+   44.5,
+   34.1
+  ]
+ },
+ "events/paris": {
+  "m": [
+   78.1,
+   50.5
+  ]
+ },
+ "events/parish-harvest": {
+  "m": [
+   60.0,
+   42.9
+  ]
+ },
+ "events/peace": {
+  "m": [
+   54.0,
+   47.0
+  ]
+ },
+ "events/pinchSuit": {
+  "m": [
+   38.9,
+   40.5
+  ]
+ },
+ "events/powder": {
+  "m": [
+   18.9,
+   48.9
+  ]
+ },
+ "events/pryorFriend": {
+  "m": [
+   56.3,
+   35.8
+  ]
+ },
+ "events/royalBond": {
+  "m": [
+   41.8,
+   48.5
+  ]
+ },
  "events/tClear": {
   "m": [
-   78.5,
-   49
+   48.8,
+   60.5
+  ]
+ },
+ "events/tMother": {
+  "m": [
+   47.7,
+   34.7
+  ]
+ },
+ "events/tSecond": {
+  "m": [
+   36.6,
+   42.6
+  ]
+ },
+ "events/tStranger": {
+  "m": [
+   40.6,
+   44.1
+  ]
+ },
+ "events/tWhig": {
+  "m": [
+   19.9,
+   44.6
+  ]
+ },
+ "events/thorneLease": {
+  "m": [
+   34.8,
+   40.9
+  ]
+ },
+ "events/vaneDowry": {
+  "m": [
+   44.3,
+   39.3
   ]
  },
  "events/ventGravel": {
@@ -124,6 +376,12 @@
     57,
     50
    ]
+  ]
+ },
+ "events/ventKiln": {
+  "m": [
+   58.1,
+   56.4
   ]
  },
  "events/ventRaces": {
@@ -165,19 +423,100 @@
    69.5
   ]
  },
+ "events/war-contribution": {
+  "m": [
+   36.5,
+   48.9
+  ]
+ },
+ "undertakings/dine-earl": {
+  "m": [
+   50.1,
+   44.1
+  ]
+ },
+ "undertakings/dine-magistrates": {
+  "m": [
+   63.2,
+   46.3
+  ]
+ },
+ "undertakings/dine-partridge": {
+  "m": [
+   35.8,
+   47.5
+  ]
+ },
+ "undertakings/dine-snow": {
+  "m": [
+   54.2,
+   47.2
+  ]
+ },
+ "undertakings/dine-swans": {
+  "m": [
+   78.6,
+   50.8
+  ]
+ },
+ "undertakings/home-alphabet": {
+  "m": [
+   69.4,
+   51.5
+  ]
+ },
  "undertakings/home-drip": {
   "m": [
-   33.5,
-   45
-  ],
-  "p": [
-   [
-    "f",
-    56,
-    6,
-    74,
-    30
-   ]
+   70.7,
+   44.5
+  ]
+ },
+ "undertakings/home-fish": {
+  "m": [
+   54.8,
+   52.3
+  ]
+ },
+ "undertakings/home-flea": {
+  "m": [
+   53.7,
+   45.7
+  ]
+ },
+ "undertakings/home-indians": {
+  "m": [
+   33.3,
+   51.4
+  ]
+ },
+ "undertakings/home-pocketbook": {
+  "m": [
+   33.7,
+   49.9
+  ]
+ },
+ "undertakings/home-radcliffe": {
+  "m": [
+   61.3,
+   41.3
+  ]
+ },
+ "undertakings/ride-geese": {
+  "m": [
+   71.3,
+   61.2
+  ]
+ },
+ "undertakings/ride-hay": {
+  "m": [
+   39.2,
+   61.5
+  ]
+ },
+ "undertakings/ride-house": {
+  "m": [
+   32.0,
+   60.0
   ]
  },
  "undertakings/ride-lambing": {
@@ -186,10 +525,70 @@
    30.5
   ]
  },
- "events/honBills": {
+ "undertakings/ride-michaelmas": {
   "m": [
    34.5,
-   19.5
+   46.2
+  ]
+ },
+ "undertakings/ride-rooks": {
+  "m": [
+   24.5,
+   54.9
+  ]
+ },
+ "undertakings/sessions-bread": {
+  "m": [
+   69.8,
+   31.7
+  ]
+ },
+ "undertakings/sessions-drum": {
+  "m": [
+   37.2,
+   45.4
+  ]
+ },
+ "undertakings/sessions-hassock": {
+  "m": [
+   23.9,
+   42.6
+  ]
+ },
+ "undertakings/sessions-sweep": {
+  "m": [
+   49.9,
+   47.2
+  ]
+ },
+ "undertakings/sessions-weights": {
+  "m": [
+   37.7,
+   39.5
+  ]
+ },
+ "undertakings/sessions-words": {
+  "m": [
+   35.4,
+   26.8
+  ]
+ },
+ "undertakings/town-brooks": {
+  "m": [
+   55.0,
+   49.6
+  ]
+ },
+ "undertakings/town-burdett": {
+  "m": [
+   31.6,
+   54.6
+  ]
+ },
+ "undertakings/town-partners": {
+  "m": [
+   44.9,
+   51.2
   ]
  }
 }
