@@ -16,16 +16,33 @@ A role-playing estate game set in Berkshire between 1795 and 1815. You inherit t
 ## Layout
 
 ```
-src/data.js      prices, harvests, people, news, quiet-season vignettes
-src/traits.js     advantages and encumbrances for character creation
-src/events1.js   the fixed calendar
-src/events2.js   the wandering pool
-src/engine.js    seasons, ledger, undertakings, the reckoning
-src/castle.js    Lord Cullerne: the votes, his court, the game, and what may be bought of him
-src/ui.js        rendering
-src/style.css    the page
-build.sh         stitches src/ into index.html
-test/sim.js      plays hundreds of random lives to catch errors and check balance
+src/data.js        prices, harvests, people, news
+src/traits.js      advantages and encumbrances for the making of a squire
+src/engine.js      seasons, ledger, undertakings, saves, the reckoning
+src/estate.js      the rent roll: farms, leases, ventures, household, society, credit
+src/common.js      the Common while it lies open
+src/farmworks.js   each farm's own works and venture
+src/castle.js      Lord Cullerne: the votes, his court, the game, and what may be bought of him
+src/events1.js     the fixed calendar
+src/events2.js     the wandering pool
+src/events3.js     one paper for each choice made at the inheritance
+src/events4.js     the Post-Captain at the Grange
+src/events5.js     the squire's past and character, made to tell
+src/ventpapers.js  the papers a venture opens (with ventpapers.css)
+src/endings.js     how the life ends, and its last plate (with endings.css)
+src/plan.js        the plan of the estate and the plates (with plan.css)
+src/planart.js     where each drawn piece sits on the plan
+src/stock.js       the beasts and the traffic on the plan
+src/sayat.js       where the speaker's mouth is on each cut
+src/sayroom.js     where a balloon may hang on each cut (made by tools/balloons/build.py)
+src/ui.js          the ledger, the inheritance and the making of a squire (with style.css)
+src/sound.js       the sounds of the house, silent until turned on
+build.sh           stitches src/ into index.html and lists art/ for the page
+test/sim.js        plays hundreds of random lives to catch errors and check balance
+test/oldsaves.js   loads saves from earlier builds and plays them out
+tools/play.js      walks the built page at desk and phone widths
+tools/voicecheck.js  the checker for docs/voice/VOICE.md
+tools/site.sh      lays out a folder a plain web host can serve
 ```
 
 After changing anything in `src/`, run `./build.sh`, then `node test/sim.js 500`.

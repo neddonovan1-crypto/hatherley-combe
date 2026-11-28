@@ -43,11 +43,6 @@ body.intro #verso::after, body.reading #verso::after{content:none}
 /* the flyleaf: marbled endpaper facing the title page */
 body.intro #tabs, body.intro #ribbon{display:none}
 body.intro .page{min-height:0;gap:10px}
-.bookplate{width:min(100%, 21rem);background:var(--sheet);background-image:var(--grain);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.4);outline:1px solid var(--ink);outline-offset:-7px;border:1px solid var(--ink)}
-.bookplate .plate{width:100%}
-.bookplate b{font-family:var(--hand);font-weight:400;font-size:2.5rem;line-height:1}
-.bookplate span{font-family:var(--caps);font-size:.8rem;letter-spacing:.14em;color:var(--muted)}
-.bookplate i{font-family:var(--display);font-size:.95rem}
 
 /* plates, tipped in */
 .plate{position:relative;margin:0;border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:3px;background:#dcd8c4;overflow:hidden;line-height:0}
@@ -71,7 +66,6 @@ h3{font-family:var(--caps);font-weight:400;letter-spacing:.12em;font-size:.86rem
 h3.orn{display:flex;align-items:center;gap:12px;color:var(--ink)}
 h3.orn::before, h3.orn::after{content:"";flex:1;height:5px;background:var(--ink)}
 h3.orn::before{clip-path:polygon(0 50%, 100% 0, 100% 100%)} h3.orn::after{clip-path:polygon(0 0, 100% 50%, 0 100%)}
-.swell{height:5px;background:var(--ink);clip-path:polygon(0 50%, 50% 0, 100% 50%, 50% 100%);margin:2px 12%;flex:none}
 
 /* the account */
 .tablewrap{overflow-x:auto;flex:none}   /* never squeezed: the page scrolls before the account loses its total */
