@@ -191,12 +191,25 @@ function beginSeason(){
   creditCheck();
   S.pending = pickEvent();
   S.vignette = S.pending ? null : vignette(q);
+  bankSeason(); S.notes = S.notes.map(bankSay); for (const e of L) e[0] = bankSay(e[0]); S.vignette = bankSay(S.vignette);
   S.phase = 'ledger';
   save();
 }
 
 const FIXED = {};
-function indexEvents(){ for (const e of EVENTS){ if (e.fixed) for (const k of [].concat(e.fixed)) (FIXED[k] = FIXED[k] || []).push(e); } }
+function indexEvents(){ for (const e of EVENTS){ if (e.fixed) for (const k of [].concat(e.fixed)) (FIXED[k] = FIXED[k] || []).push(e); bankWrap(e); } }
+/* When the bank at Wyvern breaks, another man opens it again, and everything written after that quarter names him. What was written before keeps the old name. */
+const BANKER_OLD = /Tidmarsh/g, BANKER_NEW = 'Slocock';
+const bankIsNew = () => !!S && S.bankNew !== undefined && S.t > S.bankNew;
+const bankSay = s => typeof s === 'string' && bankIsNew() ? s.replace(BANKER_OLD, BANKER_NEW) : s;
+function bankDeep(o){ if (!bankIsNew()) return o; if (typeof o === 'string') return bankSay(o); if (Array.isArray(o)) return o.map(bankDeep);
+  if (o && typeof o === 'object') { for (const k of Object.keys(o)) { const d = Object.getOwnPropertyDescriptor(o, k); if (d && 'value' in d && d.writable) o[k] = bankDeep(o[k]); } } return o; }
+function bankWrap(e){ if (e.banked) return; e.banked = true; const w = v => typeof v === 'function' ? function(){ return bankSay(v.apply(this, arguments)); } : typeof v === 'string' && /Tidmarsh/.test(v) ? () => bankSay(v) : v;
+  if (typeof e.text === 'function') e.text = w(e.text);
+  for (const c of e.choices || []) { c.t = w(c.t); if (c.note !== undefined) c.note = w(c.note); c.go = w(c.go); } }
+function bankSeason(){ const broke = F('bankFailed') || (typeof vent === 'function' && vent('bank') && vent('bank').how === 'The bank broke');
+  if (broke && S.bankNew === undefined) { S.bankNew = S.t - 1;
+    S.notes.push(`The shutters are down again at the bank in Wyvern, with a new name in gilt above the door; Mr Slocock of Newbury having bought the lease, the counter, the iron chest, and your mortgage.`); } }
 const lab = c => typeof c.t === 'function' ? c.t() : c.t;
 const byId = id => EVENTS.find(e => e.id === id);
 
@@ -829,7 +842,7 @@ function undertakingOptions(){ const rode = S.rode || [];
 }
 function undertake(i){ const u = undertakingOptions()[i]; if (!u) return;
   if (u.id === 'rest') { add({standing:-1, goodwill:-1, family:-1}); S.rides = RIDES; S.phase = 'undone'; return next(); }
-  const b = snapshot(); LAST_CUT = null; const text = u.run();
+  const b = snapshot(); LAST_CUT = null; const text = bankSay(u.run());
   S.rides = (S.rides || 0) + 1; S.rode = (S.rode || []).concat(u.id);
   S.journal.unshift({when:stamp(), title:'The season’s undertaking', did:u.t});
   S.outcome = {title:u.t, text, d:deltas(b), cut:LAST_CUT}; S.phase = 'undone'; save(); render(); }

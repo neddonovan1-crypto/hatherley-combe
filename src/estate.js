@@ -103,6 +103,7 @@ function rentDay(line){
   estateSync();
   const y = S.year, q = S.season, hy = q === 0 ? y - 1 : y;   // Lady Day rents are paid out of last year's harvest
   if (q === 0) ladyDay();
+  if (S.gone && !goneNow()) delete S.gone;
   let racked = 0, easy = 0, n = 0, asked = false;
   for (const f of S.farms){
     const able = means(hy) * farmF(f) * f.base * (0.86 + S.goodwill / 350);
@@ -114,6 +115,7 @@ function rentDay(line){
     if (surplus >= 0) { const back = Math.min(f.arrears, surplus * 0.5); f.arrears -= back; got += back; f.K = Math.min(1.6 * f.rent, f.K + 0.3 * (surplus - back)); }
     else { f.K += surplus; if (f.K < 0) { const short = Math.min(due, -f.K); f.K = 0; got -= short; f.arrears += short;
       if (short >= 1) S.notes.push(`${f.tenant} of ${f.name} is ${fmt(short)} short this half-year.`); } }
+    if (tenantHazard(f, surplus < 0) === 'fled') got = 0;
     line(f.name + ', ' + f.tenant, got); S.yearIncome += Math.round(got);
     if (f.arrears > 0.9 * f.rent) { S.notes.push(`${f.tenant} is gone from ${f.name}, owing ${fmt(f.arrears)}; the key was found upon a nail in the porch, and the farm is in hand.`); quit(f); add({goodwill:-3}); }
     else if (!asked && f.arrears > 0.25 * f.rent && (f.asked === undefined || S.t - f.asked >= 4) && !S.payQueue.includes(f.id)) { asked = true; f.asked = S.t; S.payQueue.push(f.id); later('cannotPay', 0); }
@@ -129,7 +131,7 @@ function rentRoll(){ estateSync(); const y = S.year, open = S.phase !== 'end' &&
   return S.farms.map(f => { const will = !f.void && f.lease.type === 'will', waiting = S.letQueue.some(x => x.id === f.id);
     return {id:f.id, name:f.name, acres:f.acres, tenant:f.void ? '' : f.tenant, rent:f.void ? 0 : Math.round(rentDue(f)), value:lettingValue(f, y),
       tenure:tenureOf(f), order:ORDER_W[f.cond], means:f.void ? '' : MEANS_W[Math.min(4, Math.floor(f.K / Math.max(1, f.rent) / 0.3))],
-      arrears:Math.round(f.arrears), level:f.level, own:!!f.own, abated:!!f.rebate, waiting, canLevel:open && will && !waiting, canOffer:open && will && !waiting,
+      arrears:Math.round(f.arrears), level:f.level, own:!!f.own, abated:!!f.rebate, waiting, canLevel:open && will && !waiting, canOffer:open && will && !waiting && !(goneNow() && goneNow().id === f.id),
       state:f.void ? 'hand' : will ? 'will' : f.lease.type, ends:will || f.void ? 0 : f.lease.ends, toRun:will || f.void ? 0 : Math.max(0, f.lease.ends - y)}; }); }
 const LAND = {longbarrow:'Down and sheepwalk', kennet:'Wet clay, with the mill', church:'Strips in the open field', coldharbour:'Sound loam beyond the turnpike', starveall:'Thin chalk on the hill', commonpiece:'New ground off the common', rooksnest:'Mixed land under the hanger', withymead:'Meadow and osiers on the Lambourn', maddle:'Open down, nine miles from a market'};
 /* For the Farms leaf of the book. held is ready to print; the rest is there for the page to draw as it likes. */
@@ -168,11 +170,77 @@ function offerLease(id){ const f = farm(id); if (!f || f.void || f.lease.type !=
 /* A lease granted from the farm's own paper, there and then. The terms are the choices of the letting paper after its first, which is to leave things alone;
    leaseTerms(id) lists them with what each does to the rent, and grantLease(id, i) signs one and returns what was said. S.leaseSaid keeps the last for the page to print under the farm. */
 function asLetting(id, fn){ const x = {id, why:'offer'}; S.letQueue.unshift(x); try { return fn(byId('leaseFalls')); } finally { const i = S.letQueue.indexOf(x); if (i >= 0) S.letQueue.splice(i, 1); } }
-function leaseTerms(id){ const f = farm(id); if (!f || f.void || f.lease.type !== 'will' || S.phase === 'end' || S.dead || S.letQueue.some(x => x.id === id)) return [];
+function leaseTerms(id){ const f = farm(id); if (!f || f.void || f.lease.type !== 'will' || S.phase === 'end' || S.dead || S.letQueue.some(x => x.id === id) || (goneNow() && goneNow().id === id)) return [];
   return asLetting(id, e => e.choices.slice(1).map((c, i) => ({i, label:lab(c), note:typeof c.note === 'function' ? c.note() : c.note || ''}))); }
 function grantLease(id, i){ if (!leaseTerms(id)[i]) return false; const f = farm(id);
   const said = asLetting(id, e => { const c = e.choices[i + 1], did = lab(c), text = c.go(); S.journal.unshift({when:stamp(), title:'The Letting of ' + f.name, did}); return text; });
   S.leaseSaid = {id, t:S.t, text:said}; save(); render(); return said; }
+
+/* Now and then a tenancy ends without anybody's leave: the tenant dies, or is gone in the night with the half-year unpaid.
+   It is rare, a little under one such in a life of three farms. A man goes the sooner where the rent is racked, the year has not made the rent,
+   he is behind already, and no lease holds him; a death comes the sooner to a tenant of twenty years' standing. One at a time, and never to the people the story needs. */
+function tenantHazard(f, lean){ if (S.gone || S.t < 4 || !f.tenant || f.flush || TENANT_IS(f) || (f.id === 'longbarrow' && !f.thorneDone) || S.letQueue.some(x => x.id === f.id) || S.payQueue.includes(f.id)) return '';
+  const y = S.year, racked = rentDue(f) > 1.06 * lettingValue(f, y), held = f.lease.type !== 'will' && f.lease.ends - y >= 2;
+  const dies = 0.004 + (y - (f.since || 1788) >= 20 ? 0.004 : 0), flits = 0.002 * (racked ? 3 : 1) * (lean ? 2.5 : 1) * (f.arrears >= 1 ? 2 : 1) * (held ? 0.4 : 1), r = Math.random();
+  const kind = r < dies ? 'dead' : r < dies + flits ? 'fled' : ''; if (!kind) return '';
+  S.gone = {id:f.id, kind, who:f.tenant, owed:kind === 'fled' ? Math.round(rentDue(f) / 2) : 0}; later('tenantGone', 0); return kind; }
+const goneAt = () => { const g = S.gone, f = g && farm(g.id); return f ? Object.assign({f}, g) : null; };
+const goneNow = () => { const g = goneAt(); return g && !g.done && !g.f.void && g.f.tenant === g.who ? g : null; };
+const surname = f => f.tenant.split(' ').pop();
+const heirOf = f => f.she ? {name:'young Mr ' + surname(f), she:false, called:'Her son', p:pro({})} : {name:'Widow ' + surname(f), she:true, called:'The widow', p:pro({she:true})};
+const goneDone = () => { S.gone.done = true; };
+
+ev({ id:'tenantGone', follow:true, cond:() => !!goneNow(), cut:() => 'tenantGone-' + ((goneAt() || {}).kind || 'dead'),
+  get title(){ const g = goneAt(); return g ? (g.kind === 'dead' ? 'A Death at ' : 'An Empty House at ') + g.f.name : 'A Farm Without a Tenant'; },
+  text:() => { const {f, kind, owed} = goneNow(), p = pro(f), st = steward(), h = heirOf(f);
+    if (kind === 'dead') return `${f.tenant} of ${f.name} was taken ill at Newbury market upon the Thursday, between the corn and the sheep; and being brought home in ${p.his} own cart, died there upon the Saturday night.
+
+${p.He} had the farm since ${f.since || 1788}. ${st}, who went to the burying, has brought the rent book back with him, in which the half-year is entered as paid.
+
+${h.she ? `The widow is in the passage, in a black that was dyed on Monday` : `Her son is in the passage, with crape upon his hat`}; and what ${h.p.he} has come to ask is, whether ${h.p.he} may keep the farm.`;
+    return `The kitchen chimney at ${f.name} has not smoked since Sunday; and ${st}, riding down upon the Tuesday for the half-year, found the door on the latch, the dresser bare, and the clock gone from the wall.
+
+“${p.He} went by night, sir, with two wagons; and the Hungerford gate took ${p.his} toll at four in the morning.”
+
+${st} lays the rent book open upon the table.
+
+“${cap1(pounds(owed))}, the half-year. ${p.He} has left the dung, the wheat that is in the ground, and a lame mare.”`; },
+  choices:[
+    {t:() => `Let ${heirOf(goneNow().f).p.him} hold on at the same rent.`, if:() => goneNow().kind === 'dead', note:() => rentNote(goneNow().f, goneNow().f.rent, '+Goodwill'), go:() => { const {f} = goneNow(), h = heirOf(f), st = steward(); goneDone();
+      f.tenant = h.name; f.she = h.she; f.K *= 0.6; f.since = S.year; add({goodwill:4});
+      return `“You may tell ${h.p.him} so.”
+
+${st} tells ${h.p.him} in the passage, with the door open; and ${h.name} is entered in the book at ${fmt(Math.round(rentDue(f)))}, upon the line below the old name, through which ${st} has ruled twice.`; }},
+    {t:'Advertise the farm in the Mercury.', if:() => goneNow().kind === 'dead', note:() => rentNote(goneNow().f, goneBid(goneNow().f), 'fixed for seven years, with a new tenant. −Goodwill'), go:() => { const {f} = goneNow(), h = heirOf(f), st = steward(), n = incomer(), r = goneBid(f); goneDone();
+      f.tenant = n[0]; f.she = false; f.rent = r; f.arrears = 0; f.lease = {type:'term', ends:S.year + 7, years:7, level:'fair'}; f.level = 'fair'; f.since = S.year; f.K = 0.4 * r; delete f.rebate; add({goodwill:-5});
+      return `The Mercury has it upon the Monday.
+
+“To be LETT, and entered upon immediately, ${f.name.toUpperCase()}, in the Parish of Hatherley, Berks; consisting of ${f.acres} Acres of Arable, Meadow and Pasture, with a good House, Barns and Yards. Enquire of ${st}, at Hatherley Hall. None but Principals will be treated with.”
+
+Four men ride over to see it; and ${n[0]} of ${n[1]}, who bids ${fmt(r)}, has it for seven years. ${h.name} is gone to Hungerford by the carrier’s cart, with the clock upon ${h.p.his} knees.`; }},
+    {t:'Take the farm in hand for a year.', if:() => goneNow().kind === 'dead', note:'In hand a year, then let in worse order. −Goodwill', go:() => { const {f} = goneNow(), h = heirOf(f), st = steward(); goneDone(); quit(f); add({goodwill:-3});
+      return `${st} takes the keys of the granary, and puts a man in to feed the stock; and ${h.name}, who is given until the month’s end, is out in nine days.
+
+${f.name} is in hand.`; }},
+    {t:'Sell what is left, and take the farm in hand.', if:() => goneNow().kind === 'fled', note:() => '+' + fmt(goneLeft(goneNow().f)) + ' from the sale. In hand a year', go:() => { const {f} = goneNow(), got = goneLeft(f), st = steward(); goneDone(); quit(f); add({money:got});
+      return `The wheat is valued as it stands, and sold with the dung to the next farm; the mare makes four pounds at Wyvern, to a man who has not seen her walk; and the whole comes to ${pounds(got)}.
+
+${st} puts a man in. ${f.name} is in hand.`; }},
+    {t:'Send Mr Spurling’s clerk to Bristol after the wagons.', if:() => goneNow().kind === 'fled', note:'£25 to the attorney. The half-year, if the man is found', go:() => { const {f, owed, who} = goneNow(), p = pro(f), found = chance(0.45); goneDone(); quit(f); add({money:-25 + (found ? owed : 0)});
+      return found ? `The clerk is ten days about it, and finds the wagons in the yard of an inn upon the Welsh Back, with ${who} at breakfast in the parlour, and a passage taken for Philadelphia.
+
+${p.He} pays ${pounds(owed)} upon the breakfast table, in notes, sooner than be taken up for it; and Mr Spurling’s account, which comes by the same post, is twenty-five pounds.
+
+${f.name} is in hand.` : `The clerk is three weeks about it; and brings back, with an account for twenty-five pounds, the name of a ship that cleared from Bristol for Philadelphia upon the ninth.
+
+${f.name} is in hand.`; }},
+    {t:'Let it to the first man who will take it as it stands.', if:() => goneNow().kind === 'fled', note:() => rentNote(goneNow().f, five(0.9 * lettingValue(goneNow().f, S.year)), 'from year to year. The farm a step worse'), go:() => { const {f} = goneNow(), st = steward(); goneDone(); relet(f); S.notes.pop();
+      return `${st} has it let within the week, to ${f.tenant}, who walks the wheat with his hands behind him, and says that he has seen worse.
+
+The rent is ${fmt(f.rent)}, from year to year; and nothing is said upon either side about the hedges.`; }}
+  ]});
+const goneBid = f => Math.max(f.rent, five(1.04 * lettingValue(f, S.year)));
+const goneLeft = f => five(0.15 * f.rent);
 
 /* ---------- papers ---------- */
 function letting(){ while (S.letQueue && S.letQueue.length){ const x = S.letQueue[0], f = farm(x.id); if (f && !f.void && f.lease.type === 'will') return {f, why:x.why}; S.letQueue.shift(); } return null; }
@@ -386,10 +454,10 @@ const VENTURES = {
   thresher:{ fx:["+£50 a year in wages saved", "− Goodwill", "−£300 if the barn is fired"], risk:2, odds:{"well": 0.6, "dull": 0.2, "ill": 0.2}, effects:`Saves about £50 a year. Goodwill falls. From 1811, if the parish is ill disposed, the barn may be fired: £300 lost.`, name:'A threshing machine', line:'A Scotch machine of drum and beaters, turned by two horses in the great barn. It threshes what six men did with flails.', where:'The home farm', cost:120, no:() => F('thresher') ? 'There is one in the great barn already.' : S.year < 1803 ? 'Not before 1803, when the Reading foundry first undertakes to build one.' : '',
     well:'Saves about £50 a year in winter wages.', ill:'Six men thresh in your barn from Martinmas to Lady Day. They have no other work.',
     begin:() => { fl('thresher'); add({goodwill:-4}); }, state:v => 'In the great barn since ' + v.year },
-  bank:{ fx:["+£150 a year", "+ Standing", "−£500 in a run", "−£2,500 to £5,000 if the bank breaks"], risk:4, odds:{"well": 0.45, "dull": 0.1, "ill": 0.45}, effects:`£150 a year and standing. A run on the bank may cost £500. If the bank breaks you lose the £1,000 and are called on for £1,500 to £4,000 more. You may withdraw only when money is easy.`, name:'A partner’s share in the Wyvern Bank', line:'Mr Tidmarsh’s bank at Wyvern issues its own notes. You put in a thousand pounds and sign as a partner.', where:'The estate', cost:1000,
+  bank:{ fx:["+£150 a year", "+ Standing", "−£500 in a run", "−£2,500 to £5,000 if the bank breaks"], risk:4, odds:{"well": 0.45, "dull": 0.1, "ill": 0.45}, effects:`£150 a year and standing. A run on the bank may cost £500. If the bank breaks you lose the £1,000 and are called on for £1,500 to £4,000 more. You may withdraw only when money is easy.`, name:'A partner’s share in Tidmarsh’s Bank', line:'Mr Tidmarsh’s bank at Wyvern issues its own notes. You put in a thousand pounds and sign as a partner.', where:'The estate', cost:1000, begin:v => { v.paid = VENTURES.bank.cost; },
     well:'Fifteen per cent, and a seat in the bank parlour.', ill:'Every partner answers for the notes with all he has.', state:v => 'A partner since ' + v.year,
     endLabel:'Withdraw from the bank', canEnd:() => !moneyTight(S.year), endWhy:'No partner can be let go while money is tight.',
-    end:() => { S.money += 1000; return `You have withdrawn from the Wyvern Bank. Mr Tidmarsh repays the £1,000 and takes your name off the notes.`; }},
+    end:() => { const paid = vent('bank').paid || 1000; S.money += paid; return `You have withdrawn from Tidmarsh’s Bank. Mr Tidmarsh repays the ${fmt(paid)} and takes your name off the notes.`; }},
   spa:{ fx:["+£300 a year rising to £750, if the waters take", "+£90 a year if they half take", "−£60 a year if they fail"], risk:3, odds:{"well": 0.3, "dull": 0.5, "ill": 0.2}, effects:`If the waters take: £300 a year rising to £750, and standing. If they half take: £90 a year. If they fail: £60 a year lost until the pump room is shut.`, name:'The Hatherley Spa', line:'The spring below the Hall tastes of iron. You build a pump room over it and lodgings for invalids who come to drink.', where:'The estate', cost:1800,
     well:'If the waters take, £300 a year rising to £750.', ill:'Bath is thirty miles off, and Cheltenham had the King.',
     begin:v => { const r = Math.random(); v.fate = r < 0.3 ? 'hit' : r < 0.8 ? 'dull' : 'flop'; }, state:v => 'A pump room since ' + v.year,
@@ -413,7 +481,7 @@ function beginVenture(id){ const x = venturesList().find(v => v.id === id); if (
   S.vent = S.vent || {}; const v = S.vent[id] = {year:S.year, t:S.t}; S.money -= d.cost; if (d.begin) d.begin(v);
   S.journal.unshift({when:stamp(), title:'Ventures', did:'Ventured ' + fmt(d.cost) + ': ' + d.name}); save(); render(); return true; }
 function endVenture(id){ const x = venturesList().find(v => v.id === id); if (!x || !x.canEnd) return false; const d = VENTURES[id], v = vent(id);
-  S.money -= d.endCost || 0; v.ended = S.year; v.how = d.endLabel; const said = d.end(v);
+  S.money -= d.endCost || 0; v.ended = S.year; v.how = d.endLabel; const said = bankSay(d.end(v));
   S.journal.unshift({when:stamp(), title:'Ventures', did:d.endLabel + '. ' + said}); save(); render(); return true; }
 function stopVenture(id, how){ const v = vent(id); v.ended = S.year; v.how = how; }
 
@@ -436,10 +504,10 @@ function ventureTick(line){ if (!S.vent) return; const y = S.year, q = S.season,
     if (y >= 1811 && S.goodwill < 45 && chance(0.25)) { stopVenture('thresher', 'Broken and burnt'); line('The great barn, and the machine in it', -300); add({goodwill:-2});
       S.notes.push('The threshing machine was broken up in the night and the great barn fired. Nobody in Hatherley saw anything.'); } }
   if (live('bank')) { const v = vent('bank');
-    if (q === 3) { earn('Share of profits, Wyvern Bank', 150); add({standing:1}); }
-    if (q === 1 && ((y === 1797 && chance(0.2)) || (y === 1810 && chance(0.15))) && v.year < y) { line('Paid in to meet a run on the Wyvern Bank', -500); S.notes.push('There was a run on the Wyvern Bank on Saturday. Each partner has paid in £500 to meet it.'); }
-    if (q === 2 && y === 1815 && chance(0.45)) { const c = 1500 + Math.round(Math.random() * 25) * 100; stopVenture('bank', 'The bank broke'); line('Call on the partners of the Wyvern Bank', -c); add({standing:-8});
-      S.notes.push(`The Wyvern Bank stopped payment on Tuesday. The shutters are up and there is a crowd in the market place holding its notes. Your share of ${fmt(1000)} is gone and the partners are called on for ${fmt(c)} each.`); } }
+    if (q === 3) { earn('Share of profits, Tidmarsh’s Bank', 150); add({standing:1}); }
+    if (q === 1 && ((y === 1797 && chance(0.2)) || (y === 1810 && chance(0.15))) && v.year < y) { line('Paid in to meet a run on Tidmarsh’s Bank', -500); S.notes.push('There was a run on Tidmarsh’s Bank on Saturday. Each partner has paid in £500 to meet it.'); }
+    if (q === 2 && y === 1815 && chance(0.45)) { const c = 1500 + Math.round(Math.random() * 25) * 100; stopVenture('bank', 'The bank broke'); line('Call on the partners of Tidmarsh’s Bank', -c); add({standing:-8});
+      S.notes.push(`Tidmarsh’s Bank stopped payment on Tuesday. The shutters are up and there is a crowd in the market place holding its notes. Your share of ${fmt(v.paid || 1000)} is gone and the partners are called on for ${fmt(c)} each.`); } }
   if (live('spa') && q === 2 && n('spa') >= 1) { const v = vent('spa'), k = n('spa');
     if (v.fate === 'hit') { earn('Hatherley Spa, the season', Math.min(750, 300 + 75 * (k - 1))); if (k === 1) { add({standing:4}); S.notes.push('A physician at Bath has published a pamphlet on the Hatherley waters. Eleven families have taken lodgings in the village for the season.'); } }
     else if (v.fate === 'dull') { earn('Hatherley Spa, the season', 90); if (k === 1) S.notes.push('The pump room at Hatherley Spa took £90 this season. Most of it came from Wyvern people on Sundays.'); }

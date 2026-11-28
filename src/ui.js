@@ -105,7 +105,7 @@ function resume(){ const s = load(); if (s) { S = s; render(); } }
 
 const runhead = (l, r, m) => `<p class="runhead"><span>${l}</span>${m ? `<span>${m}</span>` : ''}<span>${r}</span></p>`;
 /* A choice's sum: a plus or "Saves" or a sale is money in and goes green; a bare sum is money out and goes red. Rents on a letting are money in. */
-const RENT_PAPERS = new Set(['leaseFalls', 'cannotPay']);
+const RENT_PAPERS = new Set(['leaseFalls', 'cannotPay', 'tenantGone']);
 /* Every gain and loss on the page is coloured by this one hand, so that whatever is written hereafter with a plus or a minus before it follows the rule without being told.
    A plus goes green and a minus red, the sign together with the sum or the name that follows it: "+£80", "−Goodwill", "+2 Standing", "−1 Lord Cullerne".
    bare says how a sum with no sign is to be read: 1 a receipt, -1 a cost, 0 left in ink. debt turns the colours about, for a plus upon a mortgage is no gain. */
@@ -153,7 +153,7 @@ function ledgerHTML(){
     ${S.news ? `<aside class="sheet clip"><span>The Reading Mercury</span><p>${esc(S.news)}</p></aside>` : ''}
     ${S.vignette ? `<div class="prose vignette">${paras(S.vignette)}</div>` : ''}
     ${digestHTML()}
-    <div class="row">${S.dead ? `<button class="go" onclick="next()"><span>Face the creditors</span></button>` : `<button class="go" onclick="shutBook()"><span>Shut the book</span></button>`}</div>`; }
+    <div class="row">${S.dead ? `<button class="go" onclick="next()"><span>Face the creditors</span></button>` : `<button class="go" onclick="shutBook()"><span>Shut the book</span></button>${wipeHTML()}`}</div>`; }
 
 function paperHTML(){ const e = byId(S.pending), bill = BILLS.has(e.id), text = e.text(), who = bill ? null : whoOf(e.title + ' ' + text);
   return `${runhead(bill ? 'Posted this quarter' : 'Papers received this quarter', `fo. ${Math.min(S.t + 1, 84)}`)}
@@ -254,7 +254,7 @@ const DRAFT_VENTURES = [
   {name: 'Cut the peat', where: 'Kennet Bottom', cost: 300, well: 'About £170 a year in peat and ashes.'},
   {name: 'Forage for the barracks', where: 'The estate', cost: 200, well: '£130 a year, as long as there is cavalry at Reading.'},
   {name: 'A threshing machine', where: 'The home farm', cost: 120, well: 'Saves about £50 a year in wages.'},
-  {name: 'A partner’s share in the Wyvern Bank', where: 'The estate', cost: 1000, well: 'Fifteen per cent, and a seat in the bank parlour.'},
+  {name: 'A partner’s share in Tidmarsh’s Bank', where: 'The estate', cost: 1000, well: 'Fifteen per cent, and a seat in the bank parlour.'},
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
 let LOT = '', LEASING = '';
 function redraw(){ if (typeof VIEW !== 'undefined' && VIEW === 'plan') drawPlan(); else drawBook(); }
@@ -337,8 +337,12 @@ function chartHTML(){ const W = 300, H = 110, pad = 18, n = LAST_YEAR - FIRST_YE
 
 function journalHTML(){
   return `${S.journal.length ? `<ol class="daybook">${S.journal.slice(0, 12).map(j => `<li><time>${esc(j.when)}</time><span><b>${esc(j.title)}.</b> ${esc(j.did)}</span></li>`).join('')}</ol>` : '<p class="fine">Nothing entered yet.</p>'}
-    ${S.phase !== 'end' ? '<div class="row"><button class="quiet" onclick="askWipe(this)">Abandon this estate and begin again</button></div>' : ''}`; }
-function askWipe(b){ if (b.dataset.sure) return wipe(); b.dataset.sure = 1; b.textContent = 'Certain? Press again to give it all up'; }
+    ${wipeHTML() ? `<div class="row">${wipeHTML()}</div>` : ''}`; }
+/* Giving the estate up: a plain button in the ledger and upon the plan, and a second question before anything is lost. */
+const WIPE_ASK = `<button class="wipeask" onclick="askWipe(this)">Abandon the estate</button>`;
+const wipeHTML = () => S && S.phase !== 'end' ? `<span class="wipe">${WIPE_ASK}</span>` : '';
+function askWipe(b){ b.parentNode.innerHTML = `<span class="sure">Give up Hatherley, and begin again?</span><button class="yes" onclick="wipe()">Give it up</button><button class="no" onclick="keepEstate(this)">Keep it</button>`; }
+function keepEstate(b){ b.parentNode.innerHTML = WIPE_ASK; }
 
 /* A reader who comes back, or whose telephone has reloaded the page behind him, is set down where he left off. The opening page is for a new estate only. */
 let RESUMED = false;
