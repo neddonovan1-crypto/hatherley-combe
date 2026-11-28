@@ -109,9 +109,11 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 #land .wheel{position:absolute;left:59.44%;top:78.99%;width:1.6%;height:2.58%;pointer-events:none;transform:rotate(-6deg)} #land .wheel img{display:block;width:100%;height:100%;animation:millwheel 9s linear infinite} #land .wheel.calm img{animation:none}
 @keyframes millwheel{to{transform:rotate(360deg)}}
 /* what is said, in a balloon over the cut */
-.cutwrap{position:relative} .balloon{position:absolute;left:2%;top:2%;width:42%;aspect-ratio:900/497;background:url(art/ui/balloon.png) center/100% 100% no-repeat;quotes:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
-/* the words are set as large as the balloon will hold: fitBalloons() in plan.js finds the size */
-.balloon span{position:absolute;left:14%;right:11%;top:10%;bottom:26%;display:grid;place-items:center;overflow:hidden} .balloon span i{display:block;font-family:var(--display);font-style:italic;font-size:12px;line-height:1.12;text-align:center;color:#2b1d10;text-wrap:balance}
+.cutwrap{position:relative} .balloon{position:absolute;inset:0;quotes:none;pointer-events:none;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3));container-type:inline-size}
+.balloon b{position:absolute;display:grid;place-items:center;font-weight:400;background:url(art/ui/balloon.png) center/100% 100% no-repeat;visibility:hidden}
+.balloon svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible} .balloon path{fill:#ead9bd;stroke:#3a2a1c;stroke-width:1.3px;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+/* the words keep their size and the balloon is drawn about them: fitBalloons() in plan.js finds both */
+.balloon span{display:block} .balloon span i{display:block;font-family:var(--display);font-style:italic;font-size:12px;line-height:1.12;text-align:center;color:#2b1d10;text-wrap:balance}
 
 #landart, #landmot, #landlbl{display:contents}
 #land .beast{position:absolute;height:auto;pointer-events:none;translate:-50% -100%;filter:saturate(.8) drop-shadow(0 .5px 0 rgba(60,40,20,.25))}
@@ -123,7 +125,6 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 .lbl .fist.under{bottom:auto;top:100%;animation-name:beckonup} @keyframes beckonup{0%, 100%{transform:translateY(.55em);opacity:.55} 50%{transform:translateY(0);opacity:1}} .lbl .fist.under img{transform:scaleY(-1)}
 @keyframes beckon{0%, 100%{transform:translateY(-.55em);opacity:.55} 50%{transform:translateY(0);opacity:1}}
 @media (prefers-reduced-motion: reduce){ .lbl .fist{animation:none} }
-.balloon.flip{transform:scaleX(-1)} .balloon.flip span{transform:scaleX(-1)}
 /* the mortgage is paid down or added to from the table of the quarter, under the sum owing */
 #cart .creditbox{display:flex;flex-direction:column;align-items:stretch;gap:4px;align-self:stretch;margin-top:7px}
 #cart .creditbox button{display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.3);border:1px solid rgba(42,35,32,.5);border-radius:4px;padding:3px 9px;font-family:var(--display);font-size:.94rem;line-height:1.3;color:var(--ink);white-space:nowrap;cursor:pointer}
