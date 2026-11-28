@@ -256,3 +256,109 @@ regardQuarter = function(line){ regardQuarterStew(line); if (!stewOn()) return; 
   const work = beginWork; beginWork = function(id){ const ok = work(id); if (ok) { const s = stewOn() && stewOf(); if (S.money < 0) stewScore(-1, 'red'); else if (s && s.built !== S.year) { s.built = S.year; stewScore(1, 'works'); } save(); } return ok; };
   const venture = beginVenture; beginVenture = function(id){ const d = VENTURES[id], ok = venture(id); if (ok && d && d.risk >= 3) { stewScore(-1, 'hazard'); save(); } return ok; };
   const ride = UNDERTAKINGS.find(u => u.id === 'ride'), go = ride.go; ride.go = function(){ const s = stewOn() && stewOf(); if (s && s.rode !== S.year) { s.rode = S.year; stewScore(1, 'ride'); } return go(); }; }
+
+/* ---------- the last five years: four works and three ventures, each behind a gate ----------
+   Every one of these is listed from its year, and shut until something else is held: a title, the model farmyard, the new wing, Mr Repton's park, a share in the coach, the cut to the wharf.
+   Sources for the dates: Westmacott elected R.A. in 1811, his yard at 14 South Audley Street; Trevithick's threshing engine for Sir Christopher Hawkins at Trewithen, 1812;
+   Hopper's cast-iron conservatory at Carlton House and the Regent's fête of 19 June 1811; the Treaty of Paris of 30 May 1814 and the landing at Cannes of 1 March 1815;
+   the Kennet and Avon open throughout from December 1810, and the frost of January and February 1814; Davout's evacuation of Hamburg in May 1814, and the glut of British goods upon the Continent that followed. */
+const titledNow = () => held('knight') || held('baronet');
+const sinceQ = (y, q) => S.year > y || (S.year === y && S.season >= q);
+const GATE = {
+  monument:() => titledNow() ? '' : 'Mr Westmacott has the peerage and the baronetage upon his list for three years to come, and puts no plain Esquire among them. A knighthood or a baronetcy would get you a place.',
+  steam:() => F('modelfarm') ? '' : 'The engine wants a boiler-house and a paved barn to stand in. Yours is of elm board and thatch. Rebuild the home farm as a model farmyard first.',
+  conservatory:() => F('wing') ? '' : 'It is built against the new wing, and opens out of the library. Build the wing first.',
+  obelisk:() => F('park') ? '' : 'An obelisk wants a park to stand in. Lay out the park after Mr Repton first.',
+  bellinn:() => live('coach') ? '' : 'A house upon the road lives by the coaches that change at it, and the Defiance changes where her proprietors bid her. Take a share in the Wyvern coach first.',
+  barges:() => live('wharf') ? '' : 'A barge wants a wharf to load at. Make the cut from the canal to Hatherley wharf first.'
+};
+Object.assign(LATE, {
+  monument:{ work:true, when:() => S.year >= 1811,
+    news:() => `Mr Westmacott, who is made an Academician this year, has put up a marble in Wyvern church to a Tamworth who died in Jamaica, with a female figure weeping upon an urn; and your uncle lies in the chancel at Hatherley under a slate with his initials.` },
+  conservatory:{ work:true, when:() => sinceQ(1811, 2),
+    news:() => `At the Regent’s fête at Carlton House two thousand persons sat down to supper; and the Prince’s own table, which ran the whole length of his iron conservatory, had a stream of water down the middle of it, with gold and silver fish.` },
+  steam:{ work:true, when:() => S.year >= 1812,
+    news:() => `Sir Christopher Hawkins, in Cornwall, has a steam engine of Mr Trevithick’s in his barn, which threshes his barley and is minded by one labourer; and Hartopp has had the account of it copied out, and reads it to whoever will stand.` },
+  obelisk:{ work:true, when:() => sinceQ(1814, 1),
+    news:() => `The Definitive Treaty is signed at Paris, and Bonaparte is put ashore upon Elba. Wyvern has voted a dinner for nine hundred in the market place; and Lord Cullerne has ordered a column.` },
+  bellinn:{ when:() => S.year >= 1813,
+    news:() => `The landlord of the Bell is dead of a dropsy; and the house is to be sold by his executors, with the tap, nine beds, and stabling for thirty horses upon the Bath road.` },
+  barges:{ when:() => S.year >= 1811,
+    news:() => `A Newbury barge-master is selling up, and has two boats of fifty tons lying at West Mills, with their horses; Somerset coal coming up the canal every week, and Berkshire corn going down it.` },
+  hamburg:{ when:() => sinceQ(1814, 1),
+    news:() => `Marshal Davout has marched out of Hamburg, and the Elbe is open to British ships for the first time in eight years; a Bristol house is loading the Two Brothers with sugar, coffee and Manchester goods, and has shares in the cargo to sell.` }
+});
+const gated = id => ({ if:() => lotOpen(id) && !GATE[id](), early:() => lotOpen(id) ? GATE[id]() : '' });
+
+PROJECTS.monument = { fx:['+5 Standing', '+2 Household'], effects:`Standing rises, and settles two higher. The household pleased.`, name:'A marble to your uncle, by Mr Westmacott',
+  line:'A tablet of white marble for the chancel wall, with a figure in relief and thirty lines of inscription. Mr Westmacott carves it in London, and sends it down by wagon.',
+  seasons:2, cost:() => 480, ...gated('monument'),
+  blurb:`Your uncle lies under a slate with his initials and the year.`, gain:'Standing',
+  done:() => { fl('monument'); add({standing:5, family:2});
+    return `The marble is up on the north wall of the chancel, having come from Mr Westmacott’s yard in South Audley Street in four cases upon a wagon; and it shows a female figure, of the size of life, leaning upon an urn, with your uncle’s profile on the urn, and under it thirty lines of his virtues in capital letters.
+
+The parish clerk read them through twice on Sunday before the service, with his finger; and old Dewey, who had come in early to see it, stood behind him with his hat in his hand.
+
+“He never had a nose like that,” says Dewey.`; }};
+PROJECTS.steam = { fx:['+£45 a year saved in threshing', MINUS + '3 Goodwill'], effects:`About £45 a year saved in horses and winter wages. Goodwill falls, and settles two lower, threshing being the labourer’s winter work.`, name:'A steam engine for the barn',
+  line:'One of Mr Trevithick’s high-pressure engines, with a boiler, a fly-wheel and a strap to the threshing drum. It burns coal, and wants one man to mind it.',
+  seasons:1, cost:() => 420, ...gated('steam'),
+  blurb:`Hatherley corn is threshed between Michaelmas and Lady Day, by horses walking in a ring and by men with flails.`, gain:'Money',
+  done:() => { fl('steam'); add({goodwill:-3});
+    return `The engine came from Cornwall to Bristol by sea, and from Bristol by the canal, in nine pieces; and a man of Mr Trevithick’s, who came with it, had it standing in the boiler-house within the fortnight, with an iron chimney through the roof.
+
+Upon its first day it threshes as much barley between breakfast and dusk as the flails get through in a week; and the eleven men who have threshed at Hatherley every winter since they were boys stand in the yard the whole of that day, to see it done.`; }};
+PROJECTS.conservatory = { fx:['+4 Standing', '+3 Household', '+2 Henrietta'], effects:`Standing rises, and settles two higher. Henrietta and the household pleased.`, name:'A conservatory of iron and glass',
+  line:'A glass house against the south wall of the new wing, upon cast-iron pillars, with a stove under the floor. Orange trees stand in it in tubs.',
+  seasons:2, cost:() => 900, ...gated('conservatory'),
+  blurb:`Of the five persons who have described the Carlton House conservatory to Henrietta, one was at the fête.`, gain:'Standing and the household',
+  done:() => { fl('conservatory'); add({standing:4, family:3}); reg('henrietta', 2, 'You built her the conservatory');
+    return `The conservatory is glazed, and opens out of the library by a glass door: sixty feet of it, upon eleven iron pillars cast at Reading in the form of palm trees, with a stove under the flags, and four orange trees in tubs, which came from a nurseryman at Hammersmith at six guineas the tree.
+
+Henrietta has her chair carried in after breakfast, and receives there; and upon the first Sunday the Tamworths, who had driven over to see it, were kept among the orange trees until the stove, which the gardener had lit at six, drove the whole party out upon the lawn at a quarter past one.`; }};
+PROJECTS.obelisk = { fx:['+5 Standing', '+2 Goodwill'], effects:`Standing rises, and settles two higher. The parish has a hogshead at the foot of it.`, name:'An obelisk to the Peace',
+  line:'Forty feet of Portland stone upon the rise in the park, with the year and one word of Latin cut upon the base. It is seen from the London road.',
+  seasons:2, cost:() => 520, ...gated('obelisk'),
+  blurb:`Mr Repton left the rise bare, and marked it upon his plan with a cross.`, gain:'Standing',
+  done:() => { fl('obelisk'); add({standing:5, goodwill:2});
+    if (S.year === 1815 && S.season <= 1) return `The mason from Reading had cut PACI upon the base of the obelisk, and MDCCCXIV under it, and was gilding the last numeral, when the Wyvern coach came by with the news that Bonaparte is landed at Cannes with a thousand men, and is upon the road to Paris.
+
+He has sent up to the Hall to ask whether he is to go on. The stone stands forty feet upon the rise in the park, and may be read from the London road.`;
+    if (S.year === 1815) return `The obelisk was begun for the peace of last year, and is finished for the peace of this; and the mason from Reading, having cut PACI upon the base, and MDCCCXIV under it, has had eleven shillings more to take out the last two numerals and put in one.
+
+The parish has its hogshead at the foot of the stone, forty feet under the point; and the health of the Duke of Wellington is drunk three times.`;
+    return `The obelisk stands upon the rise in the park, forty feet of Portland stone, brought from the island to Bristol by sea and thence by the canal; and upon the east face of the base the mason from Reading has cut PACI, and under it MDCCCXIV, in letters nine inches high.
+
+The parish is given a hogshead of beer at the foot of it. Mudge, who had the key of the cellar, reports that the healths of the Emperor of Russia, the King of Prussia and Marshal Blücher were drunk in that order, and Marshal Blücher’s a second time.`; }};
+
+Object.assign(VENTURES, {
+  bellinn:{ fx:['+£150 a year', MINUS + '£60 if the glanders gets into the stables', '+£1,000 if sold'], risk:1, odds:{"well": 0.8, "dull": 0.05, "ill": 0.15}, effects:`About £150 a year from the tenant and the posting. £60 lost in a year when the glanders gets into the stables. Sells for £1,000.`,
+    name:'The Bell at Hatherley, with its posting', line:'The posting house upon the Bath road, with thirty stalls, a tap and nine beds. You put in a tenant, who pays a rent, and so much upon every pair of horses sent out.', where:'The Bath road', cost:1400,
+    no:GATE.bellinn, well:'A coach changes horses every ten miles, and her passengers must dine somewhere.', ill:'One glandered horse in a stable of thirty.', state:v => 'Yours since ' + v.year,
+    endLabel:'Sell the house', end:() => { S.money += 1000; return `The Bell is sold to a Reading brewer for £1,000, with the stabling, the tap and the sign.`; }},
+  barges:{ fx:['+£95 a year', MINUS + '£35 in a winter when the canal freezes', '+£300 if sold'], risk:1, odds:{"well": 0.8, "dull": 0.05, "ill": 0.15}, effects:`About £95 a year in freight. £35 lost in a winter when the canal is frozen. The two boats sell for £300.`,
+    name:'Two barges upon the canal', line:'Two boats of fifty tons, each with a horse, a man and a boy. They take corn and timber down to Bristol, and bring coal back to your wharf.', where:'Hatherley wharf', cost:480,
+    no:GATE.barges, well:'A horse draws two tons upon a road, and fifty upon water.', ill:'The men are paid while the canal is frozen, and the horses eat.', state:v => 'Upon the canal since ' + v.year,
+    endLabel:'Sell the boats', end:() => { S.money += 300; return `The two barges are sold at Newbury wharf, with their horses and lines, for £300.`; }},
+  hamburg:{ fx:['+£1,150 if she is early into the Elbe', '+£430 if the market is full', '+£140 if it is glutted'], risk:3, odds:{"well": 0.3, "dull": 0.4, "ill": 0.3}, effects:`One cargo to Hamburg. £1,150 if she is among the first ships in, £430 if the market is full when she arrives, and £140 if it is glutted.`,
+    name:'A share in a cargo for Hamburg', line:'Sugar, coffee and Manchester cottons, bought at Bristol and sold upon the quay at Hamburg for what they will fetch. The town has had neither sugar nor coffee since 1806, but what was smuggled.', where:'The Two Brothers, 220 tons', cost:600,
+    no:() => S.year > 1814 ? 'The Two Brothers sailed in August, and her cargo is all subscribed.' : '',
+    well:'A town of a hundred thousand persons, eight years without sugar.', ill:'Every merchant in Bristol, Liverpool and London has read the same newspaper.', state:() => 'Sailed for the Elbe in 1814' }
+});
+const ventureTickLast = ventureTick;
+ventureTick = function(line){ ventureTickLast(line); if (S.dead || S.phase === 'end') return; const y = S.year, q = S.season, earn = (label, a) => { line(label, a); if (a > 0) S.yearIncome += Math.round(a); };
+  if (F('steam') && q === 3) earn('Threshing by steam, saved in horses and wages', 45);
+  if (!S.vent) return;
+  if (live('bellinn') && q === 3 && y > vent('bellinn').year) { if (chance(0.15)) { line('The Bell: post-horses shot for the glanders', -60); S.notes.push('The farrier has found the glanders in the stables of the Bell, and four post-horses have been shot upon his word; the cost of which the tenant, by his agreement, sets against the rent.'); } else earn('The Bell, rent and posting', 150); }
+  if (live('barges') && q === 2 && y > vent('barges').year) earn('Freight by the two barges', 95);
+  if (live('barges') && q === 0 && y > vent('barges').year && (y === 1814 || chance(0.1))) { line('The barges, frozen in', -35); S.notes.push(y === 1814 ? 'The canal has been frozen from Christmas to the second week of February; and your two barges lay the whole of that time in the ice at Devizes, with forty tons of coal in each, and their men at the Black Swan.' : 'The canal was frozen for five weeks after Christmas, and your two barges lay in the ice below Newbury, with their men upon full wages.'); }
+  if (live('hamburg') && y === 1815 && q === 0) { const r = Math.random();
+    if (r < 0.3) { earn('A share of the Two Brothers’ cargo, sold at Hamburg', 1150); S.notes.push('The Two Brothers was the fourth British ship into the Elbe; and her sugar, which cost sixty shillings the hundredweight at Bristol, was sold upon the quay at Hamburg for a hundred and five.'); }
+    else if (r < 0.7) { earn('A share of the Two Brothers’ cargo, sold at Hamburg', 430); S.notes.push('The Two Brothers lay five weeks in the Elbe behind a hundred and forty sail from England, all with sugar; and her cargo was sold at last to a house at Altona, at something under what was given for it.'); }
+    else { earn('A share of the Two Brothers’ cargo, sold at Hamburg', 140); S.notes.push('The Hamburg merchants, having more British sugar in their warehouses than the town will eat in three years, have bought the cargo of the Two Brothers by auction; and the Bristol house remits you one hundred and forty pounds.'); }
+    stopVenture('hamburg', 'Sold at Hamburg'); }
+};
+{ const marksLast = marks;
+  marks = function(){ const m = marksLast(), put = (k, n, t) => { if (n) { m.why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); m[k] = clamp(m[k] + n, 5, 95); } };
+    put('standing', F('monument') ? 2 : 0, 'Your uncle’s marble'); put('standing', F('conservatory') ? 2 : 0, 'The conservatory'); put('standing', F('obelisk') ? 2 : 0, 'The obelisk'); put('goodwill', F('steam') ? -2 : 0, 'Threshing by steam');
+    return m; }; }
