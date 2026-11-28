@@ -393,6 +393,14 @@ details.evict{margin-top:10px;border-top:1px solid rgba(43,29,16,.3);padding-top
 p.line{margin:0 0 6px;font-family:var(--display);font-style:italic;font-size:1.02rem;line-height:1.3}
 
 .choice small.fxs{font-style:normal} .choice small.fxs b{font-weight:400;margin-right:.7em} .choice small.fxs .pos{color:var(--good)} .choice small.fxs .neg{color:var(--bad)}
+
+/* how a farm is held, and the lease granted on its own paper */
+.lots .tenure{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;margin:6px 0 4px;padding:6px 10px;border:1px solid var(--ink);border-left-width:4px} .lots .tenure b{font-family:var(--caps);font-weight:400;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase} .lots .tenure span{font-size:.9rem;color:var(--muted)}
+.lots .tenure.loose{border-color:var(--bad)} .lots .tenure.loose b{color:var(--bad)}
+.lots .lvrow{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px} .lots .lvrow > span:first-child{font-family:var(--caps);font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lots .leasing{margin:8px 0 4px} .lots .leasing h4{margin:0 0 6px;font-family:var(--hand);font-weight:400;font-size:1.5rem;line-height:1.1} .lots .leasing .choices{margin:0 0 8px}
+.lots .said{border-left:3px double var(--ink);padding:2px 0 2px 10px;margin:6px 0} .lots .said p{margin:0 0 6px;font-size:1rem;line-height:1.35} .lots .said p:last-child{margin-bottom:0}
+.nosave{margin:6px 0 0;font-size:.86rem;color:var(--bad)}
 /* The plan: the survey sheet lies on the baize with the quarter's slips beside it. A place's paper is laid over one side. Plates are held up over everything. */
 body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{overflow:hidden}
 #plan[hidden], #plate[hidden], #sheet[hidden]{display:none}
@@ -485,7 +493,7 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
   #cart .foot{grid-column:1/-1;margin:0} #cart .foot button{padding:2px;font-size:.9rem}
   #landwrap{display:block;place-items:normal;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
   #land{height:100%;width:auto} #landwrap{filter:none}
-  #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton #land{margin:0 auto;justify-self:normal}
+  #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton .lbl em.let, #plan.sheeton .lbl .todo{display:none} #plan.sheeton #land{margin:0 auto;justify-self:normal}
   #sheet, #sheet.left, #sheet.right{position:relative;inset:auto;width:auto;padding:14px 16px 20px;box-shadow:0 -6px 18px rgba(0,0,0,.5);animation:none}
   #sheet > h2{font-size:2rem} #sheet > .plate{aspect-ratio:5/2}
   #plate{place-items:start center;padding:10px}
@@ -531,6 +539,10 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* the Castle: what was last done there, and the yearly figure on a rung */
 .castle .said{border-left:3px double var(--ink);padding:2px 0 2px 10px;margin:2px 0 4px} .castle .said p{margin:0 0 6px;font-size:1rem;line-height:1.35} .castle .said p:last-child{margin-bottom:0}
 .castle .rung .yr small{display:inline;font-family:var(--caps);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
+
+/* the board at a farm held without a lease, and the year a lease runs to */
+.lbl.tag em.let{background:#2b1d10} .lbl.tag small{display:block;margin-top:.3em;font-family:var(--caps);font-style:normal;font-size:.62em;letter-spacing:.12em;text-transform:uppercase;color:rgba(43,29,16,.8)}
+.lbl .todo{display:inline-block;width:1.25em;height:1.25em;margin-left:.3em;vertical-align:-.25em;border-radius:50%;overflow:hidden;background:#efe6cb;box-shadow:0 0 0 1px rgba(60,40,20,.55)} .lbl .todo img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
 /* The last plate, held up over the book when the life ends. It borrows the card, print and side sheet of the other plates (plan.css). */
 #lastplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.86);overflow:auto;animation:heldup .25s ease-out}
 #lastplate[hidden]{display:none}
@@ -936,7 +948,7 @@ const pointsLeft = ids => TRAIT_POINTS - ids.reduce((a, id) => a + traitById(id)
 const T = id => S.traits && S.traits.includes(id);
 /* The engine: seasons, ledger, undertakings, and the reckoning. */
 let S = null;
-const SAVE_KEY = 'hatherley-combe-save-v1';
+const SAVE_KEY = 'hatherley-combe-save-v1', SAVE_BACKUP = 'hatherley-combe-save-before', SAVE_VERSION = 2;   // the key keeps its old name so that estates begun on earlier builds are found
 
 const F = k => S.flags[k];
 function fl(k, v = true){ S.flags[k] = v; }
@@ -1842,9 +1854,39 @@ function reckoning(){
 }
 
 /* ---------- saving ---------- */
-function save(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (err) {} }
-function load(){ try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.chars && s.phase) { if (!s.works) { s.works = s.project ? [s.project] : []; delete s.project; } return s; } } catch (err) {} return null; }
+/* The book is written to the browser at every choice and every quarter, and again when the page is put away.
+   A save carries the number of the build that wrote it. An older one is mended, never thrown out: mend() runs the numbered steps it has missed,
+   then fills in whatever a new estate would have and the old one lacks, so a part added since (a person, a farm's new column, a whole table) cannot break it.
+   Add a step to MENDS and raise SAVE_VERSION only when something must be renamed or reshaped; a plain addition needs nothing. */
+let NOSAVE = false, SAVE_FAILED = false, ASKED_KEEP = false;
+const MENDS = {
+  1: s => { if (!s.works) { s.works = s.project ? [s.project] : []; delete s.project; } }
+};
+function save(){ if (NOSAVE || !S) return; S.v = SAVE_VERSION;
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); SAVE_FAILED = false; } catch (err) { SAVE_FAILED = true; }
+  /* Safari clears a site's storage after a week unvisited unless asked to keep it. */
+  if (!ASKED_KEEP) { ASKED_KEEP = true; try { if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (err) {} } }
+function freshState(){ const keep = S, was = NOSAVE; let f = null; NOSAVE = true; try { newGame('Thomas', 'Merridew', []); f = S; } catch (err) {} S = keep; NOSAVE = was; return f; }
+function mend(s){ const from = s.v || 1;
+  for (let v = from; v < SAVE_VERSION; v++) if (MENDS[v]) MENDS[v](s);
+  const f = freshState(); if (!f) return s;
+  for (const k in f) if (s[k] === undefined) s[k] = f[k];
+  for (const id in f.chars) { if (!s.chars[id]) s.chars[id] = f.chars[id]; else for (const k in f.chars[id]) if (s.chars[id][k] === undefined) s.chars[id][k] = f.chars[id][k]; }
+  for (const x of (s.farms || [])) { const t = f.farms.find(y => y.id === x.id) || f.farms[0]; for (const k in t) if (x[k] === undefined && (k === 'lease' || k === 'level' || t.id === x.id)) x[k] = JSON.parse(JSON.stringify(t[k])); }
+  /* what a later build has dropped is taken quietly out of the book */
+  const known = id => { try { return !!byId(id); } catch (err) { return false; } };
+  s.queue = (s.queue || []).filter(q => q && known(q.id));
+  s.works = (s.works || []).filter(w => w && PROJECTS[w.id]);
+  if (s.pending && !known(s.pending)) { s.pending = null; if (s.phase === 'event') s.phase = 'undertake'; }
+  if ((s.phase === 'outcome' || s.phase === 'undone') && !s.outcome) s.phase = 'undertake';
+  s.v = SAVE_VERSION; return s; }
+function load(){ let raw = null;
+  try { raw = localStorage.getItem(SAVE_KEY); if (!raw) return null; const s = JSON.parse(raw);
+    if (s && s.chars && s.phase) { if ((s.v || 1) !== SAVE_VERSION) { try { localStorage.setItem(SAVE_BACKUP, raw); } catch (err) {} } return mend(s); } }
+  catch (err) { try { if (raw) localStorage.setItem(SAVE_BACKUP, raw); } catch (e2) {} }
+  return null; }
 function wipe(){ try { localStorage.removeItem(SAVE_KEY); } catch (err) {} S = null; render(); }
+if (typeof addEventListener === 'function') { addEventListener('pagehide', () => save()); addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); }); }
 /* Henrietta at the Hall, or at Bath: hh(home, away) picks the reading for dated papers. */
 const hh = (home, away) => F('henriettaAway') ? away : home;
 /* The fixed calendar: what history brings to the door, and when. */
@@ -8252,7 +8294,8 @@ function rentRoll(){ estateSync(); const y = S.year, open = S.phase !== 'end' &&
   return S.farms.map(f => { const will = !f.void && f.lease.type === 'will', waiting = S.letQueue.some(x => x.id === f.id);
     return {id:f.id, name:f.name, acres:f.acres, tenant:f.void ? '' : f.tenant, rent:f.void ? 0 : Math.round(rentDue(f)), value:lettingValue(f, y),
       tenure:tenureOf(f), order:ORDER_W[f.cond], means:f.void ? '' : MEANS_W[Math.min(4, Math.floor(f.K / Math.max(1, f.rent) / 0.3))],
-      arrears:Math.round(f.arrears), level:f.level, own:!!f.own, abated:!!f.rebate, waiting, canLevel:open && will && !waiting, canOffer:open && will && !waiting}; }); }
+      arrears:Math.round(f.arrears), level:f.level, own:!!f.own, abated:!!f.rebate, waiting, canLevel:open && will && !waiting, canOffer:open && will && !waiting,
+      state:f.void ? 'hand' : will ? 'will' : f.lease.type, ends:will || f.void ? 0 : f.lease.ends, toRun:will || f.void ? 0 : Math.max(0, f.lease.ends - y)}; }); }
 const LAND = {longbarrow:'Down and sheepwalk', kennet:'Wet clay, with the mill', church:'Strips in the open field', coldharbour:'Sound loam beyond the turnpike', starveall:'Thin chalk on the hill', commonpiece:'New ground off the common', rooksnest:'Mixed land under the hanger', withymead:'Meadow and osiers on the Lambourn', maddle:'Open down, nine miles from a market'};
 /* For the Farms leaf of the book. held is ready to print; the rest is there for the page to draw as it likes. */
 function farmsList(){ return rentRoll().map(f => { const bits = [f.tenure === 'In hand' ? 'In hand, no tenant' : f.tenure, f.order];
@@ -8286,6 +8329,15 @@ function setLevel(id, lvl){ const f = farm(id); if (!f || !LEVEL[lvl] || f.void 
 function askLet(id, why){ if (S.letQueue.some(x => x.id === id)) return; S.letQueue.push({id, why}); later('leaseFalls', 0); }
 function offerLease(id){ const f = farm(id); if (!f || f.void || f.lease.type !== 'will') return; askLet(id, 'offer');
   S.journal.unshift({when:stamp(), title:'Rent roll', did:'Sent word to ' + f.tenant + ' about a lease of ' + f.name}); save(); render(); }
+
+/* A lease granted from the farm's own paper, there and then. The terms are the choices of the letting paper after its first, which is to leave things alone;
+   leaseTerms(id) lists them with what each does to the rent, and grantLease(id, i) signs one and returns what was said. S.leaseSaid keeps the last for the page to print under the farm. */
+function asLetting(id, fn){ const x = {id, why:'offer'}; S.letQueue.unshift(x); try { return fn(byId('leaseFalls')); } finally { const i = S.letQueue.indexOf(x); if (i >= 0) S.letQueue.splice(i, 1); } }
+function leaseTerms(id){ const f = farm(id); if (!f || f.void || f.lease.type !== 'will' || S.phase === 'end' || S.dead || S.letQueue.some(x => x.id === id)) return [];
+  return asLetting(id, e => e.choices.slice(1).map((c, i) => ({i, label:lab(c), note:typeof c.note === 'function' ? c.note() : c.note || ''}))); }
+function grantLease(id, i){ if (!leaseTerms(id)[i]) return false; const f = farm(id);
+  const said = asLetting(id, e => { const c = e.choices[i + 1], did = lab(c), text = c.go(); S.journal.unshift({when:stamp(), title:'The Letting of ' + f.name, did}); return text; });
+  S.leaseSaid = {id, t:S.t, text:said}; save(); render(); return said; }
 
 /* ---------- papers ---------- */
 function letting(){ while (S.letQueue && S.letQueue.length){ const x = S.letQueue[0], f = farm(x.id); if (f && !f.void && f.lease.type === 'will') return {f, why:x.why}; S.letQueue.shift(); } return null; }
@@ -10064,6 +10116,17 @@ const UNDER_AT = {ride:'lane', sessions:'wyvern', town:'london', fishing:'mill',
 const LIVES_AT = {gall:'vestry', oakes:'vestry', cullerne:'castle', pryor:'common', thorne:'longbarrow', vane:'wyvern', hartopp:'wyvern', pinch:'turnpike', dubreuil:'turnpike'};
 const COUNTY_LOTS = new Set(['cup', 'harriers', 'deputy']);
 const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyvern', underAt = id => UNDER_AT[id] || 'hall', livesAt = id => LIVES_AT[id] || 'hall';
+/* A board stands at every farm held without a lease, as one stands at a farm for sale; and a farm under lease carries the year it runs to. */
+const heldFarm = id => id && typeof farmsList === 'function' ? farmsList().find(f => f.id === id) : null;
+const toLet = id => { const f = heldFarm(id); return !!f && f.canOffer; };
+const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ? '' : `<small>${f.state === 'hand' ? 'In hand' : (f.state === 'corn' ? 'Corn rent to ' : 'Lease to ') + f.ends}</small>`; };
+/* Where a work is not yet built, or a venture not yet tried, a small roundel of each stands beside the name. */
+function toDoAt(){ const w = new Set(), v = new Set(), shut = S.phase === 'end' || S.dead; if (shut) return {w, v};
+  if (typeof worksList === 'function') for (const x of worksList()) if (x.state === 'open' && !x.off) w.add(workAt(x.id));
+  if (typeof venturesList === 'function') for (const x of venturesList()) if (x.state === 'open' && !x.off && x.why !== 'Not to be had at present.') v.add(ventAt(x.id));
+  return {w, v}; }
+function goLease(id){ const open = SHEET === id && !WHO; WHO = ''; ROUND = false; if (open && LEASING === PLACES[id].farm) { LEASING = ''; SHEET = ''; drawPlan(); return; }
+  SHEET = id; SEC = 'farm'; LEASING = LOT = PLACES[id].farm; drawPlan(); showOnPlan(id); }
 const forSale = id => typeof farmsForSale === 'function' && farmsForSale().some(f => f.id === id);
 /* Whether a place has any paper to show. A place with none is only lettering on the sheet. */
 function placeHas(id){ const p = PLACES[id]; if (id === 'hall' || id === 'wyvern' || id === 'london') return true; if (p.farm && farmAt(p.farm)) return true;
@@ -10109,7 +10172,7 @@ function planSync(){ if (!S) { VIEW = 'book'; SHEET = ''; PLATEUP = false; PROGR
 function shutBook(){ VIEW = 'plan'; WHO = ''; render(); }
 function openBook(t){ VIEW = 'book'; SHEET = ''; WHO = ''; TAB = t || 'accounts'; LEAFUP = !t; render(); window.scrollTo({top:0}); }
 function goPlace(id){ SHEET = SHEET === id && !WHO ? '' : id; WHO = ''; SEC = ''; ROUND = false; drawPlan(); if (SHEET && PLACES[id]) showOnPlan(id); }
-function shutSheet(){ SHEET = ''; WHO = ''; drawPlan(); }
+function shutSheet(){ SHEET = ''; WHO = ''; LEASING = ''; drawPlan(); }
 function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
 function plateDown(){ PLATEUP = false; drawPlan(); }
 function showProgress(i){ PROGRESS = i === undefined ? Math.max(0, S.plates.length - 1) : i; drawPlate(); }
@@ -10213,9 +10276,10 @@ function landLblHTML(){
   const arms = artURL('arms/' + armsOf());
   const caller = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : '';
   const free = S.phase === 'undertake' ? new Set(undertakingOptions().map(u => underAt(u.id))) : new Set();
+  const todo = toDoAt();
   const labels = Object.keys(PLACES).filter(placeOn).map(id => { const p = PLACES[id];
     if (caller !== id && !placeHas(id)) return `<span class="lbl mute" style="left:${p.at[0]}%;top:${p.at[1]}%"><span>${esc(p.n)}</span></span>`;
-    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : ''}<span>${esc(p.n)}</span></button>`; }).join('');
+    return `<button class="lbl tag${SHEET === id ? ' on' : ''}${caller === id ? ' called' : ''}" style="left:${p.at[0]}%;top:${p.at[1]}%" ${caller === id ? 'onclick="callOn()"' : p.farm && toLet(p.farm) ? `onclick="goLease('${id}')"` : `onclick="goPlace('${id}')"`}>${caller === id ? `<i class="fist${p.at[1] < 18 ? ' under' : ''}"><img src="art/plan/hand.webp" alt="You are wanted here"></i>` : free.has(id) ? `<i class="stir">${pic('icons/ride', '')}</i>` : ''}${p.farm && forSale(p.farm) ? '<em>For sale</em>' : p.farm && toLet(p.farm) && caller !== id ? '<em class="let">Negotiate lease</em>' : ''}<span>${esc(p.n)}</span>${todo.w.has(id) ? `<i class="todo" title="Works to be put in hand">${pic('icons/works', 'Works to be put in hand')}</i>` : ''}${todo.v.has(id) ? `<i class="todo" title="Ventures untried">${pic('icons/ventures', 'Ventures untried')}</i>` : ''}${heldAs(p.farm)}</button>`; }).join('');
   return `${arms ? `<img class="arms ${armsOf()}" src="${arms}" alt="The arms of ${esc(S.sur || 'the family')}">` : ''}${labels}`; }
 
 const SEASON_ICON = ['lady-day', 'midsummer', 'michaelmas', 'christmas'];
@@ -10231,6 +10295,7 @@ function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v 
     <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${cueHTML()}
+    ${SAVE_FAILED ? '<p class="nosave">This browser will keep no copy of the book. Shut the page, and the estate is gone.</p>' : ''}
     <div class="foot"><button onclick="openBook()">The ledger</button><button onclick="showProgress()" ${S.plates.length ? '' : 'disabled'}>The Progress${S.plates.length ? ` <small>${S.plates.length}</small>` : ''}</button></div>`; }
 
 /* ---------- the paper of a place ---------- */
@@ -10541,14 +10606,28 @@ const DRAFT_VENTURES = [
   {name: 'A threshing machine', where: 'The home farm', cost: 120, well: 'Saves about £50 a year in wages.'},
   {name: 'A partner’s share in the Wyvern Bank', where: 'The estate', cost: 1000, well: 'Fifteen per cent, and a seat in the bank parlour.'},
   {name: 'The Hatherley Spa', where: 'The estate', cost: 1800, well: 'If the waters take, £300 a year rising to £750.'}];
+let LOT = '', LEASING = '';
+function redraw(){ if (typeof VIEW !== 'undefined' && VIEW === 'plan') drawPlan(); else drawBook(); }
+function leaseOn(id){ LEASING = id; LOT = id; redraw(); }
+function leaseOff(){ LEASING = ''; redraw(); }
+function signLease(id, i){ LEASING = ''; LOT = id; if (typeof grantLease === 'function') grantLease(id, i); }
 function farmsHTML(only){ const live = typeof farmsList === 'function', list = live ? farmsList() : DRAFT_FARMS, sale = live && typeof farmsForSale === 'function' ? farmsForSale() : [];
   const lv = f => !f.canLevel ? '' : `<span class="lv" role="group" aria-label="Rent">${[['easy', 'Easy'], ['fair', 'Fair'], ['rack', 'Rack']].map(([v, n]) => `<button class="${f.level === v ? 'on' : ''}" aria-pressed="${f.level === v}" onclick="setLevel('${f.id}', '${v}')">${n}</button>`).join('')}</span>`;
   const raised = f => f.sellToYou === undefined ? f.sellPrice : f.sellToYou + (f.sellToMortgage || 0), sum = f => raised(f) ? amt(raised(f), 1) : fmt(0), tf = typeof trustFund === 'function' ? trustFund() : null;
-  const held = f => `<details name="lot"><summary><b>${esc(f.name)} <small>${amt(f.rent, 1)} a year</small></b><span>${f.sellPrice ? `<i class="tag">Sell</i>${sum(f)}` : fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p><p class="terms">${esc([f.held, f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. '))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${f.sellPrice ? `<ul class="fx">${f.sellToYou === undefined ? `<li class="pos">+${fmt(f.sellPrice)} if sold</li>` : `${f.sellToYou ? `<li class="pos">+${fmt(f.sellToYou)} in hand if sold</li>` : ''}${f.sellToMortgage ? `<li class="pos">+${fmt(f.sellToMortgage)} off the mortgage if sold</li>` : ''}${raised(f) ? '' : '<li>Settled land. The price goes to the trustees</li>'}`}<li class="neg">−${fmt(f.rent)} a year in rent</li></ul>` : ''}${lv(f)}
-    <span class="acts">${f.canOffer ? `<button class="inkbtn" onclick="offerLease('${f.id}')">Offer a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${sum(f)}</button>` : ''}</span>
-    ${f.evict && f.evict.can ? `<details class="evict"><summary>Notice to quit</summary>${fxList(f.evict.fx)}<button class="inkbtn" onclick="evictTenant('${f.id}')">Serve it</button></details>` : ''}</div></details>`;
+  /* How the farm is held is set out first and plainly: the tenure, the rent, and whether the rent can move. A lease is granted here, on this paper, and the paper stays open until it is signed or put by. */
+  const yrs = n => n === 1 ? '1 year to run' : n + ' years to run';
+  const tenure = f => { const t = f.state === 'hand' ? ['In hand', 'No tenant, and no rent'] : f.waiting ? ['Out of lease', 'Terms to be settled this quarter'] : f.state === 'will' ? ['From year to year', 'No lease. The rent moves each Lady Day'] : f.state === 'corn' ? ['On a corn rent to Lady Day ' + f.ends, yrs(f.toRun) + '. The rent follows wheat'] : ['On lease to Lady Day ' + f.ends, yrs(f.toRun) + '. The rent is fixed'];
+    return `<p class="tenure ${f.state === 'will' || f.state === 'hand' ? 'loose' : 'fast'}"><b>${esc(t[0])}</b><span>${esc(t[1])}</span></p>`; };
+  const leasing = f => { const terms = LEASING === f.id && typeof leaseTerms === 'function' ? leaseTerms(f.id) : []; if (!terms.length) return '';
+    return `<div class="leasing"><h4>A Lease of ${esc(f.name)}</h4><div class="choices">${terms.map(c => `<button class="choice" onclick="signLease('${f.id}', ${c.i})"><span>${esc(c.label)}</span>${noteOf(c)}</button>`).join('')}</div><button class="quiet" onclick="leaseOff()">Leave it from year to year</button></div>`; };
+  const said = f => S.leaseSaid && S.leaseSaid.id === f.id && S.leaseSaid.t === S.t && f.state !== 'will' ? `<div class="prose said">${paras(S.leaseSaid.text)}</div>` : '';
+  const more = f => [f.order, f.abated ? 'A fifth abated' : '', f.arrears ? fmt(f.arrears) + ' in arrear' : ''].filter(Boolean).join('. ');
+  const held = f => { const up = leasing(f);
+    return `<details name="lot"${LOT === f.id ? ' open' : ''} ontoggle="if(this.open)LOT='${f.id}';else if(LOT==='${f.id}')LOT=''"><summary><b>${esc(f.name)} <small>${amt(f.rent, 1)} a year</small></b><span>${f.sellPrice ? `<i class="tag">Sell</i>${sum(f)}` : fmt(f.rent)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres. ${esc(f.tenant)}.</p>${tenure(f)}${said(f)}<p class="terms">${esc(more(f))}.${f.sellWhy ? ` <em>${esc(f.sellWhy)}</em>` : ''}</p>${up || `${f.canLevel ? `<p class="lvrow"><span>Rent asked</span>${lv(f)}</p>` : ''}${f.sellPrice ? `<ul class="fx">${f.sellToYou === undefined ? `<li class="pos">+${fmt(f.sellPrice)} if sold</li>` : `${f.sellToYou ? `<li class="pos">+${fmt(f.sellToYou)} in hand if sold</li>` : ''}${f.sellToMortgage ? `<li class="pos">+${fmt(f.sellToMortgage)} off the mortgage if sold</li>` : ''}${raised(f) ? '' : '<li>Settled land. The price goes to the trustees</li>'}`}<li class="neg">−${fmt(f.rent)} a year in rent</li></ul>` : ''}
+    <span class="acts">${f.canOffer ? `<button class="inkbtn lease" onclick="leaseOn('${f.id}')">Negotiate a lease</button>` : ''}${f.sellPrice ? `<button class="inkbtn" onclick="sellFarm('${f.id}')" ${f.canSell ? '' : 'disabled'}>Sell for ${sum(f)}</button>` : ''}</span>
+    ${f.evict && f.evict.can ? `<details class="evict"><summary>Notice to quit</summary>${fxList(f.evict.fx)}<button class="inkbtn" onclick="evictTenant('${f.id}')">Serve it</button></details>` : ''}`}</div></details>`; };
   const lot = f => `<details name="lot"><summary><b>${esc(f.name)}</b><span><i class="tag">Buy</i>${amt(f.price, -1)}</span></summary><div><p>${esc(f.land)}, ${f.acres} acres.${f.order ? ' ' + esc(f.order) + '.' : ''}</p>${f.value ? `<ul class="fx"><li class="neg">−${fmt(f.price)} to buy</li><li class="pos">+${fmt(f.value)} a year in rent</li></ul>` : ''}<p class="terms">${f.down !== undefined ? amt(f.down, -1) + ' down' + (f.loan ? ', ' + amt(f.loan, -1) + ' on mortgage' : '') + '.' : ''}${f.why ? ` <em>${esc(f.why)}</em>` : ''}</p><button class="inkbtn" onclick="buyFarm('${f.id}')" ${f.can ? '' : 'disabled'}>Buy it</button></div></details>`;
-  if (only) { const f = list.find(x => x.id === only), s = sale.find(x => x.id === only); return `<div class="lots flat">${f ? held(f) : s ? lot(s) : ''}</div>`.replace('<details name="lot">', '<details name="lot" open>'); }
+  if (only) { const f = list.find(x => x.id === only), s = sale.find(x => x.id === only); return `<div class="lots flat">${f ? held(f) : s ? lot(s) : ''}</div>`.replace(/<details name="lot"( open)?/, '<details name="lot" open'); }
   return `<dl class="bal slim"><div><dt>The rental</dt><dd>${amt(list.reduce((a, f) => a + f.rent, 0), 1)}</dd></div><div><dt>Acres let</dt><dd>${list.reduce((a, f) => a + f.acres, 0).toLocaleString('en-GB')}</dd></div><div><dt>Farms</dt><dd>${list.length} of 8</dd></div></dl>
     <div class="lots flat">${list.map(held).join('')}</div>${sale.length ? `<h3 class="orn">To be had</h3><div class="lots">${sale.map(lot).join('')}</div>` : ''}`; }
 /* One list serves Ventures and Society: a name and a price, opened one at a time. */
@@ -10612,7 +10691,8 @@ function journalHTML(){
     ${S.phase !== 'end' ? '<div class="row"><button class="quiet" onclick="askWipe(this)">Abandon this estate and begin again</button></div>' : ''}`; }
 function askWipe(b){ if (b.dataset.sure) return wipe(); b.dataset.sure = 1; b.textContent = 'Certain? Press again to give it all up'; }
 
-function boot(data){ indexEvents(); if (data && data.S) S = data.S; render(); }
+/* A reader who comes back, or whose telephone has reloaded the page behind him, is set down where he left off. The opening page is for a new estate only. */
+function boot(data){ indexEvents(); if (data && data.S) S = data.S; else S = load(); render(); }
 if (window.claude && window.claude.hot && window.claude.hot.snapshot) { try { window.claude.hot.snapshot(() => ({S})); } catch (err) {} }
 if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(boot); else boot((window.claude && window.claude.hot && window.claude.hot.data) || {});
 /* The sounds of the house. Files are in sound/, their makers in SOUNDS.md.
