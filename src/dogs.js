@@ -237,13 +237,11 @@ The four whelps are brought up by hand, upon a rag and a saucer, by Sukey Pryor 
     {t:'Send her home; and buy the litter of him, at half-a-crown a head.', note:'10s.', go:() => { add({money:-1, goodwill:2}); reg('pryor', 2, 'You bought his lurcher’s whelps, and let her go');
       return `Pryor has sold a good deal to the Hall in thirty years, and never before at the front of it. He brings the litter up next morning in his wife’s apron, and is paid by ${steward()}, who enters it in the book under Vermin and Sundries.
 
-There are three whelps in the apron.
-
-“The fourth un died, sir.”
+There are three whelps in the apron; and the fourth, Pryor says, without being asked, died in the night.
 
 You pay him the fourth half-crown notwithstanding. Mudge has the three to bring up; and there is seen that autumn upon ${ground()}, at dusk, a half-grown dog, liver and white, standing at a hare in her form, with one fore foot held up off the ground.`; }},
     {t:'Tell Mudge that the dog which trespassed was your own.', note:'+Goodwill, −Standing', go:() => { add({goodwill:3, standing:-2}); reg('pryor', 2, 'You would not have his lurcher destroyed'); S.game -= 1;
-      return `“The bitch was at home with four whelps, Mudge; and I know of one dog only that has been off his own ground.”
+      return `You tell Mudge that the bitch has been at home this month with four whelps; and that you know of one dog only, in the whole business, that was ever off his own ground.
 
 Mudge unties the rope. It takes him a long while, the knot being his own; and when it is done he puts the spade over his shoulder, and goes to feed the pheasants without having been told to.
 
@@ -411,4 +409,232 @@ You pay Hartopp the eleven shillings. He has by that time added a twelfth duck, 
       return `Foote says that Master will take it very kind. Hartopp is paid; the cook gives warning, and is persuaded, at two pounds a year more, to withdraw it; and upon Whit-Monday there come out of the panniers, upon the same flags, Rummager and Rapture.
 
 Mrs Bunce rules a fresh page in the linen book.`; }}
+  ]});
+
+/* ---------- what Edmund sends home ----------
+   A son at sea sends an ape of Gibraltar by the Portsmouth wagon; a son with the 52nd sends a grey parrot from Lisbon, who was eight months in a French mess.
+   Each has papers of its own after. They read Edmund's service through at() and edmundDead only, and write nothing to it.
+   In the books: the apes of the Rock; Muley Soliman, Emperor of Morocco; Mr Pidcock's menagerie over Exeter 'Change; Junot in Lisbon from November 1807 until after Vimeiro.
+   The ape taken up for a Frenchman is the Hartlepool story, which is a legend, and is used as one. */
+const apeKept = () => F('ape') === 'house' || F('ape') === 'stable';
+const parrotKept = () => ['house', 'kitchen', 'stable'].includes(F('parrot'));
+const parrotRoom = () => F('parrot') === 'kitchen' ? 'the kitchen' : F('parrot') === 'stable' ? 'the saddle-room' : 'the breakfast-room';
+const benchMan = () => F('gallDead') ? 'Mr Loveday' : 'Dr Gall';
+const BEAST_AFTER = [
+  {ev:'apeWig', on:apeKept, t:'apeT', wait:2}, {ev:'apeSpy', on:apeKept, t:'apeT', wait:4}, {ev:'apeWinter', on:apeKept, t:'apeT', wait:6, q:3},
+  {ev:'parrotVoice', on:() => parrotKept() && F('edmundDead'), t:'parrotT', wait:1},
+  {ev:'parrotCry', on:parrotKept, t:'parrotT', wait:2}, {ev:'parrotBugle', on:() => parrotKept() && !F('edmundDead'), t:'parrotT', wait:5} ];
+const ventureTickBeasts = ventureTick;
+ventureTick = function(line){ ventureTickBeasts(line);
+  if ((FIXED[S.year + '-' + S.season] || []).some(e => !e.cond || e.cond()) || S.queue.some(x => x.at <= S.t)) return;
+  for (const a of BEAST_AFTER) { if (!a.on() || S.seen[a.ev] !== undefined || S.queue.some(x => x.id === a.ev)) continue;
+    if (S.t - (F(a.t) || 0) < a.wait || (a.q !== undefined && S.season !== a.q)) continue;
+    const e = byId(a.ev); if (e.cond && !e.cond()) continue;
+    later(a.ev, 0); return; } };
+
+/* ---------- the ape ---------- */
+
+ev({ id:'apeComes', from:1804, to:1808, weight:40, hen:false, at:'hall', who:() => 'edmund', cond:() => at('navy') && !F('ape'), title:'By the Portsmouth Wagon',
+  text:() => `Russell’s wagon, which is nine days upon the road from Portsmouth, sets down at the stable gate a hen-coop, corded; and the wagoner, who has carried it the whole way upon the tail-board, with his own dinner in his hat for safety, will not put a hand to the cord again.
+
+“He’ve had my bacon, sir, and my comforter; and he’ve had the linch-pin out twice.”
+
+There sits in the coop, upon a ship’s biscuit, a person some two feet high, in a marine’s red jacket cut down, with a grey face, no tail, and a pair of brown eyes, which are fixed upon your watch-chain. A letter is tied to the bars.
+
+“Gibraltar. My dear Father, I send you by the Dolphin transport an ape of the Rock, which I had of a Moor at Tetuan for a dollar and an old hat. The people call him Muley, after the Emperor of Morocco. He has been six months in the gun-room, where he was allowed a glass of grog upon Saturdays; and he has been turned out of it for an affair with the Purser’s wig, in which I think he was not the only one to blame. He will eat anything that you eat, and several things that you would not. I beg my mother will not be uneasy about the jacket, for he will not go without it. Your affectionate son, Edmund.”
+
+The carriage from Portsmouth is one pound four shillings; and the wagoner asks eighteenpence beside, for the comforter.`,
+  choices:[
+    {t:'Have him into the house.', note:'£1 5s. 6d.', go:() => { fl('ape', 'house'); fl('apeT', S.t); add({money:-1, family:2}); reg('edmund', 1, 'You kept his ape in the house');
+      return `The coop is carried into the hall, and opened. Muley comes out of it upon his hind legs, shakes hands with the footman, and goes up the great staircase by the outside of the banisters.
+
+He is found, a quarter of an hour afterwards, in your dressing-room, before the glass, with the soap upon his chin and your razor in his hand. He gives up the razor when it is asked for, civilly, by the blade.
+
+A hook is put into the wall beside the breakfast-room fire, and a cushion under it. ${hh('Henrietta desires only that he may not be at table when there is company; and by Sunday she has cut down a second jacket for him, of blue.', 'Mrs Bunce is understood to have counted the spoons.')}`; }},
+    {t:'Give him to Mudge, for the stable.', note:'£1 5s. 6d.', go:() => { fl('ape', 'stable'); fl('apeT', S.t); add({money:-1, goodwill:1}); reg('edmund', 1, 'You kept his ape');
+      return `Mudge receives the coop as he would receive a warrant. Muley is given the empty stall beyond the cob’s, a chain of eight feet, and a horse-rug; and within the week he has learnt to draw the bolt of the corn-bin, to ride the cob to water, sitting very far back, and to pick Mudge’s pocket of his tobacco, which he does not smoke, but hands on to the stable boy.
+
+Upon Sunday, after church, there are forty people at the yard gate. Mudge takes a halfpenny a head from the children of other parishes.`; }},
+    {t:'Send him on to Mr Pidcock’s menagerie, at Exeter ’Change.', note:'+£10 10s.', go:() => { fl('ape', 'sold'); add({money:9}); reg('edmund', -1, 'You sold his ape to a menagerie');
+      return `The coop goes on to London by the same wagon, with the cord untouched; and Mr Pidcock, who keeps over the shops in the Strand a lion, a tiger and an elephant, writes that he is happy to give ten guineas for an ape of Barbary, in a jacket, who can take snuff.
+
+You had not known that he took snuff. You write as much to Edmund, and enclose the ten guineas; and Edmund replies, in six lines, that the money was not what he sent home.`; }}
+  ]});
+
+ev({ id:'apeWig', follow:true, hen:false, at:'hall', who:() => null, cond:apeKept, title:'The Archdeacon’s Left',
+  text:() => `There are fourteen to dinner, for the Archdeacon’s Visitation; and as Mr Tamworth has sent at the last moment to say that his gout will not let him come, a chair stands empty upon the Archdeacon’s left.
+
+Muley, who was ${F('ape') === 'stable' ? 'chained in the stable' : 'shut into the still-room'} at five, comes in by the window with the second course, in his red jacket, and takes it. He conducts himself, having dined six months in a gun-room, with great propriety; he waits for the dish; he eats his sweetbread with a fork; and when the Archdeacon, who is short-sighted, and has been attending to the lady upon his right, turns round and bows to him over a glass of Madeira, he bows, and drinks.
+
+“Your young friend from the Navy, sir, I think? I did not catch the name.”
+
+Nobody at the table has yet found anything to say, when Muley sets down his glass, reaches up, lifts the Archdeacon’s wig from the Archdeacon’s head, looks into it, and puts it on.`,
+  choices:[
+    {t:'Present him: Mr Muley, late of the Mediterranean fleet.', note:'+Standing', go:() => { add({standing:2, family:1});
+      return `You beg to present Mr Muley, late of the Mediterranean fleet, who was put ashore for an affair with a wig.
+
+The Archdeacon puts up his glass, and looks at his neighbour for some time. He then holds out his hand for the wig; receives it; and observes, when it is upon his head again, that he has sat at this dinner one-and-thirty years, between a great many gentlemen, and that this is the first of them who has not asked him for a living.
+
+Muley is carried out by the footman at the dessert, asleep. The Archdeacon sends him, at Christmas, a pound of figs.`; }},
+    {t:'Have him taken out, and beg the Archdeacon’s pardon.', note:'−Standing', go:() => { add({standing:-1}); if (!F('gallDead')) reg('gall', 1);
+      return `It takes two men and the butler’s napkin, and it takes them twice round the table. The wig is got back out of the epergne; the Archdeacon, who has in the mean time put his own napkin over his head, accepts your apology in eleven words; and the party breaks up before the tea.
+
+His Charge to the clergy, which is printed at Reading in the month following, has a paragraph upon the keeping of unsuitable animals by persons of property. ${F('gallDead') ? 'The churchwarden' : 'Dr Gall'} orders six copies.`; }},
+    {t:'Say nothing, and send round the Madeira.', go:() => { add({standing:1});
+      return `You say nothing; the table, which takes its time from you, says nothing either; and the Madeira goes round. The Archdeacon, who feels a draught, and supposes that a window has been opened, finishes what he was saying to the lady upon his right about the tithe of turnips.
+
+Muley wears the wig through the dessert. He gives it up at the door, as the Archdeacon goes out, with a bow; and the Archdeacon, who puts it on before the glass in the hall, is heard to remark to his chaplain that it sits better than it has done this twelvemonth.`; }}
+  ]});
+
+ev({ id:'apeSpy', follow:true, hen:false, at:'down', who:() => null, cond:() => apeKept() && S.year <= 1813, title:'Supposed French',
+  text:() => `The Serjeant of the ${F('volunteers') ? 'Hatherley' : 'Wyvern'} Volunteers is in the justice room, with four men, a fixed bayonet, and a prisoner; and the prisoner is sitting upon your table, in a red jacket, with his hands tied.
+
+“Took upon the Down, sir, by the beacon, a-looking out to the southward. He won’t give no name, and he won’t speak English.”
+
+The Serjeant has him down upon a paper as a foreigner, of low stature, very dark, supposed French, and wearing without authority a coat resembling the King’s uniform; and he has found upon him, being searched, a tinder-box, four walnuts, and the key of your own cellar. There is not a man of the five who has been farther from the parish than Reading fair. Two of the four, being asked, are ready to swear that he said something to them in French.
+
+Muley, hearing your voice, holds up his wrists.`,
+  choices:[
+    {t:'Examine the prisoner in form, and discharge him.', note:'4s.', go:() => { add({goodwill:2, standing:1});
+      return `You have the paper read. You ask the prisoner his name, his country, and his business upon the Down; and, receiving no answer to any of the three, you enter him in the book as standing mute. You then desire the Serjeant to look at the prisoner’s feet, and to tell the bench how many hands he counts.
+
+The Serjeant looks for some time, and counts four.
+
+The cord is taken off. The four men have a shilling apiece and their beer, upon the understanding that nothing shall be said of it in the village.
+
+Nothing is said of it until Saturday.`; }},
+    {t:'Tell the Serjeant he has taken the best look-out in the corps; and enlist him.', note:'+Standing', go:() => { add({standing:2, family:-1});
+      return `Muley is sworn in upon the spot, so far as he can be, and goes upon the strength of the corps as a drummer, at nothing a day. He has a white belt pipe-clayed for him; he marches at the head of the company upon field days, upon his hind legs, beside the big drum; and when the Inspecting Field Officer comes down from Reading at Michaelmas, it is remarked that the drummer upon the right is the only man in the front rank who does not look round.
+
+The Field Officer returns the corps at sixty-one rank and file, effective. The Serjeant’s roll has sixty.`; }},
+    {t:'Own him, pay for the alarm, and put him upon a chain.', note:'£1 13s.', go:() => { add({money:-2, goodwill:-1});
+      return `You own him. The Serjeant begs to mention that the beacon was within a minute of being fired, which would have had the Volunteers of nine parishes under arms by midnight, and the Lord Lieutenant out of his bed; and that he has four men who have lost a day’s work.
+
+You pay twelve shillings to the men, and a guinea to the corps. Muley is led home upon a dog-chain; and before the week is out he has drawn the staple of it from the wall.`; }}
+  ]});
+
+ev({ id:'apeWinter', follow:true, hen:false, at:'hall', who:() => null, cond:apeKept, title:'A Warmer Climate',
+  text:() => `It has frozen eleven nights together, and Muley has a cough.
+
+He sits upon the kitchen fender in his jacket, with a second jacket over it, holding his own elbows; he has not for a week taken anything out of anybody’s pocket; and when the cook, who has complained of him every day since he came, sets a basin of bread and milk before him, he looks at it, and at her, and puts his hand into hers.
+
+Mr Jessop, the apothecary of Wyvern, who is sent for, and who has never before been asked to feel such a pulse, feels it with his eyes shut.
+
+“I should say the chest, sir, in a Christian. I see no reason to say otherwise in this case.”
+
+He orders a waistcoat of flannel next the skin, a spoonful of paregoric at night, and a warmer climate; the last of which, he observes, he has ordered for half the county, and never before for a patient who came from one.`,
+  choices:[
+    {t:'The flannel, the paregoric, and the kitchen fire until May.', note:'£2', go:() => { add({money:-2, family:1});
+      return `The flannel is made by ${hh('Henrietta', 'the cook')}, with sleeves. Muley is given the settle next the kitchen fire; and he has his paregoric from the cook, in a spoon which she lets no other person hold.
+
+He coughs until the end of February. Upon the first warm morning of April he is missed from the settle; and is found upon the ridge of the Hall roof, in the sun, with the flannel off, and the cook’s Sunday cap on.`; }},
+    {t:'Send him to Exeter ’Change, where the rooms are kept by stoves.', note:'+£8 8s.', go:() => { fl('ape', 'sold'); add({money:8, family:-1});
+      return `The menagerie sends its own man down for him, with a box lined in baize; and gives, the animal being out of health, eight guineas in place of ten.
+
+The cook does not come up to see the box go. A lady of the county, who visits the ’Change in May, reports that there is an ape of Barbary in the second room, in a blue jacket, very stout; who took her muff from her through the bars, turned it inside out, and handed it back.`; }},
+    {t:'Send him back to Edmund, and the sea.', if:() => at('navy'), note:'£2', go:() => { fl('ape', 'sea'); add({money:-2}); reg('edmund', 1, 'You sent Muley back to the fleet');
+      return `He goes down to Portsmouth by the wagon, in the coop, with a blanket; and from Portsmouth, by the first store-ship, to the fleet.
+
+Edmund writes in March. Muley is come aboard, he says, and is quite recovered. The Captain will not have him in the gun-room; but he is borne upon the ship’s books as a boy of the third class, by the name of Muley Hatherley, and has his grog. Edmund thinks that he was known again. He is certain that the Purser was.`; }}
+  ]});
+
+/* ---------- the parrot ---------- */
+
+ev({ id:'parrotComes', from:1808, to:1810, weight:40, hen:false, at:'hall', who:() => 'edmund', cond:() => at('army') && !F('parrot') && (S.year > 1808 || S.season >= 2), title:'Corporal Dacey’s Cage',
+  text:() => `A soldier of the 52nd, discharged at Hilsea with one sleeve pinned across his breast, has walked from Portsmouth in four days with a wicker cage upon his back, and a letter in his cap; and he sets the cage down upon the hall table before he will give up either.
+
+“Mr Edmund’s duty, sir; and I was to say that he bites.”
+
+In the cage there is a grey parrot, with a red tail, who is hanging by his beak from the top of it, and regarding the company upside down.
+
+“Belem, near Lisbon. My dear Father, I send you by Corporal Dacey, who lost his arm at Vimeiro, a bird which I bought upon the quay here of the master of a Guinea ship, for two dollars. He was eight months in a French mess while Junot had the town; and the men call him Junot for that reason, and because he has got a great deal that did not belong to him. He whistles; he has some Portuguese, which I am told is not fit for my mother; and he has more of the 52nd than I could have wished. Pray give Dacey a guinea. He would take nothing from me but the bird’s seed. Your affectionate son, Edmund.”
+
+Junot rights himself; looks at the footman; and says, in the voice of a very hoarse man a long way off, something which Corporal Dacey begs to explain is only the word of command for a column to form line.`,
+  choices:[
+    {t:'Hang him in the breakfast-room window.', note:'£1 1s.', go:() => { fl('parrot', 'house'); fl('parrotT', S.t); add({money:-1, family:1}); reg('edmund', 1, 'You hung his parrot in the breakfast-room');
+      return `Dacey has his guinea, and his dinner in the kitchen; where he is kept until dark, telling it how Mr Edmund stood upon the hill.
+
+Junot is hung in the south window of the breakfast-room. He says nothing for three days. Upon the fourth, as the urn is brought in, he observes, in the footman’s own voice, and so that the footman turns round, that the toast is cold.`; }},
+    {t:'Give him to the kitchen.', note:'£1 1s.', go:() => { fl('parrot', 'kitchen'); fl('parrotT', S.t); add({money:-1, goodwill:1}); reg('edmund', 1, 'You kept his parrot');
+      return `Dacey has his guinea, and his dinner; and Junot is hung over the kitchen dresser, out of the draught.
+
+By the end of the month he has the cook’s voice, the scullery-maid’s cough, and the creak of the jack; and he calls the dairyman, every morning at six, by a name which the dairyman has had from nobody but his wife.`; }},
+    {t:'Send him on to the Castle, with your compliments.', note:'+Lord Cullerne', go:() => { fl('parrot', 'castle'); add({money:-1}); reg('cullerne', 1, 'You sent him the parrot'); reg('edmund', -1, 'You gave his parrot to Lord Cullerne');
+      return `Dacey has his guinea, and walks the cage two miles farther. Lord Cullerne, who has the bird hung in his billiard-room, is so well pleased with him that he keeps Dacey also, as an under-porter, at fourteen pounds a year, and a coat with one sleeve.
+
+His lordship writes you a note of four lines. He has not, he says, heard such language since the Westminster election; and he begs to be told the English of three words, which he encloses, as his chaplain will not tell him.`; }}
+  ]});
+
+ev({ id:'parrotCry', follow:true, hen:false, at:'hall', who:() => null, cut:() => 'parrotCry-' + (F('gallDead') ? 'loveday' : 'gall'), cond:() => parrotKept() && S.year <= 1814, title:'A Seditious Cry',
+  text:() => `${F('gallDead') ? 'Mr Loveday of Wyvern, who is in the commission of the peace, has ridden over in the heat' : 'Dr Gall has walked up from the vicarage in the heat'}, which he does not do for a small matter; and he has brought the churchwarden with him, for a witness.
+
+“There has been a seditious cry, sir, from a window of this house, three mornings together.”
+
+The Volunteers were marching past the park pale to their drill upon each of the three; and upon each, as the fifes came abreast of ${parrotRoom()}, a voice from within it was heard by the whole company to call for the Emperor of the French, twice, and then to laugh. The churchwarden has it written down, as near as he could spell it. ${benchMan()}, as a magistrate, is bound to observe that there is an Act of the year ’95 against such expressions, and that it makes no exception of the houses of his brother justices.
+
+Junot, in his cage, has his head under his wing.`,
+  choices:[
+    {t:'Wake the bird, and let them hear the rest of what he knows.', note:'+Standing', go:() => { add({standing:1}); if (!F('gallDead')) reg('gall', 1, 'He comes on Thursdays to teach the parrot a hymn');
+      return `Junot is waked. He looks at ${benchMan()} with one eye, and then with the other; and, having considered the ${F('gallDead') ? 'hat and the whip' : 'bands and the wig'}, he gives the Emperor of the French, twice; the word for a column to form line; six words of Portuguese, at which the churchwarden, who was in the Lisbon wine trade as a young man, goes out into the passage; and, last, the Evening Hymn, whistled, as far as the fourth bar.
+
+${benchMan()} enquires where he had the hymn. It is not known. He writes in his pocket-book that the prisoner is a foreigner, and not answerable; and he comes up every Thursday after that, with a lump of sugar, to teach him the fifth.`; }},
+    {t:'Have the parish clerk teach him God save the King.', note:'17s. 6d.', go:() => { add({money:-1, standing:1, goodwill:1});
+      return `The parish clerk, who has the best voice in Hatherley, and the most patience, is engaged at sixpence the lesson; and he sits before the cage every evening for five weeks, with a pitch-pipe.
+
+Junot learns it. He gives it upon the King’s birthday, at the open window, as the Volunteers go by, in the clerk’s own voice, as far as the fourth word. For the fifth, without leaving the tune, he supplies the Emperor.`; }},
+    {t:'Move the cage to the north side of the house.', note:'−Standing', go:() => { add({standing:-1});
+      return `The cage is carried to the north side of the house, to a window that looks upon the wood-yard and the laundry green; and ${benchMan()} is assured that the cry will not be heard again from the road.
+
+It is not. It is heard, upon the Monday following, by eleven laundry-women, who have it explained to them by the footman; and by Saturday there is not a child in Hatherley who does not, upon being sent to bed, call for the Emperor of the French, twice, and laugh.`; }}
+  ]});
+
+ev({ id:'parrotBugle', follow:true, hen:false, at:'hall', who:() => null, cond:() => parrotKept() && !F('edmundDead'), title:'The Rouse',
+  text:() => `It is a quarter before five, and not yet light, when the whole house is brought out of its beds by a bugle.
+
+There is no bugle. There is Junot, in ${parrotRoom()}, with the baize half off his cage; and he has given the Rouse, which is sounded to the Light Brigade an hour before day, and which he heard at Belem every morning for six weeks. He gives it again while you stand before him in your night-cap; and he follows it with a serjeant.
+
+“Turn out! Turn out, you beauties, or I’ll have the blankets!”
+
+The footman is upon the stairs with one stocking on. The stable boy, who sleeps over the coach-house, is found in the yard, at attention. And ${steward()}, who lodges at the far end of the east wing, and has not been seen out of his room before eight o’clock these twenty years, is discovered in the passage, in his shirt, with the rent-book under his arm.`,
+  choices:[
+    {t:'A thicker baize.', note:'+Household', go:() => { add({family:1});
+      return `A cover is made of green baize, doubled, with a draw-string; and for nine nights the house sleeps until seven.
+
+Upon the tenth, Junot is heard, under the baize, to sound the Rouse at the usual hour, very small, as it might be from the far side of a hill; and the footman, who has not been told of the second thickness, is found upon the stairs with one stocking on.`; }},
+    {t:'Let him sound it; and have the house rise by him.', note:'−Household', go:() => { add({family:-2, money:1});
+      return `You give out that the house will rise by the bird. The maids are down by five; the fires are lit by a quarter past; ${steward()} has cast up two quarters’ arrears before breakfast, which he was used to do after dinner; and in the month the saving in candles alone is nine shillings.
+
+The cook gives warning at Michaelmas. She has been called a beauty before, she says, but not at that hour, and not by a fowl.`; }},
+    {t:'Hang him in the stable, where the hours are earlier.', if:() => F('parrot') !== 'stable', go:() => { fl('parrot', 'stable'); add({family:1});
+      return `Junot is hung in the saddle-room. The stable has always been afoot by five, and takes the Rouse as a civility; and by the end of the summer the cob will not leave her stall until it has been sounded.
+
+But he has the stable by Christmas, as he had the 52nd. He is heard, in Mudge’s voice, to tell a horse that is not there to come over; and Mudge, who is crossing the yard with a bucket in each hand, comes over.`; }}
+  ]});
+
+/* If Edmund is killed while the bird is at Hatherley. Written quietly, and left short. */
+ev({ id:'parrotVoice', follow:true, hen:false, at:'hall', who:() => null, cond:() => parrotKept() && !!F('edmundDead'), title:'The Voice',
+  text:() => `It is evening, and the candles are not yet brought.${hh(' Henrietta has her work in her lap, and is not working.', '')}
+
+Junot has said nothing since the letter came. He has sat at the back of his cage with his feathers up; he has not whistled; he has not called the footman by the footman’s name.${F('parrot') === 'house' ? '' : ' He was brought up from ' + parrotRoom() + ' that week, and hung in the breakfast-room window; nobody has said by whose order.'}
+
+He speaks now, into the dark room.
+
+“My dear Father.”
+
+It is not the footman’s voice, nor the cook’s. It is a young man’s, a little hoarse, as from the smoke of a billet; and it is the voice of a person trying over the first words of a letter, aloud, before he will put them upon the paper.
+
+He says it again. He has no more of it.`,
+  choices:[
+    {t:'Leave him where he hangs.', go:() => { add({family:1});
+      return `The cage is not moved, and the baize is not put over it. He says it most evenings, at about the hour when the candles come; and nobody in the room looks up${hh(', though Henrietta’s needle stops', '')}.
+
+The footman has been told that he need not hurry with the candles.`; }},
+    {t:'Carry the cage up to Henrietta’s room.', if:() => !F('henriettaAway'), go:() => { add({family:2}); reg('henrietta', 2, 'You carried Edmund’s parrot up to her');
+      return `You carry it up yourself. Henrietta has it set upon the table by her bed, where the miniature is.
+
+She is heard through the door, late, speaking low, as to a child that is learning its letters. He does not get the rest of it from her. But he will take sugar from her fingers, which he would never do from Corporal Dacey’s; and he has not once bitten her.`; }},
+    {t:'Send him down to the kitchen, out of hearing.', go:() => { fl('parrot', 'kitchen'); add({family:-2});
+      return `He is taken down to the kitchen that night, with the baize on.
+
+The cook will not have him over the dresser. She hangs him in her own room, off the scullery, and shuts the door upon him at dusk; and what he says there, at the hour when the candles go in upstairs, is heard by nobody but the cook, who has given no account of it.`; }}
   ]});
