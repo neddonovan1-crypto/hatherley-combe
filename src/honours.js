@@ -44,10 +44,16 @@ beginSociety = function(id){ const ok = beginSocietyPlain(id); if (ok && HONOUR_
 /* What follows an honour, and when: so many seasons after it, in the season named if one is named, one paper to a quarter, and only in a quarter that has nothing else waiting. */
 const HONOUR_AFTER = [
   {of:'knight', ev:'honFirstCouple', wait:1, q:3}, {of:'knight', ev:'honBills', wait:3},
-  {of:'baronet', ev:'honPedigree', wait:1}, {of:'baronet', ev:'honTreasury', wait:4} ];
+  {of:'baronet', ev:'honPedigree', wait:1}, {of:'baronet', ev:'honSirEdmund', wait:3} ];
 const ventureTickHonours = ventureTick;
-ventureTick = function(line){ ventureTickHonours(line); if (!S.soc) return;
+const HONOUR_OFFER = {knight:'honOfferKnight', baronet:'honOfferBaronet'};
+const honourOpen = id => { const r = societyList().find(x => x.id === id); return !!(r && r.can); };
+ventureTick = function(line){ ventureTickHonours(line);
+  /* A squire who has had the requisites of an honour, its fees among them, for two quarters together is offered it once, without his asking. */
+  S.honReady = S.honReady || {}; for (const id in HONOUR_OFFER) S.honReady[id] = honourOpen(id) ? (S.honReady[id] || 0) + 1 : 0;
   if ((FIXED[S.year + '-' + S.season] || []).some(e => !e.cond || e.cond()) || S.queue.some(x => x.at <= S.t)) return;
+  for (const id in HONOUR_OFFER) { const ev = HONOUR_OFFER[id]; if (S.honReady[id] >= 2 && S.seen[ev] === undefined && !S.queue.some(x => x.id === ev)) { later(ev, 0); return; } }
+  if (!S.soc) return;
   for (const a of HONOUR_AFTER) { const h = soc(a.of); if (!h || h.ended || S.seen[a.ev] !== undefined || S.queue.some(x => x.id === a.ev)) continue;
     if (S.t - (h.t || 0) < a.wait || (a.q !== undefined && S.season !== a.q)) continue;
     const e = byId(a.ev); if (e.cond && !e.cond()) continue;
@@ -132,33 +138,57 @@ It costs, with the first sheet, a hundred and ten pounds; and it hangs in the ha
 Your patent is good without him. But in the roll which the College prints of the Baronets of England, between a name in M and the next, yours is not found; and at the Sessions dinner there is a gentleman, at the lower end of the table, who has the book in his pocket.`; }}
   ]});
 
-ev({ id:'honTreasury', follow:true, at:'hall', who:() => null, cond:() => held('baronet'), title:'From the Treasury',
-  text:() => `A letter comes under a frank, sealed with a seal as large as a crown piece, and marked in the corner “Private”.
+ev({ id:'honSirEdmund', follow:true, at:'hall', who:() => null, cond:() => held('baronet') && !F('edmundDead') && S.year >= 1797 && at('home', 'farmer', 'army', 'militia'), title:'The Fourteenth Line',
+  text:() => `Edmund${at('army') ? ', who has a fortnight’s leave from the 52nd,' : at('militia') ? ', who is over from the Militia for two nights,' : ''} has had the patent out of the deed chest, and has it open upon the library table when you come in, with the tin box of the Great Seal set upon one corner to keep the vellum from rolling up.
 
-“Treasury Chambers, Whitehall.
+“It is in the fourteenth line, sir. I have only to be of age, and to ask.”
 
-“Sir, The friends of His Majesty’s Government in the County of Berks have not hitherto been so numerous as could be wished; and it was remarked here with satisfaction, when a certain patent lately passed the Seal, that their number was increased by one.
+The fourteenth line, when you have found your place in it, declares that the first-born son and heir apparent of every baronet shall, upon attaining the age of one-and-twenty years, have knighthood of the King for the asking, and have it in his father’s lifetime; which clause has stood in every such patent since King James first sold them, in the year 1612. Edmund ${S.year > 1797 ? 'has been of age since the year ’97' : 'is one-and-twenty this year'}.
 
-“A gentleman well affected to Ministers intends to offer himself for the county upon the first vacancy. A subscription for his expenses lies open at Messrs Drummond’s, at Charing Cross; and I am to say that a name of your consequence, standing at the head of it, could not fail of the best effect. Three hundred pounds has been mentioned.
+He has enquired the fees. They are those of any other knight, and go to the same Gentlemen Ushers, Serjeants, Pages and porters: one hundred and ten pounds.${hh(' Henrietta, who has been listening at the door, observes that there would then be a Sir at each end of her table.', '')}
+
+He has not asked you for the money. He has laid the paper of fees upon the patent, with the figures uppermost.`,
+  choices:[
+    {t:'Pay his fees, and send him up to the Levee.', note:'£110, +Edmund, +Standing', go:() => { const L = leveeNow(); add({money:-110, standing:1, family:2}); reg('edmund', 2, 'You paid for his knighthood');
+      return `Edmund goes up by the Wyvern coach upon the Tuesday, kneels at ${L.at} upon the Friday, and is at Hatherley again, Sir Edmund, in time for church.
+
+The first letter that comes to the Hall for a knight of your name, the Christian name upon it having been blotted by the rain, is laid by the footman beside your plate. It is from a tailor in Bond Street, for a court suit and the hire of a sword; and you have read as far as the sum before you observe that it bears this month’s date.`; }},
+    {t:'Tell him that one Sir is enough for one house.', note:'−Edmund', go:() => { add({family:-2}); reg('edmund', -2, 'You would not have him knighted');
+      return `You tell him that there is one Sir at Hatherley; and that, in the course of nature, there will not be two until there is again but one. Edmund bows, rolls up the three skins, and carries them back to the deed chest himself.
+
+The paper of fees he does not take with him. It is found a month afterwards, folded very small, in the tin box with the Great Seal.`; }},
+    {t:'Let him be knighted, if he will find the fees himself.', note:'+Standing, −Edmund', go:() => { const L = leveeNow(); add({standing:1}); reg('edmund', -1, 'He paid for his own knighthood');
+      return `Edmund finds them. A banker at Reading, to whom the name of a baronet’s heir is security enough, lends him a hundred and ten pounds upon his note of hand, at five per cent; he kneels at ${L.at} within the month; and of the two Sirs who now sit down to dinner at Hatherley, one pays to a banker at Reading five pounds ten shillings a year.`; }}
+  ]});
+
+/* ---------- the honours offered ---------- */
+
+ev({ id:'honOfferKnight', follow:true, at:'hall', who:() => null, cond:() => honourOpen('knight'), title:'The County’s Address',
+  text:() => { const L = leveeNow(); return `The gentlemen, clergy and freeholders of the county, being met in the Town Hall of Wyvern, have voted a loyal and dutiful address to the Throne; it has lain a week at the Bell for signature; and upon the Saturday the Under-Sheriff rides out to Hatherley, with the vellum rolled up in a tin case under his arm.
+
+“The meeting has named you, sir, to carry it up. There is commonly a knighthood in it.”
+
+By custom the High Sheriff presents such a paper with his own hand; but the High Sheriff, it appears, cannot at present get a shoe on. The meeting was of one mind as to who should go in his room; and the Under-Sheriff adds, as a thing which a gentleman would wish to know beforehand, that the fees of honour at ${L.at} come to a hundred and ten pounds, and that the county does not pay them.
+
+${hh('Henrietta has the address unrolled upon the hall table, and is counting the names.', 'The address lies unrolled upon the hall table, with a candlestick at each end of it.')}`; },
+  choices:[
+    {t:'Carry up the address.', note:'£110', go:() => { beginSociety('knight');
+      return `The hired sword goes back to Bond Street by the Wyvern coach, in brown paper, with half a guinea; and the bag-wig, for which the tailor will allow nothing, is put away by ${steward()} in the deed chest.`; }},
+    {t:'Beg to be excused, for the present.', go:() => {
+      return `You beg to be excused. The Under-Sheriff bows, and rolls up the vellum; but he observes, with his foot in the stirrup, that an address will keep, and that the High Sheriff’s feet being what they are, there is nobody else whom the county is of a mind to send. It will lie at the Bell, in its tin case, until you choose to call for it.`; }}
+  ]});
+
+ev({ id:'honOfferBaronet', follow:true, at:'hall', who:() => null, cond:() => honourOpen('baronet'), title:'A Name to be Laid before the King',
+  text:() => `A letter comes from Downing Street, under the Minister’s own frank.
+
+“Sir, ${F('mp') ? 'Your steady attendance in the House of Commons' : 'The consequence which you hold in the County of Berks'} has not passed unobserved; and I am to acquaint you that, should it be agreeable to you, your name will be laid before the King, with some others, for the dignity of a Baronet of ${S.year < 1801 ? 'Great Britain' : 'the United Kingdom'}. I am to add, that the fees upon the patent, which are payable at the several offices through which it must pass, are understood to amount to twelve hundred pounds.
 
 “I have the honour to be, Sir, your most obedient humble servant,”
 
-The name beneath is one that you never saw. It is written very small, by a hand that writes it forty times in a morning.
-
-The Castle, as all Berkshire knows, has voted against Ministers these twenty years.`,
+It is signed by a Secretary. ${steward()}, to whom you show it, reads the last sentence twice, and goes for the book.${hh(' Henrietta reads the first, and has it by heart before dinner.', '')}`,
   choices:[
-    {t:'Put your name at the head, for three hundred.', note:'£300, +Standing, −Lord Cullerne', go:() => { add({money:-300, standing:2}); reg('cullerne', -2, 'You subscribed to the Minister’s man');
-      return `Your draft goes to Drummond’s by the next post. The list is printed in the Mercury within the fortnight, with your name at the top of it, a line to itself, and three hundred pounds against it; the second name is a clergyman’s, for ten guineas.
-
-A note comes from the Castle upon the Monday. “Lord Cullerne has read the newspaper.”`; }},
-    {t:'Send fifty pounds, and your compliments.', note:'£50', go:() => { add({money:-50});
-      return `You send fifty pounds. It is acknowledged from Whitehall in two lines, by a clerk, upon a half-sheet; and when the list is printed in the Mercury, your name stands ninth in it, below a brewer of Reading.
-
-Nothing comes from the Castle; and from the Treasury nothing more.`; }},
-    {t:'Answer that the fees were paid at the Patent Office.', note:'+Lord Cullerne', go:() => { add({standing:-1}); reg('cullerne', 2, 'You refused the Treasury');
-      return `You write that you had understood the fees upon a patent to be twelve hundred pounds; that you paid them; and that you hold the receipt. To this there is no answer.
-
-But somebody at Brooks’s has had the story from somebody at the Treasury; and at the Sessions dinner Lord Cullerne, who has not done it these three years, sends the decanter down the table to you by name.
-
-“Told ’em you’d paid, did you? So you had.”`; }}
+    {t:'Answer that it is agreeable, and pay the fees.', note:'£1,200', go:() => { beginSociety('baronet');
+      return `${steward()} enters the twelve hundred pounds in the book the same evening, under the head of Extraordinaries, upon the line below a new roof for the cart-shed.`; }},
+    {t:'Answer that your affairs do not at present admit of it.', go:() => {
+      return `You write that you are deeply sensible of the honour intended you, and that your affairs do not at present admit of it. The Secretary replies in three lines. The offer is not withdrawn; your name remains upon the Minister’s list; and the fees may be paid at the Patent Office whenever you shall think proper.`; }}
   ]});
