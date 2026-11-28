@@ -1,0 +1,4 @@
+/* The paper of a venture, held up over the plan upon the day it is undertaken. It borrows the card, print and side sheet of the other plates (plan.css). */
+#ventplate{--leaf:url(art/ui/book-leaf.jpg);position:fixed;inset:0;z-index:21;display:grid;place-items:center;padding:18px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px));background:rgba(12,18,13,.8);overflow:auto;animation:heldup .25s ease-out}
+#ventplate[hidden]{display:none}
+@media (max-width:1080px){ #ventplate{place-items:start center;padding:10px} }
