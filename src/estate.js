@@ -548,7 +548,7 @@ function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing
   line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
   if (T('jointure')) line('Your uncle’s widow, her jointure', -30);
   if (T('taste')) line('Milliners and mantua-makers', -30);
-  if (T('bottle')) line('The wine merchant', -10);
+  if (T('bottle') && !F('abstemious')) line('The wine merchant', -10);
   if (T('lawsuit') && S.season === 3) line('Costs in the matter of the pew', -40);
   if (T('brother') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
   { const sc = houseCost('schoolroom'); if (sc) line(sc > 0 ? 'The schoolroom: governess and masters' : 'Saved by sending the governess away', -sc / 4); }
