@@ -86,8 +86,9 @@ body.planview{overflow:hidden} body.planview .desk{display:none} body.plateup{ov
   #cart .vig{flex:1 1 0;min-width:0;grid-template-columns:minmax(0,1fr);row-gap:1px} #cart .vig img{display:none} #cart .vig span{font-size:.58rem} #cart .vig b{font-size:1.1rem} #cart .vig > i{grid-column:1}
   #cart .next{grid-column:1/-1;flex-direction:row;align-items:center;gap:10px} #cart .next p{flex:1 1 0;min-width:0;font-size:.95rem;text-align:left} #cart .act{width:auto;flex:none;max-width:56%;padding:9px 30px 8px 10px;font-size:.78rem} #cart .act::after{width:34px;height:34px;margin-top:-17px;right:-9px}
   #cart .foot{grid-column:1/-1;margin:0} #cart .foot button{padding:2px;font-size:.9rem}
-  #landwrap{display:block;place-items:normal;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;height:100%;scrollbar-width:none} #landwrap::-webkit-scrollbar{display:none}
-  #land{height:100%;width:auto} #landwrap{filter:none}
+  #landwrap{display:block;place-items:normal;overflow:auto;overscroll-behavior:contain;height:100%;scrollbar-width:none;-webkit-overflow-scrolling:touch} #landwrap::-webkit-scrollbar{display:none}
+  /* the sheet is never drawn so small that its tickets crowd one another: it keeps its size and is pushed about under the finger */
+  #land{height:max(100%, 620px);width:auto} #plan.sheeton #land{height:100%} #landwrap{filter:none}
   #plan.sheeton .lbl:not(.on){display:none} #plan.sheeton .lbl em.let, #plan.sheeton .lbl .todo, #plan.sheeton .key{display:none} #plan.sheeton #land{margin:0 auto;justify-self:normal}
   #sheet, #sheet.left, #sheet.right{position:relative;inset:auto;width:auto;padding:14px 16px 20px;box-shadow:0 -6px 18px rgba(0,0,0,.5);animation:none}
   #sheet > h2{font-size:2rem} #sheet > .plate{aspect-ratio:5/2}
@@ -159,3 +160,19 @@ body.planview #hush, body.plateup #hush{top:auto;bottom:2px;right:6px}
 /* The rank word never rides over its label: it keeps a gap, takes a smaller hand when long, and drops to a line of its own when there is no room beside. */
 #cart .vig .rk{grid-column:2/4;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:1px 10px;margin:0;min-width:0} #cart .vig .rk b{margin-left:auto;max-width:100%;text-align:right} #cart .vig .rk b.long{font-size:1.08rem}
 @media (max-width:1080px){ #cart .vig .rk{grid-column:1;display:block} #cart .vig .rk span, #cart .vig .rk b{display:block;text-align:left} #cart .vig .rk b{white-space:normal;overflow:hidden;text-overflow:ellipsis} #cart .vig .rk b.long{font-size:.86rem;line-height:1.28;white-space:nowrap} }
+
+/* A phone held upright. A paper taken up has the whole room under the quarter's slips, the sheet being put by until it is laid down again; and the button for giving the estate up stands between the ledger and the Progress, where it costs no line of its own until it is pressed. */
+@media (orientation:portrait) and (max-width:700px){
+  #plan.sheeton{grid-template-rows:auto minmax(0,1fr)} #plan.sheeton #landwrap{display:none}
+  #plan.sheeton #cart .giveup, #plan.sheeton #cart .resumed{display:none}
+  #cart .giveup:not(:has(.sure)){margin-top:-36px;pointer-events:none} #cart .giveup .wipe{pointer-events:auto} #cart .giveup .wipe button{min-height:32px}
+  #cart .foot{min-height:32px;align-items:center}
+}
+/* A phone on its side: the three marks stand one under another in the narrow leaf, each word beside its label, so that none is cut short. */
+@media (max-width:1080px) and (orientation:landscape) and (max-height:520px){
+  #cart .vigs{flex-direction:column;gap:5px} #cart .vig .rk{display:flex;flex-wrap:nowrap;align-items:baseline;gap:8px} #cart .vig .rk span{display:inline} #cart .vig .rk b, #cart .vig .rk b.long{display:inline;margin-left:auto;text-align:right;font-size:1.05rem;white-space:nowrap}
+  #cart .next{flex-direction:column;align-items:stretch;gap:6px} #cart .act{max-width:none;width:100%}
+  #cart .purse{align-items:flex-start} #cart .creditbox{align-self:stretch}
+}
+@media (max-width:1080px) and (orientation:landscape) and (max-height:520px){ #tabs{grid-template-columns:repeat(5, minmax(0,1fr))} }
+.purse .of{white-space:nowrap}

@@ -1146,7 +1146,7 @@ const EDMUND = [
   {id:'edmund-waiting', kind:'news', w:() => at('church') && yr(1804, 1815), x:() => `“My dear Father, I have now been a curate eleven years, counting from my Deacon’s orders. The Rector is seventy-four, and takes the waters; and upon my asking his agent who has the next presentation, I learnt that it is sold already to a gentleman in the City, for his nephew, who is nine. I keep a pig, a pony, and a school for six farmers’ sons. How does ${F('gallDead') ? 'the new man do at Hatherley' : 'Dr Gall do'}?”`},
 
   /* ---------- at home, the heir ---------- */
-  {id:'edmund-rentbook', kind:'talk', w:() => at('home') && !!tenantOf('church'), x:() => `Edmund comes to the book-room with the rent book under his arm.
+  {id:'edmund-rentbook', kind:'talk', ta:'Let him raise it.', tb:'Go through the book with him.', tc:'Think about it.', w:() => at('home') && !!tenantOf('church'), x:() => `Edmund comes to the book-room with the rent book under his arm.
 
 “Church Farm has paid the same rent since 1784, sir. Wheat was forty shillings then.”
 
@@ -1164,7 +1164,7 @@ At eleven Henrietta sends to ask whether either of you means to go to bed.`,
 “Yes, sir.”
 
 He shuts the book, with the sheet of paper inside it; and there you find it, when you open the book at Michaelmas.`},
-  {id:'edmund-gun', kind:'talk', w:() => at('home') && (S.season === 2 || S.season === 3), x:() => `Edmund is cleaning both guns at the hall table.
+  {id:'edmund-gun', kind:'talk', ta:'Give him the man, and the three weeks.', tb:'Walk down to the copse with him.', tc:'Not yet.', w:() => at('home') && (S.season === 2 || S.season === 3), x:() => `Edmund is cleaning both guns at the hall table.
 
 “Mudge has too many hen pheasants and no ground for them, sir. I would turn the rough end of Cuckoo Copse into cover. Forty rods of furze. One man, three weeks.”
 
@@ -1178,7 +1178,7 @@ A cock pheasant gets up between your feet; and neither of you having a gun, you 
     c:() => `“We shall see.”
 
 He finishes the lock, and hangs up the guns. The week following you see the pegs in Cuckoo Copse, and that nobody has pulled them up.`},
-  {id:'edmund-gazette', kind:'talk', w:() => at('home') && yr(1798, 1814), x:() => `The Gazette has come, and Edmund reads it standing at the window.
+  {id:'edmund-gazette', kind:'talk', ta:'Send him to Newbury with the barley.', tb:'Take him round the home farm.', tc:'Tell him there is nothing.', w:() => at('home') && yr(1798, 1814), x:() => `The Gazette has come, and Edmund reads it standing at the window.
 
 “Tamworth has his company,” he says. “He was below me at school.”
 
@@ -1194,7 +1194,7 @@ He holds the gate for you.`,
     c:() => `“Nothing this morning.”
 
 He goes out. You hear him in the yard, speaking to the groom; and he rides towards the Down, and is not back for dinner.`},
-  {id:'edmund-drains', kind:'talk', w:() => at('home') && !S.projectsDone.drain, x:() => `Edmund has been at Hartopp’s, and comes back with clay to the knee.
+  {id:'edmund-drains', kind:'talk', ta:'Let him try five acres.', tb:'Ride to Hartopp’s with him.', tc:'Not this year.', w:() => at('home') && !S.projectsDone.drain, x:() => `Edmund has been at Hartopp’s, and comes back with clay to the knee.
 
 “He has put stone drains under twenty acres, sir. He was sowing on it in February. Kennet Bottom is the same clay.”
 
@@ -1208,7 +1208,7 @@ By spring the five acres are dry enough to walk; and he walks you over them twic
     c:() => `“Not this year.”
 
 He takes the clay off your desk. It has left a mark upon the leather, which is there still.`},
-  {id:'edmund-thirty', kind:'talk', w:() => at('home') && yr(1806, 1815), x:() => `It is Edmund’s birthday. He is ${19 + S.year - 1795}.
+  {id:'edmund-thirty', kind:'talk', ta:'Give him the woods.', tb:'Tell him how the estate stands.', tc:'He has the estate to learn.', w:() => at('home') && yr(1806, 1815), x:() => `It is Edmund’s birthday. He is ${19 + S.year - 1795}.
 
 He comes in after dinner, and stands with his back to the fire.
 
@@ -1226,7 +1226,7 @@ By Friday he has a book ruled for them; and on Monday, with a scribing-iron, and
 He bows, and goes up; and you hear his door.`},
 
   /* ---------- farming on his own account ---------- */
-  {id:'edmund-swedes', kind:'talk', w:() => at('farmer'), x:() => `Edmund rides up from his farm before breakfast, with a Swede turnip in each coat pocket.
+  {id:'edmund-swedes', kind:'talk', ta:'Buy his seed for the home farm.', tb:'Ride back with him, and see the farm.', tc:'Admire them.', w:() => at('farmer'), x:() => `Edmund rides up from his farm before breakfast, with a Swede turnip in each coat pocket.
 
 “Eleven pounds, that one, sir. Off the wet end. Your home farm has nothing over seven.”
 
@@ -1244,7 +1244,7 @@ The bull is the only thing upon the farm that you would not have yourself.`,
 He looks at you, and puts the turnips back into his pockets.
 
 “Sophia sends her duty, sir.” He does not stay to breakfast.`},
-  {id:'edmund-rent', kind:'talk', w:() => at('farmer') && S.season === 2, x:() => `It is Michaelmas; and Edmund comes to the audit with the other tenants, and waits his turn behind Mr Froome, and lays his rent upon the table in notes and silver.
+  {id:'edmund-rent', kind:'talk', ta:'Take his rent as any other tenant’s.', tb:'Keep him after, and go through his year.', tc:'Push ten pounds back to him.', w:() => at('farmer') && S.season === 2, x:() => `It is Michaelmas; and Edmund comes to the audit with the other tenants, and waits his turn behind Mr Froome, and lays his rent upon the table in notes and silver.
 
 “I would have the same abatement as any other tenant, sir. Or none, as they have.”`,
     a:() => `You give him a receipt as you gave Froome, and take off nothing.
@@ -1258,7 +1258,7 @@ He reads it, and puts it in his hat; and at the audit dinner he sits among the f
 “For my grandchildren.”
 
 He leaves it lying there; and on Tuesday Sophia sends for it, with her thanks.`},
-  {id:'edmund-christening', kind:'talk', w:() => at('farmer') && yr(1805, 1815), x:() => `Edmund and Sophia have another child, and he comes to ask whether you will stand godfather.
+  {id:'edmund-christening', kind:'talk', ta:'Stand godfather to Barnaby.', tb:'Walk down and see the child.', tc:'Not Barnaby.', w:() => at('farmer') && yr(1805, 1815), x:() => `Edmund and Sophia have another child, and he comes to ask whether you will stand godfather.
 
 “Sophia would like him called Barnaby, sir. For the estate.”
 
@@ -1272,7 +1272,7 @@ It is four minutes, and for the whole of it you stand very still.`,
     c:() => `“Call him what you like. Not Barnaby.”
 
 He is christened Thomas; and in the house Sophia calls him Barnaby.`},
-  {id:'edmund-machine', kind:'talk', w:() => at('farmer') && yr(1806, 1815), x:() => `Edmund has been to see a threshing machine at work, and comes up to the Hall with chaff in his hair.
+  {id:'edmund-machine', kind:'talk', ta:'Tell him to keep his men.', tb:'Reckon it up with him.', tc:'Tell him it is his farm.', w:() => at('farmer') && yr(1806, 1815), x:() => `Edmund has been to see a threshing machine at work, and comes up to the Hall with chaff in his hair.
 
 “It did in a day what my four men do in a fortnight, sir. Then I looked at my four men.”
 
@@ -1290,7 +1290,7 @@ He keeps them; and his wheat is at market in March with everybody else’s, and 
 He goes home, and you do not hear which he chose.`},
 
   /* ---------- vicar of the parish ---------- */
-  {id:'edmund-sermon', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the sermon for Sunday in his pocket, and reads it to you in the book-room.
+  {id:'edmund-sermon', kind:'talk', ta:'Tell him to preach it.', tb:'Argue it with him.', tc:'Have him leave out the hire.', w:() => at('vicar'), x:() => `Edmund has the sermon for Sunday in his pocket, and reads it to you in the book-room.
 
 It is upon the labourer and his hire, and is nine minutes long; and you are in it, though not by name.
 
@@ -1306,7 +1306,7 @@ On Sunday, coming to the place, he looks at you; and you nod.`,
     c:() => `“I should leave out the part about the hire.”
 
 He preaches upon the Prodigal Son, and reads it flat and fast; and Henrietta asks in the carriage what you said to him.`},
-  {id:'edmund-tithe', kind:'talk', w:() => at('vicar'), x:() => `Edmund has the tithe book that Dr Gall kept, and lays it open upon your desk.
+  {id:'edmund-tithe', kind:'talk', ta:'Let the potatoes and the eggs go.', tb:'Go through Gall’s book with him.', tc:'Keep the tithe as Gall took it.', w:() => at('vicar'), x:() => `Edmund has the tithe book that Dr Gall kept, and lays it open upon your desk.
 
 “He took a tenth of the cottagers’ potatoes, sir. And their eggs. I should like to stop at the corn and the hay.”
 
@@ -1322,7 +1322,7 @@ He sends it back, with a shilling.`,
     c:() => `“The next vicar will not thank you.”
 
 He takes the tithe as Gall took it; and at Christmas he pays the potatoes back out of his own pocket, and thinks that you do not know.`},
-  {id:'edmund-vestry', kind:'talk', w:() => at('vicar') && yr(1800, 1815), x:() => `Edmund has been in the chair at the vestry, and comes up to the Hall afterwards without his hat.
+  {id:'edmund-vestry', kind:'talk', ta:'Call a second vestry, and vote.', tb:'Keep him to dinner.', tc:'Leave it to the ratepayers.', w:() => at('vicar') && yr(1800, 1815), x:() => `Edmund has been in the chair at the vestry, and comes up to the Hall afterwards without his hat.
 
 “They voted to cut the allowance to the old people, sir. Froome moved it. I had no vote, only the chair.”
 
@@ -1453,9 +1453,9 @@ His answer is to her; and though she laughs twice in the reading of it, she does
 
 The jelly travels badly. But he thanks her for the sermon, the paper of which, he says, was very useful.`]); }},
     /* he calls in person */
-    {t:'Let him have his way in it.', if:() => edmKind('talk'), go:() => { add({family:1}); reg('edmund',2,'You let him have his way'); return edmNow().a(); }},
-    {t:'Go into it with him.', if:() => edmKind('talk'), go:() => { add({family:3}); reg('edmund',1); return edmNow().b(); }},
-    {t:'Put him off.', if:() => edmKind('talk'), go:() => { add({family:-1}); reg('edmund',-1,'You put him off'); return edmNow().c(); }},
+    {t:() => edmNow().ta || 'Let him have his way in it.', if:() => edmKind('talk'), go:() => { add({family:1}); reg('edmund',2,'You let him have his way'); return edmNow().a(); }},
+    {t:() => edmNow().tb || 'Go into it with him.', if:() => edmKind('talk'), go:() => { add({family:3}); reg('edmund',1); return edmNow().b(); }},
+    {t:() => edmNow().tc || 'Put him off.', if:() => edmKind('talk'), go:() => { add({family:-1}); reg('edmund',-1,'You put him off'); return edmNow().c(); }},
     /* he asks for money */
     {t:'Let him have the whole of it.', note:() => '£' + edmNow().sum, if:() => edmKind('ask'), go:() => { add({money:-edmNow().sum, family:2}); reg('edmund',2,'You paid when he asked');
       return edmAway() ? pick([
@@ -1813,7 +1813,7 @@ const kittyAtHome = () => K() === 'free';
 const half = n => Math.round(n / 2);
 
 const HENRIETTA = [
-  {id:'henrietta-pianoforte', kind:'want', sum:35, w:() => kittyAtHome() && S.year <= 1806, x:() => `Henrietta has a printed card from Broadwood’s in Great Pulteney Street.
+  {id:'henrietta-pianoforte', kind:'want', ta:'Order the Broadwood.', tb:'Have the spinet mended.', sum:35, w:() => kittyAtHome() && S.year <= 1806, x:() => `Henrietta has a printed card from Broadwood’s in Great Pulteney Street.
 
 “A square piano-forte, in mahogany. Thirty-five pounds, and the carriage. Kitty plays upon a spinet that was your aunt’s. Three of the keys do not speak.”
 
@@ -1833,7 +1833,7 @@ All the keys now speak, though two of them speak the same note.
 “Your aunt was deaf,” says Henrietta.
 
 Kitty plays upon the spinet after dinner, and plays loudest upon the three dumb keys.`},
-  {id:'henrietta-carpet', kind:'want', sum:40, x:() => `Henrietta has you stand in the drawing-room doorway, and look at the carpet; across which there is a path worn to the boards, from the fire to the decanter, and back.
+  {id:'henrietta-carpet', kind:'want', ta:'Lay a Wilton.', tb:'A rug over the worst of it.', sum:40, x:() => `Henrietta has you stand in the drawing-room doorway, and look at the carpet; across which there is a path worn to the boards, from the fire to the decanter, and back.
 
 “Your uncle,” she says. “Forty years. A Wilton would be forty pounds.”`,
     a:() => `The Wilton is laid upon a Tuesday, crimson, with a border of oak leaves; and for a week nobody is let walk upon it, a drugget being put down from the door to each chair.
@@ -1849,7 +1849,7 @@ The rug does not lie flat, and at Christmas Mr Tamworth falls over it.
 She moves the sofa over the path; by which the sofa is brought to the middle of the room, facing nothing.
 
 There it stays, and callers walk round it.`},
-  {id:'henrietta-chariot', kind:'want', sum:120, w:() => S.standing >= 35 && !(typeof held === 'function' && held('chariot')), x:() => `The Tamworths have a new landaulet, yellow, with the crest upon both doors; and Henrietta, having seen it at church, saw it again in Wyvern on Thursday.
+  {id:'henrietta-chariot', kind:'want', ta:'Order the chariot from Hatchett’s.', tb:'Have the old coach new lined and painted.', sum:120, w:() => S.standing >= 35 && !(typeof held === 'function' && held('chariot')), x:() => `The Tamworths have a new landaulet, yellow, with the crest upon both doors; and Henrietta, having seen it at church, saw it again in Wyvern on Thursday.
 
 “Our coach was built for your uncle in the year of the Gordon riots. The lining is his hair-powder. A chariot from Hatchett’s is a hundred and twenty.”`,
     a:() => `It comes down from Long Acre behind your own horses, dark green, with very small arms upon the door.
@@ -1865,7 +1865,7 @@ Henrietta arrives at the Lovedays’ pale, and smiling.`,
     c:() => `“It has four wheels and a roof.”
 
 She says no more. But at church she waits in the porch until the Tamworths have driven off; and then you hand her up into your uncle’s hair-powder.`},
-  {id:'henrietta-mourning', kind:'want', sum:25, w:() => S.year === 1810 && S.season === 3 || S.year === 1811 && S.season === 0, x:() => `The Princess Amelia is dead at Windsor, at twenty-seven; and the Court goes into mourning, and the county with it.
+  {id:'henrietta-mourning', kind:'want', ta:'Put the whole household in black.', tb:'Black for the family, and a ribbon for the servants.', sum:25, w:() => S.year === 1810 && S.season === 3 || S.year === 1811 && S.season === 0, x:() => `The Princess Amelia is dead at Windsor, at twenty-seven; and the Court goes into mourning, and the county with it.
 
 Black crape, which was two shillings a yard in Wyvern on Monday, is four today.
 
@@ -1879,7 +1879,7 @@ Mrs Bunce wears hers in her cap; and she tells the kitchen that it is for the Pr
     c:() => `“We did not know the lady.”
 
 Henrietta wears her grey; and in Wyvern on Thursday, being the only gentlewoman there in a colour, she has three ladies cross the market place to ask after her health.`},
-  {id:'henrietta-portrait', kind:'want', sum:30, w:() => !(typeof held === 'function' && held('portraits')), x:() => `A travelling limner has put up at the Bell, who has painted the Tamworths, the Lovedays, and the Lovedays’ horse.
+  {id:'henrietta-portrait', kind:'want', ta:'Sit to him, the two of you.', tb:'Let Henrietta sit alone, for a head.', sum:30, w:() => !(typeof held === 'function' && held('portraits')), x:() => `A travelling limner has put up at the Bell, who has painted the Tamworths, the Lovedays, and the Lovedays’ horse.
 
 “Thirty pounds for the two of us in oils, three-quarter length,” says Henrietta. “Half that for a head.”
 
@@ -1897,7 +1897,7 @@ She has it hung in her own dressing-room, and says that it is not at all like.`,
     c:() => `“There is a looking-glass in the hall.”
 
 The limner goes on to Hungerford, leaving his card at the lodge; and Henrietta keeps the card in her work-box.`},
-  {id:'henrietta-tea', kind:'want', sum:18, w:() => S.year >= 1797, x:() => `Tea is ten shillings the pound at Wyvern, and the grocer sands it.
+  {id:'henrietta-tea', kind:'want', ta:'Take both chests.', tb:'Take the one chest.', sum:18, w:() => S.year >= 1797, x:() => `Tea is ten shillings the pound at Wyvern, and the grocer sands it.
 
 Henrietta has a letter from Twining’s in the Strand, offering a chest of Hyson and a chest of Congou, for eighteen pounds, by the Newbury wagon.
 
@@ -1913,7 +1913,7 @@ The servants’ hall has it, and the parlour has what the Thursday man brings; a
 Henrietta drinks sage tea for a week, and has it served to you as well.
 
 On Thursday there is Hyson again. You do not ask.`},
-  {id:'henrietta-gowns', kind:'want', sum:45, w:() => S.year <= 1801, x:() => `The fashion has changed, and waists are under the arms, and there are no hoops; and Henrietta, laying nine gowns across the bed, finds that not one of them can be worn.
+  {id:'henrietta-gowns', kind:'want', ta:'Six new gowns from Reading.', tb:'Have the old gowns cut down.', sum:45, w:() => S.year <= 1801, x:() => `The fashion has changed, and waists are under the arms, and there are no hoops; and Henrietta, laying nine gowns across the bed, finds that not one of them can be worn.
 
 “Forty-five pounds at the mantua-maker’s in Reading. Or I must go to the Assembly as my own mother.”`,
     a:() => `Six new gowns come home in a deal box, white muslin for the most part, and weighing nothing.
@@ -1928,7 +1928,7 @@ But the brocade, having been made to stand out upon a hoop, will not hang, and s
 
 She wears the grey brocade to the Wyvern Assembly, where it takes up two chairs; and Mrs Tamworth tells her that it is delightful to see the old fashions kept up.`},
 
-  {id:'henrietta-margravine', kind:'matter', w:() => S.year >= 1806 && S.year <= 1807, x:() => `The Margrave of Anspach is dead at Benham Park; he having sold his country to the King of Prussia, and come to live outside Newbury. His widow was Lady Craven, who married him sixteen days after Lord Craven died, and whom the Queen will not receive.
+  {id:'henrietta-margravine', kind:'matter', ta:'Let her call at Benham.', tb:'Let Henrietta judge of it.', tc:'She is not to call.', w:() => S.year >= 1806 && S.year <= 1807, x:() => `The Margrave of Anspach is dead at Benham Park; he having sold his country to the King of Prussia, and come to live outside Newbury. His widow was Lady Craven, who married him sixteen days after Lord Craven died, and whom the Queen will not receive.
 
 “She is nine miles off and in mourning,” says Henrietta. “Does one call?”`,
     a:() => `Henrietta calls, and is an hour at Benham.
@@ -1944,7 +1944,7 @@ A card comes back within the week, with a coronet upon it of nine points; and He
     c:() => `“Not while the Queen will not.”
 
 Henrietta stays at home; and Mrs Tamworth, who calls at Benham on Thursday, has a great deal to tell, and tells it at your table.`},
-  {id:'henrietta-housemaid', kind:'matter', x:() => `The second housemaid has been found in the linen closet with the under-footman, at three in the afternoon.
+  {id:'henrietta-housemaid', kind:'matter', ta:'Have them married.', tb:'Let Henrietta deal with them.', tc:'Turn both off.', x:() => `The second housemaid has been found in the linen closet with the under-footman, at three in the afternoon.
 
 “Sarah is nineteen and can get up fine linen,” says Henrietta. “Thomas is the only footman tall enough for the back of the coach. Mrs Bunce wishes both turned off before supper.”
 
@@ -1962,7 +1962,7 @@ The linen closet has a new lock, of which Mrs Bunce keeps the key.`,
     c:() => `Both are turned off, without a character.
 
 The new footman is five foot four, and cannot, behind the coach, reach the strap; and for a fortnight Henrietta irons her own lace.`},
-  {id:'henrietta-bunce', kind:'matter', x:() => `Mrs Bunce, who has been cook at the Hall twenty-six years, has given a month’s notice.
+  {id:'henrietta-bunce', kind:'matter', ta:'Go down and speak to Mrs Bunce.', tb:'Leave the kitchen to Henrietta.', tc:'Let Mrs Bunce go, if she will.', x:() => `Mrs Bunce, who has been cook at the Hall twenty-six years, has given a month’s notice.
 
 “It is the new kitchen-maid,” says Henrietta. “She told Mrs Bunce that at Lord Cullerne’s they do not boil a pudding in the same cloth twice.”
 
@@ -1980,7 +1980,7 @@ Henrietta manages it. The kitchen-maid goes to the dairy, and Mrs Bunce has two 
     c:() => `“Let her go if she wishes.”
 
 Mrs Bunce does not go. But she tells the household what you said; and for a fortnight the mutton is underdone.`},
-  {id:'henrietta-preacher', kind:'matter', w:() => S.year >= 1798, x:() => `There is a Methodist, a shoemaker from Hungerford, who preaches in Dewey’s barn on Sunday evenings.
+  {id:'henrietta-preacher', kind:'matter', ta:'Let him preach.', tb:'Ask the housemaids what he said.', tc:'Send the constable.', w:() => S.year >= 1798, x:() => `There is a Methodist, a shoemaker from Hungerford, who preaches in Dewey’s barn on Sunday evenings.
 
 “Forty of the people were there last Sunday,” says Henrietta. “Eleven were in church. ${F('gallDead') ? 'The Vicar' : 'Dr Gall'} wishes you to send the constable.”
 
@@ -1998,7 +1998,7 @@ Henrietta asks; and it appears that he said that the rich man shall hardly enter
     c:() => `The constable is sent to the barn, where the shoemaker shows him a licence under the Toleration Act; and the constable, who cannot read it, comes away.
 
 Next Sunday there are sixty in the barn.`},
-  {id:'henrietta-mother', kind:'matter', x:() => `Henrietta’s mother, who is seventy-three, proposes herself for six weeks. She travels with a maid, a parrot, and her own sheets, and will not sleep in a room that faces east.
+  {id:'henrietta-mother', kind:'matter', ta:'Have her for the six weeks.', tb:'Let Henrietta say how long.', tc:'Put her off.', x:() => `Henrietta’s mother, who is seventy-three, proposes herself for six weeks. She travels with a maid, a parrot, and her own sheets, and will not sleep in a room that faces east.
 
 “${T('portion') ? 'It was her money that mended the roof' : T('lovematch') ? 'She has never said you were a mistake. Not in words' : 'She asks after you in every letter'},” says Henrietta.`,
     a:() => `She comes for six weeks, and has the blue room, which faces west.
@@ -2023,17 +2023,17 @@ ev({ id:'henrietta', from:1796, to:1815, weight:5, repeatGap:6, title:'Henrietta
   cut:() => henNow().id,
   text:() => henNow().x(),
   choices:[
-    {t:'Let her have it.', note:() => '£' + henNow().sum, if:() => henNow().kind === 'want', go:() => { const p = henNow(); add({money:-p.sum, family:3}); reg('henrietta',1); return p.a(); }},
-    {t:'Do it by halves.', note:() => '£' + half(henNow().sum), if:() => henNow().kind === 'want', go:() => { const p = henNow(); add({money:-half(p.sum), family:1}); return p.b(); }},
+    {t:() => henNow().ta || 'Let her have it.', note:() => '£' + henNow().sum, if:() => henNow().kind === 'want', go:() => { const p = henNow(); add({money:-p.sum, family:3}); reg('henrietta',1); return p.a(); }},
+    {t:() => henNow().tb || 'Do it by halves.', note:() => '£' + half(henNow().sum), if:() => henNow().kind === 'want', go:() => { const p = henNow(); add({money:-half(p.sum), family:1}); return p.b(); }},
     {t:'Not this year.', if:() => henNow().kind === 'want', go:() => { add({family:-2}); reg('henrietta',-1); return henNow().c(); }},
-    {t:'Say yes.', if:() => henNow().kind === 'matter', go:() => { add({family:2}); reg('henrietta',1); return henNow().a(); }},
-    {t:'Leave it to her.', if:() => henNow().kind === 'matter', go:() => { add({family:1}); return henNow().b(); }},
-    {t:'Say no.', if:() => henNow().kind === 'matter', go:() => { add({family:-2}); reg('henrietta',-1); return henNow().c(); }}
+    {t:() => henNow().ta || 'Say yes.', if:() => henNow().kind === 'matter', go:() => { add({family:2}); reg('henrietta',1); return henNow().a(); }},
+    {t:() => henNow().tb || 'Leave it to her.', if:() => henNow().kind === 'matter', go:() => { add({family:1}); return henNow().b(); }},
+    {t:() => henNow().tc || 'Say no.', if:() => henNow().kind === 'matter', go:() => { add({family:-2}); reg('henrietta',-1); return henNow().c(); }}
   ]});
 
 const KITTY = [
   /* at home */
-  {id:'kitty-library', kind:'matter', w:() => kittyAtHome(), x:() => `There is a circulating library opened at the stationer’s in Wyvern, at a guinea a year, and two volumes at a time; and Kitty, who has the printed catalogue, has put a pencil cross against forty-one titles.
+  {id:'kitty-library', kind:'matter', ta:'Give her the guinea.', tb:'Go through the catalogue with her.', tc:'No subscription.', w:() => kittyAtHome(), x:() => `There is a circulating library opened at the stationer’s in Wyvern, at a guinea a year, and two volumes at a time; and Kitty, who has the printed catalogue, has put a pencil cross against forty-one titles.
 
 “Novels,” says Henrietta. “Every one. There is a thing here called The Monk.”`,
     a:() => `Kitty has her guinea, and the carrier brings two volumes each Thursday, and takes two back.
@@ -2047,7 +2047,7 @@ You let it stand, not being sure of the other name.`,
 “Three hundred are sermons,” says Kitty. “I have read the sermons.”
 
 She begins upon the sermons again, and reads them aloud at tea.`},
-  {id:'kitty-walks', kind:'matter', w:() => kittyAtHome(), x:() => `Kitty walks to the far cottages three days a week, alone, to read to an old woman there who is blind.
+  {id:'kitty-walks', kind:'matter', ta:'Let her walk.', tb:'Walk out with her on Thursday.', tc:'Send a groom after her.', w:() => kittyAtHome(), x:() => `Kitty walks to the far cottages three days a week, alone, to read to an old woman there who is blind.
 
 “Four miles, in pattens, with no servant,” says Henrietta. “Mrs Tamworth saw her on the Kintbury lane. She was climbing a gate.”
 
@@ -2067,7 +2067,7 @@ It is four miles back. Kitty climbs the gate, and you go round.`,
 She walks faster; and the groom, who is fifty, asks within the week to be put back in the stable.
 
 Kitty goes on Thursdays in the gig, sitting very straight, and looking at nothing.`},
-  {id:'kitty-latin', kind:'matter', w:() => kittyAtHome() && kittyAge() <= 26, x:() => `Kitty has Edmund’s old Latin grammar, and has got as far as the third declension without help.
+  {id:'kitty-latin', kind:'matter', ta:'Let the curate hear her.', tb:'Hear her yourself.', tc:'Put the grammar away.', w:() => kittyAtHome() && kittyAge() <= 26, x:() => `Kitty has Edmund’s old Latin grammar, and has got as far as the third declension without help.
 
 “I should like the curate to hear me twice a week, sir. He has offered.”
 
@@ -2081,7 +2081,7 @@ She is patient, and gives you the same verb four evenings running.`,
     c:() => `“Your mother is right.”
 
 The grammar goes back upon Edmund’s shelf. But taking down, a month later, the Horace that stands beside it, you find it full of pencil; and the hand is not Edmund’s.`},
-  {id:'kitty-assembly', kind:'matter', w:() => kittyAtHome() && kittyAge() >= 21, x:() => `It is the night of the Wyvern Assembly, and Kitty comes down in her old green.
+  {id:'kitty-assembly', kind:'matter', ta:'Let her stay at home.', tb:'An hour, and she shall name it.', tc:'She is to go.', w:() => kittyAtHome() && kittyAge() >= 21, x:() => `It is the night of the Wyvern Assembly, and Kitty comes down in her old green.
 
 “I have danced with the same nine men for ${kittyAge() - 17} winters, Mamma. I know what each will say at the bottom of the set. Might I stay at home?”
 
@@ -2099,7 +2099,7 @@ Going home she says, “That was fair, sir.” She has danced twice.`,
 She goes, and dances every dance, and smiles the whole evening at the wall.
 
 Mr Loveday’s nephew says that she is the most agreeable girl in the room. She has not heard a word he said.`},
-  {id:'kitty-danes', kind:'matter', w:() => kittyAtHome() && S.year >= 1808 && S.year <= 1813, x:() => `There are three hundred Danish officers upon parole at Reading, taken with their ships at Copenhagen; and Kitty has it from the laundry-maid that on Thursdays the young ones give a dance in a cellar, to which their washerwomen’s daughters come, with a washerwoman sitting by the door for propriety.
+  {id:'kitty-danes', kind:'matter', ta:'Tell her what you know.', tb:'Send her to her mother.', tc:'Not at the dinner-table.', w:() => kittyAtHome() && S.year >= 1808 && S.year <= 1813, x:() => `There are three hundred Danish officers upon parole at Reading, taken with their ships at Copenhagen; and Kitty has it from the laundry-maid that on Thursdays the young ones give a dance in a cellar, to which their washerwomen’s daughters come, with a washerwoman sitting by the door for propriety.
 
 “What do they dance, sir?” says Kitty at dinner. “Is it true the punch is mostly water?”`,
     a:() => `You tell her what you know, and it is not much; and on the Saturday you drive her into Reading.
@@ -2117,7 +2117,7 @@ Nobody at the table knows.`,
 “No, sir.”
 
 She has the rest from the laundry-maid by Friday, and it is a great deal more than you knew.`},
-  {id:'kitty-telescope', kind:'want', sum:12, w:() => kittyAtHome() && S.year === 1811, x:() => `There is a comet, which stands every evening over the stable clock, with a tail as long as your arm; and Kitty has been three nights upon the leads with your spy-glass.
+  {id:'kitty-telescope', kind:'want', ta:'Order the telescope from Dollond’s.', tb:'A new glass for the spy-glass.', tc:'She may look without one.', sum:12, w:() => kittyAtHome() && S.year === 1811, x:() => `There is a comet, which stands every evening over the stable clock, with a tail as long as your arm; and Kitty has been three nights upon the leads with your spy-glass.
 
 “Mr Dollond has a two-foot achromatic telescope on a brass stand. Twelve pounds. One could see the head of it, sir. One could draw it.”`,
     a:() => `It comes from St Paul’s Churchyard in a mahogany box, and she has it upon the leads the same night.
@@ -2134,7 +2134,7 @@ She draws it from the leads with the naked eye, every clear night for nine weeks
 
 Henrietta finds the drawings, and says that they would make a pretty screen.`},
   /* Mrs Vane */
-  {id:'kitty-vane-bailiff', kind:'want', sum:60, w:() => K() === 'vane' && !F('vaneGone'), x:() => `There is a letter from Kitty, dated from lodgings in ${['Sunderland', 'Colchester', 'Weymouth'][S.t % 3]}.
+  {id:'kitty-vane-bailiff', kind:'want', ta:'Send the sixty pounds.', tb:'Send thirty, and write to his Colonel.', tc:'Send nothing.', sum:60, w:() => K() === 'vane' && !F('vaneGone'), x:() => `There is a letter from Kitty, dated from lodgings in ${['Sunderland', 'Colchester', 'Weymouth'][S.t % 3]}.
 
 “My dear Papa, The Captain has had a misfortune at cards, and there is a bailiff sitting in the passage; a very civil man, to whom I have given tea. He says that sixty pounds would take him out of the house, and that he has known cases a great deal worse. I am quite well.”`,
     a:() => `You send the sixty pounds to Kitty by name.
@@ -2195,12 +2195,12 @@ ev({ id:'kitty', from:1797, to:1815, weight:5, repeatGap:6, cond:() => KITTY.som
   cut:() => kitNow().id,
   text:() => kitNow().x(),
   choices:[
-    {t:'Let her have it.', note:() => '£' + kitNow().sum, if:() => kitNow().kind === 'want', go:() => { const p = kitNow(); add({money:-p.sum, family:2}); reg('kitty',2,'You paid when she asked'); return p.a(); }},
-    {t:'Do it by halves.', note:() => '£' + half(kitNow().sum), if:() => kitNow().kind === 'want', go:() => { const p = kitNow(); add({money:-half(p.sum)}); reg('kitty',0); return p.b(); }},
-    {t:'Refuse.', if:() => kitNow().kind === 'want', go:() => { add({family:-2}); reg('kitty',-2,'You refused her'); return kitNow().c(); }},
-    {t:'Take her part.', if:() => kitNow().kind === 'matter', go:() => { add({family:1}); reg('kitty',2,'You took her part'); reg('henrietta',-1); return kitNow().a(); }},
-    {t:'Go into it with her.', if:() => kitNow().kind === 'matter', go:() => { add({family:3}); reg('kitty',1); return kitNow().b(); }},
-    {t:'Take her mother’s part.', if:() => kitNow().kind === 'matter', go:() => { add({family:-1}); reg('kitty',-1); reg('henrietta',1); return kitNow().c(); }},
+    {t:() => kitNow().ta || 'Let her have it.', note:() => '£' + kitNow().sum, if:() => kitNow().kind === 'want', go:() => { const p = kitNow(); add({money:-p.sum, family:2}); reg('kitty',2,'You paid when she asked'); return p.a(); }},
+    {t:() => kitNow().tb || 'Do it by halves.', note:() => '£' + half(kitNow().sum), if:() => kitNow().kind === 'want', go:() => { const p = kitNow(); add({money:-half(p.sum)}); reg('kitty',0); return p.b(); }},
+    {t:() => kitNow().tc || 'Refuse.', if:() => kitNow().kind === 'want', go:() => { add({family:-2}); reg('kitty',-2,'You refused her'); return kitNow().c(); }},
+    {t:() => kitNow().ta || 'Take her part.', if:() => kitNow().kind === 'matter', go:() => { add({family:1}); reg('kitty',2,'You took her part'); reg('henrietta',-1); return kitNow().a(); }},
+    {t:() => kitNow().tb || 'Go into it with her.', if:() => kitNow().kind === 'matter', go:() => { add({family:3}); reg('kitty',1); return kitNow().b(); }},
+    {t:() => kitNow().tc || 'Take her mother’s part.', if:() => kitNow().kind === 'matter', go:() => { add({family:-1}); reg('kitty',-1); reg('henrietta',1); return kitNow().c(); }},
     {t:'Write to her yourself.', if:() => kitNow().kind === 'news', go:() => { add({family:2}); reg('kitty',1);
       return pick([
         `You write two sides, to tell her that the orchard has blown down in part, and that the dog looks for her upon the stairs.

@@ -539,11 +539,11 @@ function stepEst(d){ const i = estIdx() + d; S.est = EST[i].id;
 function householdQuarter(line){ const i = estIdx(), tgt = clamp(EST[i].standing + societyMark() - 6 * (S.settledSold || 0), 5, 95);
   if (S.annuities) line(S.annuities > 1 ? 'Annuities on your life, ' + numWords(S.annuities) : 'Annuity on your life', -25 * S.annuities);
   line('The Hall: ' + EST[i].name, -(estCost(i, S.year) / 4 - (F('bricked') ? 3 : 0)));
-  if (T('jointure')) line('Your uncle’s widow, her jointure', -30);
-  if (T('taste')) line('Milliners and mantua-makers', -30);
+  if (T('jointure') && !F('jointureOut')) line('Your uncle’s widow, her jointure', -30);
+  if (T('taste')) line('Milliners and mantua-makers', F('tasteNewbury') ? -10 : F('tasteAllow') ? -20 : -30);
   if (T('bottle') && !F('abstemious')) line('The wine merchant', -10);
-  if (T('lawsuit') && S.season === 3) line('Costs in the matter of the pew', -40);
-  if (T('brother') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
+  if (T('lawsuit') && !F('pewEnded') && S.season === 3) line('Costs in the matter of the pew', -40);
+  if (T('brother') && !F('fredAbroad') && S.season === 0) line('Lent to Henrietta’s brother', -(40 + Math.floor(Math.random() * 12) * 10));
   { const sc = houseCost('schoolroom'); if (sc) line(sc > 0 ? 'The schoolroom: governess and masters' : 'Saved by sending the governess away', -sc / 4); }
   { const sv = houseCost('servants'), sb = houseCost('stables'); if (sv) line(sv > 0 ? 'Servants’ wages above the county rate' : 'Saved on servants’ wages', -sv / 4); if (sb) line(sb > 0 ? 'The stables: corn, a second groom, the farrier' : 'Saved in the stables', -sb / 4); }
   if (S.t > 0) societyQuarter(line); }
@@ -558,18 +558,22 @@ const MARKET_FARMS = ['coldharbour', 'rooksnest', 'withymead', 'maddle'];
 const landFor = id => (S.soldFarms && S.soldFarms[id]) || Object.assign({id, level:'fair', arrears:0, lease:{type:'will'}}, NEW_FARMS[id]);
 const askPrice = (f, years) => Math.round((years || (moneyTight(S.year) ? 19 : 22)) * lettingValue(f, S.year) / 10) * 10;
 const loanOn = price => moneyTight(S.year) ? 0 : Math.floor(price * 0.6 / 100) * 100;   // the bank lends half on the farm itself, when it lends at all
+/* What the whole estate would carry with this farm added to it; and what must be raised on that to make up a short purse. In a tight year, or when the county has cut him, the bank pays out nine tenths, as on any other borrowing. */
+const capWith = f => { S.farms.push(Object.assign({}, f, {own:true})); const c = mortCap(); S.farms.pop(); return c; };
+const raiseFor = short => short <= 0 ? 0 : Math.ceil(short * 500 / borrowGets() / 100) * 100;
 function farmsForSale(){ estateSync(); const open = S.phase !== 'end' && !S.dead;
   const ids = MARKET_FARMS.concat(Object.keys(S.soldFarms || {}).filter(id => !MARKET_FARMS.includes(id))).filter(id => !farm(id));
   return ids.map(id => { const f = landFor(id), price = askPrice(f), trust = Math.min(S.trust || 0, price), loan = loanOn(price - trust), down = price - trust - loan;
-    const why = !open ? 'The books are closed.' : S.farms.length >= MAX_FARMS ? 'Eight farms is as much as one steward can ride.' : S.money < down ? 'The purse will not stand ' + fmt(down) + ' down.' : '';
-    return {id, name:f.name, land:LAND[id], acres:f.acres, price, down, loan, trust, order:ORDER_W[f.cond], value:lettingValue(f, S.year), can:!why, why}; }); }
+    const more = raiseFor(down - Math.max(0, S.money)), room = capWith(f) - S.mortgage - loan, purse = Math.max(0, Math.round(down - more * borrowGets() / 500));
+    const why = !open ? 'The books are closed.' : S.farms.length >= MAX_FARMS ? 'Eight farms is as much as one steward can ride.' : more > room ? 'The purse will not stand ' + fmt(down) + ' down, and the land will not carry ' + fmt(more) + ' more on mortgage.' : '';
+    return {id, name:f.name, land:LAND[id], acres:f.acres, price, down, loan, trust, more, purse, borrowed:loan + more, interest:Math.round((loan + more) * (F('cheapCredit') ? 0.04 : 0.05)), order:ORDER_W[f.cond], value:lettingValue(f, S.year), can:!why, why}; }); }
 function takeFarm(id, loan, paid){ const f = landFor(id); f.paid = paid; f.boughtT = S.t; if (S.soldFarms) delete S.soldFarms[id];
   Object.assign(f, {own:true, arrears:0, level:'fair', lease:{type:'will'}, since:S.year}); delete f.void; delete f.rebate; if (!f.tenant || f.tenant === 'Edmund') f.tenant = incomer()[0];
   f.rent = five(0.95 * lettingValue(f, S.year)); f.K = 0.5 * f.rent; if (loan) S.mortgage += loan;
   S.farms.push(f); return f; }
 function buyFarm(id){ const x = farmsForSale().find(r => r.id === id); if (!x || !x.can) return false;
-  S.money -= x.down; const f = takeFarm(id, x.loan, x.price); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
-  S.journal.unshift({when:stamp(), title:'Land', did:'Bought ' + f.name + ', ' + f.acres + ' acres, for ' + fmt(x.price) + (x.loan ? ', ' + fmt(x.loan) + ' of it on mortgage' : '') + (x.trust ? ', ' + fmt(x.trust) + ' of it the trustees’ money' : '')}); save(); render(); return true; }
+  S.money -= x.purse; const f = takeFarm(id, x.borrowed, x.price); if (x.trust) { S.trust -= x.trust; if (x.trust >= x.price / 2) { f.own = false; S.settledSold = Math.max(0, (S.settledSold || 0) - 1); } }
+  S.journal.unshift({when:stamp(), title:'Land', did:'Bought ' + f.name + ', ' + f.acres + ' acres, for ' + fmt(x.price) + (x.borrowed ? ', ' + fmt(x.borrowed) + ' of it on mortgage' : '') + (x.trust ? ', ' + fmt(x.trust) + ' of it the trustees’ money' : '')}); save(); render(); return true; }
 function sellState(id){ const f = farm(id), open = S.phase !== 'end' && !S.dead, settled = !f.own;
   const why = !open ? 'The books are closed.' : S.farms.length <= 1 ? 'The last farm cannot be sold.' : f.tenant === 'Edmund' && !f.void ? 'Edmund farms it himself.' : settled && !F('edmundDead') && S.chars.edmund.r <= -3 ? 'Settled land. Edmund will not sign.' : '';
   const sp = settled ? splitSettled(salePrice(f), S.money, 0) : {free:salePrice(f), off:0, trust:0};
@@ -984,7 +988,7 @@ for (const [id, of] of [['plough', 'longbarrow'], ['peat', 'kennet'], ['brickkil
 function marks(){ const i = estIdx(), why = {standing:[], goodwill:[], family:[]}; const put = (k, n, t) => { if (n) why[k].push((n > 0 ? '+' : MINUS) + Math.abs(n) + ' ' + t); return n; };
   let st = EST[i].standing; why.standing.push(EST[i].standing + ' ' + cap1(EST[i].name));
   st += put('standing', societyMark(), 'Society'); st += put('standing', -6 * (S.settledSold || 0), 'Settled land sold');
-  st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down'); st += put('standing', F('hallPew') ? 1 : 0, 'The Hall pew'); st += put('standing', F('churchRoof') ? 1 : 0, 'The church roof');
+  st += put('standing', live('turnpike') ? 2 : 0, 'A trustee of the turnpike'); st += put('standing', live('racecourse') ? 3 : 0, 'Hatherley races'); st += put('standing', live('telegraph') ? 1 : 0, 'The Admiralty on the Down'); st += put('standing', F('hallPew') ? 1 : 0, 'The Hall pew'); st += put('standing', F('mp') ? 4 : 0, 'Member for Wyvern, and a point more each quarter you sit'); st += put('standing', F('churchRoof') ? 1 : 0, 'The church roof');
   st += put('standing', F('wages') ? -2 : 0, 'The farmers dislike your wages'); st += put('standing', idle('county', 2) ? -4 : 0, 'Not seen in the county this half-year'); st += put('standing', S.money < 0 ? -4 : 0, 'Living on credit'); st += put('standing', F('henriettaAway') ? -5 : 0, 'Henrietta at Bath');
   let g = 44; why.goodwill.push('44 The parish as you found it');
   const rack = S.farms.filter(f => f.level === 'rack').length, easy = S.farms.filter(f => f.level === 'easy').length;
@@ -1013,6 +1017,7 @@ const idle = (k, seasons) => S.t - ((S.duty && S.duty[k]) || 0) >= seasons;
 function duty(k){ S.duty = S.duty || {}; S.duty[k] = S.t; }
 function regardQuarter(line){ const m = marks(), q = S.season, d = {};
   for (const k of ['standing', 'goodwill', 'family']) { const over = S[k] - m[k]; d[k] = over > HOLD ? -Math.ceil((over - HOLD) / SINK) - (S[k] > 80 ? 1 : 0) : over <= -20 ? 2 : over <= -5 ? 1 : 0; }
+  if (F('mp')) d.standing += 1;   // a Member is somebody in the county for as long as he sits
   add(d);
   // the parish
   if (S.goodwill < 38 && !F('sullen')) { fl('sullen'); S.notes.push(`No hat is touched in Hatherley street this morning; and the eleven men who stand at the door of the Bell, as you ride by, look at the road.`); }

@@ -42,7 +42,7 @@ const workAt = id => WORK_AT[id] || 'hall', ventAt = id => VENT_AT[id] || 'wyver
 /* A board stands at every farm held without a lease, as one stands at a farm for sale; and a farm under lease carries the year it runs to. */
 const heldFarm = id => id && typeof farmsList === 'function' ? farmsList().find(f => f.id === id) : null;
 const toLet = id => { const f = heldFarm(id); return !!f && f.canOffer; };
-const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ? '' : `<small>${f.state === 'hand' ? 'In hand' : (f.state === 'corn' ? 'Corn rent to ' : 'Lease to ') + f.ends}</small>`; };
+const heldAs = id => { const f = heldFarm(id); return !f || f.state === 'will' ? '' : `<small>${f.board ? esc(f.board) : f.state === 'hand' ? 'In hand' : (f.state === 'corn' ? 'Corn rent to ' : 'Lease to ') + f.ends}</small>`; };
 /* Where a work is not yet built, or a venture not yet tried, a small roundel of each stands beside the name. */
 function toDoAt(){ const w = new Set(), v = new Set(), shut = S.phase === 'end' || S.dead; if (shut) return {w, v};
   if (typeof worksList === 'function') for (const x of worksList()) if (x.state === 'open' && !x.off) w.add(workAt(x.id));
@@ -100,7 +100,7 @@ function callOn(){ PLATEUP = true; SHEET = ''; WHO = ''; drawPlan(); }
 function plateDown(){ PLATEUP = false; drawPlan(); }
 function showProgress(i){ PROGRESS = i === undefined ? Math.max(0, S.plates.length - 1) : i; drawPlate(); }
 function shutProgress(){ PROGRESS = -1; drawPlate(); }
-function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, behavior:'smooth'})); }
+function showOnPlan(id){ if (!pane()) return; const w = $('landwrap'), l = $('land'), p = PLACES[id]; requestAnimationFrame(() => w.scrollTo({left:l.offsetWidth * p.at[0] / 100 - w.clientWidth / 2, top:l.offsetHeight * p.at[1] / 100 - w.clientHeight / 2, behavior:'smooth'})); }
 
 /* ---------- the plates ---------- */
 const eventCut = e => (e.cut && artURL('events/' + e.cut()) && 'events/' + e.cut()) || (artURL('events/' + e.id) && 'events/' + e.id) || '';
@@ -250,7 +250,7 @@ function cueHTML(){ const cue = (line, label, act) => `<div class="next"><p>${li
   return ''; }
 function cartHTML(){ const vig = (icon, label, v, words) => `<div class="vig${v < 40 ? ' low' : ''}">${pic('icons/' + icon, '')}<p class="rk"><span>${label}</span><b${band(v, words).length > 14 ? ' class="long"' : ''}>${esc(band(v, words))}</b></p><i><u style="width:${Math.max(0, Math.min(100, v))}%"></u></i></div>`;
   return `<div class="day">${pic('icons/' + SEASON_ICON[S.season], '')}<b>${esc(QUARTER[S.season])}</b><span>${S.year} · fo. ${Math.min(S.t + 1, 84)} of 84</span></div>
-    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <i>${fmt(S.mortgage)}</i></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
+    <div class="purse"><span>Your purse</span><b class="${S.money < 0 ? 'neg' : ''}">${fmt(S.money)}</b><span>Outstanding mortgage <span class="of"><i>${fmt(S.mortgage)}</i>${typeof mortCap === 'function' ? ` of ${fmt(mortCap())}` : ''}</span></span>${typeof creditList === 'function' && S.phase !== 'end' && !S.dead ? creditHTML() : ''}</div>
     <div class="vigs">${vig('standing', 'Standing', S.standing, STANDING_W)}${vig('goodwill', 'Goodwill', S.goodwill, GOODWILL_W)}${vig('household', 'Household', S.family, FAMILY_W)}</div>
     ${typeof RESUMED !== 'undefined' && RESUMED ? `<p class="resumed"><b>Your estate, as you left it</b><span>${esc(QUARTER[S.season])} ${S.year}. Nothing is lost.</span></p>` : ''}
     ${cueHTML()}
@@ -338,10 +338,13 @@ function drawPlan(){ const on = !!S && VIEW === 'plan'; document.body.classList.
   if (!$('landart')) land.innerHTML = '<div id="landart"></div><div id="landmot"></div><div id="landlbl"></div>';
   for (const [k, h] of [['landart', landArtHTML()], ['landmot', landMotHTML()], ['landlbl', landLblHTML()]]) { const el = $(k); if (el._h !== h) { const fresh = el._h === undefined; el._h = h; if (k === 'landart') layArt(el, h); else patchKids(el, h, k === 'landmot' && !fresh); } }
   if (key !== LANDKEY) { const first = !LANDKEY; LANDKEY = key;
-    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; }); }
+    const to = S.phase === 'event' && !PLATEUP ? eventPlace(byId(S.pending)) : first ? 'hall' : ''; if (to && pane()) requestAnimationFrame(() => { const w = $('landwrap'); w.scrollLeft = land.offsetWidth * PLACES[to].at[0] / 100 - w.clientWidth / 2; w.scrollTop = land.offsetHeight * PLACES[to].at[1] / 100 - w.clientHeight / 2; }); }
   setHTML($('cart'), cartHTML());
   whenIdle(warmQuarter);
   const top = sheet.scrollTop, was = sheet.dataset.key, now = SHEET + ':' + WHO;
-  sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET); sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
+  { /* on a phone the sheet is put by while a paper is read, and comes back lying where it lay */
+    const w = $('landwrap'), was = $('plan').classList.contains('sheeton'); if (!was && SHEET) w._at = [w.scrollLeft, w.scrollTop];
+    sheet.hidden = !SHEET; $('plan').classList.toggle('sheeton', !!SHEET);
+    if (was && !SHEET && w._at && pane()) { const [x, y] = w._at; w.scrollLeft = x; w.scrollTop = y; } } sheet.className = p && p.at[0] > 56 ? 'left' : 'right';
   const sh = SHEET ? sheetHTML() : ''; if (sheet._h !== sh) { sheet._h = sh; sheet.innerHTML = sh; } sheet.dataset.key = now; sheet.scrollTop = was === now ? top : 0; }
 addEventListener('keydown', e => { if (e.key !== 'Escape' || !S) return; if (PROGRESS >= 0) shutProgress(); else if (SHEET && VIEW === 'plan' && !PLATEUP) shutSheet(); });

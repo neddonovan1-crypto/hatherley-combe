@@ -23,12 +23,14 @@ src/estate.js      the rent roll: farms, leases, ventures, household, society, c
 src/common.js      the Common while it lies open
 src/farmworks.js   each farm's own works and venture
 src/castle.js      Lord Cullerne: the votes, his court, the game, and what may be bought of him
+src/king.js        Mr Robinson: the King's physicians take a farm, at three times its rent, for nobody knows how long
 src/events1.js     the fixed calendar
 src/events2.js     the wandering pool
 src/events3.js     one paper for each choice made at the inheritance
 src/events4.js     the Post-Captain at the Grange
 src/events5.js     the squire's past and character, made to tell
 src/ventpapers.js  the papers a venture opens (with ventpapers.css)
+src/honours.js     the knighthood and the baronetcy: a paper and a plate each, and two papers after
 src/endings.js     how the life ends, and its last plate (with endings.css)
 src/plan.js        the plan of the estate and the plates (with plan.css)
 src/planart.js     where each drawn piece sits on the plan
